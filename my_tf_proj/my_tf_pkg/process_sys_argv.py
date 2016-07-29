@@ -16,7 +16,7 @@ def process_argv(argv):
     if is_it_tensorboard_run(argv):
         if len(argv) == 6:
             # python main_nn.py slurm_jobid slurm_array_task_id job_name mdl_save --logdir=/tmp/mdl_logs
-            # python main_nn.py slurm_jobid slurm_array_task_id job_name True --logdir=/tmp/mdl_logs
+            # python main_nn.py slurm_jobid slurm_array_task_id job_name_TEST True --logdir=/tmp/mdl_logs
             slurm_jobid = argv[1]
             slurm_array_task_id = argv[2]
             job_name = argv[3]
@@ -34,13 +34,13 @@ def process_argv(argv):
         if len(argv) == 10:
             # python main_nn.py slurm_jobid slurm_array_task_id experiment_root_dir experiment_name job_name mdl_save 3,3 multiple_S/single_S task_name
 
-            #
+            # python main_nn.py slurm_jobid slurm_array_task_id om_xsinlog1_x_depth2_multiple_S experiment_name job_name True 3,3 multiple_S task_f_2d_task2_xsinglog1_x_depth2
             slurm_jobid = argv[1]
             slurm_array_task_id = argv[2]
             experiment_root_dir = argv[3]
             job_name = argv[4]
-            mdl_save = bool(argv[5])
-            experiment_name = argv[6]
+            experiment_name = argv[5]
+            mdl_save = bool(argv[6])
             units =  argv[7].split(',')
             units_list = [ int(a) for a in units ]
             train_S_type = argv[8] # multiple_S/single_S
