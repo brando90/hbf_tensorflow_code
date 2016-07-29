@@ -22,31 +22,27 @@ re_train = None
 #re_train = 're_train'
 
 results = {'train_errors':[], 'cv_errors':[],'test_errors':[]}
-# slyurm values and ids
-(prefix,slurm_jobid,slurm_array_task_id,job_number,mdl_save,experiment_name,units_list,train_S_type,task_name) = mtf.process_argv(sys.argv)
-print 'prefix=%s,slurm_jobid=%s,slurm_array_task_id=%s,job_number=%s'%(prefix,slurm_jobid,slurm_array_task_id,job_number)
-results['job_number'] = job_number
-results['slurm_jobid'] = slurm_jobid
-results['slurm_array_task_id'] = slurm_array_task_id
+# slurm values and ids
+(experiment_root_dir,slurm_jobid,slurm_array_task_id,job_name,mdl_save,experiment_name,units_list,train_S_type,task_name) = mtf.process_argv(sys.argv)
+date = datetime.date.today().strftime("%B %d").replace (" ", "_")
+print 'experiment_root_dir=%s,slurm_jobid=%s,slurm_array_task_id=%s,job_name=%s'%(experiment_root_dir,slurm_jobid,slurm_array_task_id,job_name)
+
 # randomness
 tf_rand_seed = int(os.urandom(32).encode('hex'), 16)
 tf.set_random_seed(tf_rand_seed)
-results['tf_rand_seed'] = tf_rand_seed
 ## directory structure for collecting data for experiments
-path_root = './%s_test_experiments/%s'%(prefix,experiment_name)
-date = datetime.date.today().strftime("%B %d").replace (" ", "_")
-results['date'] = date
+path_root = '../../%s/%s'%(experiment_root_dir,experiment_name)
 #
-current_experiment_folder = '/%s_%s_j%s'%(prefix,date,job_number)
+current_experiment_folder = '/%s_j%s'%(date,job_name)
 path = path_root+current_experiment_folder
 #
 #errors_pretty_dir = '/errors_pretty_dir'
-errors_pretty = '/%s_errors_file_%s_slurm_sj%s.txt'%(prefix,date,slurm_array_task_id)
+errors_pretty = '/errors_file_%s_slurm_sj%s.txt'%(date,slurm_array_task_id)
 #
-mdl_dir ='/mdls_%s_%s_slurm_sj%s'%(prefix,date,slurm_array_task_id)
+mdl_dir ='/mdls_%s_slurm_sj%s'%(date,slurm_array_task_id)
 #
 #json_dir = '/results_json_dir'
-json_file = '/%s_json_%s_slurm_array_id%s_jobid_%s'%(prefix, date, slurm_array_task_id, slurm_jobid)
+json_file = '/json_%s_slurm_array_id%s_jobid_%s'%(date, slurm_array_task_id, slurm_jobid)
 #
 tensorboard_data_dump_train = '/tmp/mdl_logs/train'
 tensorboard_data_dump_test = '/tmp/mdl_logs/test'
@@ -130,9 +126,9 @@ if bn:
 else:
     phase_train = None
 
-report_error_freq = 50
-steps = 3000
-M = 17000 #batch-size
+report_error_freq = 29
+steps = 80
+M = 60 #batch-size
 
 low_const_learning_rate, high_const_learning_rate = 0, -6
 log_learning_rate = np.random.uniform(low=low_const_learning_rate, high=high_const_learning_rate)
@@ -330,6 +326,13 @@ mtf.load_results_dic(results,git_hash=git_hash,dims=dims,mu=mu,std=std,init_cons
     tensorboard_data_dump_test=tensorboard_data_dump_test,tensorboard_data_dump_train=tensorboard_data_dump_train,\
     report_error_freq=report_error_freq,steps=steps,M=M,optimization_alg=optimization_alg,\
     starter_learning_rate=starter_learning_rate,decay_rate=decay_rate,staircase=staircase)
+
+##
+results['job_name'] = job_name
+results['slurm_jobid'] = slurm_jobid
+results['slurm_array_task_id'] = slurm_array_task_id
+results['tf_rand_seed'] = tf_rand_seed
+results['date'] = date
 
 seconds = (time.time() - start_time)
 minutes = seconds/ 60
