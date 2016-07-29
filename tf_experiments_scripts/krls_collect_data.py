@@ -12,7 +12,7 @@ import my_tf_pkg as mtf
 #import my_tf_pkg.plotting_1D as plt1d
 
 def main(argv):
-        (_, task_name, prefix, experiment_name, nb_inits, nb_rbf_shapes, units)  = argv
+        (_, task_name, experiment_name, nb_inits, nb_rbf_shapes, units)  = argv
         nb_inits, nb_rbf_shapes = int(nb_inits), int(nb_rbf_shapes)
         units_list =  units.split(',')
         nb_centers_list = [ int(a) for a in units_list ]
@@ -38,7 +38,7 @@ def main(argv):
         #(Y_pred_train_best, _, Y_pred_test_best) = reconstructions_best
         print 'train_errors_means: ', train_errors_means
 
-        dir_path = './%s_experiments/%s_%s'%(prefix,date,experiment_name)
+        dir_path = '../../om_krls/%s_%s'%(date,experiment_name)
         mtf.make_and_check_dir(dir_path)
         # save rbf
         rbf_params_loc = dir_path+'/rbf_params_%s_%s'%(date,experiment_name)
@@ -52,13 +52,10 @@ def main(argv):
         #mtf.save_workspace(filename=result_loc,names_of_spaces_to_save=dir(),dict_of_values_to_save=locals())
 
 if __name__ == '__main__':
-    # python krls_collect_data.py f_2D_task2 tmp_krls krls_experiment_name_test 2 2 2,3,4
-    # python krls_collect_data.py f_2d_task2_xsinglog1_x_depth2 tmp_krls krls_f_2d_task2_xsinglog1_x_depth2 2 2 2,3,4
-    # python krls_collect_data.py f_2d_task2_xsinglog1_x_depth3 tmp_krls krls_f_2d_task3_xsinglog1_x_depth2 2 2 2,3,4
-    # python krls_collect_data.py hrushikesh tmp_krls krls_hrushikesh 2 2 2,3,4
+    # python krls_collect_data.py task_f_2d_task2_xsinglog1_x_depth2 krls_f_2d_task2_xsinglog1_x_depth2_TEST 2 2 2,3,4
 
-    # task_name = f_2d_task2_xsinglog1_x_depth2
-    # task_name = f_2d_task2_xsinglog1_x_depth3
+    print 'main'
+    mtf.helloworld()
     argv = sys.argv
     main(argv)
     print '\a' #makes beep

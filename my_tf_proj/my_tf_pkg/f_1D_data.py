@@ -87,22 +87,27 @@ def generate_data_from_krls():
 
 ##
 
+def helloworld():
+    print 'helloworld'
+
 def get_data(task_name):
     ## Data sets
-    if task_name == 'qianli_func':
+    print '---> task_name: ', task_name
+
+    if task_name == 'task_qianli_func':
         (X_train, Y_train, X_cv, Y_cv, X_test, Y_test) = get_data_from_file(file_name='./f_1d_cos_no_noise_data.npz')
-    elif task_name == 'f_2D_task2':
+    elif task_name == 'task_f_2D_task2':
         (X_train, Y_train, X_cv, Y_cv, X_test, Y_test) = get_data_from_file(file_name='./f_2d_task2_ml_data_and_mesh.npz')
-    elif task_name == 'f_2d_task2_xsinglog1_x_depth2':
+    elif task_name == 'task_f_2d_task2_xsinglog1_x_depth2':
         (X_train, Y_train, X_cv, Y_cv, X_test, Y_test) = get_data_from_file(file_name='./f_2d_task2_ml_xsinlog1_x_depth_2data_and_mesh.npz')
-    elif task_name == 'f_2d_task2_xsinglog1_x_depth3':
+    elif task_name == 'task_f_2d_task2_xsinglog1_x_depth3':
         (X_train, Y_train, X_cv, Y_cv, X_test, Y_test) = get_data_from_file(file_name='./f_2d_task2_ml_xsinlog1_x_depth_3data_and_mesh.npz')
-    elif task_name == 'MNIST_flat':
+    elif task_name == 'task_MNIST_flat':
         mnist = input_data.read_data_sets("MNIST_data/", one_hot=True)
         X_train, Y_train = mnist.train.images, mnist.train.labels
         X_cv, Y_cv = mnist.validation.images, mnist.validation.labels
         X_test, Y_test = mnist.test.images, mnist.test.labels
-    elif task_name == 'hrushikesh':
+    elif task_name == 'task_hrushikesh':
         with open('../hrushikesh/patient_data_X_Y.json', 'r') as f_json:
             patients_data = json.load(f_json)
         X = patients_data['1']['X']
