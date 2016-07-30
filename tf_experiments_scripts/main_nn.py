@@ -124,7 +124,7 @@ phase_train = tf.placeholder(tf.bool, name='phase_train') if bn else  None
 
 report_error_freq = 100
 steps = 3000
-M = np.random.uniform(low=500, high=20000)
+M = np.random.randint(low=500, high=20000)
 #M = 17000 #batch-size
 
 low_const_learning_rate, high_const_learning_rate = 0, -6
