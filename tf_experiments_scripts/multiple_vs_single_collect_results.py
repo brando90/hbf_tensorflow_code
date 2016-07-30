@@ -101,7 +101,8 @@ def get_results_for_experiments(path_to_experiments, verbose=True, split_string=
             results_best, best_filename, final_train_errors, final_cv_errors, final_test_errors = get_best_results_from_experiment(experiment_dirpath=experiment_dir,list_runs_filenames=potential_runs)
             nb_units = results_best['dims'][1]
             #(left, right) = experiment_dir.split('jHBF1_')
-            (left, right) = re.split('_jHBF[\d]*_',experiment_dir)
+            #(left, right) = re.split('_jHBF[\d]*_',experiment_dir)
+            (left, right) = re.split(split_string,experiment_dir)
             if verbose:
                 print '--'
                 print right[0]
@@ -280,17 +281,19 @@ def display_results_HBF1_task2():
     plt.show()
 
 def display_results_NN1_xsinglog1_x():
+    # frameworkpython multiple_vs_single_collect_results.py
     #print os.path.isdir(path_to_experiments)
     experiment_name = 'om_xsinlog1_x_depth2'
     path_to_experiments = '../../%s/task_27_july_NN1_depth_2_1000'%experiment_name
-    nn1_multiple_experiment_results = get_results_for_experiments(path_to_experiments,verbose=True)
+    nn1_multiple_experiment_results = get_results_for_experiments(path_to_experiments,verbose=True, split_string='_jHBF[\d]*_')
 
-    path_to_experiments = '../../%s/task_27_july_NN2_depth_2_1000'%experiment_name
-    nn2_multiple_experiment_results = get_results_for_experiments(path_to_experiments,verbose=True)
+    #path_to_experiments = '../../%s/task_27_july_NN2_depth_2_1000'%experiment_name
+    path_to_experiments = '../../%s/task_28_july_NN2_1000_BN'%experiment_name
+    nn2_multiple_experiment_results = get_results_for_experiments(path_to_experiments,verbose=True, split_string='_jNN[\d]*_')
 
-    path_to_experiments = '../../%s/task_27_july_NN3_depth_2_1000'%experiment_name
-    #path_to_experiments = '../../%s/task_28_july_hbf3_depth_2_1000_second'%experiment_name
-    nn3_multiple_experiment_results = get_results_for_experiments(path_to_experiments,verbose=True)
+    #path_to_experiments = '../../%s/task_27_july_NN3_depth_2_1000'%experiment_name
+    path_to_experiments = '../../%s/task_28_july_NN3_1000_BN'%experiment_name
+    nn3_multiple_experiment_results = get_results_for_experiments(path_to_experiments,verbose=True, split_string='_jNN[\d]*_')
 
     #
     nn1_list_units, nn1_list_train_errors, nn1_list_test_errors = get_list_errors2(experiment_results=nn1_multiple_experiment_results)
