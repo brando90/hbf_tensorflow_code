@@ -5,7 +5,7 @@ def process_argv(argv):
     print 'len(argv) =',len(argv)
     experiment_name = 'tmp_experiment'
     train_S_type = 'multiple_S'
-    units_list = [24,24]
+    units_list = [6,6]
     # units_list = [96,96]
     # task_name = 'task_qianli_func'
     # task_name = 'task_hrushikesh'
@@ -45,8 +45,8 @@ def process_argv(argv):
             slurm_jobid = argv[1]
             slurm_array_task_id = argv[2]
             experiment_root_dir = argv[3]
-            job_name = argv[4]
-            experiment_name = argv[5]
+            experiment_name = argv[4]
+            job_name = argv[5]
             mdl_save = bool(argv[6])
             units =  argv[7].split(',')
             units_list = [ int(a) for a in units ]
