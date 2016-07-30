@@ -1,13 +1,5 @@
 import pdb
 
-def str_to_bool(s):
-    if s == 'True':
-         return True
-    elif s == 'False':
-         return False
-    else:
-         raise ValueError('Cannot conver %s to bool'%s)
-
 def process_argv(argv):
     print 'print argv =',argv
     print 'len(argv) =',len(argv)
@@ -153,3 +145,11 @@ def is_it_tensorboard_run(argv):
         check_args.extend(sys_arg.split('='))
     print check_args
     return '--logdir' in check_args
+
+def str_to_bool(s):
+    if s == 'True':
+         return True
+    elif s == 'False':
+         return False
+    else:
+         raise ValueError('Cannot conver %s to bool'%s)

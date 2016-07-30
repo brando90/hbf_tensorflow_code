@@ -121,9 +121,10 @@ max_to_keep = 10
 
 phase_train = tf.placeholder(tf.bool, name='phase_train') if bn else  None
 
-report_error_freq = 29
-steps = 80
-M = 60 #batch-size
+report_error_freq = 100
+steps = 3000
+M = np.random.uniform(low=500, high=20000)
+#M = 17000 #batch-size
 
 low_const_learning_rate, high_const_learning_rate = 0, -6
 log_learning_rate = np.random.uniform(low=low_const_learning_rate, high=high_const_learning_rate)
@@ -138,7 +139,7 @@ print '++> starter_learning_rate ', starter_learning_rate
 # decay_rate = 0.9
 # decay_steps = 500
 decay_rate = np.random.uniform(low=0.2, high=0.99)
-decay_steps = np.random.randint(low=report_error_freq, high=M/2.0)
+decay_steps = np.random.randint(low=report_error_freq, high=M)
 staircase = True
 
 optimization_alg = 'GD'
