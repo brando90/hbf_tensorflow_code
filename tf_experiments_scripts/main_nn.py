@@ -23,7 +23,7 @@ re_train = None
 
 results = {'train_errors':[], 'cv_errors':[],'test_errors':[]}
 # slurm values and ids
-(experiment_root_dir,slurm_jobid,slurm_array_task_id,job_name,mdl_save,experiment_name,units_list,train_S_type,task_name,bn) = mtf.process_argv(sys.argv)
+(experiment_root_dir,slurm_jobid,slurm_array_task_id,job_name,mdl_save,experiment_name,units_list,train_S_type,task_name,bn,trainable_bn) = mtf.process_argv(sys.argv)
 date = datetime.date.today().strftime("%B %d").replace (" ", "_")
 print 'experiment_root_dir=%s,slurm_jobid=%s,slurm_array_task_id=%s,job_name=%s'%(experiment_root_dir,slurm_jobid,slurm_array_task_id,job_name)
 
@@ -123,8 +123,8 @@ phase_train = tf.placeholder(tf.bool, name='phase_train') if bn else  None
 
 report_error_freq = 100
 steps = 3000
-M = np.random.uniform(low=500, high=20000)
-#M = 17000 #batch-size
+#M = np.random.uniform(low=500, high=20000)
+M = 17000 #batch-size
 
 low_const_learning_rate, high_const_learning_rate = 0, -6
 log_learning_rate = np.random.uniform(low=low_const_learning_rate, high=high_const_learning_rate)
@@ -176,7 +176,7 @@ if model == 'standard_nn':
     #tensorboard_data_dump = '/tmp/standard_nn_logs'
     (inits_C,inits_W,inits_b) = mtf.get_initilizations_standard_NN(init_type=init_type,dims=dims,mu=mu,std=std,b_init=b_init,S_init=S_init, X_train=X_train, Y_train=Y_train)
     with tf.name_scope("standardNN") as scope:
-        mdl = mtf.build_standard_NN(x,dims,(inits_C,inits_W,inits_b),phase_train)
+        mdl = mtf.build_standard_NN(x,dims,(inits_C,inits_W,inits_b),phase_train,trainable_bn)
         mdl = mtf.get_summation_layer(l=str(nb_layers),x=mdl,init=inits_C[0])
     inits_S = inits_b
 elif model == 'hbf':
@@ -184,7 +184,7 @@ elif model == 'hbf':
     (inits_C,inits_W,inits_S) = mtf.get_initilizations_HBF(init_type=init_type,dims=dims,mu=mu,std=std,b_init=b_init,S_init=S_init, X_train=X_train, Y_train=Y_train, train_S_type=train_S_type)
     print inits_W
     with tf.name_scope("HBF") as scope:
-        mdl = mtf.build_HBF2(x,dims,(inits_C,inits_W,inits_S),phase_train)
+        mdl = mtf.build_HBF2(x,dims,(inits_C,inits_W,inits_S),phase_train,trainable_bn)
         mdl = mtf.get_summation_layer(l=str(nb_layers),x=mdl,init=inits_C[0])
 
 ## Output and Loss

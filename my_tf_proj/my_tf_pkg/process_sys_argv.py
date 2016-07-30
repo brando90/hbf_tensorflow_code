@@ -17,7 +17,8 @@ def process_argv(argv):
     # task_name = 'task_MNIST_flat'
     #
     #bn = True
-    #bn = False
+    trainable_bn=True #scale, shift BN
+    bn = False
     print '---------> len(argv)', len(argv)
     if is_it_tensorboard_run(argv):
         if len(argv) == 7:
@@ -38,10 +39,10 @@ def process_argv(argv):
             print 2
     else:
         mdl_save = True
-        if len(argv) == 11:
+        if len(argv) == 12:
             # python main_nn.py slurm_jobid slurm_array_task_id experiment_root_dir experiment_name job_name mdl_save 3,3 multiple_S/single_S task_name bn
 
-            # python main_nn.py slurm_jobid slurm_array_task_id om_xsinlog1_x_depth2 experiment_name job_name True 3,3 multiple_S task_f_2d_task2_xsinglog1_x_depth2 False
+            # python main_nn.py slurm_jobid slurm_array_task_id om_xsinlog1_x_depth2 experiment_name job_name True 3,3 multiple_S task_f_2d_task2_xsinglog1_x_depth2 False False
             slurm_jobid = argv[1]
             slurm_array_task_id = argv[2]
             experiment_root_dir = argv[3]
@@ -53,6 +54,7 @@ def process_argv(argv):
             train_S_type = argv[8] # multiple_S/single_S
             task_name = argv[9]
             bn = argv[10]
+            trainable_bn = argv[11]
             print 2.8
         # elif len(argv) == 9:
         #     # python main_nn.py      slurm_jobid     slurm_array_task_id     job_name      True            experiment_name 3,3,3  multiple_S/single_S
@@ -137,7 +139,7 @@ def process_argv(argv):
         else:
             raise ValueError('Need to specify the correct number of params')
     bn = str_to_bool(bn)
-    return (experiment_root_dir,slurm_jobid,slurm_array_task_id,job_name,mdl_save,experiment_name,units_list,train_S_type,task_name,bn)
+    return (experiment_root_dir,slurm_jobid,slurm_array_task_id,job_name,mdl_save,experiment_name,units_list,train_S_type,task_name,bn,trainable_bn)
 
 def is_it_tensorboard_run(argv):
     check_args = []
@@ -148,8 +150,10 @@ def is_it_tensorboard_run(argv):
 
 def str_to_bool(s):
     if s == 'True':
-         return True
+        return True
     elif s == 'False':
-         return False
+        return False
+    elif s==True or s==False:
+        return s
     else:
          raise ValueError('Cannot conver %s to bool'%s)
