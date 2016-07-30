@@ -140,7 +140,7 @@ def add_batch_norm_layer(l, x, phase_train, n_out=1, scope='BN', trainable_bn=Tr
 
 def batch_norm_layer(x,phase_train,scope_bn,trainable=True):
     print '======> official BN'
-    print '--> trainable_bn', trainable
+    print '--> trainable_bn: ', trainable
     bn_train = batch_norm(x, decay=0.999, center=True, scale=True,
     updates_collections=None,
     is_training=True,

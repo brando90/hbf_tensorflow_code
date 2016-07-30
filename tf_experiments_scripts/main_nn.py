@@ -329,6 +329,8 @@ results['slurm_jobid'] = slurm_jobid
 results['slurm_array_task_id'] = slurm_array_task_id
 results['tf_rand_seed'] = tf_rand_seed
 results['date'] = date
+result['bn'] = bn
+result['trainable_bn'] = trainable_bn
 
 seconds = (time.time() - start_time)
 minutes = seconds/ 60
