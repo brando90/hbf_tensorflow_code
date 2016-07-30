@@ -46,19 +46,20 @@ json_file = '/json_%s_slurm_array_id%s_jobid_%s'%(date, slurm_array_task_id, slu
 #
 tensorboard_data_dump_train = '/tmp/mdl_logs/train'
 tensorboard_data_dump_test = '/tmp/mdl_logs/test'
-print '==> tensorboard_data_dump_train: ', tensorboard_data_dump_train
-print '==> tensorboard_data_dump_test: ', tensorboard_data_dump_test
-print 'mdl_save',mdl_save
+if mtf.is_it_tensorboard_run(sys.argv):
+    print '==> tensorboard_data_dump_train: ', tensorboard_data_dump_train
+    print '==> tensorboard_data_dump_test: ', tensorboard_data_dump_test
+    print 'mdl_save',mdl_save
+    mtf.make_and_check_dir(path=tensorboard_data_dump_train)
+    mtf.make_and_check_dir(path=tensorboard_data_dump_test)
+    # delete contents of tensorboard dir
+    shutil.rmtree(tensorboard_data_dump_train)
+    shutil.rmtree(tensorboard_data_dump_test)
 # try to make directory, if it exists do NOP
 mtf.make_and_check_dir(path=path)
 #make_and_check_dir(path=path+json_dir)
 #make_and_check_dir(path=path+errors_pretty_dir)
 mtf.make_and_check_dir(path=path+mdl_dir)
-mtf.make_and_check_dir(path=tensorboard_data_dump_train)
-mtf.make_and_check_dir(path=tensorboard_data_dump_test)
-# delete contents of tensorboard dir
-shutil.rmtree(tensorboard_data_dump_train)
-shutil.rmtree(tensorboard_data_dump_test)
 # JSON results structure
 results_dic = mtf.fill_results_dic_with_np_seed(np_rnd_seed=np.random.get_state(), results=results)
 
@@ -123,8 +124,8 @@ phase_train = tf.placeholder(tf.bool, name='phase_train') if bn else  None
 
 report_error_freq = 100
 steps = 3000
-#M = np.random.uniform(low=500, high=20000)
-M = 17000 #batch-size
+M = np.random.uniform(low=500, high=20000)
+#M = 17000 #batch-size
 
 low_const_learning_rate, high_const_learning_rate = 0, -6
 log_learning_rate = np.random.uniform(low=low_const_learning_rate, high=high_const_learning_rate)
@@ -301,7 +302,7 @@ with open(path+errors_pretty, 'w+') as f_err_msgs:
                 test_writer.add_summary(summary_str_test, i)
 
                 loss_msg = "Mdl*%s%s*-units%s, task: %s, step %d/%d, train err %g, cv err: %g test err %g"%(model,nb_hidden_layers,dims,task_name,i,steps,train_error,cv_error,test_error)
-                mdl_info_msg = "Opt:%s, BN %s, After%d/%d iteration,Init: %s" % (optimization_alg,bn,i,steps,init_type)
+                mdl_info_msg = "Opt:%s, BN %s, BN_trainable: %s After%d/%d iteration,Init: %s" % (optimization_alg,bn,trainable_bn,i,steps,init_type)
                 print_messages(loss_msg, mdl_info_msg)
                 print 'S: ', inits_S
                 # store results
@@ -329,8 +330,8 @@ results['slurm_jobid'] = slurm_jobid
 results['slurm_array_task_id'] = slurm_array_task_id
 results['tf_rand_seed'] = tf_rand_seed
 results['date'] = date
-result['bn'] = bn
-result['trainable_bn'] = trainable_bn
+results['bn'] = bn
+results['trainable_bn'] = trainable_bn
 
 seconds = (time.time() - start_time)
 minutes = seconds/ 60
