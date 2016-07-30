@@ -23,7 +23,7 @@ re_train = None
 
 results = {'train_errors':[], 'cv_errors':[],'test_errors':[]}
 # slurm values and ids
-(experiment_root_dir,slurm_jobid,slurm_array_task_id,job_name,mdl_save,experiment_name,units_list,train_S_type,task_name) = mtf.process_argv(sys.argv)
+(experiment_root_dir,slurm_jobid,slurm_array_task_id,job_name,mdl_save,experiment_name,units_list,train_S_type,task_name,bn) = mtf.process_argv(sys.argv)
 date = datetime.date.today().strftime("%B %d").replace (" ", "_")
 print 'experiment_root_dir=%s,slurm_jobid=%s,slurm_array_task_id=%s,job_name=%s'%(experiment_root_dir,slurm_jobid,slurm_array_task_id,job_name)
 
@@ -119,12 +119,7 @@ model = 'standard_nn'
 #
 max_to_keep = 10
 
-## train params
-bn = False
-if bn:
-    phase_train = tf.placeholder(tf.bool, name='phase_train') ##BN ON
-else:
-    phase_train = None
+phase_train = tf.placeholder(tf.bool, name='phase_train') if bn else  None
 
 report_error_freq = 29
 steps = 80

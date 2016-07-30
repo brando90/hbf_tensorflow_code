@@ -1,3 +1,13 @@
+import pdb
+
+def str_to_bool(s):
+    if s == 'True':
+         return True
+    elif s == 'False':
+         return False
+    else:
+         raise ValueError('Cannot conver %s to bool'%s)
+
 def process_argv(argv):
     print 'print argv =',argv
     print 'len(argv) =',len(argv)
@@ -10,17 +20,22 @@ def process_argv(argv):
     # re_train = None
     # task_name = 'task_f_2D_task2'
     task_name = 'task_f_2d_task2_xsinglog1_x_depth2'
-    experiment_root_dir = 'om_xsinlog1_x_depth2_multiple_S'
+    experiment_root_dir = 'om_xsinlog1_x_depth2'
     # task_name = 'task_f_2d_task2_xsinglog1_x_depth3'
     # task_name = 'task_MNIST_flat'
+    #
+    #bn = True
+    #bn = False
+    print '---------> len(argv)', len(argv)
     if is_it_tensorboard_run(argv):
-        if len(argv) == 6:
-            # python main_nn.py slurm_jobid slurm_array_task_id job_name mdl_save --logdir=/tmp/mdl_logs
-            # python main_nn.py slurm_jobid slurm_array_task_id job_name_TEST True --logdir=/tmp/mdl_logs
+        if len(argv) == 7:
+            # python main_nn.py slurm_jobid slurm_array_task_id job_name mdl_save bn --logdir=/tmp/mdl_logs
+            # python main_nn.py slurm_jobid slurm_array_task_id job_name_TEST True False --logdir=/tmp/mdl_logs
             slurm_jobid = argv[1]
             slurm_array_task_id = argv[2]
             job_name = argv[3]
             mdl_save = bool(argv[4])
+            bn = argv[5]
             print 1
         else:
             # python main_nn.py --logdir=/tmp/mdl_logs
@@ -32,9 +47,9 @@ def process_argv(argv):
     else:
         mdl_save = True
         if len(argv) == 10:
-            # python main_nn.py slurm_jobid slurm_array_task_id experiment_root_dir experiment_name job_name mdl_save 3,3 multiple_S/single_S task_name
+            # python main_nn.py slurm_jobid slurm_array_task_id experiment_root_dir experiment_name job_name mdl_save 3,3 multiple_S/single_S task_name bn
 
-            # python main_nn.py slurm_jobid slurm_array_task_id om_xsinlog1_x_depth2_multiple_S experiment_name job_name True 3,3 multiple_S task_f_2d_task2_xsinglog1_x_depth2
+            # python main_nn.py slurm_jobid slurm_array_task_id om_xsinlog1_x_depth2_multiple_S experiment_name job_name True 3,3 multiple_S task_f_2d_task2_xsinglog1_x_depth2 False
             slurm_jobid = argv[1]
             slurm_array_task_id = argv[2]
             experiment_root_dir = argv[3]
@@ -45,6 +60,7 @@ def process_argv(argv):
             units_list = [ int(a) for a in units ]
             train_S_type = argv[8] # multiple_S/single_S
             task_name = argv[9]
+            bn = argv[10]
             print 2.8
         # elif len(argv) == 9:
         #     # python main_nn.py      slurm_jobid     slurm_array_task_id     job_name      True            experiment_name 3,3,3  multiple_S/single_S
@@ -128,7 +144,8 @@ def process_argv(argv):
         #     print 8
         else:
             raise ValueError('Need to specify the correct number of params')
-    return (experiment_root_dir,slurm_jobid,slurm_array_task_id,job_name,mdl_save,experiment_name,units_list,train_S_type,task_name)
+    bn = str_to_bool(bn)
+    return (experiment_root_dir,slurm_jobid,slurm_array_task_id,job_name,mdl_save,experiment_name,units_list,train_S_type,task_name,bn)
 
 def is_it_tensorboard_run(argv):
     check_args = []

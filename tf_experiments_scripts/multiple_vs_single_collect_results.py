@@ -9,18 +9,18 @@ import re
 import krls
 
 ##
-def get_list_errors(experiment_results):
-    # experiment_results : units->results
-    list_units = []
-    list_test_errors = []
-    for nb_units, results in experiment_results.iteritems():
-        #print 'nb_units ', nb_units
-        train_error, cv_error, test_error = get_errors_from(results)
-        list_units.append(nb_units)
-        list_test_errors.append(test_error)
-    # sort based on first list
-    list_units, list_test_errors = zip(*sorted(zip(list_units, list_test_errors)))
-    return list_units, list_test_errors
+# def get_list_errors(experiment_results):
+#     # experiment_results : units->results
+#     list_units = []
+#     list_test_errors = []
+#     for nb_units, results in experiment_results.iteritems():
+#         #print 'nb_units ', nb_units
+#         train_error, cv_error, test_error = get_errors_from(results)
+#         list_units.append(nb_units)
+#         list_test_errors.append(test_error)
+#     # sort based on first list
+#     list_units, list_test_errors = zip(*sorted(zip(list_units, list_test_errors)))
+#     return list_units, list_test_errors
 
 def get_list_errors2(experiment_results):
     # experiment_results : units->results
@@ -33,8 +33,8 @@ def get_list_errors2(experiment_results):
         #print '--nb_units', nb_units
         #print 'train_error, cv_error, test_error ', train_error, cv_error, test_error
         list_units.append(nb_units)
-        list_test_errors.append(test_error)
         list_train_errors.append(train_error)
+        list_test_errors.append(test_error)
     # sort based on first list
     print len(list_train_errors)
     print len(list_test_errors)
@@ -87,11 +87,13 @@ def get_best_results_from_experiment(experiment_dirpath, list_runs_filenames):
                 results_best = results_current_run
     return results_best, best_cv_filname, final_train_errors, final_cv_errors, final_test_errors
 
-def get_results_for_experiments(path_to_experiments, verbose=False, split_string='jHBF1_'):
+def get_results_for_experiments(path_to_experiments, verbose=True, split_string='jHBF1_'):
     '''
         Returns a dictionary containing the best results for each experiment
     '''
     print path_to_experiments
+    #print os.path.isdir(path_to_experiments)
+    #print os.listdir(path_to_experiments)
     experiment_results = {} # maps units -> results_best_mdl e.g {'4':{'results_best_mdl':results_best_mdl}}
     for (experiment_dir, _, potential_runs) in os.walk(path_to_experiments):
         # if current dirpath is a valid experiment and not . (itself)
@@ -277,14 +279,17 @@ def display_results_HBF1_task2():
     plt.legend()
     plt.show()
 
-def display_results_HBF1_xsinglog1_x():
-    path_to_experiments = './om_results_test_experiments/task_27_july_NN1_depth_2_1000'
+def display_results_NN1_xsinglog1_x():
+    #print os.path.isdir(path_to_experiments)
+    experiment_name = 'om_xsinlog1_x_depth2'
+    path_to_experiments = '../../%s/task_27_july_NN1_depth_2_1000'%experiment_name
     nn1_multiple_experiment_results = get_results_for_experiments(path_to_experiments,verbose=True)
 
-    path_to_experiments = './om_results_test_experiments/task_27_july_NN2_depth_2_1000'
+    path_to_experiments = '../../%s/task_27_july_NN2_depth_2_1000'%experiment_name
     nn2_multiple_experiment_results = get_results_for_experiments(path_to_experiments,verbose=True)
 
-    path_to_experiments = './om_results_test_experiments/task_27_july_NN3_depth_2_1000'
+    path_to_experiments = '../../%s/task_27_july_NN3_depth_2_1000'%experiment_name
+    #path_to_experiments = '../../%s/task_28_july_hbf3_depth_2_1000_second'%experiment_name
     nn3_multiple_experiment_results = get_results_for_experiments(path_to_experiments,verbose=True)
 
     #
@@ -314,4 +319,4 @@ def display_results_HBF1_xsinglog1_x():
     plt.show()
 
 if __name__ == '__main__':
-    display_results_HBF1_xsinglog1_x()
+    display_results_NN1_xsinglog1_x()
