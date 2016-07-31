@@ -66,12 +66,6 @@ mtf.make_and_check_dir(path=path+mdl_dir)
 results_dic = mtf.fill_results_dic_with_np_seed(np_rnd_seed=np.random.get_state(), results=results)
 
 ## Data sets and task
-#task_name = 'qianli_func'
-#task_name = 'hrushikesh'
-#task_name = 'f_2D_task2'
-# task_name = 'f_2d_task2_xsinglog1_x_depth2
-# task_name = 'f_2d_task2_xsinglog1_x_depth3
-# task_name = 'MNIST_flat'
 print '----====> TASK NAME: %s' % task_name
 (X_train, Y_train, X_cv, Y_cv, X_test, Y_test) = mtf.get_data(task_name)
 (N_train,D) = X_train.shape
@@ -81,25 +75,21 @@ print '(N_test,D_out) = ', (N_test,D_out)
 
 ## HBF/NN params
 dims = [D]+units_list+[D_out]
-#dims = [D,5,D_out]
-#dims = [D,6,6,D_out]
-#dims = [D,4,4,4,D_out]
-#dims = [D,24,24,24,24,D_out]
 mu_init = 0.0
 mu = len(dims)*[mu_init]
 #std = list(np.random.uniform(low=0.001, high=0.8,size=len(dims)))
 #std = list(np.random.uniform(low=0.001, high=0.8,size=len(dims)))
-std_init = 0.1
+std_init = 0.9
 std = len(dims)*[std_init]
 #std = [None,2,.25,.1]
 #std = [None,1,1,1]
 #init_constant = None
-low_const, high_const = 0.1, 0.8
+low_const, high_const = 0.01, 1.0
 #init_constant = np.random.uniform(low=low_const, high=high_const)
 init_constant = 0.51454545
-#b_init = list(np.random.uniform(low=low_const, high=high_const,size=len(dims)))
+b_init = list(np.random.uniform(low=low_const, high=high_const,size=len(dims)))
 #init_constant = 0.1
-b_init = len(dims)*[init_constant]
+#b_init = len(dims)*[init_constant]
 #b_init = [None, 1, .1, None]
 #b_init = [None, 1, 1, None]
 #low_const, high_const = 0.1, 2
@@ -119,27 +109,25 @@ max_to_keep = 1
 phase_train = tf.placeholder(tf.bool, name='phase_train') if bn else  None
 
 report_error_freq = 50
-steps = 1000
-#M = np.random.randint(low=800, high=20000)
-M = 10000 #batch-size
+steps = 3000
+M = np.random.randint(low=800, high=20000)
+#M = 17000 #batch-size
 
-low_const_learning_rate, high_const_learning_rate = 0, -6
+low_const_learning_rate, high_const_learning_rate = -2, -6
 log_learning_rate = np.random.uniform(low=low_const_learning_rate, high=high_const_learning_rate)
 starter_learning_rate = 10**log_learning_rate
 
-starter_learning_rate = 0.00001
-#starter_learning_rate = 0.00035
-#starter_learning_rate = 0.001
+#starter_learning_rate = 0.00001
 
 print '++> starter_learning_rate ', starter_learning_rate
 ## decayed_learning_rate = learning_rate * decay_rate ^ (global_step / decay_steps)
-decay_rate = 0.9
-decay_steps = 500
-#decay_rate = np.random.uniform(low=0.2, high=0.99)
-#decay_steps = np.random.randint(low=report_error_freq, high=M)
+#decay_rate = 0.9
+#decay_steps = 500
+decay_rate = np.random.uniform(low=0.2, high=0.99)
+decay_steps = np.random.randint(low=report_error_freq, high=M)
 staircase = True
 
-optimization_alg = 'GD'
+#optimization_alg = 'GD'
 
 #momentum = 0.9
 #optimization_alg = 'Momentum'
