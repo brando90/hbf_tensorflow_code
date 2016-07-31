@@ -24,6 +24,8 @@ re_train = None
 results = {'train_errors':[], 'cv_errors':[],'test_errors':[]}
 # slurm values and ids
 (experiment_root_dir,slurm_jobid,slurm_array_task_id,job_name,mdl_save,experiment_name,units_list,train_S_type,task_name,bn,trainable_bn) = mtf.process_argv(sys.argv)
+use_tensorboard = mtf.is_it_tensorboard_run(sys.argv)
+print 'use_tensorboard', use_tensorboard
 date = datetime.date.today().strftime("%B %d").replace (" ", "_")
 print 'experiment_root_dir=%s,slurm_jobid=%s,slurm_array_task_id=%s,job_name=%s'%(experiment_root_dir,slurm_jobid,slurm_array_task_id,job_name)
 
@@ -44,9 +46,9 @@ mdl_dir ='/mdls_%s_slurm_sj%s'%(date,slurm_array_task_id)
 #json_dir = '/results_json_dir'
 json_file = '/json_%s_slurm_array_id%s_jobid_%s'%(date, slurm_array_task_id, slurm_jobid)
 #
-tensorboard_data_dump_train = '/tmp/mdl_logs/train'
-tensorboard_data_dump_test = '/tmp/mdl_logs/test'
-if mtf.is_it_tensorboard_run(sys.argv):
+tensorboard_data_dump_train = '/tmp/mdl_logs/train' #note these names are always saved in results even if its not done
+tensorboard_data_dump_test = '/tmp/mdl_logs/test' #note these names are always saved in results even if its not done
+if use_tensorboard:
     print '==> tensorboard_data_dump_train: ', tensorboard_data_dump_train
     print '==> tensorboard_data_dump_test: ', tensorboard_data_dump_test
     print 'mdl_save',mdl_save
@@ -123,8 +125,8 @@ max_to_keep = 10
 phase_train = tf.placeholder(tf.bool, name='phase_train') if bn else  None
 
 report_error_freq = 100
-steps = 3000
-M = np.random.uniform(low=500, high=20000)
+steps = 1000
+M = np.random.randint(low=800, high=20000)
 #M = 17000 #batch-size
 
 low_const_learning_rate, high_const_learning_rate = 0, -6
@@ -282,10 +284,20 @@ if mdl_save:
 start_time = time.time()
 with open(path+errors_pretty, 'w+') as f_err_msgs:
     with tf.Session() as sess:
-        merged = tf.merge_all_summaries()
-        #writer = tf.train.SummaryWriter(tensorboard_data_dump, sess.graph)
-        train_writer = tf.train.SummaryWriter(tensorboard_data_dump_train, sess.graph)
-        test_writer = tf.train.SummaryWriter(tensorboard_data_dump_test, sess.graph)
+        ## prepare writers and fetches
+        if use_tensorboard:
+            merged = tf.merge_all_summaries()
+            #writer = tf.train.SummaryWriter(tensorboard_data_dump, sess.graph)
+            train_writer = tf.train.SummaryWriter(tensorboard_data_dump_train, sess.graph)
+            test_writer = tf.train.SummaryWriter(tensorboard_data_dump_test, sess.graph)
+            ##
+            fetches_train = [merged, l2_loss]
+            fetches_cv = l2_loss
+            fetches_test = [merged, l2_loss]
+        else:
+            fetches_train = l2_loss
+            fetches_cv = l2_loss
+            fetches_test = l2_loss
 
         sess.run( tf.initialize_all_variables() )
         for i in xrange(steps):
@@ -294,16 +306,22 @@ with open(path+errors_pretty, 'w+') as f_err_msgs:
             feed_dict_batch = get_batch_feed(X_train, Y_train, M, phase_train)
             ## Train
             if i%report_error_freq == 0:
-                (summary_str_train,train_error) = sess.run(fetches=[merged, l2_loss], feed_dict=feed_dict_train)
-                cv_error = sess.run(fetches=l2_loss, feed_dict=feed_dict_cv)
-                (summary_str_test,test_error) = sess.run(fetches=[merged, l2_loss], feed_dict=feed_dict_test)
+                if use_tensorboard:
+                    (summary_str_train,train_error) = sess.run(fetches=fetches_train, feed_dict=feed_dict_train)
+                    cv_error = sess.run(fetches=fetches_cv, feed_dict=feed_dict_cv)
+                    (summary_str_test,test_error) = sess.run(fetches=fetches_test, feed_dict=feed_dict_test)
 
-                train_writer.add_summary(summary_str_train, i)
-                test_writer.add_summary(summary_str_test, i)
+                    train_writer.add_summary(summary_str_train, i)
+                    test_writer.add_summary(summary_str_test, i)
+                else:
+                    train_error = sess.run(fetches=fetches_train, feed_dict=feed_dict_train)
+                    cv_error = sess.run(fetches=fetches_cv, feed_dict=feed_dict_cv)
+                    test_error = sess.run(fetches=fetches_test, feed_dict=feed_dict_test)
 
                 loss_msg = "Mdl*%s%s*-units%s, task: %s, step %d/%d, train err %g, cv err: %g test err %g"%(model,nb_hidden_layers,dims,task_name,i,steps,train_error,cv_error,test_error)
                 mdl_info_msg = "Opt:%s, BN %s, BN_trainable: %s After%d/%d iteration,Init: %s" % (optimization_alg,bn,trainable_bn,i,steps,init_type)
                 print_messages(loss_msg, mdl_info_msg)
+
                 print 'S: ', inits_S
                 # store results
                 results['train_errors'].append(train_error)
@@ -315,7 +333,10 @@ with open(path+errors_pretty, 'w+') as f_err_msgs:
                 # save mdl
                 if mdl_save:
                     save_path = saver.save(sess, path+mdl_dir+'/model.ckpt',global_step=i)
-            sess.run(fetches=[merged,train_step], feed_dict=feed_dict_batch) #sess.run(train_step, feed_dict={x: batch_xs, y_: batch_ys})
+            if use_tensorboard:
+                sess.run(fetches=[merged,train_step], feed_dict=feed_dict_batch) #sess.run(train_step, feed_dict={x: batch_xs, y_: batch_ys})
+            else:
+                sess.run(fetches=train_step, feed_dict=feed_dict_batch) #sess.run(train_step, feed_dict={x: batch_xs, y_: batch_ys})
 
 git_hash = subprocess.check_output(['git', 'rev-parse', 'HEAD'])
 mtf.load_results_dic(results,git_hash=git_hash,dims=dims,mu=mu,std=std,init_constant=init_constant,b_init=b_init,S_init=S_init,\
