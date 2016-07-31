@@ -23,7 +23,7 @@ re_train = None
 
 results = {'train_errors':[], 'cv_errors':[],'test_errors':[]}
 # slurm values and ids
-(experiment_root_dir,slurm_jobid,slurm_array_task_id,job_name,mdl_save,experiment_name,units_list,train_S_type,task_name,bn,trainable_bn) = mtf.process_argv(sys.argv)
+(experiment_root_dir,slurm_jobid,slurm_array_task_id,job_name,mdl_save,experiment_name,units_list,train_S_type,task_name,bn,trainable_bn,mdl_type,init_type) = mtf.process_argv(sys.argv)
 use_tensorboard = mtf.is_it_tensorboard_run(sys.argv)
 print 'use_tensorboard', use_tensorboard
 date = datetime.date.today().strftime("%B %d").replace (" ", "_")
@@ -96,9 +96,9 @@ std = len(dims)*[std_init]
 #init_constant = None
 low_const, high_const = 0.1, 0.8
 #init_constant = np.random.uniform(low=low_const, high=high_const)
-#init_constant = 0.62163
+init_constant = 0.51454545
 #b_init = list(np.random.uniform(low=low_const, high=high_const,size=len(dims)))
-init_constant = 0.1
+#init_constant = 0.1
 b_init = len(dims)*[init_constant]
 #b_init = [None, 1, .1, None]
 #b_init = [None, 1, 1, None]
@@ -109,40 +109,34 @@ b_init = len(dims)*[init_constant]
 #b_init = [None, b_init_1, b_init_2, None]
 print '++> S/b_init ', b_init
 S_init = b_init
-#train_S_type = 'multiple_S'
-#train_S_type = 'single_S'
-#init_type = 'truncated_normal'
-#init_type = 'data_init'
-#init_type = 'kern_init'
-#init_type = 'kpp_init'
-#init_type = 'data_trunc_norm_kern'
-init_type = 'xavier'
-model = 'standard_nn'
+#
+model = mdl_type
+#model = 'standard_nn'
 #model = 'hbf'
 #
-max_to_keep = 10
+max_to_keep = 1
 
 phase_train = tf.placeholder(tf.bool, name='phase_train') if bn else  None
 
-report_error_freq = 100
+report_error_freq = 50
 steps = 1000
-M = np.random.randint(low=800, high=20000)
-#M = 17000 #batch-size
+#M = np.random.randint(low=800, high=20000)
+M = 10000 #batch-size
 
 low_const_learning_rate, high_const_learning_rate = 0, -6
 log_learning_rate = np.random.uniform(low=low_const_learning_rate, high=high_const_learning_rate)
 starter_learning_rate = 10**log_learning_rate
 
-#starter_learning_rate = 0.0003
+starter_learning_rate = 0.00001
 #starter_learning_rate = 0.00035
 #starter_learning_rate = 0.001
 
 print '++> starter_learning_rate ', starter_learning_rate
-# decayed_learning_rate = learning_rate * decay_rate ^ (global_step / decay_steps)
-# decay_rate = 0.9
-# decay_steps = 500
-decay_rate = np.random.uniform(low=0.2, high=0.99)
-decay_steps = np.random.randint(low=report_error_freq, high=M)
+## decayed_learning_rate = learning_rate * decay_rate ^ (global_step / decay_steps)
+decay_rate = 0.9
+decay_steps = 500
+#decay_rate = np.random.uniform(low=0.2, high=0.99)
+#decay_steps = np.random.randint(low=report_error_freq, high=M)
 staircase = True
 
 optimization_alg = 'GD'

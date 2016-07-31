@@ -53,7 +53,8 @@ def get_HBF_layer2(l, x, dims, init, phase_train=None, layer_name='HBFLayer', tr
             Delta_tilde = 2.0*tf.matmul(x,W) - tf.add(WW, XX) # (M x D^(l)) - (M x D^(l)) = (M x D^(l-1)) * (D^(l-1) x D^(l)) - (M x D^(l))
             Z = beta * ( Delta_tilde ) # (M x D^(l))
         if phase_train is not None:
-            Z = standard_batch_norm(l, Z , 1, phase_train, trainable_bn)
+            Z = add_batch_norm_layer(l, Z , phase_train, trainable_bn=trainable_bn)
+            #z = add_batch_norm_layer(l, z, phase_train, trainable_bn=trainable_bn)
         with tf.name_scope('A'+l):
             A = tf.exp(Z) # (M x D^(l))
     var_prefix = 'vars_'+layer_name+l

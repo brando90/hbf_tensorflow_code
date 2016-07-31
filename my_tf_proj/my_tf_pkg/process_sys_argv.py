@@ -3,22 +3,38 @@ import pdb
 def process_argv(argv):
     print 'print argv =',argv
     print 'len(argv) =',len(argv)
+    #mdl_type = 'standard_nn'
+    mdl_type = 'hbf'
+    #
+    #train_S_type = 'multiple_S'
+    #train_S_type = 'single_S'
+    #init_type = 'truncated_normal'
+    #init_type = 'data_init'
+    #init_type = 'kern_init'
+    #init_type = 'kpp_init'
+    init_type = 'data_trunc_norm_kern'
+    #init_type = 'xavier'
+    #
     experiment_name = 'tmp_experiment'
     train_S_type = 'multiple_S'
-    units_list = [6,6]
+    units_list = [12]
     # units_list = [96,96]
     # task_name = 'task_qianli_func'
     # task_name = 'task_hrushikesh'
     # re_train = None
     # task_name = 'task_f_2D_task2'
     task_name = 'task_f_2d_task2_xsinglog1_x_depth2'
-    experiment_root_dir = 'om_xsinlog1_x_depth2'
+    #experiment_root_dir = 'om_xsinlog1_x_depth2'
+    experiment_root_dir = 'om_xsinlog1_x_depth2_hbf'
     # task_name = 'task_f_2d_task2_xsinglog1_x_depth3'
     # task_name = 'task_MNIST_flat'
     #
     #bn = True
-    trainable_bn=True #scale, shift BN
+    #trainable_bn=True #scale, shift BN
     bn = False
+    trainable_bn=False #scale, shift BN
+    #
+    mdl_save = True
     print '---------> len(argv)', len(argv)
     if is_it_tensorboard_run(argv):
         if len(argv) == 7:
@@ -35,14 +51,13 @@ def process_argv(argv):
             slurm_jobid = 'TB'
             slurm_array_task_id = 'TB'
             job_name = 'TB'
-            mdl_save = True
             print 2
     else:
         mdl_save = True
-        if len(argv) == 12:
+        if len(argv) == 14:
             # python main_nn.py slurm_jobid slurm_array_task_id experiment_root_dir experiment_name job_name mdl_save 3,3 multiple_S/single_S task_name bn
 
-            # python main_nn.py slurm_jobid slurm_array_task_id om_xsinlog1_x_depth2 experiment_name job_name True 3,3 multiple_S task_f_2d_task2_xsinglog1_x_depth2 True False
+            # python main_nn.py slurm_jobid slurm_array_task_id om_xsinlog1_x_depth2 experiment_name job_name True 3,3 multiple_S task_f_2d_task2_xsinglog1_x_depth2 True False hbf truncated_normal
             slurm_jobid = argv[1]
             slurm_array_task_id = argv[2]
             experiment_root_dir = argv[3]
@@ -55,6 +70,8 @@ def process_argv(argv):
             task_name = argv[9]
             bn = argv[10]
             trainable_bn = argv[11]
+            mdl_type = argv[12]
+            init_type = argv[13]
             print 2.8
         # elif len(argv) == 9:
         #     # python main_nn.py      slurm_jobid     slurm_array_task_id     job_name      True            experiment_name 3,3,3  multiple_S/single_S
@@ -139,7 +156,8 @@ def process_argv(argv):
         else:
             raise ValueError('Need to specify the correct number of params')
     bn = str_to_bool(bn)
-    return (experiment_root_dir,slurm_jobid,slurm_array_task_id,job_name,mdl_save,experiment_name,units_list,train_S_type,task_name,bn,trainable_bn)
+    print 'mdl_type: ', mdl_type
+    return (experiment_root_dir,slurm_jobid,slurm_array_task_id,job_name,mdl_save,experiment_name,units_list,train_S_type,task_name,bn,trainable_bn,mdl_type,init_type)
 
 def is_it_tensorboard_run(argv):
     check_args = []

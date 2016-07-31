@@ -288,11 +288,13 @@ def display_results_NN1_xsinglog1_x():
     nn1_multiple_experiment_results = get_results_for_experiments(path_to_experiments,verbose=True, split_string='_jHBF[\d]*_')
 
     #path_to_experiments = '../../%s/task_27_july_NN2_depth_2_1000'%experiment_name
-    path_to_experiments = '../../%s/task_28_july_NN2_1000_BN'%experiment_name
+    #path_to_experiments = '../../%s/task_28_july_NN2_1000_BN'%experiment_name
+    path_to_experiments = '../../%s/task_28_july_NN2_1000_BN_False_trainable_BN'%experiment_name
     nn2_multiple_experiment_results = get_results_for_experiments(path_to_experiments,verbose=True, split_string='_jNN[\d]*_')
 
     #path_to_experiments = '../../%s/task_27_july_NN3_depth_2_1000'%experiment_name
-    path_to_experiments = '../../%s/task_28_july_NN3_1000_BN'%experiment_name
+    #path_to_experiments = '../../%s/task_28_july_NN3_1000_BN'%experiment_name
+    path_to_experiments = '../../%s/task_28_july_NN3_1000_BN_False_trainable_BN'%experiment_name
     nn3_multiple_experiment_results = get_results_for_experiments(path_to_experiments,verbose=True, split_string='_jNN[\d]*_')
 
     #
