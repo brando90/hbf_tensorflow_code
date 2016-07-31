@@ -42,7 +42,7 @@ def process_argv(argv):
         if len(argv) == 12:
             # python main_nn.py slurm_jobid slurm_array_task_id experiment_root_dir experiment_name job_name mdl_save 3,3 multiple_S/single_S task_name bn
 
-            # python main_nn.py slurm_jobid slurm_array_task_id om_xsinlog1_x_depth2 experiment_name job_name True 3,3 multiple_S task_f_2d_task2_xsinglog1_x_depth2 False False
+            # python main_nn.py slurm_jobid slurm_array_task_id om_xsinlog1_x_depth2 experiment_name job_name True 3,3 multiple_S task_f_2d_task2_xsinglog1_x_depth2 True False
             slurm_jobid = argv[1]
             slurm_array_task_id = argv[2]
             experiment_root_dir = argv[3]
