@@ -7,4 +7,4 @@
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=rene_sax14@yahoo.com
 
-python main_nn.py $SLURM_JOBID $SLURM_ARRAY_TASK_ID om_xsinlog1_x_depth2_hbf task_29_july_HBF2_depth_2_1000_BN HBF2_24_24_multiple_1000_BN True 24,24 multiple_S task_f_2d_task2_xsinglog1_x_depth2 True True hbf data_trunc_norm_kern
+python main_nn.py $SLURM_JOBID $SLURM_ARRAY_TASK_ID om_xsinlog1_x_depth2_hbf task_30_july_HBF2_depth_2_1000_BN HBF2_24_24_multiple_1000_BN True 24,24 multiple_S task_f_2d_task2_xsinglog1_x_depth2 False False hbf data_trunc_norm_kern
