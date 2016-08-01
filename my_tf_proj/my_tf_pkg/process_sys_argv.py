@@ -31,8 +31,8 @@ def process_argv(argv):
     #
     #bn = True
     #trainable_bn=True #scale, shift BN
-    bn = False
-    trainable_bn=False #scale, shift BN
+    bn = True
+    trainable_bn=True #scale, shift BN
     #
     mdl_save = True
     print '---------> len(argv)', len(argv)
