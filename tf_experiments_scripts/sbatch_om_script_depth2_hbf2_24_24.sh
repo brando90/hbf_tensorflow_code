@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --job-name=HBF1_48_48
+#SBATCH --job-name=HBF2_48_48
 #SBATCH --nodes=1
 #SBATCH --mem=7000
 #SBATCH --time=6-23
