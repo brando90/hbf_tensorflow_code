@@ -127,8 +127,10 @@ def get_NN_layer(l, x, dims, init, phase_train=None, scope="NNLayer", trainable_
 def get_W(init_W, l, x, dims, init):
     (dim_input,dim_out) = dims
     if isinstance(init_W, tf.python.framework.ops.Tensor):
+        print 'isinstance'
         W = tf.get_variable(name='W'+l, dtype=tf.float64, initializer=init_W, regularizer=None, trainable=True)
     else:
+        print 'XAVIER'
         W = tf.get_variable(name='W'+l, dtype=tf.float64, initializer=init_W, regularizer=None, trainable=True, shape=[dim_input,dim_out])
     return W
 
