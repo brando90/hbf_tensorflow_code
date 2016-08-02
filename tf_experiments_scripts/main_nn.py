@@ -94,9 +94,9 @@ def init_norm(loc,scale,upper_threshold,lower_threshold):
     return
 low_const, high_const = 0.4, 1.0
 #init_constant = np.random.uniform(low=low_const, high=high_const)
-b_init = list(np.random.uniform(low=low_const, high=high_const,size=len(dims)))
-init_constant = 0.6
-#b_init = len(dims)*[init_constant]
+#b_init = list(np.random.uniform(low=low_const, high=high_const,size=len(dims)))
+init_constant = 0.72357142857142864
+b_init = len(dims)*[init_constant]
 #[0.6374998052942504, 0.6374998052942504, 0.6374998052942504, 0.6374998052942504]
 #b_init = [None, 1, .1, None]
 #b_init = [None, 1, 1, None]
@@ -125,7 +125,7 @@ low_const_learning_rate, high_const_learning_rate = -0.9, -5.0
 log_learning_rate = np.random.uniform(low=low_const_learning_rate, high=high_const_learning_rate)
 starter_learning_rate = 10**log_learning_rate
 
-#starter_learning_rate = 0.000001
+starter_learning_rate = 0.1
 # starter_learning_rate = 0.00001
 
 print '++> starter_learning_rate ', starter_learning_rate
