@@ -73,11 +73,11 @@ if __name__ == '__main__':
     # rbf_params_filename = '/rbf_params_July_24_krls_mnist_test.npz'
 
     #### OM
-    task_name = 'MNIST_flat'
-    experiments_root = './om_krls_experiments'
-    experiment_dir = '/July_24_krls_MNIST_flat_50_50_units_6_12_24_48_96_182_246_360_std_search'
-    results_filename = '/results_json_July_24_krls_MNIST_flat_50_50_units_6_12_24_48_96_182_246_360_std_search'
-    rbf_params_filename = '/rbf_params_July_24_krls_MNIST_flat_50_50_units_6_12_24_48_96_182_246_360_std_search.npz'
+    # task_name = 'MNIST_flat'
+    # experiments_root = './om_krls_experiments'
+    # experiment_dir = '/July_24_krls_MNIST_flat_50_50_units_6_12_24_48_96_182_246_360_std_search'
+    # results_filename = '/results_json_July_24_krls_MNIST_flat_50_50_units_6_12_24_48_96_182_246_360_std_search'
+    # rbf_params_filename = '/rbf_params_July_24_krls_MNIST_flat_50_50_units_6_12_24_48_96_182_246_360_std_search.npz'
 
     ## singlog1_x_depth_2
     # task_name = 'f_2d_task2_xsinglog1_x_depth2'
@@ -92,6 +92,13 @@ if __name__ == '__main__':
     # experiment_dir = '/July_24_krls_task2_xsinglog1_x_depth_3_50_50_D_6_12_24_48_96_182_246_364'
     # results_filename = '/results_json_July_24_krls_task2_xsinglog1_x_depth_3_50_50_D_6_12_24_48_96_182_246_364'
     # rbf_params_filename = '/rbf_params_July_24_krls_task2_xsinglog1_x_depth_3_50_50_D_6_12_24_48_96_182_246_364.npz'
+
+    ##
+    task_name = 'task_f2d_2x2_1_cosx1_plus_x2_depth_2'
+    experiments_root = '../../om_krls'
+    experiment_dir = '/August_01_krls_task_2x2_1_cosx1_plus_x2_depth_2_15_15_12_48_96_246_360'
+    results_filename = '/results_json_August_01_krls_f_2d_task2_xsinglog1_x_depth2_12_48_96_246_360'
+    rbf_params_filename = '/rbf_params_August_01_krls_f_2d_task2_xsinglog1_x_depth2_12_48_96_246_360.npz'
 
     main(rbf_params_filename=experiments_root+experiment_dir+rbf_params_filename,errors_filename=experiments_root+experiment_dir+results_filename, task_name=task_name)
     #main(sys.argv)

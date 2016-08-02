@@ -51,6 +51,28 @@ from sklearn.cross_validation import train_test_split
 
 #
 
+def f2D_func_simple2(x_1,x_2,nb_recursive_layers=2):
+    #first layer
+    c_h = 1.2*np.pi
+    h = np.cos( c_h*( x_1+x_2 ))
+    # recursive layer
+    A = 1.2*h
+    for l in range(nb_recursive_layers):
+        A = 2*A**2 - 1
+    f = A
+    return f
+
+def f2D_func_simple(x_1,x_2,nb_recursive_layers=2):
+    #first layer
+    c_h = 1.2*np.pi
+    h = np.cos( c_h*( x_1*x_2 ))
+    # recursive layer
+    A = 1.2*h
+    for l in range(nb_recursive_layers):
+        A = 2*A**2 - 1
+    f = A
+    return f
+
 def f2D_func_task2_2(x_1,x_2,nb_recursive_layers=2):
     #first layer
     #c_h = 0.2*np.pi

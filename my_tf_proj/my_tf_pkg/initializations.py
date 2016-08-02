@@ -132,6 +132,25 @@ def get_initilizations_HBF(init_type,dims,mu,std,b_init,S_init,X_train,Y_train,t
         inits_C=[tf.constant(C)]
         #inits_C=[ tf.truncated_normal(shape=[dims[l-1],dims[l]], mean=mu[l], stddev=std[l], dtype=tf.float64) ]
         print report_RBF_error(Kern, C, Y_train)
+    elif init_type=='data_xavier_kern':
+        inits_W=[None]
+        inits_S=[None]
+
+        (subsampled_data_points,W,W_tf)= get_centers_from_data(X_train,dims)
+        inits_W.append( W_tf )
+        # nb_hidden_layers=len(dims)-1
+        for l in xrange(1, nb_hidden_layers):
+            #inits_S.append( tf.constant( S_init[l], shape=[dims[l]], dtype=tf.float64 ) )
+            inits_S.append( get_single_multiple_S(l,S_init,dims,train_S_type) )
+        for l in xrange(2,nb_hidden_layers):
+            inits_W.append( tf.contrib.layers.xavier_initializer(dtype=tf.float64) )
+        stddev = S_init[1]
+        beta = np.power(1.0/stddev,2)
+        Kern = np.exp(-beta*euclidean_distances(X=X_train,Y=subsampled_data_points,squared=True))
+        (C,_,_,_) = np.linalg.lstsq(Kern,Y_train)
+        inits_C=[tf.constant(C)]
+        #inits_C=[ tf.truncated_normal(shape=[dims[l-1],dims[l]], mean=mu[l], stddev=std[l], dtype=tf.float64)
+        print report_RBF_error(Kern, C, Y_train)
     print 'DONE INITILIZING'
     return (inits_C,inits_W,inits_S)
 

@@ -93,11 +93,10 @@ def init_norm(loc,scale,upper_threshold,lower_threshold):
             init_constant[i] = lower_threshold
     return
 low_const, high_const = 0.4, 1.0
-init_constant = np.random.uniform(low=low_const, high=high_const)
-#init_constant = 0.6
-b_init = list(np.random.uniform(low=low_const, high=high_const,size=len(dims)))
-#init_constant = 0.6
-#b_init = len(dims)*[init_constant]
+#init_constant = np.random.uniform(low=low_const, high=high_const)
+#b_init = list(np.random.uniform(low=low_const, high=high_const,size=len(dims)))
+init_constant = 0.72357143
+b_init = len(dims)*[init_constant]
 #[0.6374998052942504, 0.6374998052942504, 0.6374998052942504, 0.6374998052942504]
 #b_init = [None, 1, .1, None]
 #b_init = [None, 1, 1, None]
@@ -126,12 +125,12 @@ low_const_learning_rate, high_const_learning_rate = -0.9, -5.0
 log_learning_rate = np.random.uniform(low=low_const_learning_rate, high=high_const_learning_rate)
 starter_learning_rate = 10**log_learning_rate
 
-starter_learning_rate = 0.0001
+starter_learning_rate = 0.000001
 # starter_learning_rate = 0.00001
 
 print '++> starter_learning_rate ', starter_learning_rate
 ## decayed_learning_rate = learning_rate * decay_rate ^ (global_step / decay_steps)
-decay_rate = 0.9
+decay_rate = 0.8
 decay_steps = 500
 #decay_rate = np.random.uniform(low=0.2, high=0.99)
 #decay_steps = np.random.randint(low=report_error_freq, high=M)

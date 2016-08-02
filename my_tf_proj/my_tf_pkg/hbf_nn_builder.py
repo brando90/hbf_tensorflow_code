@@ -41,7 +41,8 @@ def get_HBF_layer2(l, x, dims, init, phase_train=None, layer_name='HBFLayer', tr
     (init_W,init_S) = init
     with tf.name_scope(layer_name+l):
         with tf.name_scope('templates'+l):
-            W = tf.get_variable(name='W'+l, dtype=tf.float64, initializer=init_W, regularizer=None, trainable=True)
+            #W = tf.get_variable(name='W'+l, dtype=tf.float64, initializer=init_W, regularizer=None, trainable=True)
+            W = get_W(init_W, l, x, dims, init)
         with tf.name_scope('rbf_stddev'+l):
             print '-->',init_S
             S = tf.get_variable(name='S'+l, dtype=tf.float64, initializer=init_S, regularizer=None, trainable=True)
@@ -126,7 +127,6 @@ def get_NN_layer(l, x, dims, init, phase_train=None, scope="NNLayer", trainable_
 def get_W(init_W, l, x, dims, init):
     (dim_input,dim_out) = dims
     if isinstance(init_W, tf.python.framework.ops.Tensor):
-        print 'isinstance'
         W = tf.get_variable(name='W'+l, dtype=tf.float64, initializer=init_W, regularizer=None, trainable=True)
     else:
         W = tf.get_variable(name='W'+l, dtype=tf.float64, initializer=init_W, regularizer=None, trainable=True, shape=[dim_input,dim_out])
