@@ -75,6 +75,7 @@ def get_best_results_from_experiment(experiment_dirpath, list_runs_filenames):
     for potential_run_filename in list_runs_filenames:
         # if current run=filenmae is a json struct then it has the results
         if 'json' in potential_run_filename:
+            #print 'potential_run_filename', potential_run_filename
             run_filename = potential_run_filename
             results_current_run = get_results(experiment_dirpath, run_filename)
             train_error, cv_error, test_error = get_errors_from(results_current_run)
@@ -98,11 +99,15 @@ def get_results_for_experiments(path_to_experiments, verbose=True, split_string=
     for (experiment_dir, _, potential_runs) in os.walk(path_to_experiments):
         # if current dirpath is a valid experiment and not . (itself)
         if (experiment_dir != path_to_experiments):
+            #print '=> experiment_dir: ', experiment_dir
+            #print '=> potential_runs: ', potential_runs
             results_best, best_filename, final_train_errors, final_cv_errors, final_test_errors = get_best_results_from_experiment(experiment_dirpath=experiment_dir,list_runs_filenames=potential_runs)
             nb_units = results_best['dims'][1]
             #(left, right) = experiment_dir.split('jHBF1_')
             #(left, right) = re.split('_jHBF[\d]*_',experiment_dir)
             (left, right) = re.split(split_string,experiment_dir)
+            print '=====> ', left, right
+            #pdb.set_trace()
             if verbose:
                 print '--'
                 print right[0]
@@ -280,21 +285,21 @@ def display_results_HBF1_task2():
     plt.legend()
     plt.show()
 
-def display_results_NN1_xsinglog1_x():
+def display_results_NN_xsinglog1_x():
     # frameworkpython multiple_vs_single_collect_results.py
     #print os.path.isdir(path_to_experiments)
     experiment_name = 'om_xsinlog1_x_depth2'
-    path_to_experiments = '../../%s/task_27_july_NN1_depth_2_1000'%experiment_name
+    #path_to_experiments = '../../%s/task_27_july_NN1_depth_2_1000'%experiment_name
     nn1_multiple_experiment_results = get_results_for_experiments(path_to_experiments,verbose=True, split_string='_jHBF[\d]*_')
 
     #path_to_experiments = '../../%s/task_27_july_NN2_depth_2_1000'%experiment_name
     #path_to_experiments = '../../%s/task_28_july_NN2_1000_BN'%experiment_name
-    path_to_experiments = '../../%s/task_28_july_NN2_1000_BN_False_trainable_BN'%experiment_name
+    #path_to_experiments = '../../%s/task_28_july_NN2_1000_BN_False_trainable_BN'%experiment_name
     nn2_multiple_experiment_results = get_results_for_experiments(path_to_experiments,verbose=True, split_string='_jNN[\d]*_')
 
     #path_to_experiments = '../../%s/task_27_july_NN3_depth_2_1000'%experiment_name
     #path_to_experiments = '../../%s/task_28_july_NN3_1000_BN'%experiment_name
-    path_to_experiments = '../../%s/task_28_july_NN3_1000_BN_False_trainable_BN'%experiment_name
+    #path_to_experiments = '../../%s/task_28_july_NN3_1000_BN_False_trainable_BN'%experiment_name
     nn3_multiple_experiment_results = get_results_for_experiments(path_to_experiments,verbose=True, split_string='_jNN[\d]*_')
 
     #
@@ -323,5 +328,49 @@ def display_results_NN1_xsinglog1_x():
     plt.legend()
     plt.show()
 
+def display_results_hbf_xsinglog1_x():
+    # frameworkpython multiple_vs_single_collect_results.py
+    #print os.path.isdir(path_to_experiments)
+    experiment_name = 'om_xsinlog1_x_depth2_hbf'
+    path_to_experiments = '../../%s/task_30_july_HBF1_depth_2_1000'%experiment_name
+    nn1_multiple_experiment_results = get_results_for_experiments(path_to_experiments,verbose=True, split_string='_jHBF[\d]*_')
+
+    path_to_experiments = '../../%s/task_30_july_HBF2_depth_2_1000'%experiment_name
+    nn2_multiple_experiment_results = get_results_for_experiments(path_to_experiments,verbose=True, split_string='_jHBF[\d]*_')
+
+    #path_to_experiments = '../../%s/task_30_july_HBF2_depth_2_1000'%experiment_name
+    #nn3_multiple_experiment_results = get_results_for_experiments(path_to_experiments,verbose=True, split_string='_jNN[\d]*_')
+
+    #
+    nn1_list_units, nn1_list_train_errors, nn1_list_test_errors = get_list_errors2(experiment_results=nn1_multiple_experiment_results)
+    nn2_list_units, nn2_list_train_errors, nn2_list_test_errors = get_list_errors2(experiment_results=nn2_multiple_experiment_results)
+    print 'nn1_list_train_errors: ', nn1_list_train_errors
+    print 'nn1_list_test_errors: ', nn1_list_test_errors
+    print 'nn2_list_train_errors: ', nn2_list_train_errors
+    print 'nn2_list_test_errors: ', nn2_list_test_errors
+    #nn3_list_units, nn3_list_train_errors, nn3_list_test_errors = get_list_errors2(experiment_results=nn3_multiple_experiment_results)
+
+    #
+    plt.figure(3)
+    #
+    list_units = np.array(nn1_list_units)
+    print list_units
+    krls.plot_errors(list_units, nn1_list_train_errors,label='HBF1 train', markersize=3, colour='b')
+    krls.plot_errors(list_units, nn1_list_test_errors,label='HBF1 test', markersize=3, colour='c')
+    #
+    list_units = 2*np.array(nn2_list_units)
+    print list_units
+    krls.plot_errors(list_units, nn2_list_train_errors,label='HBF2 train', markersize=3, colour='r')
+    krls.plot_errors(list_units, nn2_list_test_errors,label='HBF2 test', markersize=3, colour='m')
+    #
+    #list_units = 3*np.array(nn3_list_units)
+    #print list_units
+    #krls.plot_errors(list_units, nn3_list_train_errors,label='NN3 train', markersize=3, colour='g')
+    #krls.plot_errors(list_units, nn3_list_test_errors,label='NN3 test', markersize=3, colour='y')
+
+    plt.legend()
+    plt.show()
+
 if __name__ == '__main__':
-    display_results_NN1_xsinglog1_x()
+    #display_results_NN_xsinglog1_x()
+    display_results_hbf_xsinglog1_x()

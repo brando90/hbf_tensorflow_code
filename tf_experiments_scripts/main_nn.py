@@ -84,9 +84,17 @@ std = len(dims)*[std_init]
 #std = [None,2,.25,.1]
 #std = [None,1,1,1]
 #init_constant = None
-low_const, high_const = 0.1, 1.0
+def init_norm(loc,scale,upper_threshold,lower_threshold):
+    init_constant = np.random.normal(loc=loc,scale=scale)
+    for i, item in enumerate(init_constant):
+        if item > upper_threshold:
+            init_constant[i] = upper_threshold
+        elif item < lower_threshold:
+            init_constant[i] = lower_threshold
+    return
+low_const, high_const = 0.4, 1.0
 init_constant = np.random.uniform(low=low_const, high=high_const)
-#init_constant = 0.2
+#init_constant = 0.6
 b_init = list(np.random.uniform(low=low_const, high=high_const,size=len(dims)))
 #init_constant = 0.6
 #b_init = len(dims)*[init_constant]
@@ -109,8 +117,8 @@ phase_train = tf.placeholder(tf.bool, name='phase_train') if bn else  None
 
 report_error_freq = 50
 steps = 3000
-M = np.random.randint(low=5000, high=20000)
-#M = 17000 #batch-size
+#M = np.random.randint(low=5000, high=20000)
+M = 17000 #batch-size
 #M = 5000
 print '++++> M (batch size) :', M
 
@@ -118,15 +126,15 @@ low_const_learning_rate, high_const_learning_rate = -0.9, -5.0
 log_learning_rate = np.random.uniform(low=low_const_learning_rate, high=high_const_learning_rate)
 starter_learning_rate = 10**log_learning_rate
 
-#starter_learning_rate = 0.01
+starter_learning_rate = 0.0001
 # starter_learning_rate = 0.00001
 
 print '++> starter_learning_rate ', starter_learning_rate
 ## decayed_learning_rate = learning_rate * decay_rate ^ (global_step / decay_steps)
-#decay_rate = 0.9
-#decay_steps = 500
-decay_rate = np.random.uniform(low=0.2, high=0.99)
-decay_steps = np.random.randint(low=report_error_freq, high=M)
+decay_rate = 0.9
+decay_steps = 500
+#decay_rate = np.random.uniform(low=0.2, high=0.99)
+#decay_steps = np.random.randint(low=report_error_freq, high=M)
 staircase = True
 print '++> decay_rate ', decay_rate
 print '++> decay_steps ', decay_steps
@@ -140,10 +148,10 @@ print '++> staircase ', staircase
 #rho = 0.95
 #optimization_alg = 'Adadelta'
 
-#beta1=0.9 # m = b1m + (1 - b1)m
-#beta2=0.999 # v = b2 v + (1 - b2)v
-beta1=np.random.uniform(low=0.7, high=0.99) # m = b1m + (1 - b1)m
-beta2=np.random.uniform(low=0.8, high=0.999) # v = b2 v + (1 - b2)v
+beta1=0.9 # m = b1m + (1 - b1)m
+beta2=0.999 # v = b2 v + (1 - b2)v
+#beta1=np.random.uniform(low=0.7, high=0.99) # m = b1m + (1 - b1)m
+#beta2=np.random.uniform(low=0.8, high=0.999) # v = b2 v + (1 - b2)v
 optimization_alg = 'Adam' # w := w - m/(sqrt(v)+eps)
 
 #optimization_alg = 'Adagrad'

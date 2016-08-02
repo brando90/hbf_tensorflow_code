@@ -8,11 +8,12 @@ import my_tf_pkg as mtf
 # file_name = 'f_2d_task2_ml_xsinlog1_x_depth_%sdata_and_mesh.npz'%(nb_recursive_layers)
 
 print 'run task 2 data gen'
-func = mtf.f2D_func_task2_2
+func = mtf.f2D_func_simple
 nb_recursive_layers = 2
-file_name = 'f_2d_task2_ml_xsinlog1_x_depth_%sdata_and_mesh.npz'%(nb_recursive_layers)
+file_name = 'f_2d_2x2_1_cosx1x2_depth_%sdata_and_mesh.npz'%(nb_recursive_layers)
 mtf.save_data_task2_func(func=func,file_name=file_name,nb_recursive_layers=nb_recursive_layers)
 print 'data task 2 has been successfuly saved to a file'
+
 # get data form file created
 print 'get data form file created'
 (X_train, Y_train, X_cv, Y_cv, X_test, Y_test) = mtf.get_data_from_file(file_name=file_name)

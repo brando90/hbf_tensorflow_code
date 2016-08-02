@@ -7,4 +7,7 @@
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=rene_sax14@yahoo.com
 
-python krls_collect_data.py task_f_2d_task2_xsinglog1_x_depth2 krls_f_2d_task2_xsinglog1_x_depth2 100 100 6,12,24,48,96
+task_name=task_f2d_2x2_1_cosx1_plus_x2_depth_2
+#task_name=task_f2d_2x2_1_cosx1x2_depth_2
+#task_name=task_f_2d_task2_xsinglog1_x_depth2
+python krls_collect_data.py $task_name krls_f_2d_task2_xsinglog1_x_depth2_12_48_96_246_360 15 15 12,48,96,246,360

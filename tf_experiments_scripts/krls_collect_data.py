@@ -53,6 +53,8 @@ def main(argv):
 
 if __name__ == '__main__':
     # python krls_collect_data.py task_f_2d_task2_xsinglog1_x_depth2 krls_f_2d_task2_xsinglog1_x_depth2_TEST 2 2 2,3,4
+    # python krls_collect_data.py task_f2d_2x2_1_cosx1x2_depth_2 krls_task_f2d_2x2_1_cosx1x2_depth_2_TEST 2 2 2,3,4
+    # python krls_collect_data.py task_f2d_2x2_1_cosx1_plus_x2_depth_2 krls_task_f2d_2x2_1_cosx1_plus_x2_depth_2_TEST 2 2 2,3,4
 
     print 'main'
     mtf.helloworld()
