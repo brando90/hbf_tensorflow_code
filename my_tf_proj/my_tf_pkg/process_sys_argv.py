@@ -10,15 +10,15 @@ def process_argv(argv):
     #train_S_type = 'single_S'
     #init_type = 'truncated_normal'
     #init_type = 'data_init'
-    init_type = 'kern_init'
+    #init_type = 'kern_init'
     #init_type = 'kpp_init'
-    #init_type = 'data_trunc_norm_kern'
+    init_type = 'data_trunc_norm_kern'
     #init_type = 'data_xavier_kern'
     #init_type = 'xavier'
     #
     experiment_name = 'tmp_experiment'
     train_S_type = 'multiple_S'
-    units_list = [12]
+    units_list = [24,24]
     # units_list = [96,96]
     # task_name = 'task_qianli_func'
     # task_name = 'task_hrushikesh'

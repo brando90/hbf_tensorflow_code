@@ -53,11 +53,14 @@ def get_HBF_layer2(l, x, dims, init, phase_train=None, layer_name='HBFLayer', tr
             # -|| x - w ||^2 = -(-2<x,w> + ||x||^2 + ||w||^2) = 2<x,w> - (||x||^2 + ||w||^2)
             Delta_tilde = 2.0*tf.matmul(x,W) - tf.add(WW, XX) # (M x D^(l)) - (M x D^(l)) = (M x D^(l-1)) * (D^(l-1) x D^(l)) - (M x D^(l))
             Z = beta * ( Delta_tilde ) # (M x D^(l))
-        if phase_train is not None:
-            Z = add_batch_norm_layer(l, Z , phase_train, trainable_bn=trainable_bn)
-            #z = add_batch_norm_layer(l, z, phase_train, trainable_bn=trainable_bn)
+        # if phase_train is not None:
+        #     Z = add_batch_norm_layer(l, Z , phase_train, trainable_bn=trainable_bn)
+        #     #z = add_batch_norm_layer(l, z, phase_train, trainable_bn=trainable_bn)
         with tf.name_scope('A'+l):
             A = tf.exp(Z) # (M x D^(l))
+        if phase_train is not None:
+            A = add_batch_norm_layer(l, A , phase_train, trainable_bn=trainable_bn)
+            #z = add_batch_norm_layer(l, z, phase_train, trainable_bn=trainable_bn)
     var_prefix = 'vars_'+layer_name+l
     put_summaries(var=W,prefix_name=var_prefix+W.name,suffix_text=W.name)
     put_summaries(var=S,prefix_name=var_prefix+S.name,suffix_text=S.name)
