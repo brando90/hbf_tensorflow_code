@@ -18,21 +18,22 @@ def process_argv(argv):
     #
     experiment_name = 'tmp_experiment'
     train_S_type = 'multiple_S'
-    units_list = [24,24]
+    units_list = [6,6]
+    #units_list = [24,24]
     # units_list = [96,96]
     # task_name = 'task_qianli_func'
     # task_name = 'task_hrushikesh'
     # re_train = None
     # task_name = 'task_f_2D_task2'
-    task_name = 'task_f_2d_task2_xsinglog1_x_depth2'
+    # task_name = 'task_f_2d_task2_xsinglog1_x_depth2'
     # task_name = 'task_f2d_2x2_1_cosx1x2_depth_2'
     # task_name = 'task_f2d_2x2_1_cosx1_plus_x2_depth2'
-    # task_name == 'task_MNIST_flat_auto_encoder'
-    # experiment_root_dir = 'om_mnist'
+    task_name = 'task_MNIST_flat_auto_encoder'
+    experiment_root_dir = 'om_mnist'
     # experiment_root_dir = 'om_xsinlog1_x_depth2'
-    experiment_root_dir = 'om_xsinlog1_x_depth2_hbf'
+    # experiment_root_dir = 'om_xsinlog1_x_depth2_hbf'
     # experiment_root_dir = 'om_2x2_1_cosx1_plus_x2_depth2'
-    #experiment_root_dir = 'om_2x2_1_cosx1_plus_x2_depth_2_hbf'
+    # experiment_root_dir = 'om_2x2_1_cosx1_plus_x2_depth_2_hbf'
     # task_name = 'task_f_2d_task2_xsinglog1_x_depth3'
     # task_name = 'task_MNIST_flat'
     #

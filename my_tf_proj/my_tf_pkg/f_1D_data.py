@@ -113,9 +113,9 @@ def get_data(task_name):
         X_test, Y_test = mnist.test.images, mnist.test.labels
     elif task_name == 'task_MNIST_flat_auto_encoder':
         mnist = input_data.read_data_sets("MNIST_data/", one_hot=True)
-        X_train, Y_train = mnist.train.images, np.copy(mnist.train.images)
-        X_cv, Y_cv = mnist.validation.images, np.copy(mnist.validation.images)
-        X_test, Y_test = mnist.test.images, np.copy(mnist.test.images)
+        X_train, Y_train = mnist.train.images.astype('float64'), np.copy(mnist.train.images.astype('float64'))
+        X_cv, Y_cv = mnist.validation.images.astype('float64'), np.copy(mnist.validation.images.astype('float64'))
+        X_test, Y_test = mnist.test.images.astype('float64'), np.copy(mnist.test.images.astype('float64'))
     elif task_name == 'task_hrushikesh':
         with open('../hrushikesh/patient_data_X_Y.json', 'r') as f_json:
             patients_data = json.load(f_json)
