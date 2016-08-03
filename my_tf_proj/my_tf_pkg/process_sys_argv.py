@@ -43,11 +43,11 @@ def process_argv(argv):
     #
     mdl_save = True
     #
-    #trainable_S = True
-    trainable_S = False
+    #trainable_S = 'train_S'
+    trainable_S = 'dont_train_S'
     #
     #data_normalize = 'normalize_input'
-    data_normalize = False
+    data_normalize = 'dont_normalize'
     cluster = 'home'
     print '---------> len(argv)', len(argv)
     if is_it_tensorboard_run(argv):
@@ -68,7 +68,7 @@ def process_argv(argv):
             print 2
     else:
         mdl_save = True
-        if len(argv) == 14:
+        if len(argv) == 16:
             # python main_nn.py slurm_jobid slurm_array_task_id experiment_root_dir experiment_name job_name mdl_save 3,3 multiple_S/single_S task_name bn data_normalize
 
             # python main_nn.py slurm_jobid slurm_array_task_id om_xsinlog1_x_depth2_hbf experiment_name job_name True 3 multiple_S task_f_2d_task2_xsinglog1_x_depth2 False False hbf kern_init normalize_input
@@ -87,6 +87,7 @@ def process_argv(argv):
             mdl_type = argv[12]
             init_type = argv[13]
             data_normalize = argv[14]
+            trainable_S = argv[15]
             cluster = 'OM7'
             print 2.8
         # elif len(argv) == 9:
