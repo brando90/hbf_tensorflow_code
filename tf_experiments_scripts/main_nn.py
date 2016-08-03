@@ -95,14 +95,15 @@ if cluster == 'OM7':
     dims = [D]+units_list+[D_out]
     mu_init = 0.0
     mu = len(dims)*[mu_init]
-    std_init = 0.2
+    std_init = 0.9
     std = len(dims)*[std_init]
     low_const, high_const = 0.4, 1.0
     #init_constant = np.random.uniform(low=low_const, high=high_const)
     #b_init = list(np.random.uniform(low=low_const, high=high_const,size=len(dims)))
-    init_constant = 0.31272727
+    init_constant = 0.4177551
     b_init = len(dims)*[init_constant]
     #[0.6374998052942504, 0.6374998052942504, 0.6374998052942504, 0.6374998052942504]
+    b_init = [None, init_constant, np.random.uniform(low=1,high=2.5)]
     print '++> S/b_init ', b_init
     S_init = b_init
     model = mdl_type
@@ -111,13 +112,13 @@ if cluster == 'OM7':
     phase_train = tf.placeholder(tf.bool, name='phase_train') if bn else  None
 
     report_error_freq = 50
-    steps = 3000
+    steps = np.random.randint(low=3000,high=6000)
     #M = np.random.randint(low=5000, high=20000)
     M = 17000 #batch-size
     #M = 5000
     print '++++> M (batch size) :', M
 
-    low_const_learning_rate, high_const_learning_rate = -0.9, -5.0
+    low_const_learning_rate, high_const_learning_rate = -0.1, -5.0
     log_learning_rate = np.random.uniform(low=low_const_learning_rate, high=high_const_learning_rate)
     starter_learning_rate = 10**log_learning_rate
 
@@ -159,7 +160,7 @@ else:
     std = len(dims)*[std_init]
     #std = [None,0.75,0.1]
     low_const, high_const = 0.4, 1.0
-    init_constant = 0.4177
+    init_constant = 0.4177551
     b_init = len(dims)*[init_constant]
     b_init = [None, 0.4177, 2.5]
     print '++> S/b_init ', b_init
