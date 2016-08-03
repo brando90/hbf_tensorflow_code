@@ -24,12 +24,14 @@ def process_argv(argv):
     # task_name = 'task_hrushikesh'
     # re_train = None
     # task_name = 'task_f_2D_task2'
-    # task_name = 'task_f_2d_task2_xsinglog1_x_depth2'
+    task_name = 'task_f_2d_task2_xsinglog1_x_depth2'
     # task_name = 'task_f2d_2x2_1_cosx1x2_depth_2'
-    task_name = 'task_f2d_2x2_1_cosx1_plus_x2_depth2'
+    # task_name = 'task_f2d_2x2_1_cosx1_plus_x2_depth2'
+    # task_name == 'task_MNIST_flat_auto_encoder'
+    # experiment_root_dir = 'om_mnist'
     # experiment_root_dir = 'om_xsinlog1_x_depth2'
-    # experiment_root_dir = 'om_xsinlog1_x_depth2_hbf'
-    experiment_root_dir = 'om_2x2_1_cosx1_plus_x2_depth2'
+    experiment_root_dir = 'om_xsinlog1_x_depth2_hbf'
+    # experiment_root_dir = 'om_2x2_1_cosx1_plus_x2_depth2'
     #experiment_root_dir = 'om_2x2_1_cosx1_plus_x2_depth_2_hbf'
     # task_name = 'task_f_2d_task2_xsinglog1_x_depth3'
     # task_name = 'task_MNIST_flat'
@@ -41,6 +43,11 @@ def process_argv(argv):
     #
     mdl_save = True
     #
+    #trainable_S = True
+    trainable_S = False
+    #
+    #data_normalize = 'normalize_input'
+    data_normalize = False
     cluster = 'home'
     print '---------> len(argv)', len(argv)
     if is_it_tensorboard_run(argv):
@@ -62,9 +69,9 @@ def process_argv(argv):
     else:
         mdl_save = True
         if len(argv) == 14:
-            # python main_nn.py slurm_jobid slurm_array_task_id experiment_root_dir experiment_name job_name mdl_save 3,3 multiple_S/single_S task_name bn
+            # python main_nn.py slurm_jobid slurm_array_task_id experiment_root_dir experiment_name job_name mdl_save 3,3 multiple_S/single_S task_name bn data_normalize
 
-            # python main_nn.py slurm_jobid slurm_array_task_id om_xsinlog1_x_depth2_hbf experiment_name job_name True 3 multiple_S task_f_2d_task2_xsinglog1_x_depth2 False False hbf kern_init
+            # python main_nn.py slurm_jobid slurm_array_task_id om_xsinlog1_x_depth2_hbf experiment_name job_name True 3 multiple_S task_f_2d_task2_xsinglog1_x_depth2 False False hbf kern_init normalize_input
             slurm_jobid = argv[1]
             slurm_array_task_id = argv[2]
             experiment_root_dir = argv[3]
@@ -79,6 +86,7 @@ def process_argv(argv):
             trainable_bn = argv[11]
             mdl_type = argv[12]
             init_type = argv[13]
+            data_normalize = argv[14]
             cluster = 'OM7'
             print 2.8
         # elif len(argv) == 9:
@@ -165,7 +173,7 @@ def process_argv(argv):
             raise ValueError('Need to specify the correct number of params')
     bn = str_to_bool(bn)
     print 'mdl_type: ', mdl_type
-    return (experiment_root_dir,slurm_jobid,slurm_array_task_id,job_name,mdl_save,experiment_name,units_list,train_S_type,task_name,bn,trainable_bn,mdl_type,init_type,cluster)
+    return (experiment_root_dir,slurm_jobid,slurm_array_task_id,job_name,mdl_save,experiment_name,units_list,train_S_type,task_name,bn,trainable_bn,mdl_type,init_type,cluster,data_normalize,trainable_S)
 
 def is_it_tensorboard_run(argv):
     check_args = []

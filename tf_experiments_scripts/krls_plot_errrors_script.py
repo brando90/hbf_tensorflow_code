@@ -96,9 +96,9 @@ if __name__ == '__main__':
     ##
     task_name = 'task_f2d_2x2_1_cosx1_plus_x2_depth_2'
     experiments_root = '../../om_krls'
-    experiment_dir = '/August_01_krls_task_2x2_1_cosx1_plus_x2_depth_2_15_15_12_48_96_246_360'
-    results_filename = '/results_json_August_01_krls_f_2d_task2_xsinglog1_x_depth2_12_48_96_246_360'
-    rbf_params_filename = '/rbf_params_August_01_krls_f_2d_task2_xsinglog1_x_depth2_12_48_96_246_360.npz'
+    experiment_dir = '/August_02_krls_2x2_1_cosx1x2_depth_2_50_50_12_48_96_246_360'
+    results_filename = '/results_json_August_02_krls_2x2_1_cosx1x2_depth_2_50_50_12_48_96_246_360'
+    rbf_params_filename = '/rbf_params_August_02_krls_2x2_1_cosx1x2_depth_2_50_50_12_48_96_246_360.npz'
 
     main(rbf_params_filename=experiments_root+experiment_dir+rbf_params_filename,errors_filename=experiments_root+experiment_dir+results_filename, task_name=task_name)
     #main(sys.argv)

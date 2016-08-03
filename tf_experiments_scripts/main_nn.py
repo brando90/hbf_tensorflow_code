@@ -2,8 +2,11 @@
 ## show board on browser run cmd: tensorboard --logdir=/tmp/mdl_logs
 ## browser: http://localhost:6006/
 
-import numpy as np
 import tensorflow as tf
+
+from sklearn import preprocessing
+import numpy as np
+
 import shutil
 import subprocess
 import json
@@ -32,7 +35,7 @@ re_train = None
 
 results = {'train_errors':[], 'cv_errors':[],'test_errors':[]}
 # slurm values and ids
-(experiment_root_dir,slurm_jobid,slurm_array_task_id,job_name,mdl_save,experiment_name,units_list,train_S_type,task_name,bn,trainable_bn,mdl_type,init_type,cluster) = mtf.process_argv(sys.argv)
+(experiment_root_dir,slurm_jobid,slurm_array_task_id,job_name,mdl_save,experiment_name,units_list,train_S_type,task_name,bn,trainable_bn,mdl_type,init_type,cluster,data_normalize,trainable_S) = mtf.process_argv(sys.argv)
 use_tensorboard = mtf.is_it_tensorboard_run(sys.argv)
 print 'use_tensorboard', use_tensorboard
 date = datetime.date.today().strftime("%B %d").replace (" ", "_")
@@ -77,6 +80,9 @@ results_dic = mtf.fill_results_dic_with_np_seed(np_rnd_seed=np.random.get_state(
 ## Data sets and task
 print '----====> TASK NAME: %s' % task_name
 (X_train, Y_train, X_cv, Y_cv, X_test, Y_test) = mtf.get_data(task_name)
+if data_normalize == 'normalize_input':
+    X_train, X_cv, X_test = preprocessing.scale(X_train), preprocessing.scale(X_cv), preprocessing.scale(X_test)
+
 (N_train,D) = X_train.shape
 (N_test,D_out) = Y_test.shape
 print '(N_train,D) = ', (N_train,D)
@@ -88,12 +94,12 @@ if cluster == 'OM7':
     dims = [D]+units_list+[D_out]
     mu_init = 0.0
     mu = len(dims)*[mu_init]
-    std_init = 0.9
+    std_init = 0.2
     std = len(dims)*[std_init]
     low_const, high_const = 0.4, 1.0
     #init_constant = np.random.uniform(low=low_const, high=high_const)
     #b_init = list(np.random.uniform(low=low_const, high=high_const,size=len(dims)))
-    init_constant = 0.72357142857142864
+    init_constant = 0.31272727
     b_init = len(dims)*[init_constant]
     #[0.6374998052942504, 0.6374998052942504, 0.6374998052942504, 0.6374998052942504]
     print '++> S/b_init ', b_init
@@ -150,9 +156,11 @@ else:
     mu = len(dims)*[mu_init]
     std_init = 0.9
     std = len(dims)*[std_init]
+    #std = [None,0.75,0.1]
     low_const, high_const = 0.4, 1.0
-    init_constant = 0.72357143
+    init_constant = 0.4177
     b_init = len(dims)*[init_constant]
+    b_init = [None, 0.4177, 3]
     print '++> S/b_init ', b_init
     S_init = b_init
     #
@@ -167,13 +175,13 @@ else:
     M = 17000 #batch-size
     print '++++> M (batch size) :', M
 
-    starter_learning_rate = 0.00005
+    starter_learning_rate = 0.01
     # starter_learning_rate = 0.00001
 
     print '++> starter_learning_rate ', starter_learning_rate
     ## decayed_learning_rate = learning_rate * decay_rate ^ (global_step / decay_steps)
-    decay_rate = 0.8
-    decay_steps = 200
+    decay_rate = 1
+    decay_steps = 1000
     staircase = True
     print '++> decay_rate ', decay_rate
     print '++> decay_steps ', decay_steps
@@ -181,15 +189,15 @@ else:
 
     #optimization_alg = 'GD'
 
-    #momentum = 0.9
-    #optimization_alg = 'Momentum'
+    momentum = 0.9
+    optimization_alg = 'Momentum'
 
     #rho = 0.95
     #optimization_alg = 'Adadelta'
 
-    beta1=0.9 # m = b1m + (1 - b1)m
-    beta2=0.999 # v = b2 v + (1 - b2)v
-    optimization_alg = 'Adam' # w := w - m/(sqrt(v)+eps)
+    #beta1=0.9 # m = b1m + (1 - b1)m
+    #beta2=0.999 # v = b2 v + (1 - b2)v
+    #optimization_alg = 'Adam' # w := w - m/(sqrt(v)+eps)
 
     #optimization_alg = 'Adagrad'
 
@@ -218,7 +226,7 @@ elif model == 'hbf':
     (inits_C,inits_W,inits_S) = mtf.get_initilizations_HBF(init_type=init_type,dims=dims,mu=mu,std=std,b_init=b_init,S_init=S_init, X_train=X_train, Y_train=Y_train, train_S_type=train_S_type)
     print inits_W
     with tf.name_scope("HBF") as scope:
-        mdl = mtf.build_HBF2(x,dims,(inits_C,inits_W,inits_S),phase_train,trainable_bn)
+        mdl = mtf.build_HBF2(x,dims,(inits_C,inits_W,inits_S),phase_train,trainable_bn,trainable_S)
         mdl = mtf.get_summation_layer(l=str(nb_layers),x=mdl,init=inits_C[0])
 
 ## Output and Loss

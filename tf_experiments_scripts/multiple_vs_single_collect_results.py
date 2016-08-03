@@ -331,11 +331,14 @@ def display_results_NN_xsinglog1_x():
 def display_results_hbf_xsinglog1_x():
     # frameworkpython multiple_vs_single_collect_results.py
     #print os.path.isdir(path_to_experiments)
-    experiment_name = 'om_xsinlog1_x_depth2_hbf'
-    path_to_experiments = '../../%s/task_30_july_HBF1_depth_2_1000'%experiment_name
+    #experiment_name = 'om_xsinlog1_x_depth2_hbf'
+    experiment_name = 'om_2x2_1_cosx1_plus_x2_depth2'
+    #path_to_experiments = '../../%s/task_30_july_HBF1_depth_2_1000'%experiment_name
+    path_to_experiments = '../../%s/task_1_August_HBF2_depth_2_1000'%experiment_name
     nn1_multiple_experiment_results = get_results_for_experiments(path_to_experiments,verbose=True, split_string='_jHBF[\d]*_')
 
-    path_to_experiments = '../../%s/task_30_july_HBF2_depth_2_1000'%experiment_name
+    #path_to_experiments = '../../%s/task_30_july_HBF2_depth_2_1000'%experiment_name
+    path_to_experiments = '../../%s/task_1_August_HBF2_depth_2_1000'%experiment_name
     nn2_multiple_experiment_results = get_results_for_experiments(path_to_experiments,verbose=True, split_string='_jHBF[\d]*_')
 
     #path_to_experiments = '../../%s/task_30_july_HBF2_depth_2_1000'%experiment_name
