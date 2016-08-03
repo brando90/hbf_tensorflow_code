@@ -37,6 +37,7 @@ results = {'train_errors':[], 'cv_errors':[],'test_errors':[]}
 # slurm values and ids
 (experiment_root_dir,slurm_jobid,slurm_array_task_id,job_name,mdl_save,experiment_name,units_list,train_S_type,task_name,bn,trainable_bn,mdl_type,init_type,cluster,data_normalize,trainable_S) = mtf.process_argv(sys.argv)
 use_tensorboard = mtf.is_it_tensorboard_run(sys.argv)
+trainable_S = True if (trainable_S=='train_S') else False
 print 'use_tensorboard', use_tensorboard
 date = datetime.date.today().strftime("%B %d").replace (" ", "_")
 print 'experiment_root_dir=%s,slurm_jobid=%s,slurm_array_task_id=%s,job_name=%s'%(experiment_root_dir,slurm_jobid,slurm_array_task_id,job_name)
@@ -160,7 +161,7 @@ else:
     low_const, high_const = 0.4, 1.0
     init_constant = 0.4177
     b_init = len(dims)*[init_constant]
-    b_init = [None, 0.4177, 3]
+    b_init = [None, 0.4177, 2.5]
     print '++> S/b_init ', b_init
     S_init = b_init
     #

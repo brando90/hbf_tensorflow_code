@@ -7,4 +7,10 @@
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=rene_sax14@yahoo.com
 
-python main_nn.py $SLURM_JOBID $SLURM_ARRAY_TASK_ID om_2x2_1_cosx1_plus_x2_depth2 task_1_August_HBF2_depth_2_1000 HBF2_24_24_multiple_1000 True 24,24 multiple_S task_f2d_2x2_1_cosx1_plus_x2_depth2 False False hbf data_xavier_kern
+#data_normalize=normalize_input
+data_normalize=dont_normalize
+
+#dont_train_S=train_S
+trainable_S=dont_train_S
+
+python main_nn.py $SLURM_JOBID $SLURM_ARRAY_TASK_ID om_2x2_1_cosx1_plus_x2_depth2 task_2_August_HBF2_depth_2_1000_dont_train_S HBF2_24_24_multiple_1000 True 24,24 multiple_S task_f2d_2x2_1_cosx1_plus_x2_depth2 False False hbf data_trunc_norm_kern $data_normalize $trainable_S
