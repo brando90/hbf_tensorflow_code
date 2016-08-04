@@ -23,4 +23,6 @@ trainable_S=dont_train_S
 #mdl=
 mdl=hbf
 
-python main_nn.py $SLURM_JOBID $SLURM_ARRAY_TASK_ID $folder task_1_August_HBF1_depth_2_1000_dont_train_S HBF1_96_multiple_1000 True 12 multiple_S $task_name False False $mdl kern_init $data_normalize $trainable_S all_same_const-0.51454545
+units=12
+
+python main_nn.py $SLURM_JOBID $SLURM_ARRAY_TASK_ID $folder task_1_August_HBF1_depth_2_1000_dont_train_S HBF1_96_multiple_1000 True $units multiple_S $task_name False False $mdl kern_init $data_normalize $trainable_S all_same_const-0.51454545
