@@ -14,6 +14,7 @@ import sys
 import datetime
 import os
 import pdb
+import ast
 
 import my_tf_pkg as mtf
 import time
@@ -30,12 +31,45 @@ def init_norm(loc,scale,upper_threshold,lower_threshold):
             init_constant[i] = lower_threshold
     return
 
+def get_init_b(argv_init_S,dims):
+    #parse argv input
+    type_S, arg_S = argv_init_S.split('-')
+    print '++> type_S ', type_S
+    print '++> arg_S ', arg_S
+    # process it and choose constant list:
+    if type_S == 'all_same_const':
+        # arg_S = init_constant
+        init_constant = float(arg_S)
+        b_init = len(dims)*[init_constant]
+    elif type_S == 'first_constant_rest_specific_consts':
+        # arg_S = init_constant,const_1,...const_l,...,const_L]
+        b_init = ast.literal_eval(arg_S)
+        b_init = [None] + b_init
+    elif type_S == 'first_constant_rest_uniform_random':
+        print 'first_constant_rest_uniform_randomfirst_constant_rest_uniform_randomfirst_constant_rest_uniform_randomfirst_constant_rest_uniform_randomfirst_constant_rest_uniform_random'
+        # arg_S = [init_constant,(low_1,high_1),...(low_l,high_l),...,(low_L,high_L)]
+        params_S = ast.literal_eval(arg_S)
+        b_init = [None, params_S[0]]
+        for l in range(1,len(params_S)):
+            #b_init.append( np.random.uniform(low=1,high=2.5) )
+            low, high = params_S[l]
+            print '###########> ', params_S[l]
+            b_init.append( np.random.uniform(low=low,high=high) )
+    else:
+        raise ValueError('Wrong type of b/S init')
+    print '++===> S/b_init ', b_init
+    return b_init
+
+
 re_train = None
 #re_train = 're_train'
-
 results = {'train_errors':[], 'cv_errors':[],'test_errors':[]}
 # slurm values and ids
-(experiment_root_dir,slurm_jobid,slurm_array_task_id,job_name,mdl_save,experiment_name,units_list,train_S_type,task_name,bn,trainable_bn,mdl_type,init_type,cluster,data_normalize,trainable_S) = mtf.process_argv(sys.argv)
+(experiment_root_dir,slurm_jobid,slurm_array_task_id,job_name,mdl_save,experiment_name,units_list,train_S_type,task_name,bn,trainable_bn,mdl_type,init_type,cluster,data_normalize,trainable_S,argv_init_S) = mtf.process_argv(sys.argv)
+results['task_name'] = task_name
+results['argv_init_S'] = argv_init_S
+results['train_S_type'] = train_S_type
+
 use_tensorboard = mtf.is_it_tensorboard_run(sys.argv)
 trainable_S = True if (trainable_S=='train_S') else False
 print 'use_tensorboard', use_tensorboard
@@ -97,22 +131,17 @@ if cluster == 'OM7':
     mu = len(dims)*[mu_init]
     std_init = 0.9
     std = len(dims)*[std_init]
-    low_const, high_const = 0.4, 1.0
-    #init_constant = np.random.uniform(low=low_const, high=high_const)
-    #b_init = list(np.random.uniform(low=low_const, high=high_const,size=len(dims)))
-    init_constant = 0.4177551
-    b_init = len(dims)*[init_constant]
-    #[0.6374998052942504, 0.6374998052942504, 0.6374998052942504, 0.6374998052942504]
-    b_init = [None, init_constant, np.random.uniform(low=1,high=2.5)]
-    print '++> S/b_init ', b_init
-    S_init = b_init
+
+    b_init = get_init_b(argv_init_S,dims)
+
     model = mdl_type
     max_to_keep = 1
 
     phase_train = tf.placeholder(tf.bool, name='phase_train') if bn else  None
 
     report_error_freq = 50
-    steps = np.random.randint(low=3000,high=6000)
+    #steps = np.random.randint(low=3000,high=6000)
+    steps = 3000
     #M = np.random.randint(low=5000, high=20000)
     M = 17000 #batch-size
     #M = 5000
@@ -149,16 +178,15 @@ if cluster == 'OM7':
     #momentum = 0.0
     #optimization_alg = 'RMSProp'
 
-    results['train_S_type'] = train_S_type
     results['range_learning_rate'] = [low_const_learning_rate, high_const_learning_rate]
-    results['range_constant'] = [low_const, high_const]
+    #results['range_constant'] = [low_const, high_const]
 else:
     dims = [D]+units_list+[D_out]
     mu_init = 0.0
     mu = len(dims)*[mu_init]
     std_init = 0.9
     std = len(dims)*[std_init]
-    #std = [None,0.75,0.1]
+    std = [None,0.75,0.1]
     low_const, high_const = 0.4, 1.0
     init_constant = 0.4177551
     b_init = len(dims)*[init_constant]
@@ -172,9 +200,9 @@ else:
 
     phase_train = tf.placeholder(tf.bool, name='phase_train') if bn else  None
 
-    report_error_freq = 50
-    steps = 3000
-    M = 17000 #batch-size
+    report_error_freq = 1
+    steps = 10
+    M = 2 #batch-size
     print '++++> M (batch size) :', M
 
     starter_learning_rate = 0.01
@@ -207,7 +235,7 @@ else:
     #momentum = 0.0
     #optimization_alg = 'RMSProp'
 
-
+S_init = b_init
 ##
 
 ## Make Model
@@ -409,3 +437,12 @@ with open(path+json_file, 'w+') as f_json:
     json.dump(results,f_json,sort_keys=True, indent=2, separators=(',', ': '))
 print '\a' #makes beep
 print '\a' #makes beep
+
+
+# low_const, high_const = 0.4, 1.0
+# #init_constant = np.random.uniform(low=low_const, high=high_const)
+# #b_init = list(np.random.uniform(low=low_const, high=high_const,size=len(dims)))
+# init_constant = 0.4177551
+# #b_init = len(dims)*[init_constant]
+# #[0.6374998052942504, 0.6374998052942504, 0.6374998052942504, 0.6374998052942504]
+# b_init = [None, init_constant, np.random.uniform(low=1,high=2.5)]

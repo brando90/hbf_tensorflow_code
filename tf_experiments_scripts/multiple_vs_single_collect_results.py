@@ -335,10 +335,16 @@ def display_results_hbf_xsinglog1_x():
     experiment_name = 'om_2x2_1_cosx1_plus_x2_depth2'
     #path_to_experiments = '../../%s/task_30_july_HBF1_depth_2_1000'%experiment_name
     path_to_experiments = '../../%s/task_1_August_HBF2_depth_2_1000'%experiment_name
+    path_to_experiments = '../../%s/task_1_August_HBF2_depth_2_1000_Xavier'%experiment_name
+    path_to_experiments = '../../%s/task_1_August_HBF2_depth_2_1000_BN_true_true'%experiment_name
+    path_to_experiments = '../../%s/task_1_August_HBF1_depth_2_1000_dont_train_S'%experiment_name
     nn1_multiple_experiment_results = get_results_for_experiments(path_to_experiments,verbose=True, split_string='_jHBF[\d]*_')
 
     #path_to_experiments = '../../%s/task_30_july_HBF2_depth_2_1000'%experiment_name
     path_to_experiments = '../../%s/task_1_August_HBF2_depth_2_1000'%experiment_name
+    path_to_experiments = '../../%s/task_1_August_HBF2_depth_2_1000_Xavier'%experiment_name
+    path_to_experiments = '../../%s/task_1_August_HBF2_depth_2_1000_BN_true_true'%experiment_name
+    path_to_experiments = '../../%s/task_2_August_HBF2_depth_2_1000_dont_train_S'%experiment_name
     nn2_multiple_experiment_results = get_results_for_experiments(path_to_experiments,verbose=True, split_string='_jHBF[\d]*_')
 
     #path_to_experiments = '../../%s/task_30_july_HBF2_depth_2_1000'%experiment_name

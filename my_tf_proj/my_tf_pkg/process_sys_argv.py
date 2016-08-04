@@ -69,10 +69,10 @@ def process_argv(argv):
             print 2
     else:
         mdl_save = True
-        if len(argv) == 16:
-            # python main_nn.py slurm_jobid slurm_array_task_id experiment_root_dir experiment_name job_name mdl_save 3,3 multiple_S/single_S task_name bn data_normalize
+        if len(argv) == 17:
+            # python main_nn.py slurm_jobid slurm_array_task_id experiment_root_dir experiment_name job_name mdl_save 3,3 multiple_S/single_S task_name bn data_normalize argv_init_S
 
-            # python main_nn.py slurm_jobid slurm_array_task_id om_xsinlog1_x_depth2_hbf experiment_name job_name True 3 multiple_S task_f_2d_task2_xsinglog1_x_depth2 False False hbf kern_init normalize_input
+            # python main_nn.py slurm_jobid slurm_array_task_id om_xsinlog1_x_depth2_hbf experiment_name job_name True 3 multiple_S task_f_2d_task2_xsinglog1_x_depth2 False False hbf kern_init normalize_input dont_train_S all_same_const-0.1
             slurm_jobid = argv[1]
             slurm_array_task_id = argv[2]
             experiment_root_dir = argv[3]
@@ -90,6 +90,7 @@ def process_argv(argv):
             data_normalize = argv[14]
             trainable_S = argv[15]
             cluster = 'OM7'
+            argv_init_S = argv[16]
             print 2.8
         # elif len(argv) == 9:
         #     # python main_nn.py      slurm_jobid     slurm_array_task_id     job_name      True            experiment_name 3,3,3  multiple_S/single_S
@@ -175,7 +176,7 @@ def process_argv(argv):
             raise ValueError('Need to specify the correct number of params')
     bn = str_to_bool(bn)
     print 'mdl_type: ', mdl_type
-    return (experiment_root_dir,slurm_jobid,slurm_array_task_id,job_name,mdl_save,experiment_name,units_list,train_S_type,task_name,bn,trainable_bn,mdl_type,init_type,cluster,data_normalize,trainable_S)
+    return (experiment_root_dir,slurm_jobid,slurm_array_task_id,job_name,mdl_save,experiment_name,units_list,train_S_type,task_name,bn,trainable_bn,mdl_type,init_type,cluster,data_normalize,trainable_S,argv_init_S)
 
 def is_it_tensorboard_run(argv):
     check_args = []
