@@ -123,6 +123,7 @@ if data_normalize == 'normalize_input':
 print '(N_train,D) = ', (N_train,D)
 print '(N_test,D_out) = ', (N_test,D_out)
 
+init_constant = -1
 ## HBF/NN params
 print 'CLUSTER: ', cluster
 if cluster == 'OM7':

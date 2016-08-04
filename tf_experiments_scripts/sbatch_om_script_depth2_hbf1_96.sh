@@ -20,4 +20,4 @@ data_normalize=dont_normalize
 #dont_train_S=train_S
 trainable_S=dont_train_S
 
-python main_nn.py $SLURM_JOBID $SLURM_ARRAY_TASK_ID $folder task_1_August_HBF1_depth_2_1000_dont_train_S HBF1_96_multiple_1000 True 96 multiple_S $task_name False False hbf kern_init $data_normalize $trainable_S
+python main_nn.py $SLURM_JOBID $SLURM_ARRAY_TASK_ID $folder task_1_August_HBF1_depth_2_1000_dont_train_S HBF1_96_multiple_1000 True 96 multiple_S $task_name False False hbf kern_init $data_normalize $trainable_S all_same_const-0.61545455
