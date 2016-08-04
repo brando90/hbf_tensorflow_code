@@ -6,7 +6,8 @@ import my_tf_pkg as mtf
 def get_pairwise_norm_squared(X,Y):
     return mtf.euclidean_distances(X=X,Y=Y,squared=True)
 
-task_name = 'hrushikesh'
+#task_name = 'hrushikesh'
+task_name = 'task_MNIST_flat_auto_encoder'
 X_train, Y_train, X_cv, Y_cv, X_test, Y_test = mtf.get_data(task_name)
 
 print 'X_train.shape', X_train.shape
