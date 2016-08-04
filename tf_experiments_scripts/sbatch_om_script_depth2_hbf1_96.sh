@@ -8,10 +8,11 @@
 #SBATCH --mail-user=rene_sax14@yahoo.com
 #SBATCH --exclude=node047
 
-task_name=task_f2d_2x2_1_cosx1_plus_x2_depth2
+#task_name=task_f2d_2x2_1_cosx1_plus_x2_depth2
 #task_name=task_f2d_2x2_1_cosx1x2_depth2
-#task_name=task_f_2d_task2_xsinglog1_x_depth2
-folder=om_2x2_1_cosx1_plus_x2_depth2
+task_name=task_f_2d_task2_xsinglog1_x_depth2
+#folder=om_2x2_1_cosx1_plus_x2_depth2
+folder=om_xsinlog1_x_depth2_hbf
 
 #data_normalize=normalize_input
 data_normalize=dont_normalize
