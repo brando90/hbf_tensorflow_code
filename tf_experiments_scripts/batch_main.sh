@@ -1,7 +1,7 @@
 #!/bin/bash
-#SBATCH --job-name=HBF2_6_6
+#SBATCH --job-name=HBF1_12
 #SBATCH --nodes=1
-#SBATCH --mem=7000
+#SBATCH --mem=14000
 #SBATCH --time=6-23
 #SBATCH --array=1-1000
 #SBATCH --mail-type=ALL
@@ -20,6 +20,7 @@ data_normalize=dont_normalize
 #dont_train_S=train_S
 trainable_S=dont_train_S
 
-init_type=data_xavier_kern
+#mdl=
+mdl=hbf
 
-python main_nn.py $SLURM_JOBID $SLURM_ARRAY_TASK_ID $folder task_1_August_HBF1_depth_2_1000_dont_train_S HBF1_96_multiple_1000 True 6,6 multiple_S $task_name False False hbf $init_type $data_normalize $trainable_S all_same_const-0.51454545
+python main_nn.py $SLURM_JOBID $SLURM_ARRAY_TASK_ID $folder task_1_August_HBF1_depth_2_1000_dont_train_S HBF1_96_multiple_1000 True 12 multiple_S $task_name False False $mdl kern_init $data_normalize $trainable_S all_same_const-0.51454545
