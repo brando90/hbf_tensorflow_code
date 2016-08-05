@@ -28,13 +28,13 @@ mdl=hbf
 #train_S_type=single_S
 #init_type=truncated_normal
 #init_type=data_init
-init_type=kern_init
+#init_type=kern_init
 #init_type=kpp_init
 #init_type=data_trunc_norm_kern
-#init_type=data_xavier_kern
+init_type=data_xavier_kern
 #init_type=xavier
 
-units=12
+units=6,6
 
 #python main_nn.py $SLURM_JOBID $SLURM_ARRAY_TASK_ID $main_folder task_August_HBF1_depth_2_1000_dont_train_S run_HBF1_96_multiple_1000 True $units multiple_S $task_name False False $mdl $init_type $data_normalize $trainable_S all_same_const-0.51454545
-python main_nn.py $SLURM_JOBID $SLURM_ARRAY_TASK_ID $main_folder task_August_HBF1_depth_2_1000_dont_train_S run_HBF1_12_multiple_1000 True $units multiple_S $task_name False False $mdl $init_type $data_normalize $trainable_S all_same_const-525.32626263
+python main_nn.py $SLURM_JOBID $SLURM_ARRAY_TASK_ID $main_folder task_August_HBF1_depth_2_1000_dont_train_S run_HBF1_12_multiple_1000 True $units multiple_S $task_name False False $mdl $init_type $data_normalize $trainable_S first_constant_rest_uniform_random-[525.32626263,[0.9,2.5]]

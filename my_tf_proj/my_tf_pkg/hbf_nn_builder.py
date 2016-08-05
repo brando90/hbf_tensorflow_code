@@ -31,6 +31,8 @@ def build_standard_NN(x, dims, inits, phase_train=None, trainable_bn=True):
 
 def build_HBF2(x, dims, inits, phase_train=None, trainable_bn=True,trainable_S=True):
     (_,inits_W,inits_S) = inits
+    print inits_S
+    print inits_W
     layer = x
     nb_hidden_layers = len(dims)-1
     for l in xrange(1,nb_hidden_layers): # from 1 to L-1

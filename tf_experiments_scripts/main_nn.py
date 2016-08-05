@@ -53,7 +53,7 @@ def get_init_b(argv_init_S,dims):
         for l in range(1,len(params_S)):
             #b_init.append( np.random.uniform(low=1,high=2.5) )
             low, high = params_S[l]
-            print '###########> ', params_S[l]
+            print '###########> params_S', params_S[l]
             b_init.append( np.random.uniform(low=low,high=high) )
     else:
         raise ValueError('Wrong type of b/S init')
@@ -148,7 +148,7 @@ if cluster == 'OM7':
     #M = 5000
     print '++++> M (batch size) :', M
 
-    low_const_learning_rate, high_const_learning_rate = -0.1, -5.0
+    low_const_learning_rate, high_const_learning_rate = -0.1, -6.0
     log_learning_rate = np.random.uniform(low=low_const_learning_rate, high=high_const_learning_rate)
     starter_learning_rate = 10**log_learning_rate
 
