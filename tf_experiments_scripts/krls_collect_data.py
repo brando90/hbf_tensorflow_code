@@ -12,7 +12,8 @@ import my_tf_pkg as mtf
 #import my_tf_pkg.plotting_1D as plt1d
 
 def main(argv):
-        (_, task_name, experiment_name, nb_inits, nb_rbf_shapes, units)  = argv
+        print  'argv: ', argv
+        (_, task_name, folder, experiment_name, nb_inits, nb_rbf_shapes, units)  = argv
         nb_inits, nb_rbf_shapes = int(nb_inits), int(nb_rbf_shapes)
         units_list =  units.split(',')
         nb_centers_list = [ int(a) for a in units_list ]
@@ -24,7 +25,7 @@ def main(argv):
         print X_train.shape
 
         replace = False # with or without replacement
-        stddevs = np.linspace(start=0.01, stop=10, num=nb_rbf_shapes)
+        stddevs = np.linspace(start=0.1, stop=1250, num=nb_rbf_shapes)
         print 'number of RBF stddev tried:', len(stddevs)
         print 'start stddevs: ', stddevs
 
