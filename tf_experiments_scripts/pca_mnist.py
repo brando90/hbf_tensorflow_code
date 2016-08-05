@@ -24,6 +24,9 @@ print np.sum(X_train)+np.sum(X_cv)
 print repr( np.sum(x_train) )
 print repr( np.sum(X_train)+np.sum(X_cv) )
 # print x_train[0][163]
+print 'about to compute SVD'
+U, s, V = np.linalg.svd(x_train)
+
 pdb.set_trance()
 
 def get_reconstruction(X_train,k):
