@@ -10,9 +10,10 @@
 
 #task_name=task_f2d_2x2_1_cosx1_plus_x2_depth2
 #task_name=task_f2d_2x2_1_cosx1x2_depth2
-task_name=task_f_2d_task2_xsinglog1_x_depth2
-#folder=om_2x2_1_cosx1_plus_x2_depth2
-main_folder=om_xsinlog1_x_depth2_hbf
+#task_name=task_f_2d_task2_xsinglog1_x_depth2
+task_name=task_MNIST_flat_auto_encoder
+#main_folder=om_2x2_1_cosx1_plus_x2_depth2
+main_folder=om_mnist
 
 #data_normalize=normalize_input
 data_normalize=dont_normalize
@@ -35,4 +36,5 @@ init_type=kern_init
 
 units=12
 
-python main_nn.py $SLURM_JOBID $SLURM_ARRAY_TASK_ID $main_folder task_August_HBF1_depth_2_1000_dont_train_S run_HBF1_96_multiple_1000 True $units multiple_S $task_name False False $mdl $init_type $data_normalize $trainable_S all_same_const-0.51454545
+#python main_nn.py $SLURM_JOBID $SLURM_ARRAY_TASK_ID $main_folder task_August_HBF1_depth_2_1000_dont_train_S run_HBF1_96_multiple_1000 True $units multiple_S $task_name False False $mdl $init_type $data_normalize $trainable_S all_same_const-0.51454545
+python main_nn.py $SLURM_JOBID $SLURM_ARRAY_TASK_ID $main_folder task_August_HBF1_depth_2_1000_dont_train_S run_HBF1_12_multiple_1000 True $units multiple_S $task_name False False $mdl $init_type $data_normalize $trainable_S all_same_const-525.32626263
