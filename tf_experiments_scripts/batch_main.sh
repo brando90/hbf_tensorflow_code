@@ -18,7 +18,7 @@ main_folder=om_mnist
 #data_normalize=normalize_input
 data_normalize=dont_normalize
 
-dont_train_S=train_S
+trainable_S=train_S
 #trainable_S=dont_train_S
 
 #mdl=standard_nn
