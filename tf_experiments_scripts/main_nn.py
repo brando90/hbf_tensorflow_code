@@ -163,7 +163,7 @@ if cluster == 'OM7':
 
     if optimization_alg == 'GD':
         pass
-    elif optimization_alg=='momentum':
+    elif optimization_alg=='Momentum':
         #momentum = 0.9
         momentum=np.random.uniform(low=0.4, high=0.99)
     elif optimization_alg == 'Adadelta':
@@ -223,7 +223,7 @@ else:
     print '++> decay_steps ', decay_steps
     print '++> staircase ', staircase
 
-    if optimization_alg=='momentum':
+    if optimization_alg=='Momentum':
         momentum = 0.9
     elif optimization_alg == 'Adadelta':
         rho = 0.95

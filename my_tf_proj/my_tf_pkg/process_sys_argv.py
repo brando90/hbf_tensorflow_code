@@ -18,7 +18,7 @@ def process_argv(argv):
     #
     experiment_name = 'tmp_experiment'
     train_S_type = 'multiple_S'
-    units_list = [6,6]
+    units_list = [48]
     #units_list = [24,24]
     # units_list = [96,96]
     # task_name = 'task_qianli_func'

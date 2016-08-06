@@ -40,7 +40,7 @@ init=all_same_const-525.32626263
 units=12
 
 optimization_alg=GD
-optimization_alg=momentum
+optimization_alg=Momentum
 optimization_alg=Adadelta
 optimization_alg=Adagrad
 optimization_alg=Adam
