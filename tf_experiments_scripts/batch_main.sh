@@ -39,7 +39,12 @@ init=all_same_const-525.32626263
 
 units=12
 
+optimization_alg=GD
+optimization_alg=momentum
+optimization_alg=Adadelta
+optimization_alg=Adagrad
 optimization_alg=Adam
+optimization_alg=RMSProp
 
 #python main_nn.py $SLURM_JOBID $SLURM_ARRAY_TASK_ID $main_folder task_August_HBF1_depth_2_1000_dont_train_S run_HBF1_96_multiple_1000 True $units multiple_S $task_name False False $mdl $init_type $data_normalize $trainable_S all_same_const-0.51454545
 python main_nn.py $SLURM_JOBID $SLURM_ARRAY_TASK_ID $main_folder task_August_HBF1_depth_2_1000_dont_train_S run_HBF1_12_multiple_1000 True $units multiple_S $task_name False False $mdl $init_type $data_normalize $trainable_S $init $optimization_alg
