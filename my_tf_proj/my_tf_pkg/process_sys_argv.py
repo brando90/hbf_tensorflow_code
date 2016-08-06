@@ -52,6 +52,13 @@ def process_argv(argv):
     cluster = 'home'
     #
     argv_init_S = 'all_same_const-0.1'
+    #
+    #optimization_alg = 'GD'
+    optimization_alg = 'Momentum'
+    #optimization_alg = 'Adadelta'
+    #optimization_alg = 'Adam' # w := w - m/(sqrt(v)+eps)
+    #optimization_alg = 'Adagrad'
+    #optimization_alg = 'RMSProp'
     print '---------> len(argv)', len(argv)
     if is_it_tensorboard_run(argv):
         if len(argv) == 7:
@@ -71,7 +78,8 @@ def process_argv(argv):
             print 2
     else:
         mdl_save = True
-        if len(argv) == 17:
+        nb_params_needed = 18
+        if len(argv) == nb_params_needed:
             # python main_nn.py slurm_jobid slurm_array_task_id experiment_root_dir experiment_name job_name mdl_save 3,3 multiple_S/single_S task_name bn data_normalize argv_init_S
 
             # python main_nn.py slurm_jobid slurm_array_task_id om_xsinlog1_x_depth2_hbf experiment_name job_name True 3 multiple_S task_f_2d_task2_xsinglog1_x_depth2 False False hbf kern_init normalize_input dont_train_S all_same_const-0.1
@@ -93,6 +101,7 @@ def process_argv(argv):
             trainable_S = argv[15]
             cluster = 'OM7'
             argv_init_S = argv[16]
+            optimization_alg = argv[17]
             print 2.8
         # elif len(argv) == 9:
         #     # python main_nn.py      slurm_jobid     slurm_array_task_id     job_name      True            experiment_name 3,3,3  multiple_S/single_S
@@ -175,10 +184,10 @@ def process_argv(argv):
         #     job_name = 'test'
         #     print 8
         else:
-            raise ValueError('Need to specify the correct number of params')
+            raise ValueError('Need to specify the correct number of params; given %s, needed %s'%(len(argv),nb_params_needed))
     bn = str_to_bool(bn)
     print 'mdl_type: ', mdl_type
-    return (experiment_root_dir,slurm_jobid,slurm_array_task_id,job_name,mdl_save,experiment_name,units_list,train_S_type,task_name,bn,trainable_bn,mdl_type,init_type,cluster,data_normalize,trainable_S,argv_init_S)
+    return (experiment_root_dir,slurm_jobid,slurm_array_task_id,job_name,mdl_save,experiment_name,units_list,train_S_type,task_name,bn,trainable_bn,mdl_type,init_type,cluster,data_normalize,trainable_S,argv_init_S,optimization_alg)
 
 def is_it_tensorboard_run(argv):
     check_args = []

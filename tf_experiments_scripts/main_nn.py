@@ -65,7 +65,7 @@ re_train = None
 #re_train = 're_train'
 results = {'train_errors':[], 'cv_errors':[],'test_errors':[]}
 # slurm values and ids
-(experiment_root_dir,slurm_jobid,slurm_array_task_id,job_name,mdl_save,experiment_name,units_list,train_S_type,task_name,bn,trainable_bn,mdl_type,init_type,cluster,data_normalize,trainable_S,argv_init_S) = mtf.process_argv(sys.argv)
+(experiment_root_dir,slurm_jobid,slurm_array_task_id,job_name,mdl_save,experiment_name,units_list,train_S_type,task_name,bn,trainable_bn,mdl_type,init_type,cluster,data_normalize,trainable_S,argv_init_S,optimization_alg) = mtf.process_argv(sys.argv)
 results['task_name'] = task_name
 results['argv_init_S'] = argv_init_S
 results['train_S_type'] = train_S_type
@@ -130,7 +130,7 @@ if cluster == 'OM7':
     dims = [D]+units_list+[D_out]
     mu_init = 0.0
     mu = len(dims)*[mu_init]
-    std_init = 0.9
+    std_init = 0.01
     std = len(dims)*[std_init]
 
     b_init = get_init_b(argv_init_S,dims)
@@ -142,13 +142,13 @@ if cluster == 'OM7':
 
     report_error_freq = 50
     #steps = np.random.randint(low=3000,high=6000)
-    steps = 3000
-    #M = np.random.randint(low=5000, high=20000)
-    M = 17000 #batch-size
+    steps = 10000
+    M = np.random.randint(low=3000, high=20000)
+    #M = 17000 #batch-size
     #M = 5000
     print '++++> M (batch size) :', M
 
-    low_const_learning_rate, high_const_learning_rate = -0.1, -6.0
+    low_const_learning_rate, high_const_learning_rate = -0.1, -2.0
     log_learning_rate = np.random.uniform(low=low_const_learning_rate, high=high_const_learning_rate)
     starter_learning_rate = 10**log_learning_rate
 
@@ -161,23 +161,27 @@ if cluster == 'OM7':
     print '++> decay_steps ', decay_steps
     print '++> staircase ', staircase
 
-    #optimization_alg = 'GD'
-
-    momentum = 0.9
-    optimization_alg = 'Momentum'
-
-    #rho = 0.95
-    #optimization_alg = 'Adadelta'
-
-    #beta1=np.random.uniform(low=0.7, high=0.99) # m = b1m + (1 - b1)m
-    #beta2=np.random.uniform(low=0.8, high=0.999) # v = b2 v + (1 - b2)v
-    #optimization_alg = 'Adam' # w := w - m/(sqrt(v)+eps)
-
-    #optimization_alg = 'Adagrad'
-
-    #decay = 0.001
-    #momentum = 0.0
-    #optimization_alg = 'RMSProp'
+    if optimization_alg == 'GD':
+        pass
+    elif optimization_alg=='momentum':
+        #momentum = 0.9
+        momentum=np.random.uniform(low=0.4, high=0.99)
+    elif optimization_alg == 'Adadelta':
+        #rho = 0.95
+        rho=np.random.uniform(low=0.4, high=0.99)
+    elif optimization_alg == 'Adagrad':
+        #only has learning rate
+        pass
+    elif optimization_alg == 'Adam':
+        #beta1==0.99 # m = b1m + (1 - b1)m
+        #beta2=nhigh=0.999 # v = b2 v + (1 - b2)v
+        beta1=np.random.uniform(low=0.7, high=0.99) # m = b1m + (1 - b1)m
+        beta2=np.random.uniform(low=0.8, high=0.999) # v = b2 v + (1 - b2)v
+    elif optimization_alg == 'RMSProp':
+        decay = 0.001
+        momentum = 0.0
+    else:
+        pass
 
     results['range_learning_rate'] = [low_const_learning_rate, high_const_learning_rate]
     #results['range_constant'] = [low_const, high_const]
@@ -203,7 +207,7 @@ else:
     phase_train = tf.placeholder(tf.bool, name='phase_train') if bn else  None
 
     report_error_freq = 50
-    steps = 6000
+    steps = 10000
     M = 3000 #batch-size
     print '++++> M (batch size) :', M
 
@@ -219,41 +223,38 @@ else:
     print '++> decay_steps ', decay_steps
     print '++> staircase ', staircase
 
-    #optimization_alg = 'GD'
-
-    #momentum = 0.9
-    #optimization_alg = 'Momentum'
-
-    #rho = 0.95
-    #optimization_alg = 'Adadelta'
-
-    #beta1=0.9 # m = b1m + (1 - b1)m
-    #beta2=0.999 # v = b2 v + (1 - b2)v
-    #optimization_alg = 'Adam' # w := w - m/(sqrt(v)+eps)
-
-    #optimization_alg = 'Adagrad'
-
-    decay = 0.001
-    momentum = 0.0
-    optimization_alg = 'RMSProp'
+    if optimization_alg=='momentum':
+        momentum = 0.9
+    elif optimization_alg == 'Adadelta':
+        rho = 0.95
+    elif optimization_alg == 'Adagrad':
+        #only has learning rate
+        pass
+    elif optimization_alg == 'Adam':
+        beta1==0.99 # m = b1m + (1 - b1)m
+        beta2=nhigh=0.999 # v = b2 v + (1 - b2)v
+        # w := w - m/(sqrt(v)+eps)
+    elif optimization_alg =='RMSProp':
+        decay = 0.001
+        momentum = 0.0
 
     ##
     #X_reconstruct_pca, _, _ = mtf. get_reconstruction(X_train,k=units_list[0])
     #print '*************> PCA error: ', mtf.report_l2_loss(Y=X_train,Y_pred=X_reconstruct_pca)
-    if task_name == 'task_MNIST_flat_auto_encoder':
-        PCA_errors = {12:24.8254684915, 48:9.60052317906, 96:4.72118325768}
-        if len(units_list) == 1:
-            k = units_list[0]
-        else:
-            k = units_list[0] * len(units_list)
-        if not k in PCA_errors.keys():
-            print 'COMPUTING PCA...'
-            X_reconstruct_pca, _, _ = mtf. get_reconstruction_pca(X_train,k=units_list[0])
-            pca_error = mtf.report_l2_loss(Y=X_train,Y_pred=X_reconstruct_pca)
-            PCA_errors[k] = pca_error
-        else:
-            pca_error = PCA_errors[k]
-        print '*************> PCA error: ', pca_error
+if task_name == 'task_MNIST_flat_auto_encoder':
+    PCA_errors = {12:24.8254684915, 48:9.60052317906, 96:4.72118325768}
+    if len(units_list) == 1:
+        k = units_list[0]
+    else:
+        k = units_list[0] * len(units_list)
+    if not k in PCA_errors.keys():
+        print 'COMPUTING PCA...'
+        X_reconstruct_pca, _, _ = mtf. get_reconstruction_pca(X_train,k=units_list[0])
+        pca_error = mtf.report_l2_loss(Y=X_train,Y_pred=X_reconstruct_pca)
+        PCA_errors[k] = pca_error
+    else:
+        pca_error = PCA_errors[k]
+    print '*************> PCA error: ', pca_error
 
 S_init = b_init
 ##
