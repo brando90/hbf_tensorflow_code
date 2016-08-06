@@ -148,7 +148,7 @@ if cluster == 'OM7':
     #M = 5000
     print '++++> M (batch size) :', M
 
-    low_const_learning_rate, high_const_learning_rate = -0.1, -2.0
+    low_const_learning_rate, high_const_learning_rate = -0.01, -6.0
     log_learning_rate = np.random.uniform(low=low_const_learning_rate, high=high_const_learning_rate)
     starter_learning_rate = 10**log_learning_rate
 
@@ -194,7 +194,7 @@ else:
     std = len(dims)*[std_init]
     std = [None,20.3010101,2.0]
     low_const, high_const = 0.4, 1.0
-    #init_constant = 20.3010101
+    init_constant = 20.3010101
     b_init = len(dims)*[init_constant]
     #b_init = [None, 0.4177, 2.5]
     print '++> S/b_init ', b_init
@@ -211,7 +211,7 @@ else:
     M = 3000 #batch-size
     print '++++> M (batch size) :', M
 
-    starter_learning_rate = 0.99
+    starter_learning_rate = 0.1
     # starter_learning_rate = 0.00001
 
     print '++> starter_learning_rate ', starter_learning_rate
