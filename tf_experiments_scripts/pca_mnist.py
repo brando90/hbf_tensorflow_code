@@ -59,7 +59,7 @@ for k in number_units_list:
     #N_train_keras = x_train.shape[0]
     #print 'keras error: ',(1.0/N_train_keras)*LA.norm(X_reconstruct_keras - x_train)**2
     print 'MSE error: ', sklearn.metrics.mean_squared_error(X_reconstruct, X_train)
-    print 'X_recon - X_train', (1.0/X_train.shape[0])*LA.norm(X_my_reconstruct - X_reconstruct)**2
+    print 'X_recon - X_my_reconstruct', (1.0/X_train.shape[0])*LA.norm(X_my_reconstruct - X_reconstruct)**2
     print 'U.T*U*X  error: ',(1.0/X_train.shape[0])*LA.norm(X_my_reconstruct - X_train)**2
     print 'RBF error: ',(1.0/X_train.shape[0])*LA.norm( Y_pred_train_best - X_train)**2
     y_ = tf.placeholder(tf.float64, shape=[None, 784])
@@ -69,5 +69,7 @@ for k in number_units_list:
         l2_loss2 = (2.0/N_train_tf)*tf.nn.l2_loss(y_-y)
         error_tf1=sess.run(fetches=l2_loss1, feed_dict={y:X_reconstruct,y_:X_train})
         error_tf2=sess.run(fetches=l2_loss2, feed_dict={y:X_reconstruct,y_:X_train})
-        print 'TensorFlow error: ', error_tf1
-        print 'TensorFlow error: ', error_tf2
+        print 'TensorFlow error1: ', error_tf1
+        print 'TensorFlow error2: ', error_tf2
+        print 'U.T*U*X  error1: ',sess.run(fetches=l2_loss1, feed_dict={y:X_my_reconstruct,y_:X_train})
+        print 'U.T*U*X  error2: ',sess.run(fetches=l2_loss2, feed_dict={y:X_my_reconstruct,y_:X_train})

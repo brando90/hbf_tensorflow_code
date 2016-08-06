@@ -1,7 +1,10 @@
 import numpy as np
+from numpy import linalg as LA
 import tensorflow as tf
 import sklearn
 from sklearn.metrics.pairwise import euclidean_distances
+from sklearn.decomposition import PCA
+
 import my_tf_pkg as mtf
 
 import sklearn.cluster.k_means_
@@ -54,6 +57,7 @@ def get_initilizations_HBF(init_type,dims,mu,std,b_init,S_init,X_train,Y_train,t
             #inits_C.append( tf.truncated_normal(shape=[dims[l],1], mean=mu[l], stddev=std[l], dtype=tf.float64) )
         l=len(dims)-1
         inits_C=[ tf.truncated_normal(shape=[dims[l-1],dims[l]], mean=mu[l], stddev=std[l], dtype=tf.float64) ]
+        rbf_error=None
     elif init_type=='data_init':
         nb_hidden_layers=len(dims)-1
         inits_W=[None]
@@ -67,6 +71,7 @@ def get_initilizations_HBF(init_type,dims,mu,std,b_init,S_init,X_train,Y_train,t
             inits_S.append( get_single_multiple_S(l,S_init,dims,train_S_type) )
         l=len(dims)-1
         inits_C=[ tf.truncated_normal(shape=[dims[l-1],dims[l]], mean=mu, stddev=std, dtype=tf.float64) ]
+        rbf_error=None
     elif init_type=='kern_init':
         inits_W=[None]
         inits_S=[None]
@@ -81,7 +86,7 @@ def get_initilizations_HBF(init_type,dims,mu,std,b_init,S_init,X_train,Y_train,t
         Kern = np.exp(-beta*euclidean_distances(X=X_train,Y=subsampled_data_points,squared=True))
         (C,_,_,_) = np.linalg.lstsq(Kern,Y_train)
         inits_C=[tf.constant(C)]
-        print report_RBF_error(Kern, C, Y_train)
+        rbf_error=report_RBF_error(Kern, C, Y_train)
     elif init_type=='kpp_init':
         inits_W=[None]
         inits_S=[None]
@@ -97,7 +102,7 @@ def get_initilizations_HBF(init_type,dims,mu,std,b_init,S_init,X_train,Y_train,t
         Kern = np.exp(-beta*euclidean_distances(X=X_train,Y=centers,squared=True))
         (C,_,_,_) = np.linalg.lstsq(Kern,Y_train)
         inits_C=[tf.constant(C)]
-        print report_RBF_error(Kern, C, Y_train)
+        rbf_error=report_RBF_error(Kern, C, Y_train)
     elif init_type=='kpp_trun_norm_lq':
         inits_W=[None]
         inits_S=[None]
@@ -113,6 +118,7 @@ def get_initilizations_HBF(init_type,dims,mu,std,b_init,S_init,X_train,Y_train,t
         Kern = np.exp(-beta*euclidean_distances(X=X_train,Y=centers,squared=True))
         (C,_,_,_) = np.linalg.lstsq(Kern,Y_train)
         inits_C=[tf.constant(C)]
+        rbf_error=report_RBF_error(Kern, C, Y_train)
     elif init_type=='data_trunc_norm_kern':
         inits_W=[None]
         inits_S=[None]
@@ -131,7 +137,7 @@ def get_initilizations_HBF(init_type,dims,mu,std,b_init,S_init,X_train,Y_train,t
         (C,_,_,_) = np.linalg.lstsq(Kern,Y_train)
         inits_C=[tf.constant(C)]
         #inits_C=[ tf.truncated_normal(shape=[dims[l-1],dims[l]], mean=mu[l], stddev=std[l], dtype=tf.float64) ]
-        print report_RBF_error(Kern, C, Y_train)
+        rbf_error=report_RBF_error(Kern, C, Y_train)
     elif init_type=='data_xavier_kern':
         inits_W=[None]
         inits_S=[None]
@@ -150,9 +156,9 @@ def get_initilizations_HBF(init_type,dims,mu,std,b_init,S_init,X_train,Y_train,t
         (C,_,_,_) = np.linalg.lstsq(Kern,Y_train)
         inits_C=[tf.constant(C)]
         #inits_C=[ tf.truncated_normal(shape=[dims[l-1],dims[l]], mean=mu[l], stddev=std[l], dtype=tf.float64)
-        print report_RBF_error(Kern, C, Y_train)
+        rbf_error=report_RBF_error(Kern, C, Y_train)
     print 'DONE INITILIZING'
-    return (inits_C,inits_W,inits_S)
+    return (inits_C,inits_W,inits_S,rbf_error)
 
 def get_single_multiple_S(l,S_init,dims,train_S_type='multiple_S'):
     if train_S_type == 'multiple_S':
@@ -163,7 +169,13 @@ def get_single_multiple_S(l,S_init,dims,train_S_type='multiple_S'):
 
 def get_centers_from_data(X_train,dims):
     N = X_train.shape[0]
-    indices=np.random.choice( N,size=dims[1] )
+    k = dims[1]
+    # nb_hidden_layers = dims[1] - 2
+    # if nb_hidden_layers == 1:
+    #     k = dims[1]
+    # else:
+    #     k = dims[1] * nb_hidden_layers
+    indices=np.random.choice( N,size=k )
     subsampled_data_points=X_train[indices,:] # D^(1) x D
     W =  np.transpose( subsampled_data_points )  # D x D^(1)
     W_tf = tf.constant(W)
@@ -180,7 +192,34 @@ def get_kpp_init(X,n_clusters,random_state=None):
 
 def report_RBF_error(Kern, C, Y):
     Y_pred = np.dot( Kern , C )
-    error = sklearn.metrics.mean_squared_error(Y, Y_pred)
+    #error = (1.0/Y.shape[0])*LA.norm( Y_pred - Y)**2
+    error = report_l2_loss(Y,Y_pred)
+    return error
+
+def report_RBF_error_from_data(X_train, Y_train, dims, stddev):
+    (subsampled_data_points,_,_)= get_centers_from_data(X_train,dims)
+    #stddev = S_init[1]
+    beta = np.power(1.0/stddev,2)
+    Kern = np.exp(-beta*euclidean_distances(X=X_train,Y=subsampled_data_points,squared=True))
+    (C,_,_,_) = np.linalg.lstsq(Kern,Y_train)
+    Y_pred = np.dot( Kern , C )
+    #error = (1.0/Y.shape[0])*LA.norm( Y_pred - Y)**2
+    error = report_l2_loss(Y_train,Y_pred)
+    return error, Y_pred, Kern, C, subsampled_data_points
+
+##
+
+def get_reconstruction_pca(X_train,k):
+    pca = PCA(n_components=k)
+    pca = pca.fit(X_train)
+    X_pca = pca.transform(X_train) # M_train x k
+    X_reconstruct = pca.inverse_transform(X_pca)
+    #
+    U = pca.components_
+    return X_reconstruct, pca, U
+
+def report_l2_loss(Y,Y_pred):
+    error = (1.0/Y.shape[0])*LA.norm( Y_pred - Y)**2
     return error
 
 # def get_initilizations_summed_NN(init_type,dims,mu,std,b_init,S_init,X_train,Y_train):

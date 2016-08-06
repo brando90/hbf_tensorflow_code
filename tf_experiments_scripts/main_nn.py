@@ -163,15 +163,15 @@ if cluster == 'OM7':
 
     #optimization_alg = 'GD'
 
-    #momentum = 0.9
-    #optimization_alg = 'Momentum'
+    momentum = 0.9
+    optimization_alg = 'Momentum'
 
     #rho = 0.95
     #optimization_alg = 'Adadelta'
 
-    beta1=np.random.uniform(low=0.7, high=0.99) # m = b1m + (1 - b1)m
-    beta2=np.random.uniform(low=0.8, high=0.999) # v = b2 v + (1 - b2)v
-    optimization_alg = 'Adam' # w := w - m/(sqrt(v)+eps)
+    #beta1=np.random.uniform(low=0.7, high=0.99) # m = b1m + (1 - b1)m
+    #beta2=np.random.uniform(low=0.8, high=0.999) # v = b2 v + (1 - b2)v
+    #optimization_alg = 'Adam' # w := w - m/(sqrt(v)+eps)
 
     #optimization_alg = 'Adagrad'
 
@@ -182,16 +182,17 @@ if cluster == 'OM7':
     results['range_learning_rate'] = [low_const_learning_rate, high_const_learning_rate]
     #results['range_constant'] = [low_const, high_const]
 else:
+    print '::::+++++====> Running MANUAL SETTING OF HYPER PARAMETERS'
     dims = [D]+units_list+[D_out]
     mu_init = 0.0
     mu = len(dims)*[mu_init]
-    std_init = 0.9
+    std_init = 0.05
     std = len(dims)*[std_init]
-    std = [None,0.75,0.1]
+    std = [None,20.3010101,2.0]
     low_const, high_const = 0.4, 1.0
-    init_constant = 0.4177551
+    #init_constant = 20.3010101
     b_init = len(dims)*[init_constant]
-    b_init = [None, 0.4177, 2.5]
+    #b_init = [None, 0.4177, 2.5]
     print '++> S/b_init ', b_init
     S_init = b_init
     #
@@ -201,12 +202,12 @@ else:
 
     phase_train = tf.placeholder(tf.bool, name='phase_train') if bn else  None
 
-    report_error_freq = 1
-    steps = 10
-    M = 2 #batch-size
+    report_error_freq = 50
+    steps = 6000
+    M = 3000 #batch-size
     print '++++> M (batch size) :', M
 
-    starter_learning_rate = 0.01
+    starter_learning_rate = 0.99
     # starter_learning_rate = 0.00001
 
     print '++> starter_learning_rate ', starter_learning_rate
@@ -220,8 +221,8 @@ else:
 
     #optimization_alg = 'GD'
 
-    momentum = 0.9
-    optimization_alg = 'Momentum'
+    #momentum = 0.9
+    #optimization_alg = 'Momentum'
 
     #rho = 0.95
     #optimization_alg = 'Adadelta'
@@ -232,9 +233,27 @@ else:
 
     #optimization_alg = 'Adagrad'
 
-    #decay = 0.001
-    #momentum = 0.0
-    #optimization_alg = 'RMSProp'
+    decay = 0.001
+    momentum = 0.0
+    optimization_alg = 'RMSProp'
+
+    ##
+    #X_reconstruct_pca, _, _ = mtf. get_reconstruction(X_train,k=units_list[0])
+    #print '*************> PCA error: ', mtf.report_l2_loss(Y=X_train,Y_pred=X_reconstruct_pca)
+    if task_name == 'task_MNIST_flat_auto_encoder':
+        PCA_errors = {12:24.8254684915, 48:9.60052317906, 96:4.72118325768}
+        if len(units_list) == 1:
+            k = units_list[0]
+        else:
+            k = units_list[0] * len(units_list)
+        if not k in PCA_errors.keys():
+            print 'COMPUTING PCA...'
+            X_reconstruct_pca, _, _ = mtf. get_reconstruction_pca(X_train,k=units_list[0])
+            pca_error = mtf.report_l2_loss(Y=X_train,Y_pred=X_reconstruct_pca)
+            PCA_errors[k] = pca_error
+        else:
+            pca_error = PCA_errors[k]
+        print '*************> PCA error: ', pca_error
 
 S_init = b_init
 ##
@@ -246,6 +265,7 @@ nb_hidden_layers = nb_layers-1
 print( '-----> Running model: %s. (nb_hidden_layers = %d, nb_layers = %d)' % (model,nb_hidden_layers,nb_layers) )
 print( '-----> Units: %s)' % (dims) )
 if model == 'standard_nn':
+    rbf_error = None
     #tensorboard_data_dump = '/tmp/standard_nn_logs'
     (inits_C,inits_W,inits_b) = mtf.get_initilizations_standard_NN(init_type=init_type,dims=dims,mu=mu,std=std,b_init=b_init,S_init=S_init, X_train=X_train, Y_train=Y_train)
     with tf.name_scope("standardNN") as scope:
@@ -254,17 +274,36 @@ if model == 'standard_nn':
     inits_S = inits_b
 elif model == 'hbf':
     #tensorboard_data_dump = '/tmp/hbf_logs'
-    (inits_C,inits_W,inits_S) = mtf.get_initilizations_HBF(init_type=init_type,dims=dims,mu=mu,std=std,b_init=b_init,S_init=S_init, X_train=X_train, Y_train=Y_train, train_S_type=train_S_type)
+    (inits_C,inits_W,inits_S,rbf_error) = mtf.get_initilizations_HBF(init_type=init_type,dims=dims,mu=mu,std=std,b_init=b_init,S_init=S_init, X_train=X_train, Y_train=Y_train, train_S_type=train_S_type)
     print inits_W
     with tf.name_scope("HBF") as scope:
         mdl = mtf.build_HBF2(x,dims,(inits_C,inits_W,inits_S),phase_train,trainable_bn,trainable_S)
         mdl = mtf.get_summation_layer(l=str(nb_layers),x=mdl,init=inits_C[0])
 
+##
+hbf1_error = None
+if rbf_error != None:
+    #error, Y_pred, Kern, C, subsampled_data_points = report_RBF_error_from_data(X_train, dims, stddev)
+    if len(units_list) > 1:
+        k = units_list[0]*len(units_list)
+        print 'k', k
+        nb_units = [None, k]
+        rbf_error, _, _, _, _ = mtf.report_RBF_error_from_data(X_train, X_train, nb_units, S_init[1])
+        print rbf_error
+        hbf1={12:26.7595}
+        hbf1_error = hbf1[k]
+    else:
+        nb_units = dims
+        rbf_error, _, _, _, _ = mtf.report_RBF_error_from_data(X_train, X_train, nb_units, S_init[1])
+
+
 ## Output and Loss
 y = mdl
 y_ = tf.placeholder(tf.float64, shape=[None, D_out]) # (M x D)
 with tf.name_scope("L2_loss") as scope:
-    l2_loss = tf.reduce_mean(tf.square(y_-y))
+    l2_loss = tf.reduce_sum( tf.reduce_mean(tf.square(y_-y), 0) )
+    #l2_loss = (2.0/N_train)*tf.nn.l2_loss(y_-y)
+    #l2_loss = tf.reduce_mean(tf.square(y_-y))
 
 with tf.name_scope("train") as scope:
     # starter_learning_rate = 0.0000001
@@ -302,7 +341,19 @@ else:
 
 ##
 with tf.name_scope("l2_loss") as scope:
-  ls_scalar_summary = tf.scalar_summary("l2_loss", l2_loss)
+    ls_scalar_summary = tf.scalar_summary("l2_loss", l2_loss)
+
+with tf.name_scope('input_reshape'):
+    x_image = tf.to_float(x, name='ToFloat')
+    image_shaped_input_x = tf.reshape(x_image, [-1, 28, 28, 1])
+    # tf.image_summary(tag, tensor, max_images=3, collections=None, name=None)
+    tf.image_summary('input', image_shaped_input_x, 10)
+
+with tf.name_scope('reconstruct'):
+    y_image = tf.to_float(y, name='ToFloat')
+    image_shaped_input_y = tf.reshape(x_image, [-1, 28, 28, 1])
+    # tf.image_summary(tag, tensor, max_images=3, collections=None, name=None)
+    tf.image_summary('reconstruct', image_shaped_input_y, 10)
 
 def register_all_variables_and_grads(y):
     all_vars = tf.all_variables()
@@ -390,7 +441,8 @@ with open(path+errors_pretty, 'w+') as f_err_msgs:
 
                 loss_msg = "Mdl*%s%s*-units%s, task: %s, step %d/%d, train err %g, cv err: %g test err %g"%(model,nb_hidden_layers,dims,task_name,i,steps,train_error,cv_error,test_error)
                 mdl_info_msg = "Opt:%s, BN %s, BN_trainable: %s After%d/%d iteration,Init: %s" % (optimization_alg,bn,trainable_bn,i,steps,init_type)
-                print_messages(loss_msg, mdl_info_msg)
+                errors_to_beat = 'BEAT: hbf1_error: %s RBF error: %s PCA error: %s '%(hbf1_error, rbf_error,pca_error)
+                print_messages(loss_msg, mdl_info_msg, errors_to_beat)
 
                 print 'S: ', inits_S
                 # store results
