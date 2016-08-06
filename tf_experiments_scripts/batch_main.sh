@@ -34,10 +34,11 @@ init_type=kern_init
 #init_type=data_xavier_kern
 #init_type=xavier
 
-init=all_same_const-525.32626263
+#init=all_same_const-525.32626263
+init=all_same_const-20.3010101
 #init=first_constant_rest_uniform_random-[525.32626263,[0.9,2.5]]
 
-units=12
+units=48
 
 optimization_alg=GD
 optimization_alg=Momentum
