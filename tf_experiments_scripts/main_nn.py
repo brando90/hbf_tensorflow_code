@@ -46,10 +46,19 @@ def get_init_b(argv_init_S,dims):
         b_init = ast.literal_eval(arg_S)
         b_init = [None] + b_init
     elif type_S == 'first_constant_rest_uniform_random':
-        print 'first_constant_rest_uniform_randomfirst_constant_rest_uniform_randomfirst_constant_rest_uniform_randomfirst_constant_rest_uniform_randomfirst_constant_rest_uniform_random'
         # arg_S = [init_constant,(low_1,high_1),...(low_l,high_l),...,(low_L,high_L)]
         params_S = ast.literal_eval(arg_S)
         b_init = [None, params_S[0]]
+        for l in range(1,len(params_S)):
+            #b_init.append( np.random.uniform(low=1,high=2.5) )
+            low, high = params_S[l]
+            print '###########> params_S', params_S[l]
+            b_init.append( np.random.uniform(low=low,high=high) )
+    elif type_S == 'first_rand_same_uniform_rest_uniform_random':
+        # arg_S = [(low_1,high_1)  ,  (low_1,high_1),...(low_l,high_l),...,(low_L,high_L)]
+        params_S = ast.literal_eval(arg_S)
+        low, high = params_S[0]
+        b_init = [None, np.random.uniform(low=low,high=high)]
         for l in range(1,len(params_S)):
             #b_init.append( np.random.uniform(low=1,high=2.5) )
             low, high = params_S[l]
@@ -131,7 +140,7 @@ if cluster == 'OM7':
     dims = [D]+units_list+[D_out]
     mu_init = 0.0
     mu = len(dims)*[mu_init]
-    std_init = 0.05
+    std_init = 0.1
     std = len(dims)*[std_init]
 
     b_init = get_init_b(argv_init_S,dims)
@@ -143,8 +152,8 @@ if cluster == 'OM7':
 
     report_error_freq = 50
     #steps = np.random.randint(low=3000,high=6000)
-    steps = 10100
-    M = np.random.randint(low=3000, high=20000)
+    steps = 9000
+    M = np.random.randint(low=3000, high=9000)
     #M = 17000 #batch-size
     #M = 5000
     print '++++> M (batch size) :', M
