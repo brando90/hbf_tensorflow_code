@@ -41,10 +41,10 @@ def main(rbf_params_filename,errors_filename,task_name):
     # plot errors
     print 'plotting errors'
     plt1d.figure(n=1)
-    plt1d.plot_errors(nb_centers_list, train_errors_bests,label='train_Errors_best', markersize=3,colour='b')
-    plt1d.plot_errors(nb_centers_list, test_errors_bests,label='test_Errors_best', markersize=3,colour='r')
-    plt1d.plot_errors_and_bars(nb_centers_list, train_errors_means, train_error_stds, label='train_Errors_average', markersize=3,colour='b')
-    plt1d.plot_errors_and_bars(nb_centers_list, test_errors_means, test_error_stds, label='test_Errors_average', markersize=3,colour='r')
+    plt1d.plot_errors(nb_centers_list, np.array(train_errors_bests) ,label='train_Errors_best', markersize=3,colour='b')
+    plt1d.plot_errors(nb_centers_list, np.array(test_errors_bests) ,label='test_Errors_best', markersize=3,colour='r')
+    #plt1d.plot_errors_and_bars(nb_centers_list, train_errors_means, train_error_stds, label='train_Errors_average', markersize=3,colour='b')
+    #plt1d.plot_errors_and_bars(nb_centers_list, test_errors_means, test_error_stds, label='test_Errors_average', markersize=3,colour='r')
 
     # get things to reconstruct
     if task_name == 'qianli_func':
@@ -75,9 +75,9 @@ if __name__ == '__main__':
     #### OM
     task_name = 'MNIST_flat'
     experiments_root = '../../om_krls'
-    experiment_dir = '/July_24_krls_MNIST_flat_100_100_units_12_48_96_std_search'
-    results_filename = '/results_json_July_24_krls_MNIST_flat_100_100_units_12_48_96_std_search'
-    rbf_params_filename = '/rbf_params_July_24_krls_MNIST_flat_100_100_units_12_48_96_std_search.npz'
+    experiment_dir = '/August_05_krls_MNIST_flat_150_150_units_6_12_24_48_96_TEST'
+    results_filename = '/results_json_August_05_krls_MNIST_flat_150_150_units_6_12_24_48_96_TEST'
+    rbf_params_filename = '/rbf_params_August_05_krls_MNIST_flat_150_150_units_6_12_24_48_96_TEST.npz'
 
     ## singlog1_x_depth_2
     # task_name = 'f_2d_task2_xsinglog1_x_depth2'

@@ -6,6 +6,7 @@
 #SBATCH --array=1-1000
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=rene_sax14@yahoo.com
+#SBATCH --gres=gpu:1
 
 #task_name=task_f2d_2x2_1_cosx1_plus_x2_depth2
 #task_name=task_f2d_2x2_1_cosx1x2_depth2

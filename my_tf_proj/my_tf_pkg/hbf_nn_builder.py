@@ -74,6 +74,44 @@ def get_HBF_layer2(l, x, dims, init, phase_train=None, layer_name='HBFLayer', tr
     put_summaries(beta,prefix_name=act_stats+'beta'+l,suffix_text='beta'+l)
     return A
 
+def get_HBF_layer3(l, x, dims, init, phase_train=None, layer_name='HBFLayer', trainable_bn=True, trainable_S=True):
+    (init_W,init_S) = init
+    with tf.name_scope(layer_name+l):
+        with tf.name_scope('templates'+l):
+            #W = tf.get_variable(name='W'+l, dtype=tf.float64, initializer=init_W, regularizer=None, trainable=True)
+            W = get_W(init_W, l, x, dims, init)
+        with tf.name_scope('rbf_stddev'+l):
+            print '--> init_S: ', init_S
+            print '--> trainable_S: ', trainable_S
+            S = tf.get_variable(name='S'+l, dtype=tf.float64, initializer=init_S, regularizer=None, trainable=trainable_S)
+            beta = tf.pow(tf.div( tf.constant(1.0,dtype=tf.float64),S), 2)
+        with tf.name_scope('Z'+l):
+            WW =  tf.reduce_sum(W*W, reduction_indices=0, keep_dims=True) # (1 x D^(l)) = sum( (D^(l-1) x D^(l)), 0 )
+            XX =  tf.reduce_sum(x*x, reduction_indices=1, keep_dims=True) # (M x 1) = sum( (M x D^(l-1)), 1 )
+            # -|| x - w ||^2 = -(-2<x,w> + ||x||^2 + ||w||^2) = 2<x,w> - (||x||^2 + ||w||^2)
+            Delta_tilde = 2.0*tf.matmul(x,W) - tf.add(WW, XX) # (M x D^(l)) - (M x D^(l)) = (M x D^(l-1)) * (D^(l-1) x D^(l)) - (M x D^(l))
+            #Z = tf.pow( tf.sqrt( beta*(Delta_tilde) ),2.0 )  # (M x D^(l))
+            #Z = tf.square( beta*(Delta_tilde) )
+            Z = beta * ( Delta_tilde ) # (M x D^(l))
+            #Z = Delta_tilde
+        if phase_train is not None:
+            Z = add_batch_norm_layer(l, Z , phase_train, trainable_bn=trainable_bn)
+        with tf.name_scope('A'+l):
+            #Z = tf.pow( tf.sqrt(Z),2.0)
+            Z = tf.square(Z)
+            #tf.Print(0, [Z])
+            #A = tf.exp(tf.pow( tf.sqrt(Z),2.0))
+            A = tf.exp(Z) # (M x D^(l))
+    var_prefix = 'vars_'+layer_name+l
+    put_summaries(var=W,prefix_name=var_prefix+W.name,suffix_text=W.name)
+    put_summaries(var=S,prefix_name=var_prefix+S.name,suffix_text=S.name)
+    act_stats = 'acts_'+layer_name+l
+    put_summaries(Z,prefix_name=act_stats+'Z'+l,suffix_text='Z'+l)
+    put_summaries(A,prefix_name=act_stats+'A'+l,suffix_text='A'+l)
+    put_summaries(Delta_tilde,prefix_name=act_stats+'Delta_tilde'+l,suffix_text='Delta_tilde'+l)
+    put_summaries(beta,prefix_name=act_stats+'beta'+l,suffix_text='beta'+l)
+    return A
+
 def put_summaries(var, prefix_name, suffix_text = ''):
     """Attach a lot of summaries to a Tensor."""
     prefix_title = prefix_name+'/'
@@ -141,6 +179,7 @@ def get_W(init_W, l, x, dims, init):
     return W
 
 def add_batch_norm_layer(l, x, phase_train, n_out=1, scope='BN', trainable_bn=True):
+    print 'add_batch_norm_layer'
     #bn_layer = standard_batch_norm(l, x, n_out, phase_train, scope='BN')
     #bn_layer = batch_norm_layer(x,phase_train,scope_bn=scope+l)
     bn_layer = batch_norm_layer(x,phase_train,scope_bn=scope+l,trainable=trainable_bn)

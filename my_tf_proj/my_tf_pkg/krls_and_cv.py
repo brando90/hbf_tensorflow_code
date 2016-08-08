@@ -1,6 +1,7 @@
 import numpy as np
 import sklearn
 from sklearn.metrics.pairwise import euclidean_distances
+from numpy import linalg as LA
 from scipy.interpolate import Rbf
 import operator
 #import time
@@ -136,17 +137,20 @@ def get_best_shape_and_mdl(K, data, stddevs, nb_inits=1):
             # evluate RBF
             Y_pred_train = np.dot(Kern_train,C_hat)
             Y_preds_trains.append(Y_pred_train)
-            train_error = sklearn.metrics.mean_squared_error(Y_train, Y_pred_train)
+            #train_error = sklearn.metrics.mean_squared_error(Y_train, Y_pred_train)
+            train_error = get_l2_loss(Y_train, Y_pred_train)
             train_errors.append(train_error)
 
             Y_pred_cv = np.dot(Kern_cv,C_hat)
             Y_preds_cvs.append(Y_pred_cv)
-            cv_error = sklearn.metrics.mean_squared_error(Y_cv, Y_pred_cv)
+            #cv_error = sklearn.metrics.mean_squared_error(Y_cv, Y_pred_cv)
+            cv_error = get_l2_loss(Y_cv, Y_pred_cv)
             cv_errors.append(cv_error)
 
             Y_pred_test = np.dot(Kern_test,C_hat)
             Y_preds_tests.append(Y_pred_test)
-            test_error = sklearn.metrics.mean_squared_error(Y_test, Y_pred_test)
+            #test_error = sklearn.metrics.mean_squared_error(Y_test, Y_pred_test)
+            test_error = get_l2_loss(Y_test, Y_pred_test)
             test_errors.append(test_error)
             #
             stddevs_list_for_runs.append(stddev)
@@ -244,6 +248,10 @@ def rbf_predict(X_data, C, centers, stddev):
     # evluate RBF
     Y_pred = np.dot(Kern,C)
     return Y_pred
+
+def get_l2_loss(X_true, X_pred):
+    error = (1.0/X_true.shape[0])*LA.norm(X_pred - X_true)**2
+    return error
 
 ##
 

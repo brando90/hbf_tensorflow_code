@@ -10,15 +10,15 @@ def process_argv(argv):
     #train_S_type='single_S'
     #init_type='truncated_normal'
     #init_type='data_init'
-    init_type='kern_init'
+    #init_type='kern_init'
     #init_type='kpp_init'
-    #init_type='data_trunc_norm_kern'
+    init_type='data_trunc_norm_kern'
     #init_type='data_xavier_kern'
     #init_type='xavier'
     #
     experiment_name = 'tmp_experiment'
     train_S_type = 'multiple_S'
-    units_list = [96]
+    units_list = [6,6]
     #units_list = [24,24]
     # units_list = [96,96]
     # task_name = 'task_qianli_func'
@@ -54,9 +54,9 @@ def process_argv(argv):
     argv_init_S = 'all_same_const-0.1'
     #
     #optimization_alg = 'GD'
-    optimization_alg = 'Momentum'
+    #optimization_alg = 'Momentum'
     #optimization_alg = 'Adadelta'
-    #optimization_alg = 'Adam' # w := w - m/(sqrt(v)+eps)
+    optimization_alg = 'Adam' # w := w - m/(sqrt(v)+eps)
     #optimization_alg = 'Adagrad'
     #optimization_alg = 'RMSProp'
     print '---------> len(argv)', len(argv)

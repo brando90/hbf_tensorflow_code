@@ -71,6 +71,7 @@ results['argv_init_S'] = argv_init_S
 results['train_S_type'] = train_S_type
 
 use_tensorboard = mtf.is_it_tensorboard_run(sys.argv)
+#use_tensorboard =  False
 trainable_S = True if (trainable_S=='train_S') else False
 print 'use_tensorboard', use_tensorboard
 date = datetime.date.today().strftime("%B %d").replace (" ", "_")
@@ -130,7 +131,7 @@ if cluster == 'OM7':
     dims = [D]+units_list+[D_out]
     mu_init = 0.0
     mu = len(dims)*[mu_init]
-    std_init = 0.01
+    std_init = 0.05
     std = len(dims)*[std_init]
 
     b_init = get_init_b(argv_init_S,dims)
@@ -148,13 +149,13 @@ if cluster == 'OM7':
     #M = 5000
     print '++++> M (batch size) :', M
 
-    low_const_learning_rate, high_const_learning_rate = -0.01, -6.0
+    low_const_learning_rate, high_const_learning_rate = -0.01, -2.5
     log_learning_rate = np.random.uniform(low=low_const_learning_rate, high=high_const_learning_rate)
     starter_learning_rate = 10**log_learning_rate
 
     print '++> starter_learning_rate ', starter_learning_rate
     ## decayed_learning_rate = learning_rate * decay_rate ^ (global_step / decay_steps)
-    decay_rate = np.random.uniform(low=0.2, high=0.99)
+    decay_rate = np.random.uniform(low=0.7, high=0.99)
     decay_steps = np.random.randint(low=report_error_freq, high=M)
     staircase = True
     print '++> decay_rate ', decay_rate
@@ -173,10 +174,10 @@ if cluster == 'OM7':
         #only has learning rate
         pass
     elif optimization_alg == 'Adam':
-        #beta1==0.99 # m = b1m + (1 - b1)m
-        #beta2=nhigh=0.999 # v = b2 v + (1 - b2)v
-        beta1=np.random.uniform(low=0.7, high=0.99) # m = b1m + (1 - b1)m
-        beta2=np.random.uniform(low=0.8, high=0.999) # v = b2 v + (1 - b2)v
+        beta1=0.99 # m = b1m + (1 - b1)m
+        beta2=nhigh=0.999 # v = b2 v + (1 - b2)v
+        #beta1=np.random.uniform(low=0.7, high=0.99) # m = b1m + (1 - b1)m
+        #beta2=np.random.uniform(low=0.8, high=0.999) # v = b2 v + (1 - b2)v
     elif optimization_alg == 'RMSProp':
         decay = 0.001
         momentum = 0.0
@@ -190,13 +191,13 @@ else:
     dims = [D]+units_list+[D_out]
     mu_init = 0.0
     mu = len(dims)*[mu_init]
-    std_init = 0.05
+    std_init = 0.1
     std = len(dims)*[std_init]
-    std = [None,20.3010101,2.0]
-    low_const, high_const = 0.4, 1.0
-    init_constant = 20.3010101
-    b_init = len(dims)*[init_constant]
-    #b_init = [None, 0.4177, 2.5]
+    #low_const, high_const = 0.4, 1.0
+    init_constant = 105.3262
+    #init_constant = 2.0
+    #b_init = len(dims)*[init_constant]
+    b_init = [None, init_constant, 3.0]
     print '++> S/b_init ', b_init
     S_init = b_init
     #
@@ -206,8 +207,8 @@ else:
 
     phase_train = tf.placeholder(tf.bool, name='phase_train') if bn else  None
 
-    report_error_freq = 50
-    steps = 10000
+    report_error_freq = 25
+    steps = 7000
     M = 3000 #batch-size
     print '++++> M (batch size) :', M
 
@@ -216,8 +217,8 @@ else:
 
     print '++> starter_learning_rate ', starter_learning_rate
     ## decayed_learning_rate = learning_rate * decay_rate ^ (global_step / decay_steps)
-    decay_rate = 1
-    decay_steps = 1000
+    decay_rate = 0.9
+    decay_steps = 2000
     staircase = True
     print '++> decay_rate ', decay_rate
     print '++> decay_steps ', decay_steps
@@ -231,16 +232,17 @@ else:
         #only has learning rate
         pass
     elif optimization_alg == 'Adam':
-        beta1==0.99 # m = b1m + (1 - b1)m
+        beta1=0.99 # m = b1m + (1 - b1)m
         beta2=nhigh=0.999 # v = b2 v + (1 - b2)v
         # w := w - m/(sqrt(v)+eps)
     elif optimization_alg =='RMSProp':
         decay = 0.001
         momentum = 0.0
 
-    ##
-    #X_reconstruct_pca, _, _ = mtf. get_reconstruction(X_train,k=units_list[0])
-    #print '*************> PCA error: ', mtf.report_l2_loss(Y=X_train,Y_pred=X_reconstruct_pca)
+##############################
+##
+#X_reconstruct_pca, _, _ = mtf. get_reconstruction(X_train,k=units_list[0])
+#print '*************> PCA error: ', mtf.report_l2_loss(Y=X_train,Y_pred=X_reconstruct_pca)
 if task_name == 'task_MNIST_flat_auto_encoder':
     PCA_errors = {12:24.8254684915, 48:9.60052317906, 96:4.72118325768}
     if len(units_list) == 1:
@@ -399,6 +401,8 @@ def print_messages(*args):
 if tf.gfile.Exists('/tmp/mdl_logs'):
   tf.gfile.DeleteRecursively('/tmp/mdl_logs')
 tf.gfile.MakeDirs('/tmp/mdl_logs')
+
+tf.add_check_numerics_ops()
 
 # Add ops to save and restore all the variables.
 if mdl_save:
