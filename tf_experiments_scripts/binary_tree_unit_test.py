@@ -11,7 +11,8 @@ import tensorflow as tf
 
 # data shape is "[batch, in_height, in_width, in_channels]",
 # X_train = N x D
-X_train_org = np.array([[1,2,3,4],[4,5,6,7],[8,9,10,11]])
+#X_train_org = np.array([[0,1,2,3],[4,5,6,7],[8,9,10,11]])
+X_train_org = np.array([[0,1,2,3]])
 N, D = X_train_org.shape
 X_train_1d = X_train_org.reshape(N,1,D,1)
 #X_train = tf.constant( X_train_org )
@@ -21,11 +22,11 @@ xx = tf.placeholder(tf.float32, shape=[None,1,D,1], name='xx-input')
 # filter shape is "[filter_height, filter_width, in_channels, out_channels]"
 filter_size, nb_filters = 2, 2 # filter_size , number of hidden units/units
 # think of it as having nb_filters number of filters, each of size filter_size
-filter_w = np.array([[1,2],[3,4]]).reshape(1,filter_size,1,nb_filters)
+filter_w = np.array([[1,3],[2,4]]).reshape(1,filter_size,1,nb_filters)
 #W = tf.Variable( tf.truncated_normal(shape=[1,filter_size,1,nb_filters], stddev=0.1) )
 W = tf.Variable( tf.constant(filter_w, dtype=tf.float32) )
 stride_convd1 = 2 # controls the stride for 1D convolution
-conv = tf.nn.conv2d(input=xx, filter=W, strides=[1, stride_convd1, 1, 1], padding="SAME", name="conv")
+conv = tf.nn.conv2d(input=xx, filter=W, strides=[1, 1, stride_convd1, 1], padding="SAME", name="conv")
 
 #C = tf.constant( (np.array([[4,3,2,1]]).T).reshape(1,1,1,4) , dtype=tf.float32 ) #
 #tf.reshape( conv , [])
@@ -40,6 +41,7 @@ W2 = tf.Variable( tf.constant( np.array([[0,0,1,2],[0,0,3,4]]).T, dtype=tf.float
 y2 = tf.matmul(x,W2) # N x 2 = N x 4 x 4 x 2
 C1 = tf.constant( np.array([[4,3]]).T, dtype=tf.float32 ) # 1 x 2
 C2 = tf.constant( np.array([[2,1]]).T, dtype=tf.float32 )
+
 p1 = tf.matmul(y1,C1)
 p2 = tf.matmul(y2,C2)
 y = p1 + p2
