@@ -4,7 +4,7 @@ def process_argv(argv):
     print 'print argv =',argv
     print 'len(argv) =',len(argv)
     #mdl_type = 'standard_nn'
-    mdl_type = 'hbf'
+    #mdl_type = 'hbf'
     mdl_type = 'binary_tree'
     # python main_nn.py --logdir=/tmp/mdl_logs
     #
@@ -15,14 +15,14 @@ def process_argv(argv):
     #init_type='kern_init'
     #init_type='kpp_init'
     #init_type='data_trunc_norm_kern'
-    init_type='kpp_trun_norm_kern'
+    #init_type='kpp_trun_norm_kern'
     #init_type='data_trunc_norm_trunc_norm'
     #init_type='data_xavier_kern'
-    #init_type='xavier'
+    init_type='xavier'
 
     experiment_name = 'tmp_experiment'
     train_S_type = 'multiple_S'
-    units_list = [4,4,4]
+    units_list = [12]
     #units_list = [24,24]
     # units_list = [96,96]
     # task_name = 'task_qianli_func'
@@ -33,10 +33,10 @@ def process_argv(argv):
     # task_name = 'task_f2d_2x2_1_cosx1x2_depth_2'
     # task_name = 'task_f2d_2x2_1_cosx1_plus_x2_depth2'
     # task_name = 'task_MNIST_flat'
-    # task_name = 'task_MNIST_flat_auto_encoder'
+    #task_name = 'task_MNIST_flat_auto_encoder'
     task_name = 'task_f_4d'
     experiment_root_dir = 'om_f4d'
-    # experiment_root_dir = 'om_mnist'
+    #experiment_root_dir = 'om_mnist'
     # experiment_root_dir = 'om_xsinlog1_x_depth2'
     # experiment_root_dir = 'om_xsinlog1_x_depth2_hbf'
     # experiment_root_dir = 'om_2x2_1_cosx1_plus_x2_depth2'
