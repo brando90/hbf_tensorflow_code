@@ -44,9 +44,9 @@ def process_argv(argv):
     # task_name = 'task_f_2d_task2_xsinglog1_x_depth3'
     # task_name = 'task_MNIST_flat'
     #
-    bn = True
-    trainable_bn=True #scale, shift BN
-    #bn = False
+    #bn = True
+    #trainable_bn=True #scale, shift BN
+    bn = False
     trainable_bn=False #scale, shift BN
     #
     mdl_save = True
@@ -62,11 +62,11 @@ def process_argv(argv):
 
     #
     #optimization_alg = 'GD'
-    optimization_alg = 'Momentum'
+    #optimization_alg = 'Momentum'
     #optimization_alg = 'Adadelta'
     #optimization_alg = 'Adam' # w := w - m/(sqrt(v)+eps)
     #optimization_alg = 'Adagrad'
-    #optimization_alg = 'RMSProp'
+    optimization_alg = 'RMSProp'
     print '---------> len(argv)', len(argv)
     if is_it_tensorboard_run(argv):
         if len(argv) == 7:
