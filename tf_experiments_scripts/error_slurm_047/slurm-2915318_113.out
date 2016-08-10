@@ -1,0 +1,391 @@
+I tensorflow/stream_executor/dso_loader.cc:108] successfully opened CUDA library libcublas.so locally
+I tensorflow/stream_executor/dso_loader.cc:102] Couldn't open CUDA library libcudnn.so. LD_LIBRARY_PATH: /cm/shared/openmind/cuda/7.5/lib64:/cm/shared/openmind/cuda/7.5/lib
+I tensorflow/stream_executor/cuda/cuda_dnn.cc:2092] Unable to load cuDNN DSO
+I tensorflow/stream_executor/dso_loader.cc:108] successfully opened CUDA library libcufft.so locally
+I tensorflow/stream_executor/dso_loader.cc:108] successfully opened CUDA library libcuda.so locally
+I tensorflow/stream_executor/dso_loader.cc:108] successfully opened CUDA library libcurand.so locally
+E tensorflow/stream_executor/cuda/cuda_driver.cc:491] failed call to cuInit: CUDA_ERROR_NO_DEVICE
+I tensorflow/stream_executor/cuda/cuda_diagnostics.cc:153] retrieving CUDA diagnostic information for host: node023.cm.cluster
+I tensorflow/stream_executor/cuda/cuda_diagnostics.cc:160] hostname: node023.cm.cluster
+I tensorflow/stream_executor/cuda/cuda_diagnostics.cc:185] libcuda reported version is: Not found: was unable to find libcuda.so DSO loaded into this program
+I tensorflow/stream_executor/cuda/cuda_diagnostics.cc:347] driver version file contents: """NVRM version: NVIDIA UNIX x86_64 Kernel Module  352.63  Sat Nov  7 21:25:42 PST 2015
+GCC version:  gcc version 4.8.5 20150623 (Red Hat 4.8.5-4) (GCC) 
+"""
+I tensorflow/stream_executor/cuda/cuda_diagnostics.cc:189] kernel reported version is: 352.63.0
+I tensorflow/core/common_runtime/gpu/gpu_init.cc:81] No GPU devices available on machine.
+print sys.argv = ['main_nn.py', '2915431', '113', 'om_2x2_1_cosx1_plus_x2_depth2', 'task_2_August_HBF2_depth_2_1000_dont_train_S', 'HBF2_6_6_multiple_1000', 'True', '6,6', 'multiple_S', 'task_f2d_2x2_1_cosx1_plus_x2_depth2', 'False', 'False', 'hbf', 'data_trunc_norm_kern', 'dont_normalize', 'dont_train_S']
+len(sys.argv) = 16
+print argv = ['main_nn.py', '2915431', '113', 'om_2x2_1_cosx1_plus_x2_depth2', 'task_2_August_HBF2_depth_2_1000_dont_train_S', 'HBF2_6_6_multiple_1000', 'True', '6,6', 'multiple_S', 'task_f2d_2x2_1_cosx1_plus_x2_depth2', 'False', 'False', 'hbf', 'data_trunc_norm_kern', 'dont_normalize', 'dont_train_S']
+len(argv) = 16
+---------> len(argv) 16
+['main_nn.py', '2915431', '113', 'om_2x2_1_cosx1_plus_x2_depth2', 'task_2_August_HBF2_depth_2_1000_dont_train_S', 'HBF2_6_6_multiple_1000', 'True', '6,6', 'multiple_S', 'task_f2d_2x2_1_cosx1_plus_x2_depth2', 'False', 'False', 'hbf', 'data_trunc_norm_kern', 'dont_normalize', 'dont_train_S']
+2.8
+mdl_type:  hbf
+['main_nn.py', '2915431', '113', 'om_2x2_1_cosx1_plus_x2_depth2', 'task_2_August_HBF2_depth_2_1000_dont_train_S', 'HBF2_6_6_multiple_1000', 'True', '6,6', 'multiple_S', 'task_f2d_2x2_1_cosx1_plus_x2_depth2', 'False', 'False', 'hbf', 'data_trunc_norm_kern', 'dont_normalize', 'dont_train_S']
+use_tensorboard False
+experiment_root_dir=om_2x2_1_cosx1_plus_x2_depth2,slurm_jobid=2915431,slurm_array_task_id=113,job_name=HBF2_6_6_multiple_1000
+----====> TASK NAME: task_f2d_2x2_1_cosx1_plus_x2_depth2
+---> task_name:  task_f2d_2x2_1_cosx1_plus_x2_depth2
+(N_train,D) =  (60025, 2)
+(N_test,D_out) =  (60025, 1)
+CLUSTER:  OM7
+++> S/b_init  [None, 0.4177551, 2.1726274339933376]
+++++> M (batch size) : 17000
+++> starter_learning_rate  0.229364312586
+++> decay_rate  0.744436687888
+++> decay_steps  15976
+++> staircase  True
+-----> Running model: hbf. (nb_hidden_layers = 2, nb_layers = 3)
+-----> Units: [2, 6, 6, 1])
+train_S_type:  multiple_S
+data_trunc_norm_kern
+6.44927518137
+DONE INITILIZING
+[None, <tf.Tensor 'Const:0' shape=(2, 6) dtype=float64>, <tf.Tensor 'truncated_normal:0' shape=(6, 6) dtype=float64>]
+isinstance
+--> init_S:  Tensor("Const_1:0", shape=(6,), dtype=float64)
+--> trainable_S:  False
+isinstance
+--> init_S:  Tensor("Const_2:0", shape=(6,), dtype=float64)
+--> trainable_S:  False
+('>', 'Mdl*hbf2*-units[2, 6, 6, 1], task: task_f2d_2x2_1_cosx1_plus_x2_depth2, step 0/5597, train err 8.84886, cv err: 8.78664 test err 8.71732')
+('>', 'Opt:Adam, BN False, BN_trainable: False After0/5597 iteration,Init: data_trunc_norm_kern')
+S:  [None, <tf.Tensor 'Const_1:0' shape=(6,) dtype=float64>, <tf.Tensor 'Const_2:0' shape=(6,) dtype=float64>]
+('>', 'Mdl*hbf2*-units[2, 6, 6, 1], task: task_f2d_2x2_1_cosx1_plus_x2_depth2, step 50/5597, train err 5.64125, cv err: 5.49618 test err 5.56372')
+('>', 'Opt:Adam, BN False, BN_trainable: False After50/5597 iteration,Init: data_trunc_norm_kern')
+S:  [None, <tf.Tensor 'Const_1:0' shape=(6,) dtype=float64>, <tf.Tensor 'Const_2:0' shape=(6,) dtype=float64>]
+('>', 'Mdl*hbf2*-units[2, 6, 6, 1], task: task_f2d_2x2_1_cosx1_plus_x2_depth2, step 100/5597, train err 5.66911, cv err: 5.55454 test err 5.56383')
+('>', 'Opt:Adam, BN False, BN_trainable: False After100/5597 iteration,Init: data_trunc_norm_kern')
+S:  [None, <tf.Tensor 'Const_1:0' shape=(6,) dtype=float64>, <tf.Tensor 'Const_2:0' shape=(6,) dtype=float64>]
+('>', 'Mdl*hbf2*-units[2, 6, 6, 1], task: task_f2d_2x2_1_cosx1_plus_x2_depth2, step 150/5597, train err 5.59429, cv err: 5.46237 test err 5.4991')
+('>', 'Opt:Adam, BN False, BN_trainable: False After150/5597 iteration,Init: data_trunc_norm_kern')
+S:  [None, <tf.Tensor 'Const_1:0' shape=(6,) dtype=float64>, <tf.Tensor 'Const_2:0' shape=(6,) dtype=float64>]
+('>', 'Mdl*hbf2*-units[2, 6, 6, 1], task: task_f2d_2x2_1_cosx1_plus_x2_depth2, step 200/5597, train err 5.64209, cv err: 5.52089 test err 5.54035')
+('>', 'Opt:Adam, BN False, BN_trainable: False After200/5597 iteration,Init: data_trunc_norm_kern')
+S:  [None, <tf.Tensor 'Const_1:0' shape=(6,) dtype=float64>, <tf.Tensor 'Const_2:0' shape=(6,) dtype=float64>]
+('>', 'Mdl*hbf2*-units[2, 6, 6, 1], task: task_f2d_2x2_1_cosx1_plus_x2_depth2, step 250/5597, train err 5.49301, cv err: 5.36587 test err 5.42599')
+('>', 'Opt:Adam, BN False, BN_trainable: False After250/5597 iteration,Init: data_trunc_norm_kern')
+S:  [None, <tf.Tensor 'Const_1:0' shape=(6,) dtype=float64>, <tf.Tensor 'Const_2:0' shape=(6,) dtype=float64>]
+('>', 'Mdl*hbf2*-units[2, 6, 6, 1], task: task_f2d_2x2_1_cosx1_plus_x2_depth2, step 300/5597, train err 5.48377, cv err: 5.36246 test err 5.44456')
+('>', 'Opt:Adam, BN False, BN_trainable: False After300/5597 iteration,Init: data_trunc_norm_kern')
+S:  [None, <tf.Tensor 'Const_1:0' shape=(6,) dtype=float64>, <tf.Tensor 'Const_2:0' shape=(6,) dtype=float64>]
+('>', 'Mdl*hbf2*-units[2, 6, 6, 1], task: task_f2d_2x2_1_cosx1_plus_x2_depth2, step 350/5597, train err 5.43193, cv err: 5.29437 test err 5.39138')
+('>', 'Opt:Adam, BN False, BN_trainable: False After350/5597 iteration,Init: data_trunc_norm_kern')
+S:  [None, <tf.Tensor 'Const_1:0' shape=(6,) dtype=float64>, <tf.Tensor 'Const_2:0' shape=(6,) dtype=float64>]
+('>', 'Mdl*hbf2*-units[2, 6, 6, 1], task: task_f2d_2x2_1_cosx1_plus_x2_depth2, step 400/5597, train err 5.39894, cv err: 5.26435 test err 5.35091')
+('>', 'Opt:Adam, BN False, BN_trainable: False After400/5597 iteration,Init: data_trunc_norm_kern')
+S:  [None, <tf.Tensor 'Const_1:0' shape=(6,) dtype=float64>, <tf.Tensor 'Const_2:0' shape=(6,) dtype=float64>]
+('>', 'Mdl*hbf2*-units[2, 6, 6, 1], task: task_f2d_2x2_1_cosx1_plus_x2_depth2, step 450/5597, train err 5.60303, cv err: 5.50114 test err 5.6356')
+('>', 'Opt:Adam, BN False, BN_trainable: False After450/5597 iteration,Init: data_trunc_norm_kern')
+S:  [None, <tf.Tensor 'Const_1:0' shape=(6,) dtype=float64>, <tf.Tensor 'Const_2:0' shape=(6,) dtype=float64>]
+('>', 'Mdl*hbf2*-units[2, 6, 6, 1], task: task_f2d_2x2_1_cosx1_plus_x2_depth2, step 500/5597, train err 5.96886, cv err: 5.87961 test err 5.97793')
+('>', 'Opt:Adam, BN False, BN_trainable: False After500/5597 iteration,Init: data_trunc_norm_kern')
+S:  [None, <tf.Tensor 'Const_1:0' shape=(6,) dtype=float64>, <tf.Tensor 'Const_2:0' shape=(6,) dtype=float64>]
+('>', 'Mdl*hbf2*-units[2, 6, 6, 1], task: task_f2d_2x2_1_cosx1_plus_x2_depth2, step 550/5597, train err 6.0229, cv err: 5.94197 test err 6.05407')
+('>', 'Opt:Adam, BN False, BN_trainable: False After550/5597 iteration,Init: data_trunc_norm_kern')
+S:  [None, <tf.Tensor 'Const_1:0' shape=(6,) dtype=float64>, <tf.Tensor 'Const_2:0' shape=(6,) dtype=float64>]
+('>', 'Mdl*hbf2*-units[2, 6, 6, 1], task: task_f2d_2x2_1_cosx1_plus_x2_depth2, step 600/5597, train err 5.68037, cv err: 5.60021 test err 5.74582')
+('>', 'Opt:Adam, BN False, BN_trainable: False After600/5597 iteration,Init: data_trunc_norm_kern')
+S:  [None, <tf.Tensor 'Const_1:0' shape=(6,) dtype=float64>, <tf.Tensor 'Const_2:0' shape=(6,) dtype=float64>]
+('>', 'Mdl*hbf2*-units[2, 6, 6, 1], task: task_f2d_2x2_1_cosx1_plus_x2_depth2, step 650/5597, train err 5.62163, cv err: 5.52902 test err 5.6843')
+('>', 'Opt:Adam, BN False, BN_trainable: False After650/5597 iteration,Init: data_trunc_norm_kern')
+S:  [None, <tf.Tensor 'Const_1:0' shape=(6,) dtype=float64>, <tf.Tensor 'Const_2:0' shape=(6,) dtype=float64>]
+('>', 'Mdl*hbf2*-units[2, 6, 6, 1], task: task_f2d_2x2_1_cosx1_plus_x2_depth2, step 700/5597, train err 5.84034, cv err: 5.76077 test err 5.90036')
+('>', 'Opt:Adam, BN False, BN_trainable: False After700/5597 iteration,Init: data_trunc_norm_kern')
+S:  [None, <tf.Tensor 'Const_1:0' shape=(6,) dtype=float64>, <tf.Tensor 'Const_2:0' shape=(6,) dtype=float64>]
+('>', 'Mdl*hbf2*-units[2, 6, 6, 1], task: task_f2d_2x2_1_cosx1_plus_x2_depth2, step 750/5597, train err 6.26002, cv err: 6.20477 test err 6.30458')
+('>', 'Opt:Adam, BN False, BN_trainable: False After750/5597 iteration,Init: data_trunc_norm_kern')
+S:  [None, <tf.Tensor 'Const_1:0' shape=(6,) dtype=float64>, <tf.Tensor 'Const_2:0' shape=(6,) dtype=float64>]
+('>', 'Mdl*hbf2*-units[2, 6, 6, 1], task: task_f2d_2x2_1_cosx1_plus_x2_depth2, step 800/5597, train err 6.73658, cv err: 6.6889 test err 6.77825')
+('>', 'Opt:Adam, BN False, BN_trainable: False After800/5597 iteration,Init: data_trunc_norm_kern')
+S:  [None, <tf.Tensor 'Const_1:0' shape=(6,) dtype=float64>, <tf.Tensor 'Const_2:0' shape=(6,) dtype=float64>]
+('>', 'Mdl*hbf2*-units[2, 6, 6, 1], task: task_f2d_2x2_1_cosx1_plus_x2_depth2, step 850/5597, train err 6.29363, cv err: 6.23959 test err 6.3332')
+('>', 'Opt:Adam, BN False, BN_trainable: False After850/5597 iteration,Init: data_trunc_norm_kern')
+S:  [None, <tf.Tensor 'Const_1:0' shape=(6,) dtype=float64>, <tf.Tensor 'Const_2:0' shape=(6,) dtype=float64>]
+('>', 'Mdl*hbf2*-units[2, 6, 6, 1], task: task_f2d_2x2_1_cosx1_plus_x2_depth2, step 900/5597, train err 7.56976, cv err: 7.53282 test err 7.58684')
+('>', 'Opt:Adam, BN False, BN_trainable: False After900/5597 iteration,Init: data_trunc_norm_kern')
+S:  [None, <tf.Tensor 'Const_1:0' shape=(6,) dtype=float64>, <tf.Tensor 'Const_2:0' shape=(6,) dtype=float64>]
+('>', 'Mdl*hbf2*-units[2, 6, 6, 1], task: task_f2d_2x2_1_cosx1_plus_x2_depth2, step 950/5597, train err 5.93082, cv err: 5.86439 test err 5.98602')
+('>', 'Opt:Adam, BN False, BN_trainable: False After950/5597 iteration,Init: data_trunc_norm_kern')
+S:  [None, <tf.Tensor 'Const_1:0' shape=(6,) dtype=float64>, <tf.Tensor 'Const_2:0' shape=(6,) dtype=float64>]
+('>', 'Mdl*hbf2*-units[2, 6, 6, 1], task: task_f2d_2x2_1_cosx1_plus_x2_depth2, step 1000/5597, train err 6.38244, cv err: 6.33958 test err 6.42246')
+('>', 'Opt:Adam, BN False, BN_trainable: False After1000/5597 iteration,Init: data_trunc_norm_kern')
+S:  [None, <tf.Tensor 'Const_1:0' shape=(6,) dtype=float64>, <tf.Tensor 'Const_2:0' shape=(6,) dtype=float64>]
+('>', 'Mdl*hbf2*-units[2, 6, 6, 1], task: task_f2d_2x2_1_cosx1_plus_x2_depth2, step 1050/5597, train err 7.44533, cv err: 7.43028 test err 7.46502')
+('>', 'Opt:Adam, BN False, BN_trainable: False After1050/5597 iteration,Init: data_trunc_norm_kern')
+S:  [None, <tf.Tensor 'Const_1:0' shape=(6,) dtype=float64>, <tf.Tensor 'Const_2:0' shape=(6,) dtype=float64>]
+('>', 'Mdl*hbf2*-units[2, 6, 6, 1], task: task_f2d_2x2_1_cosx1_plus_x2_depth2, step 1100/5597, train err 6.49631, cv err: 6.46459 test err 6.54808')
+('>', 'Opt:Adam, BN False, BN_trainable: False After1100/5597 iteration,Init: data_trunc_norm_kern')
+S:  [None, <tf.Tensor 'Const_1:0' shape=(6,) dtype=float64>, <tf.Tensor 'Const_2:0' shape=(6,) dtype=float64>]
+('>', 'Mdl*hbf2*-units[2, 6, 6, 1], task: task_f2d_2x2_1_cosx1_plus_x2_depth2, step 1150/5597, train err 6.51779, cv err: 6.48708 test err 6.5765')
+('>', 'Opt:Adam, BN False, BN_trainable: False After1150/5597 iteration,Init: data_trunc_norm_kern')
+S:  [None, <tf.Tensor 'Const_1:0' shape=(6,) dtype=float64>, <tf.Tensor 'Const_2:0' shape=(6,) dtype=float64>]
+('>', 'Mdl*hbf2*-units[2, 6, 6, 1], task: task_f2d_2x2_1_cosx1_plus_x2_depth2, step 1200/5597, train err 6.62206, cv err: 6.6034 test err 6.67559')
+('>', 'Opt:Adam, BN False, BN_trainable: False After1200/5597 iteration,Init: data_trunc_norm_kern')
+S:  [None, <tf.Tensor 'Const_1:0' shape=(6,) dtype=float64>, <tf.Tensor 'Const_2:0' shape=(6,) dtype=float64>]
+('>', 'Mdl*hbf2*-units[2, 6, 6, 1], task: task_f2d_2x2_1_cosx1_plus_x2_depth2, step 1250/5597, train err 6.5934, cv err: 6.56497 test err 6.64377')
+('>', 'Opt:Adam, BN False, BN_trainable: False After1250/5597 iteration,Init: data_trunc_norm_kern')
+S:  [None, <tf.Tensor 'Const_1:0' shape=(6,) dtype=float64>, <tf.Tensor 'Const_2:0' shape=(6,) dtype=float64>]
+('>', 'Mdl*hbf2*-units[2, 6, 6, 1], task: task_f2d_2x2_1_cosx1_plus_x2_depth2, step 1300/5597, train err 6.64509, cv err: 6.62221 test err 6.69477')
+('>', 'Opt:Adam, BN False, BN_trainable: False After1300/5597 iteration,Init: data_trunc_norm_kern')
+S:  [None, <tf.Tensor 'Const_1:0' shape=(6,) dtype=float64>, <tf.Tensor 'Const_2:0' shape=(6,) dtype=float64>]
+('>', 'Mdl*hbf2*-units[2, 6, 6, 1], task: task_f2d_2x2_1_cosx1_plus_x2_depth2, step 1350/5597, train err 7.33709, cv err: 7.34908 test err 7.38118')
+('>', 'Opt:Adam, BN False, BN_trainable: False After1350/5597 iteration,Init: data_trunc_norm_kern')
+S:  [None, <tf.Tensor 'Const_1:0' shape=(6,) dtype=float64>, <tf.Tensor 'Const_2:0' shape=(6,) dtype=float64>]
+('>', 'Mdl*hbf2*-units[2, 6, 6, 1], task: task_f2d_2x2_1_cosx1_plus_x2_depth2, step 1400/5597, train err 6.82878, cv err: 6.81817 test err 6.87978')
+('>', 'Opt:Adam, BN False, BN_trainable: False After1400/5597 iteration,Init: data_trunc_norm_kern')
+S:  [None, <tf.Tensor 'Const_1:0' shape=(6,) dtype=float64>, <tf.Tensor 'Const_2:0' shape=(6,) dtype=float64>]
+('>', 'Mdl*hbf2*-units[2, 6, 6, 1], task: task_f2d_2x2_1_cosx1_plus_x2_depth2, step 1450/5597, train err 7.78735, cv err: 7.81406 test err 7.82262')
+('>', 'Opt:Adam, BN False, BN_trainable: False After1450/5597 iteration,Init: data_trunc_norm_kern')
+S:  [None, <tf.Tensor 'Const_1:0' shape=(6,) dtype=float64>, <tf.Tensor 'Const_2:0' shape=(6,) dtype=float64>]
+('>', 'Mdl*hbf2*-units[2, 6, 6, 1], task: task_f2d_2x2_1_cosx1_plus_x2_depth2, step 1500/5597, train err 5.95735, cv err: 5.87166 test err 6.03338')
+('>', 'Opt:Adam, BN False, BN_trainable: False After1500/5597 iteration,Init: data_trunc_norm_kern')
+S:  [None, <tf.Tensor 'Const_1:0' shape=(6,) dtype=float64>, <tf.Tensor 'Const_2:0' shape=(6,) dtype=float64>]
+('>', 'Mdl*hbf2*-units[2, 6, 6, 1], task: task_f2d_2x2_1_cosx1_plus_x2_depth2, step 1550/5597, train err 6.51216, cv err: 6.48682 test err 6.56838')
+('>', 'Opt:Adam, BN False, BN_trainable: False After1550/5597 iteration,Init: data_trunc_norm_kern')
+S:  [None, <tf.Tensor 'Const_1:0' shape=(6,) dtype=float64>, <tf.Tensor 'Const_2:0' shape=(6,) dtype=float64>]
+('>', 'Mdl*hbf2*-units[2, 6, 6, 1], task: task_f2d_2x2_1_cosx1_plus_x2_depth2, step 1600/5597, train err 7.1355, cv err: 7.14092 test err 7.16487')
+('>', 'Opt:Adam, BN False, BN_trainable: False After1600/5597 iteration,Init: data_trunc_norm_kern')
+S:  [None, <tf.Tensor 'Const_1:0' shape=(6,) dtype=float64>, <tf.Tensor 'Const_2:0' shape=(6,) dtype=float64>]
+('>', 'Mdl*hbf2*-units[2, 6, 6, 1], task: task_f2d_2x2_1_cosx1_plus_x2_depth2, step 1650/5597, train err 6.2006, cv err: 6.15918 test err 6.27015')
+('>', 'Opt:Adam, BN False, BN_trainable: False After1650/5597 iteration,Init: data_trunc_norm_kern')
+S:  [None, <tf.Tensor 'Const_1:0' shape=(6,) dtype=float64>, <tf.Tensor 'Const_2:0' shape=(6,) dtype=float64>]
+('>', 'Mdl*hbf2*-units[2, 6, 6, 1], task: task_f2d_2x2_1_cosx1_plus_x2_depth2, step 1700/5597, train err 7.50772, cv err: 7.51836 test err 7.55782')
+('>', 'Opt:Adam, BN False, BN_trainable: False After1700/5597 iteration,Init: data_trunc_norm_kern')
+S:  [None, <tf.Tensor 'Const_1:0' shape=(6,) dtype=float64>, <tf.Tensor 'Const_2:0' shape=(6,) dtype=float64>]
+('>', 'Mdl*hbf2*-units[2, 6, 6, 1], task: task_f2d_2x2_1_cosx1_plus_x2_depth2, step 1750/5597, train err 6.3646, cv err: 6.19336 test err 6.42532')
+('>', 'Opt:Adam, BN False, BN_trainable: False After1750/5597 iteration,Init: data_trunc_norm_kern')
+S:  [None, <tf.Tensor 'Const_1:0' shape=(6,) dtype=float64>, <tf.Tensor 'Const_2:0' shape=(6,) dtype=float64>]
+('>', 'Mdl*hbf2*-units[2, 6, 6, 1], task: task_f2d_2x2_1_cosx1_plus_x2_depth2, step 1800/5597, train err 6.34644, cv err: 6.31158 test err 6.40965')
+('>', 'Opt:Adam, BN False, BN_trainable: False After1800/5597 iteration,Init: data_trunc_norm_kern')
+S:  [None, <tf.Tensor 'Const_1:0' shape=(6,) dtype=float64>, <tf.Tensor 'Const_2:0' shape=(6,) dtype=float64>]
+('>', 'Mdl*hbf2*-units[2, 6, 6, 1], task: task_f2d_2x2_1_cosx1_plus_x2_depth2, step 1850/5597, train err 6.9493, cv err: 6.95281 test err 6.99498')
+('>', 'Opt:Adam, BN False, BN_trainable: False After1850/5597 iteration,Init: data_trunc_norm_kern')
+S:  [None, <tf.Tensor 'Const_1:0' shape=(6,) dtype=float64>, <tf.Tensor 'Const_2:0' shape=(6,) dtype=float64>]
+('>', 'Mdl*hbf2*-units[2, 6, 6, 1], task: task_f2d_2x2_1_cosx1_plus_x2_depth2, step 1900/5597, train err 6.0891, cv err: 5.96069 test err 6.15973')
+('>', 'Opt:Adam, BN False, BN_trainable: False After1900/5597 iteration,Init: data_trunc_norm_kern')
+S:  [None, <tf.Tensor 'Const_1:0' shape=(6,) dtype=float64>, <tf.Tensor 'Const_2:0' shape=(6,) dtype=float64>]
+('>', 'Mdl*hbf2*-units[2, 6, 6, 1], task: task_f2d_2x2_1_cosx1_plus_x2_depth2, step 1950/5597, train err 5.95116, cv err: 5.85386 test err 5.98481')
+('>', 'Opt:Adam, BN False, BN_trainable: False After1950/5597 iteration,Init: data_trunc_norm_kern')
+S:  [None, <tf.Tensor 'Const_1:0' shape=(6,) dtype=float64>, <tf.Tensor 'Const_2:0' shape=(6,) dtype=float64>]
+('>', 'Mdl*hbf2*-units[2, 6, 6, 1], task: task_f2d_2x2_1_cosx1_plus_x2_depth2, step 2000/5597, train err 5.95509, cv err: 5.88886 test err 6.03795')
+('>', 'Opt:Adam, BN False, BN_trainable: False After2000/5597 iteration,Init: data_trunc_norm_kern')
+S:  [None, <tf.Tensor 'Const_1:0' shape=(6,) dtype=float64>, <tf.Tensor 'Const_2:0' shape=(6,) dtype=float64>]
+('>', 'Mdl*hbf2*-units[2, 6, 6, 1], task: task_f2d_2x2_1_cosx1_plus_x2_depth2, step 2050/5597, train err 6.09158, cv err: 6.02729 test err 6.12496')
+('>', 'Opt:Adam, BN False, BN_trainable: False After2050/5597 iteration,Init: data_trunc_norm_kern')
+S:  [None, <tf.Tensor 'Const_1:0' shape=(6,) dtype=float64>, <tf.Tensor 'Const_2:0' shape=(6,) dtype=float64>]
+('>', 'Mdl*hbf2*-units[2, 6, 6, 1], task: task_f2d_2x2_1_cosx1_plus_x2_depth2, step 2100/5597, train err 6.97493, cv err: 6.96921 test err 7.03286')
+('>', 'Opt:Adam, BN False, BN_trainable: False After2100/5597 iteration,Init: data_trunc_norm_kern')
+S:  [None, <tf.Tensor 'Const_1:0' shape=(6,) dtype=float64>, <tf.Tensor 'Const_2:0' shape=(6,) dtype=float64>]
+('>', 'Mdl*hbf2*-units[2, 6, 6, 1], task: task_f2d_2x2_1_cosx1_plus_x2_depth2, step 2150/5597, train err 6.45023, cv err: 6.41645 test err 6.48981')
+('>', 'Opt:Adam, BN False, BN_trainable: False After2150/5597 iteration,Init: data_trunc_norm_kern')
+S:  [None, <tf.Tensor 'Const_1:0' shape=(6,) dtype=float64>, <tf.Tensor 'Const_2:0' shape=(6,) dtype=float64>]
+('>', 'Mdl*hbf2*-units[2, 6, 6, 1], task: task_f2d_2x2_1_cosx1_plus_x2_depth2, step 2200/5597, train err 7.47378, cv err: 7.50184 test err 7.51687')
+('>', 'Opt:Adam, BN False, BN_trainable: False After2200/5597 iteration,Init: data_trunc_norm_kern')
+S:  [None, <tf.Tensor 'Const_1:0' shape=(6,) dtype=float64>, <tf.Tensor 'Const_2:0' shape=(6,) dtype=float64>]
+('>', 'Mdl*hbf2*-units[2, 6, 6, 1], task: task_f2d_2x2_1_cosx1_plus_x2_depth2, step 2250/5597, train err 7.34006, cv err: 7.35416 test err 7.38541')
+('>', 'Opt:Adam, BN False, BN_trainable: False After2250/5597 iteration,Init: data_trunc_norm_kern')
+S:  [None, <tf.Tensor 'Const_1:0' shape=(6,) dtype=float64>, <tf.Tensor 'Const_2:0' shape=(6,) dtype=float64>]
+('>', 'Mdl*hbf2*-units[2, 6, 6, 1], task: task_f2d_2x2_1_cosx1_plus_x2_depth2, step 2300/5597, train err 8.01032, cv err: 8.06923 test err 8.05765')
+('>', 'Opt:Adam, BN False, BN_trainable: False After2300/5597 iteration,Init: data_trunc_norm_kern')
+S:  [None, <tf.Tensor 'Const_1:0' shape=(6,) dtype=float64>, <tf.Tensor 'Const_2:0' shape=(6,) dtype=float64>]
+('>', 'Mdl*hbf2*-units[2, 6, 6, 1], task: task_f2d_2x2_1_cosx1_plus_x2_depth2, step 2350/5597, train err 8.90515, cv err: 8.98903 test err 8.93931')
+('>', 'Opt:Adam, BN False, BN_trainable: False After2350/5597 iteration,Init: data_trunc_norm_kern')
+S:  [None, <tf.Tensor 'Const_1:0' shape=(6,) dtype=float64>, <tf.Tensor 'Const_2:0' shape=(6,) dtype=float64>]
+('>', 'Mdl*hbf2*-units[2, 6, 6, 1], task: task_f2d_2x2_1_cosx1_plus_x2_depth2, step 2400/5597, train err 7.48796, cv err: 7.51966 test err 7.52532')
+('>', 'Opt:Adam, BN False, BN_trainable: False After2400/5597 iteration,Init: data_trunc_norm_kern')
+S:  [None, <tf.Tensor 'Const_1:0' shape=(6,) dtype=float64>, <tf.Tensor 'Const_2:0' shape=(6,) dtype=float64>]
+('>', 'Mdl*hbf2*-units[2, 6, 6, 1], task: task_f2d_2x2_1_cosx1_plus_x2_depth2, step 2450/5597, train err 6.77529, cv err: 6.77103 test err 6.83536')
+('>', 'Opt:Adam, BN False, BN_trainable: False After2450/5597 iteration,Init: data_trunc_norm_kern')
+S:  [None, <tf.Tensor 'Const_1:0' shape=(6,) dtype=float64>, <tf.Tensor 'Const_2:0' shape=(6,) dtype=float64>]
+('>', 'Mdl*hbf2*-units[2, 6, 6, 1], task: task_f2d_2x2_1_cosx1_plus_x2_depth2, step 2500/5597, train err 6.78225, cv err: 6.76868 test err 6.8142')
+('>', 'Opt:Adam, BN False, BN_trainable: False After2500/5597 iteration,Init: data_trunc_norm_kern')
+S:  [None, <tf.Tensor 'Const_1:0' shape=(6,) dtype=float64>, <tf.Tensor 'Const_2:0' shape=(6,) dtype=float64>]
+('>', 'Mdl*hbf2*-units[2, 6, 6, 1], task: task_f2d_2x2_1_cosx1_plus_x2_depth2, step 2550/5597, train err 8.99965, cv err: 9.06524 test err 9.02662')
+('>', 'Opt:Adam, BN False, BN_trainable: False After2550/5597 iteration,Init: data_trunc_norm_kern')
+S:  [None, <tf.Tensor 'Const_1:0' shape=(6,) dtype=float64>, <tf.Tensor 'Const_2:0' shape=(6,) dtype=float64>]
+('>', 'Mdl*hbf2*-units[2, 6, 6, 1], task: task_f2d_2x2_1_cosx1_plus_x2_depth2, step 2600/5597, train err 6.67424, cv err: 6.66524 test err 6.7315')
+('>', 'Opt:Adam, BN False, BN_trainable: False After2600/5597 iteration,Init: data_trunc_norm_kern')
+S:  [None, <tf.Tensor 'Const_1:0' shape=(6,) dtype=float64>, <tf.Tensor 'Const_2:0' shape=(6,) dtype=float64>]
+('>', 'Mdl*hbf2*-units[2, 6, 6, 1], task: task_f2d_2x2_1_cosx1_plus_x2_depth2, step 2650/5597, train err 7.51708, cv err: 7.55402 test err 7.55937')
+('>', 'Opt:Adam, BN False, BN_trainable: False After2650/5597 iteration,Init: data_trunc_norm_kern')
+S:  [None, <tf.Tensor 'Const_1:0' shape=(6,) dtype=float64>, <tf.Tensor 'Const_2:0' shape=(6,) dtype=float64>]
+('>', 'Mdl*hbf2*-units[2, 6, 6, 1], task: task_f2d_2x2_1_cosx1_plus_x2_depth2, step 2700/5597, train err 6.3251, cv err: 6.28222 test err 6.41233')
+('>', 'Opt:Adam, BN False, BN_trainable: False After2700/5597 iteration,Init: data_trunc_norm_kern')
+S:  [None, <tf.Tensor 'Const_1:0' shape=(6,) dtype=float64>, <tf.Tensor 'Const_2:0' shape=(6,) dtype=float64>]
+('>', 'Mdl*hbf2*-units[2, 6, 6, 1], task: task_f2d_2x2_1_cosx1_plus_x2_depth2, step 2750/5597, train err 7.45385, cv err: 7.48964 test err 7.50287')
+('>', 'Opt:Adam, BN False, BN_trainable: False After2750/5597 iteration,Init: data_trunc_norm_kern')
+S:  [None, <tf.Tensor 'Const_1:0' shape=(6,) dtype=float64>, <tf.Tensor 'Const_2:0' shape=(6,) dtype=float64>]
+('>', 'Mdl*hbf2*-units[2, 6, 6, 1], task: task_f2d_2x2_1_cosx1_plus_x2_depth2, step 2800/5597, train err 7.38644, cv err: 7.4121 test err 7.44311')
+('>', 'Opt:Adam, BN False, BN_trainable: False After2800/5597 iteration,Init: data_trunc_norm_kern')
+S:  [None, <tf.Tensor 'Const_1:0' shape=(6,) dtype=float64>, <tf.Tensor 'Const_2:0' shape=(6,) dtype=float64>]
+('>', 'Mdl*hbf2*-units[2, 6, 6, 1], task: task_f2d_2x2_1_cosx1_plus_x2_depth2, step 2850/5597, train err 9.39543, cv err: 9.4849 test err 9.40643')
+('>', 'Opt:Adam, BN False, BN_trainable: False After2850/5597 iteration,Init: data_trunc_norm_kern')
+S:  [None, <tf.Tensor 'Const_1:0' shape=(6,) dtype=float64>, <tf.Tensor 'Const_2:0' shape=(6,) dtype=float64>]
+('>', 'Mdl*hbf2*-units[2, 6, 6, 1], task: task_f2d_2x2_1_cosx1_plus_x2_depth2, step 2900/5597, train err 7.71962, cv err: 7.77042 test err 7.761')
+('>', 'Opt:Adam, BN False, BN_trainable: False After2900/5597 iteration,Init: data_trunc_norm_kern')
+S:  [None, <tf.Tensor 'Const_1:0' shape=(6,) dtype=float64>, <tf.Tensor 'Const_2:0' shape=(6,) dtype=float64>]
+('>', 'Mdl*hbf2*-units[2, 6, 6, 1], task: task_f2d_2x2_1_cosx1_plus_x2_depth2, step 2950/5597, train err 9.05836, cv err: 9.10046 test err 9.07397')
+('>', 'Opt:Adam, BN False, BN_trainable: False After2950/5597 iteration,Init: data_trunc_norm_kern')
+S:  [None, <tf.Tensor 'Const_1:0' shape=(6,) dtype=float64>, <tf.Tensor 'Const_2:0' shape=(6,) dtype=float64>]
+('>', 'Mdl*hbf2*-units[2, 6, 6, 1], task: task_f2d_2x2_1_cosx1_plus_x2_depth2, step 3000/5597, train err 6.94406, cv err: 6.94721 test err 6.99282')
+('>', 'Opt:Adam, BN False, BN_trainable: False After3000/5597 iteration,Init: data_trunc_norm_kern')
+S:  [None, <tf.Tensor 'Const_1:0' shape=(6,) dtype=float64>, <tf.Tensor 'Const_2:0' shape=(6,) dtype=float64>]
+('>', 'Mdl*hbf2*-units[2, 6, 6, 1], task: task_f2d_2x2_1_cosx1_plus_x2_depth2, step 3050/5597, train err 7.31336, cv err: 7.32854 test err 7.36005')
+('>', 'Opt:Adam, BN False, BN_trainable: False After3050/5597 iteration,Init: data_trunc_norm_kern')
+S:  [None, <tf.Tensor 'Const_1:0' shape=(6,) dtype=float64>, <tf.Tensor 'Const_2:0' shape=(6,) dtype=float64>]
+('>', 'Mdl*hbf2*-units[2, 6, 6, 1], task: task_f2d_2x2_1_cosx1_plus_x2_depth2, step 3100/5597, train err 6.73754, cv err: 6.71635 test err 6.78704')
+('>', 'Opt:Adam, BN False, BN_trainable: False After3100/5597 iteration,Init: data_trunc_norm_kern')
+S:  [None, <tf.Tensor 'Const_1:0' shape=(6,) dtype=float64>, <tf.Tensor 'Const_2:0' shape=(6,) dtype=float64>]
+('>', 'Mdl*hbf2*-units[2, 6, 6, 1], task: task_f2d_2x2_1_cosx1_plus_x2_depth2, step 3150/5597, train err 7.36851, cv err: 7.40767 test err 7.43')
+('>', 'Opt:Adam, BN False, BN_trainable: False After3150/5597 iteration,Init: data_trunc_norm_kern')
+S:  [None, <tf.Tensor 'Const_1:0' shape=(6,) dtype=float64>, <tf.Tensor 'Const_2:0' shape=(6,) dtype=float64>]
+('>', 'Mdl*hbf2*-units[2, 6, 6, 1], task: task_f2d_2x2_1_cosx1_plus_x2_depth2, step 3200/5597, train err 8.01775, cv err: 8.08503 test err 8.06155')
+('>', 'Opt:Adam, BN False, BN_trainable: False After3200/5597 iteration,Init: data_trunc_norm_kern')
+S:  [None, <tf.Tensor 'Const_1:0' shape=(6,) dtype=float64>, <tf.Tensor 'Const_2:0' shape=(6,) dtype=float64>]
+('>', 'Mdl*hbf2*-units[2, 6, 6, 1], task: task_f2d_2x2_1_cosx1_plus_x2_depth2, step 3250/5597, train err 8.44588, cv err: 8.53473 test err 8.50963')
+('>', 'Opt:Adam, BN False, BN_trainable: False After3250/5597 iteration,Init: data_trunc_norm_kern')
+S:  [None, <tf.Tensor 'Const_1:0' shape=(6,) dtype=float64>, <tf.Tensor 'Const_2:0' shape=(6,) dtype=float64>]
+('>', 'Mdl*hbf2*-units[2, 6, 6, 1], task: task_f2d_2x2_1_cosx1_plus_x2_depth2, step 3300/5597, train err 8.66879, cv err: 8.75093 test err 8.69905')
+('>', 'Opt:Adam, BN False, BN_trainable: False After3300/5597 iteration,Init: data_trunc_norm_kern')
+S:  [None, <tf.Tensor 'Const_1:0' shape=(6,) dtype=float64>, <tf.Tensor 'Const_2:0' shape=(6,) dtype=float64>]
+('>', 'Mdl*hbf2*-units[2, 6, 6, 1], task: task_f2d_2x2_1_cosx1_plus_x2_depth2, step 3350/5597, train err 6.47384, cv err: 6.46285 test err 6.54838')
+('>', 'Opt:Adam, BN False, BN_trainable: False After3350/5597 iteration,Init: data_trunc_norm_kern')
+S:  [None, <tf.Tensor 'Const_1:0' shape=(6,) dtype=float64>, <tf.Tensor 'Const_2:0' shape=(6,) dtype=float64>]
+('>', 'Mdl*hbf2*-units[2, 6, 6, 1], task: task_f2d_2x2_1_cosx1_plus_x2_depth2, step 3400/5597, train err 6.84775, cv err: 6.8453 test err 6.88787')
+('>', 'Opt:Adam, BN False, BN_trainable: False After3400/5597 iteration,Init: data_trunc_norm_kern')
+S:  [None, <tf.Tensor 'Const_1:0' shape=(6,) dtype=float64>, <tf.Tensor 'Const_2:0' shape=(6,) dtype=float64>]
+('>', 'Mdl*hbf2*-units[2, 6, 6, 1], task: task_f2d_2x2_1_cosx1_plus_x2_depth2, step 3450/5597, train err 8.22956, cv err: 8.3045 test err 8.27878')
+('>', 'Opt:Adam, BN False, BN_trainable: False After3450/5597 iteration,Init: data_trunc_norm_kern')
+S:  [None, <tf.Tensor 'Const_1:0' shape=(6,) dtype=float64>, <tf.Tensor 'Const_2:0' shape=(6,) dtype=float64>]
+('>', 'Mdl*hbf2*-units[2, 6, 6, 1], task: task_f2d_2x2_1_cosx1_plus_x2_depth2, step 3500/5597, train err 6.74344, cv err: 6.75049 test err 6.81265')
+('>', 'Opt:Adam, BN False, BN_trainable: False After3500/5597 iteration,Init: data_trunc_norm_kern')
+S:  [None, <tf.Tensor 'Const_1:0' shape=(6,) dtype=float64>, <tf.Tensor 'Const_2:0' shape=(6,) dtype=float64>]
+('>', 'Mdl*hbf2*-units[2, 6, 6, 1], task: task_f2d_2x2_1_cosx1_plus_x2_depth2, step 3550/5597, train err 7.01684, cv err: 7.01493 test err 7.03175')
+('>', 'Opt:Adam, BN False, BN_trainable: False After3550/5597 iteration,Init: data_trunc_norm_kern')
+S:  [None, <tf.Tensor 'Const_1:0' shape=(6,) dtype=float64>, <tf.Tensor 'Const_2:0' shape=(6,) dtype=float64>]
+('>', 'Mdl*hbf2*-units[2, 6, 6, 1], task: task_f2d_2x2_1_cosx1_plus_x2_depth2, step 3600/5597, train err 7.133, cv err: 7.1516 test err 7.16946')
+('>', 'Opt:Adam, BN False, BN_trainable: False After3600/5597 iteration,Init: data_trunc_norm_kern')
+S:  [None, <tf.Tensor 'Const_1:0' shape=(6,) dtype=float64>, <tf.Tensor 'Const_2:0' shape=(6,) dtype=float64>]
+('>', 'Mdl*hbf2*-units[2, 6, 6, 1], task: task_f2d_2x2_1_cosx1_plus_x2_depth2, step 3650/5597, train err 7.6779, cv err: 7.73167 test err 7.71666')
+('>', 'Opt:Adam, BN False, BN_trainable: False After3650/5597 iteration,Init: data_trunc_norm_kern')
+S:  [None, <tf.Tensor 'Const_1:0' shape=(6,) dtype=float64>, <tf.Tensor 'Const_2:0' shape=(6,) dtype=float64>]
+('>', 'Mdl*hbf2*-units[2, 6, 6, 1], task: task_f2d_2x2_1_cosx1_plus_x2_depth2, step 3700/5597, train err 10.5455, cv err: 10.6757 test err 10.5694')
+('>', 'Opt:Adam, BN False, BN_trainable: False After3700/5597 iteration,Init: data_trunc_norm_kern')
+S:  [None, <tf.Tensor 'Const_1:0' shape=(6,) dtype=float64>, <tf.Tensor 'Const_2:0' shape=(6,) dtype=float64>]
+('>', 'Mdl*hbf2*-units[2, 6, 6, 1], task: task_f2d_2x2_1_cosx1_plus_x2_depth2, step 3750/5597, train err 8.13237, cv err: 8.17923 test err 8.16573')
+('>', 'Opt:Adam, BN False, BN_trainable: False After3750/5597 iteration,Init: data_trunc_norm_kern')
+S:  [None, <tf.Tensor 'Const_1:0' shape=(6,) dtype=float64>, <tf.Tensor 'Const_2:0' shape=(6,) dtype=float64>]
+('>', 'Mdl*hbf2*-units[2, 6, 6, 1], task: task_f2d_2x2_1_cosx1_plus_x2_depth2, step 3800/5597, train err 7.69615, cv err: 7.74029 test err 7.72628')
+('>', 'Opt:Adam, BN False, BN_trainable: False After3800/5597 iteration,Init: data_trunc_norm_kern')
+S:  [None, <tf.Tensor 'Const_1:0' shape=(6,) dtype=float64>, <tf.Tensor 'Const_2:0' shape=(6,) dtype=float64>]
+('>', 'Mdl*hbf2*-units[2, 6, 6, 1], task: task_f2d_2x2_1_cosx1_plus_x2_depth2, step 3850/5597, train err 6.953, cv err: 6.96258 test err 6.99496')
+('>', 'Opt:Adam, BN False, BN_trainable: False After3850/5597 iteration,Init: data_trunc_norm_kern')
+S:  [None, <tf.Tensor 'Const_1:0' shape=(6,) dtype=float64>, <tf.Tensor 'Const_2:0' shape=(6,) dtype=float64>]
+('>', 'Mdl*hbf2*-units[2, 6, 6, 1], task: task_f2d_2x2_1_cosx1_plus_x2_depth2, step 3900/5597, train err 7.24497, cv err: 7.28064 test err 7.30051')
+('>', 'Opt:Adam, BN False, BN_trainable: False After3900/5597 iteration,Init: data_trunc_norm_kern')
+S:  [None, <tf.Tensor 'Const_1:0' shape=(6,) dtype=float64>, <tf.Tensor 'Const_2:0' shape=(6,) dtype=float64>]
+('>', 'Mdl*hbf2*-units[2, 6, 6, 1], task: task_f2d_2x2_1_cosx1_plus_x2_depth2, step 3950/5597, train err 6.83783, cv err: 6.84507 test err 6.90307')
+('>', 'Opt:Adam, BN False, BN_trainable: False After3950/5597 iteration,Init: data_trunc_norm_kern')
+S:  [None, <tf.Tensor 'Const_1:0' shape=(6,) dtype=float64>, <tf.Tensor 'Const_2:0' shape=(6,) dtype=float64>]
+('>', 'Mdl*hbf2*-units[2, 6, 6, 1], task: task_f2d_2x2_1_cosx1_plus_x2_depth2, step 4000/5597, train err 10.8822, cv err: 10.9693 test err 10.875')
+('>', 'Opt:Adam, BN False, BN_trainable: False After4000/5597 iteration,Init: data_trunc_norm_kern')
+S:  [None, <tf.Tensor 'Const_1:0' shape=(6,) dtype=float64>, <tf.Tensor 'Const_2:0' shape=(6,) dtype=float64>]
+('>', 'Mdl*hbf2*-units[2, 6, 6, 1], task: task_f2d_2x2_1_cosx1_plus_x2_depth2, step 4050/5597, train err 6.01446, cv err: 5.91856 test err 6.06744')
+('>', 'Opt:Adam, BN False, BN_trainable: False After4050/5597 iteration,Init: data_trunc_norm_kern')
+S:  [None, <tf.Tensor 'Const_1:0' shape=(6,) dtype=float64>, <tf.Tensor 'Const_2:0' shape=(6,) dtype=float64>]
+('>', 'Mdl*hbf2*-units[2, 6, 6, 1], task: task_f2d_2x2_1_cosx1_plus_x2_depth2, step 4100/5597, train err 8.3779, cv err: 8.45678 test err 8.40431')
+('>', 'Opt:Adam, BN False, BN_trainable: False After4100/5597 iteration,Init: data_trunc_norm_kern')
+S:  [None, <tf.Tensor 'Const_1:0' shape=(6,) dtype=float64>, <tf.Tensor 'Const_2:0' shape=(6,) dtype=float64>]
+('>', 'Mdl*hbf2*-units[2, 6, 6, 1], task: task_f2d_2x2_1_cosx1_plus_x2_depth2, step 4150/5597, train err 7.0095, cv err: 7.02496 test err 7.08971')
+('>', 'Opt:Adam, BN False, BN_trainable: False After4150/5597 iteration,Init: data_trunc_norm_kern')
+S:  [None, <tf.Tensor 'Const_1:0' shape=(6,) dtype=float64>, <tf.Tensor 'Const_2:0' shape=(6,) dtype=float64>]
+('>', 'Mdl*hbf2*-units[2, 6, 6, 1], task: task_f2d_2x2_1_cosx1_plus_x2_depth2, step 4200/5597, train err 6.1493, cv err: 6.09843 test err 6.18195')
+('>', 'Opt:Adam, BN False, BN_trainable: False After4200/5597 iteration,Init: data_trunc_norm_kern')
+S:  [None, <tf.Tensor 'Const_1:0' shape=(6,) dtype=float64>, <tf.Tensor 'Const_2:0' shape=(6,) dtype=float64>]
+('>', 'Mdl*hbf2*-units[2, 6, 6, 1], task: task_f2d_2x2_1_cosx1_plus_x2_depth2, step 4250/5597, train err 6.58097, cv err: 6.55011 test err 6.63')
+('>', 'Opt:Adam, BN False, BN_trainable: False After4250/5597 iteration,Init: data_trunc_norm_kern')
+S:  [None, <tf.Tensor 'Const_1:0' shape=(6,) dtype=float64>, <tf.Tensor 'Const_2:0' shape=(6,) dtype=float64>]
+('>', 'Mdl*hbf2*-units[2, 6, 6, 1], task: task_f2d_2x2_1_cosx1_plus_x2_depth2, step 4300/5597, train err 6.3421, cv err: 6.29176 test err 6.39721')
+('>', 'Opt:Adam, BN False, BN_trainable: False After4300/5597 iteration,Init: data_trunc_norm_kern')
+S:  [None, <tf.Tensor 'Const_1:0' shape=(6,) dtype=float64>, <tf.Tensor 'Const_2:0' shape=(6,) dtype=float64>]
+('>', 'Mdl*hbf2*-units[2, 6, 6, 1], task: task_f2d_2x2_1_cosx1_plus_x2_depth2, step 4350/5597, train err 8.09043, cv err: 8.16693 test err 8.15457')
+('>', 'Opt:Adam, BN False, BN_trainable: False After4350/5597 iteration,Init: data_trunc_norm_kern')
+S:  [None, <tf.Tensor 'Const_1:0' shape=(6,) dtype=float64>, <tf.Tensor 'Const_2:0' shape=(6,) dtype=float64>]
+('>', 'Mdl*hbf2*-units[2, 6, 6, 1], task: task_f2d_2x2_1_cosx1_plus_x2_depth2, step 4400/5597, train err 6.41379, cv err: 6.36594 test err 6.47051')
+('>', 'Opt:Adam, BN False, BN_trainable: False After4400/5597 iteration,Init: data_trunc_norm_kern')
+S:  [None, <tf.Tensor 'Const_1:0' shape=(6,) dtype=float64>, <tf.Tensor 'Const_2:0' shape=(6,) dtype=float64>]
+('>', 'Mdl*hbf2*-units[2, 6, 6, 1], task: task_f2d_2x2_1_cosx1_plus_x2_depth2, step 4450/5597, train err 7.03059, cv err: 7.04366 test err 7.08968')
+('>', 'Opt:Adam, BN False, BN_trainable: False After4450/5597 iteration,Init: data_trunc_norm_kern')
+S:  [None, <tf.Tensor 'Const_1:0' shape=(6,) dtype=float64>, <tf.Tensor 'Const_2:0' shape=(6,) dtype=float64>]
+('>', 'Mdl*hbf2*-units[2, 6, 6, 1], task: task_f2d_2x2_1_cosx1_plus_x2_depth2, step 4500/5597, train err 6.07906, cv err: 6.00544 test err 6.13405')
+('>', 'Opt:Adam, BN False, BN_trainable: False After4500/5597 iteration,Init: data_trunc_norm_kern')
+S:  [None, <tf.Tensor 'Const_1:0' shape=(6,) dtype=float64>, <tf.Tensor 'Const_2:0' shape=(6,) dtype=float64>]
+('>', 'Mdl*hbf2*-units[2, 6, 6, 1], task: task_f2d_2x2_1_cosx1_plus_x2_depth2, step 4550/5597, train err 7.58003, cv err: 7.63039 test err 7.64182')
+('>', 'Opt:Adam, BN False, BN_trainable: False After4550/5597 iteration,Init: data_trunc_norm_kern')
+S:  [None, <tf.Tensor 'Const_1:0' shape=(6,) dtype=float64>, <tf.Tensor 'Const_2:0' shape=(6,) dtype=float64>]
+('>', 'Mdl*hbf2*-units[2, 6, 6, 1], task: task_f2d_2x2_1_cosx1_plus_x2_depth2, step 4600/5597, train err 7.04098, cv err: 7.06162 test err 7.08606')
+('>', 'Opt:Adam, BN False, BN_trainable: False After4600/5597 iteration,Init: data_trunc_norm_kern')
+S:  [None, <tf.Tensor 'Const_1:0' shape=(6,) dtype=float64>, <tf.Tensor 'Const_2:0' shape=(6,) dtype=float64>]
+('>', 'Mdl*hbf2*-units[2, 6, 6, 1], task: task_f2d_2x2_1_cosx1_plus_x2_depth2, step 4650/5597, train err 6.8714, cv err: 6.87392 test err 6.92632')
+('>', 'Opt:Adam, BN False, BN_trainable: False After4650/5597 iteration,Init: data_trunc_norm_kern')
+S:  [None, <tf.Tensor 'Const_1:0' shape=(6,) dtype=float64>, <tf.Tensor 'Const_2:0' shape=(6,) dtype=float64>]
+('>', 'Mdl*hbf2*-units[2, 6, 6, 1], task: task_f2d_2x2_1_cosx1_plus_x2_depth2, step 4700/5597, train err 5.99331, cv err: 5.8924 test err 6.07913')
+('>', 'Opt:Adam, BN False, BN_trainable: False After4700/5597 iteration,Init: data_trunc_norm_kern')
+S:  [None, <tf.Tensor 'Const_1:0' shape=(6,) dtype=float64>, <tf.Tensor 'Const_2:0' shape=(6,) dtype=float64>]
+('>', 'Mdl*hbf2*-units[2, 6, 6, 1], task: task_f2d_2x2_1_cosx1_plus_x2_depth2, step 4750/5597, train err 6.60996, cv err: 6.59896 test err 6.6537')
+('>', 'Opt:Adam, BN False, BN_trainable: False After4750/5597 iteration,Init: data_trunc_norm_kern')
+S:  [None, <tf.Tensor 'Const_1:0' shape=(6,) dtype=float64>, <tf.Tensor 'Const_2:0' shape=(6,) dtype=float64>]
+('>', 'Mdl*hbf2*-units[2, 6, 6, 1], task: task_f2d_2x2_1_cosx1_plus_x2_depth2, step 4800/5597, train err 6.38041, cv err: 6.33098 test err 6.41541')
+('>', 'Opt:Adam, BN False, BN_trainable: False After4800/5597 iteration,Init: data_trunc_norm_kern')
+S:  [None, <tf.Tensor 'Const_1:0' shape=(6,) dtype=float64>, <tf.Tensor 'Const_2:0' shape=(6,) dtype=float64>]
+('>', 'Mdl*hbf2*-units[2, 6, 6, 1], task: task_f2d_2x2_1_cosx1_plus_x2_depth2, step 4850/5597, train err 6.99001, cv err: 6.9944 test err 7.02067')
+('>', 'Opt:Adam, BN False, BN_trainable: False After4850/5597 iteration,Init: data_trunc_norm_kern')
+S:  [None, <tf.Tensor 'Const_1:0' shape=(6,) dtype=float64>, <tf.Tensor 'Const_2:0' shape=(6,) dtype=float64>]
+('>', 'Mdl*hbf2*-units[2, 6, 6, 1], task: task_f2d_2x2_1_cosx1_plus_x2_depth2, step 4900/5597, train err 6.57737, cv err: 6.55945 test err 6.62774')
+('>', 'Opt:Adam, BN False, BN_trainable: False After4900/5597 iteration,Init: data_trunc_norm_kern')
+S:  [None, <tf.Tensor 'Const_1:0' shape=(6,) dtype=float64>, <tf.Tensor 'Const_2:0' shape=(6,) dtype=float64>]
+('>', 'Mdl*hbf2*-units[2, 6, 6, 1], task: task_f2d_2x2_1_cosx1_plus_x2_depth2, step 4950/5597, train err 7.50711, cv err: 7.55663 test err 7.55551')
+('>', 'Opt:Adam, BN False, BN_trainable: False After4950/5597 iteration,Init: data_trunc_norm_kern')
+S:  [None, <tf.Tensor 'Const_1:0' shape=(6,) dtype=float64>, <tf.Tensor 'Const_2:0' shape=(6,) dtype=float64>]
+('>', 'Mdl*hbf2*-units[2, 6, 6, 1], task: task_f2d_2x2_1_cosx1_plus_x2_depth2, step 5000/5597, train err 8.11908, cv err: 8.18714 test err 8.16513')
+('>', 'Opt:Adam, BN False, BN_trainable: False After5000/5597 iteration,Init: data_trunc_norm_kern')
+S:  [None, <tf.Tensor 'Const_1:0' shape=(6,) dtype=float64>, <tf.Tensor 'Const_2:0' shape=(6,) dtype=float64>]
+('>', 'Mdl*hbf2*-units[2, 6, 6, 1], task: task_f2d_2x2_1_cosx1_plus_x2_depth2, step 5050/5597, train err 6.83908, cv err: 6.84109 test err 6.88255')
+('>', 'Opt:Adam, BN False, BN_trainable: False After5050/5597 iteration,Init: data_trunc_norm_kern')
+S:  [None, <tf.Tensor 'Const_1:0' shape=(6,) dtype=float64>, <tf.Tensor 'Const_2:0' shape=(6,) dtype=float64>]
+('>', 'Mdl*hbf2*-units[2, 6, 6, 1], task: task_f2d_2x2_1_cosx1_plus_x2_depth2, step 5100/5597, train err 8.06203, cv err: 8.12438 test err 8.08716')
+('>', 'Opt:Adam, BN False, BN_trainable: False After5100/5597 iteration,Init: data_trunc_norm_kern')
+S:  [None, <tf.Tensor 'Const_1:0' shape=(6,) dtype=float64>, <tf.Tensor 'Const_2:0' shape=(6,) dtype=float64>]
+('>', 'Mdl*hbf2*-units[2, 6, 6, 1], task: task_f2d_2x2_1_cosx1_plus_x2_depth2, step 5150/5597, train err 7.09224, cv err: 7.10496 test err 7.16446')
+('>', 'Opt:Adam, BN False, BN_trainable: False After5150/5597 iteration,Init: data_trunc_norm_kern')
+S:  [None, <tf.Tensor 'Const_1:0' shape=(6,) dtype=float64>, <tf.Tensor 'Const_2:0' shape=(6,) dtype=float64>]
+('>', 'Mdl*hbf2*-units[2, 6, 6, 1], task: task_f2d_2x2_1_cosx1_plus_x2_depth2, step 5200/5597, train err 6.68539, cv err: 6.67414 test err 6.74759')
+('>', 'Opt:Adam, BN False, BN_trainable: False After5200/5597 iteration,Init: data_trunc_norm_kern')
+S:  [None, <tf.Tensor 'Const_1:0' shape=(6,) dtype=float64>, <tf.Tensor 'Const_2:0' shape=(6,) dtype=float64>]
+('>', 'Mdl*hbf2*-units[2, 6, 6, 1], task: task_f2d_2x2_1_cosx1_plus_x2_depth2, step 5250/5597, train err 8.96188, cv err: 9.04738 test err 8.97617')
+('>', 'Opt:Adam, BN False, BN_trainable: False After5250/5597 iteration,Init: data_trunc_norm_kern')
+S:  [None, <tf.Tensor 'Const_1:0' shape=(6,) dtype=float64>, <tf.Tensor 'Const_2:0' shape=(6,) dtype=float64>]
+('>', 'Mdl*hbf2*-units[2, 6, 6, 1], task: task_f2d_2x2_1_cosx1_plus_x2_depth2, step 5300/5597, train err 6.04055, cv err: 5.98508 test err 6.09478')
+('>', 'Opt:Adam, BN False, BN_trainable: False After5300/5597 iteration,Init: data_trunc_norm_kern')
+S:  [None, <tf.Tensor 'Const_1:0' shape=(6,) dtype=float64>, <tf.Tensor 'Const_2:0' shape=(6,) dtype=float64>]
+('>', 'Mdl*hbf2*-units[2, 6, 6, 1], task: task_f2d_2x2_1_cosx1_plus_x2_depth2, step 5350/5597, train err 8.61037, cv err: 8.69841 test err 8.67727')
+('>', 'Opt:Adam, BN False, BN_trainable: False After5350/5597 iteration,Init: data_trunc_norm_kern')
+S:  [None, <tf.Tensor 'Const_1:0' shape=(6,) dtype=float64>, <tf.Tensor 'Const_2:0' shape=(6,) dtype=float64>]
+('>', 'Mdl*hbf2*-units[2, 6, 6, 1], task: task_f2d_2x2_1_cosx1_plus_x2_depth2, step 5400/5597, train err 8.00852, cv err: 8.07781 test err 8.05747')
+('>', 'Opt:Adam, BN False, BN_trainable: False After5400/5597 iteration,Init: data_trunc_norm_kern')
+S:  [None, <tf.Tensor 'Const_1:0' shape=(6,) dtype=float64>, <tf.Tensor 'Const_2:0' shape=(6,) dtype=float64>]
+('>', 'Mdl*hbf2*-units[2, 6, 6, 1], task: task_f2d_2x2_1_cosx1_plus_x2_depth2, step 5450/5597, train err 7.80444, cv err: 7.84707 test err 7.8429')
+('>', 'Opt:Adam, BN False, BN_trainable: False After5450/5597 iteration,Init: data_trunc_norm_kern')
+S:  [None, <tf.Tensor 'Const_1:0' shape=(6,) dtype=float64>, <tf.Tensor 'Const_2:0' shape=(6,) dtype=float64>]
+('>', 'Mdl*hbf2*-units[2, 6, 6, 1], task: task_f2d_2x2_1_cosx1_plus_x2_depth2, step 5500/5597, train err 6.53678, cv err: 6.51834 test err 6.59828')
+('>', 'Opt:Adam, BN False, BN_trainable: False After5500/5597 iteration,Init: data_trunc_norm_kern')
+S:  [None, <tf.Tensor 'Const_1:0' shape=(6,) dtype=float64>, <tf.Tensor 'Const_2:0' shape=(6,) dtype=float64>]
+('>', 'Mdl*hbf2*-units[2, 6, 6, 1], task: task_f2d_2x2_1_cosx1_plus_x2_depth2, step 5550/5597, train err 10.1155, cv err: 10.2291 test err 10.1333')
+('>', 'Opt:Adam, BN False, BN_trainable: False After5550/5597 iteration,Init: data_trunc_norm_kern')
+S:  [None, <tf.Tensor 'Const_1:0' shape=(6,) dtype=float64>, <tf.Tensor 'Const_2:0' shape=(6,) dtype=float64>]
+--- 322.826852083 seconds ---
+--- 5.38044753472 minutes ---
+--- 0.0896741255787 hours ---
+
+

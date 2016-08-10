@@ -29,7 +29,8 @@ mdl=hbf
 #init_type=data_init
 #init_type=kern_init
 #init_type=kpp_init
-init_type=data_trunc_norm_kern
+#init_type=data_trunc_norm_kern
+init_type=data_trunc_norm_trunc_norm
 #init_type=data_xavier_kern
 #init_type=xavier
 

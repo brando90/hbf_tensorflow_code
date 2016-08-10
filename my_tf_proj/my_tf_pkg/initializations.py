@@ -45,6 +45,7 @@ def get_initilizations_HBF(init_type,dims,mu,std,b_init,S_init,X_train,Y_train,t
     print 'train_S_type: ', train_S_type
     nb_hidden_layers=len(dims)-1
     print init_type
+    rbf_error = None
     if init_type=='truncated_normal':
         inits_W=[None]
         inits_S=[None]
@@ -103,7 +104,7 @@ def get_initilizations_HBF(init_type,dims,mu,std,b_init,S_init,X_train,Y_train,t
         (C,_,_,_) = np.linalg.lstsq(Kern,Y_train)
         inits_C=[tf.constant(C)]
         rbf_error=report_RBF_error(Kern, C, Y_train)
-    elif init_type=='kpp_trun_norm_lq':
+    elif init_type=='kpp_trun_norm_kern':
         inits_W=[None]
         inits_S=[None]
 
@@ -112,7 +113,8 @@ def get_initilizations_HBF(init_type,dims,mu,std,b_init,S_init,X_train,Y_train,t
 
         for l in range(1,nb_hidden_layers):
             inits_S.append( get_single_multiple_S(l,S_init,dims,train_S_type) )
-            #inits_S.append( tf.constant( S_init[l], shape=[dims[l]], dtype=tf.float64 ) )
+        for l in xrange(2,nb_hidden_layers):
+            inits_W.append( tf.truncated_normal(shape=[dims[l-1],dims[l]], mean=mu[l], stddev=std[l], dtype=tf.float64) )
         stddev = S_init[1]
         beta = np.power(1.0/stddev,2)
         Kern = np.exp(-beta*euclidean_distances(X=X_train,Y=centers,squared=True))
@@ -155,8 +157,10 @@ def get_initilizations_HBF(init_type,dims,mu,std,b_init,S_init,X_train,Y_train,t
         # Kern = np.exp(-beta*euclidean_distances(X=X_train,Y=subsampled_data_points,squared=True))
         # (C,_,_,_) = np.linalg.lstsq(Kern,Y_train)
         # inits_C=[tf.constant(C)]
+        l=len(dims)-1
         inits_C=[ tf.truncated_normal(shape=[dims[l-1],dims[l]], mean=mu[l], stddev=std[l], dtype=tf.float64) ]
-        rbf_error=report_RBF_error(Kern, C, Y_train)
+        #rbf_error=report_RBF_error(Kern, C, Y_train)
+        rbf_error = None
     elif init_type=='data_xavier_kern':
         inits_W=[None]
         inits_S=[None]
