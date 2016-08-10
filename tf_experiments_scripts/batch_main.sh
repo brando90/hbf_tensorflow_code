@@ -1,12 +1,11 @@
 #!/bin/bash
-#SBATCH --job-name=HBF1_12
+#SBATCH --job-name=HBF2_24_24
 #SBATCH --nodes=1
 #SBATCH --mem=14000
 #SBATCH --time=6-23
-#SBATCH --array=1-1000
+#SBATCH --array=1-30
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=rene_sax14@yahoo.com
-#SBATCH --gres=gpu:1
 
 #task_name=task_f2d_2x2_1_cosx1_plus_x2_depth2
 #task_name=task_f2d_2x2_1_cosx1x2_depth2
@@ -37,10 +36,10 @@ init_type=data_trunc_norm_kern
 #init=all_same_const-525.32626263
 #init=all_same_const-20.3010101
 #init=first_constant_rest_uniform_random-[525.32626263,[0.9,2.5]]
-first_constant_rest_specific_consts-[1250.32,3]
-first_rand_same_uniform_rest_uniform_random-[[1,1250.32,3],[2,4]]
+#init=first_constant_rest_specific_consts-[1250.32,3]
+init=first_rand_same_uniform_rest_uniform_random-[[10,525.32],[2,4]]
 
-units=6,6
+units=24,24
 
 #optimization_alg=GD
 #optimization_alg=Momentum
@@ -49,4 +48,4 @@ units=6,6
 optimization_alg=Adam
 #optimization_alg=RMSProp
 
-python main_nn.py $SLURM_JOBID $SLURM_ARRAY_TASK_ID $main_folder task_August_7_HBF2_dont_train_S_data_trunc_norm_kern HBF2_6_6_1000 True $units multiple_S $task_name False False $mdl $init_type $data_normalize $trainable_S $init $optimization_alg
+python main_nn.py $SLURM_JOBID $SLURM_ARRAY_TASK_ID $main_folder task_mnist_August_8_HBF2_dont_train_S_data_trunc_norm_kern_30_Adam HBF2_24_24_50 True $units multiple_S $task_name False False $mdl $init_type $data_normalize $trainable_S $init $optimization_alg
