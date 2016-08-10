@@ -179,19 +179,20 @@ def build_binary_tree(x,filter_size,nb_filters,mean,stddev,stride_convd1=2):
     flat_conv = get_binary_branch(l,x,filter_size,nb_filters,mean=mean,stddev=stddev,stride_convd1=stride_convd1) # N x D_conv_flat = N x (filter_size*nb_filters)
     ## fully connected layer
     W = get_W(init_W, l, x, dims, init)
-    f = tf.matmul(W,flat_conv)
-    return f
+    mdl = tf.matmul(W,flat_conv)
+    return mdl
 
 def get_binary_branch(l,x,filter_size,nb_filters,mean,stddev,stride_convd1=2):
     '''
         stride_convd1 # controls the stride for 1D convolution
     '''
     # filter shape is "[filter_height, filter_width, in_channels, out_channels]"
-    init_W = tf.tf.truncated_normal(shape=[1,filter_size,1,nb_filters], mean=mean, stddev=stddev, dtype=tf.float32, seed=None, name=None)
-    W_filter = tf.get_variable(name='W'+l, dtype=tf.float64, initializer=init_W, regularizer=None, trainable=True)
-    conv = tf.nn.conv2d(input=x, filter=W, strides=[1, 1, stride_convd1, 1], padding="SAME", name="conv")
+    init_W = tf.truncated_normal(shape=[1,filter_size,1,nb_filters], mean=mean, stddev=stddev, dtype=tf.float64, seed=None, name=None)
+    W_filters = tf.get_variable(name='W'+l, dtype=tf.float64, initializer=init_W, regularizer=None, trainable=True)
+    conv = tf.nn.conv2d(input=x, filter=W_filters, strides=[1, 1, stride_convd1, 1], padding="SAME", name="conv")
     flat_conv = tf.reshape(conv, [-1,filter_size*nb_filters])
-    return flat_conv
+    A = tf.relu(flat_conv)
+    return A
 
 ##
 
