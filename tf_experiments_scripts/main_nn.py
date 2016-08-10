@@ -73,7 +73,7 @@ re_train = None
 #re_train = 're_train'
 results = {'train_errors':[], 'cv_errors':[],'test_errors':[]}
 # slurm values and ids
-(experiment_root_dir,slurm_jobid,slurm_array_task_id,job_name,mdl_save,experiment_name,units_list,train_S_type,task_name,bn,trainable_bn,mdl_type,init_type,cluster,data_normalize,trainable_S,argv_init_S,optimization_alg) = mtf.process_argv(sys.argv)
+(experiment_root_dir,slurm_jobid,slurm_array_task_id,job_name,mdl_save,experiment_name,units_list,train_S_type,task_name,bn,trainable_bn,mdl_type,init_type,cluster,data_normalize,trainable_S,argv_init_S,optimization_alg,nb_filters) = mtf.process_argv(sys.argv)
 results['task_name'] = task_name
 results['argv_init_S'] = argv_init_S
 results['train_S_type'] = train_S_type
@@ -319,12 +319,14 @@ elif model == 'binary_tree':
     x = tf.placeholder(float_type, shape=[None,1,D,1], name='x-input')
     #
     filter_size = 2 #fixed for Binary Tree BT
-    nb_filters = 6
+    nb_filters = nb_filters
     mean = 0.0
     stddev = 1.0
     x = tf.placeholder(float_type, shape=[None,1,D,1], name='x-input')
     with tf.name_scope("build_binary_model") as scope:
         mdl = mtf.build_binary_tree(x,filter_size,nb_filters,mean,stddev,stride_convd1=2)
+    #
+    results['nb_filters'] = nb_filters
 
 ## Output and Loss
 y = mdl

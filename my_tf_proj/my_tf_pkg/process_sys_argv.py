@@ -23,6 +23,7 @@ def process_argv(argv):
     experiment_name = 'tmp_experiment'
     train_S_type = 'multiple_S'
     units_list = [5]
+    nb_filters = 6
     #units_list = [24,24]
     # units_list = [96,96]
     # task_name = 'task_qianli_func'
@@ -86,7 +87,7 @@ def process_argv(argv):
             print 2
     else:
         mdl_save = True
-        nb_params_needed = 18
+        nb_params_needed = 19
         if len(argv) == nb_params_needed:
             # python main_nn.py slurm_jobid slurm_array_task_id experiment_root_dir experiment_name job_name mdl_save 3,3 multiple_S/single_S task_name bn data_normalize argv_init_S
 
@@ -110,6 +111,7 @@ def process_argv(argv):
             cluster = 'OM7'
             argv_init_S = argv[16]
             optimization_alg = argv[17]
+            nb_filters = int(argv[18])
             print 2.8
         # elif len(argv) == 9:
         #     # python main_nn.py      slurm_jobid     slurm_array_task_id     job_name      True            experiment_name 3,3,3  multiple_S/single_S
@@ -195,7 +197,7 @@ def process_argv(argv):
             raise ValueError('Need to specify the correct number of params; given %s, needed %s'%(len(argv),nb_params_needed))
     bn = str_to_bool(bn)
     print 'mdl_type: ', mdl_type
-    return (experiment_root_dir,slurm_jobid,slurm_array_task_id,job_name,mdl_save,experiment_name,units_list,train_S_type,task_name,bn,trainable_bn,mdl_type,init_type,cluster,data_normalize,trainable_S,argv_init_S,optimization_alg)
+    return (experiment_root_dir,slurm_jobid,slurm_array_task_id,job_name,mdl_save,experiment_name,units_list,train_S_type,task_name,bn,trainable_bn,mdl_type,init_type,cluster,data_normalize,trainable_S,argv_init_S,optimization_alg,nb_filters)
 
 def is_it_tensorboard_run(argv):
     check_args = []

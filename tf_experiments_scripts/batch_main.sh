@@ -45,6 +45,7 @@ init=all_same_const-0.1
 #init=first_rand_same_uniform_rest_uniform_random-[[1,1250.32],[2,4]]
 
 units=5
+nb_filters=12
 
 #optimization_alg=GD
 #optimization_alg=Momentum
@@ -53,4 +54,4 @@ units=5
 #optimization_alg=Adam
 optimization_alg=RMSProp
 
-python main_nn.py $SLURM_JOBID $SLURM_ARRAY_TASK_ID $main_folder task_August_8_HBF2_dont_train_S_data_trunc_norm_kern HBF2_6_6_1000 True $units multiple_S $task_name False False $mdl $init_type $data_normalize $trainable_S $init $optimization_alg
+python main_nn.py $SLURM_JOBID $SLURM_ARRAY_TASK_ID $main_folder task_August_8_HBF2_dont_train_S_data_trunc_norm_kern HBF2_6_6_1000 True $units multiple_S $task_name False False $mdl $init_type $data_normalize $trainable_S $init $optimization_alg $nb_filters
