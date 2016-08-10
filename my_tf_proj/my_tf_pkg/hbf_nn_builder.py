@@ -197,7 +197,7 @@ def get_binary_branch(l,x,filter_size,nb_filters,mean,stddev,stride_convd1=2):
     conv = tf.nn.conv2d(input=x, filter=W_filters, strides=[1, 1, stride_convd1, 1], padding="SAME", name="conv") + b
     # get activations
     flat_conv = tf.reshape(conv, [-1,filter_size*nb_filters])
-    A = tf.nn.relu( flat_conv)
+    A = tf.nn.relu( flat_conv )
     return A
 
 ##

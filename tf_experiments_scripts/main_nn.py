@@ -153,12 +153,12 @@ if cluster == 'OM7':
     report_error_freq = 50
     #steps = np.random.randint(low=3000,high=6000)
     steps = 20000
-    M = np.random.randint(low=3000, high=9000)
+    M = np.random.randint(low=500, high=9000)
     #M = 17000 #batch-size
     #M = 5000
     print '++++> M (batch size) :', M
 
-    low_const_learning_rate, high_const_learning_rate = -0.01, -2.5
+    low_const_learning_rate, high_const_learning_rate = -0.01, -5
     log_learning_rate = np.random.uniform(low=low_const_learning_rate, high=high_const_learning_rate)
     starter_learning_rate = 10**log_learning_rate
 
@@ -220,11 +220,11 @@ else:
     phase_train = tf.placeholder(tf.bool, name='phase_train') if bn else  None
 
     report_error_freq = 25
-    steps = 14000
-    M = 4000 #batch-size
+    steps = 5000
+    M = 9000 #batch-size
     print '++++> M (batch size) :', M
 
-    starter_learning_rate = 0.00001
+    starter_learning_rate = 0.001
     # starter_learning_rate = 0.00001
 
     print '++> starter_learning_rate ', starter_learning_rate
@@ -238,7 +238,7 @@ else:
 
     if optimization_alg=='Momentum':
         #use_nesterov=False
-        momentum = 0.9
+        momentum = 0.4
     elif optimization_alg == 'Adadelta':
         rho = 0.95
     elif optimization_alg == 'Adagrad':
@@ -318,8 +318,8 @@ elif model == 'binary_tree':
     #Y_test = Y_test.reshape(N_test,1,D,1)
     x = tf.placeholder(float_type, shape=[None,1,D,1], name='x-input')
     #
-    filter_size = 2
-    nb_filters = 3
+    filter_size = 2 #fixed for Binary Tree BT
+    nb_filters = 6
     mean = 0.0
     stddev = 1.0
     x = tf.placeholder(float_type, shape=[None,1,D,1], name='x-input')
@@ -495,9 +495,12 @@ with open(path+errors_pretty, 'w+') as f_err_msgs:
 
                 print 'S: ', inits_S
                 # store results
-                results['train_errors'].append(train_error)
-                results['cv_errors'].append(cv_error)
-                results['test_errors'].append(test_error)
+                #print type(train_error)
+                results['train_errors'].append( float(train_error) )
+                #print type(cv_error)
+                results['cv_errors'].append( float(cv_error) )
+                #print type(test_error)
+                results['test_errors'].append( float(test_error) )
                 # write errors to pretty print
                 f_err_msgs.write(loss_msg)
                 f_err_msgs.write(mdl_info_msg)
@@ -535,6 +538,7 @@ print("--- %s hours ---" % hours )
 results['seconds'] = seconds
 results['minutes'] = minutes
 results['hours'] = hours
+#print results
 with open(path+json_file, 'w+') as f_json:
     json.dump(results,f_json,sort_keys=True, indent=2, separators=(',', ': '))
 print '\a' #makes beep
