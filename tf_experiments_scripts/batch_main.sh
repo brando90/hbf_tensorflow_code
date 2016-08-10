@@ -30,15 +30,16 @@ mdl=hbf
 #init_type=data_init
 #init_type=kern_init
 #init_type=kpp_init
-init_type=data_trunc_norm_kern
+#init_type=data_trunc_norm_kern
+init_type=data_trunc_norm_trunc_norm
 #init_type=data_xavier_kern
 #init_type=xavier
 
 #init=all_same_const-525.32626263
 #init=all_same_const-20.3010101
 #init=first_constant_rest_uniform_random-[525.32626263,[0.9,2.5]]
-first_constant_rest_specific_consts-[1250.32,3]
-first_rand_same_uniform_rest_uniform_random-[[1,1250.32,3],[2,4]]
+init=first_constant_rest_specific_consts-[1250.32,3]
+init=first_rand_same_uniform_rest_uniform_random-[[1,1250.32],[2,4]]
 
 units=6,6
 

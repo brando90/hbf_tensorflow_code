@@ -48,7 +48,9 @@ def get_errors_from(results):
     # get error lists
     (train_errors, cv_errors, test_errors) = (results['train_errors'], results['cv_errors'], results['test_errors'])
     # get most recent error
-    (train_error, cv_error, test_error) = (train_errors[-1], cv_errors[-1], test_errors[-1])
+    #(train_error, cv_error, test_error) = train_errors[-1], cv_errors[-1], test_errors[-1]
+    min_cv_index = np.argmin(cv_errors)
+    (train_error, cv_error, test_error) = train_errors[min_cv_index], cv_errors[min_cv_index], test_errors[min_cv_index]
     return train_error, cv_error, test_error
 
 def get_results(dirpath, filename):
@@ -332,20 +334,21 @@ def display_results_hbf_xsinglog1_x():
     # frameworkpython multiple_vs_single_collect_results.py
     #print os.path.isdir(path_to_experiments)
     #experiment_name = 'om_xsinlog1_x_depth2_hbf'
-    experiment_name = 'om_2x2_1_cosx1_plus_x2_depth2'
+    #experiment_name = 'om_2x2_1_cosx1_plus_x2_depth2'
+    experiment_name = 'om_mnist'
     #path_to_experiments = '../../%s/task_30_july_HBF1_depth_2_1000'%experiment_name
     path_to_experiments = '../../%s/task_1_August_HBF2_depth_2_1000'%experiment_name
     path_to_experiments = '../../%s/task_1_August_HBF2_depth_2_1000_Xavier'%experiment_name
     path_to_experiments = '../../%s/task_1_August_HBF2_depth_2_1000_BN_true_true'%experiment_name
-    path_to_experiments = '../../%s/task_1_August_HBF1_depth_2_1000_dont_train_S'%experiment_name
-    nn1_multiple_experiment_results = get_results_for_experiments(path_to_experiments,verbose=True, split_string='_jHBF[\d]*_')
+    path_to_experiments = '../../%s/task_August_HBF1_depth_2_1000_dont_train_S/hbf1_dont_train'%experiment_name
+    nn1_multiple_experiment_results = get_results_for_experiments(path_to_experiments,verbose=True, split_string='_jHBF[\d]*_|_jrun_HBF[\d]*_')
 
     #path_to_experiments = '../../%s/task_30_july_HBF2_depth_2_1000'%experiment_name
     path_to_experiments = '../../%s/task_1_August_HBF2_depth_2_1000'%experiment_name
     path_to_experiments = '../../%s/task_1_August_HBF2_depth_2_1000_Xavier'%experiment_name
     path_to_experiments = '../../%s/task_1_August_HBF2_depth_2_1000_BN_true_true'%experiment_name
-    path_to_experiments = '../../%s/task_2_August_HBF2_depth_2_1000_dont_train_S'%experiment_name
-    nn2_multiple_experiment_results = get_results_for_experiments(path_to_experiments,verbose=True, split_string='_jHBF[\d]*_')
+    path_to_experiments = '../../%s/task_mnist_August_7_HBF2_dont_train_S_data_trunc_norm_kern_30'%experiment_name
+    nn2_multiple_experiment_results = get_results_for_experiments(path_to_experiments,verbose=True, split_string='_jHBF[\d]*_|_jrun_HBF[\d]*_')
 
     #path_to_experiments = '../../%s/task_30_july_HBF2_depth_2_1000'%experiment_name
     #nn3_multiple_experiment_results = get_results_for_experiments(path_to_experiments,verbose=True, split_string='_jNN[\d]*_')
@@ -353,15 +356,17 @@ def display_results_hbf_xsinglog1_x():
     #
     nn1_list_units, nn1_list_train_errors, nn1_list_test_errors = get_list_errors2(experiment_results=nn1_multiple_experiment_results)
     nn2_list_units, nn2_list_train_errors, nn2_list_test_errors = get_list_errors2(experiment_results=nn2_multiple_experiment_results)
-    print 'nn1_list_train_errors: ', nn1_list_train_errors
-    print 'nn1_list_test_errors: ', nn1_list_test_errors
-    print 'nn2_list_train_errors: ', nn2_list_train_errors
-    print 'nn2_list_test_errors: ', nn2_list_test_errors
     #nn3_list_units, nn3_list_train_errors, nn3_list_test_errors = get_list_errors2(experiment_results=nn3_multiple_experiment_results)
 
     #
     plt.figure(3)
     #
+    nn1_list_train_errors, nn1_list_test_errors = 784*np.array(nn1_list_train_errors), 784*np.array(nn1_list_test_errors)
+    nn2_list_train_errors, nn2_list_test_errors = np.array(nn2_list_train_errors), np.array(nn2_list_test_errors)
+    print 'nn1_list_train_errors: ', nn1_list_train_errors
+    print 'nn1_list_test_errors: ', nn1_list_test_errors
+    print 'nn2_list_train_errors: ', nn2_list_train_errors
+    print 'nn2_list_test_errors: ', nn2_list_test_errors
     list_units = np.array(nn1_list_units)
     print list_units
     krls.plot_errors(list_units, nn1_list_train_errors,label='HBF1 train', markersize=3, colour='b')

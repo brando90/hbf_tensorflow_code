@@ -1,6 +1,9 @@
 import numpy as np
 
 import tensorflow as tf
+
+import my_tf_pkg as mtf
+
 # from tensorflow.examples.tutorials.mnist import input_data
 #
 # task_name = 'task_MNIST_flat_auto_encoder'
@@ -11,7 +14,10 @@ import tensorflow as tf
 
 # data shape is "[batch, in_height, in_width, in_channels]",
 # X_train = N x D
-X_train_org = np.array([[0,1,2,3],[4,5,6,7],[8,9,10,11]])
+task_name = 'task_f_4d'
+(X_train, Y_train, X_cv, Y_cv, X_test, Y_test) = mtf.get_data(task_name)
+X_train_org = X_train
+#X_train_org = np.array([[0,1,2,3],[4,5,6,7],[8,9,10,11]])
 #X_train_org = np.array([[0,1,2,3]])
 #X_train_org = np.array([[0,1,2,3],[4,5,6,7]])
 N, D = X_train_org.shape
@@ -24,7 +30,7 @@ xx = tf.placeholder(tf.float32, shape=[None,1,D,1], name='xx-input')
 # filter shape is "[filter_height, filter_width, in_channels, out_channels]"
 filter_size, nb_filters = 2, 3 # filter_size , number of hidden units/units
 # think of it as having nb_filters number of filters, each of size filter_size
-W_filters = np.array([[1, 3, 5],[2, 4, 6]]).reshape(1,filter_size,1,nb_filters)
+#W_filters = np.array([[1, 3, 5],[2, 4, 6]]).reshape(1,filter_size,1,nb_filters)
 init_W = tf.truncated_normal(shape=[1,filter_size,1,nb_filters], mean=0.0, stddev=1.0, dtype=tf.float32, seed=None, name=None)
 W_filters = tf.get_variable(name='W', dtype=tf.float64, initializer=init_W, regularizer=None, trainable=True)
 #W = tf.Variable( tf.truncated_normal(shape=[1,filter_size,1,nb_filters], stddev=0.1) )

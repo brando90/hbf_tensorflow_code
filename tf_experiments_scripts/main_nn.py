@@ -151,9 +151,9 @@ if cluster == 'OM7':
 
     phase_train = tf.placeholder(tf.bool, name='phase_train') if bn else  None
 
-    report_error_freq = 50
+    report_error_freq = 100
     #steps = np.random.randint(low=3000,high=6000)
-    steps = 14000
+    steps = 20000
     M = np.random.randint(low=3000, high=9000)
     #M = 17000 #batch-size
     #M = 5000
@@ -190,8 +190,8 @@ if cluster == 'OM7':
         #beta1=np.random.uniform(low=0.7, high=0.99) # m = b1m + (1 - b1)m
         #beta2=np.random.uniform(low=0.8, high=0.999) # v = b2 v + (1 - b2)v
     elif optimization_alg == 'RMSProp':
-        decay = 0.001
-        momentum = 0.0
+        decay = np.random.uniform(low=0.75,high=0.99)
+        momentum = p.random.uniform(low=0.3,high=0.9)
     else:
         pass
 
