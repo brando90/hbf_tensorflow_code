@@ -143,7 +143,11 @@ if cluster == 'OM7':
     std_init = 0.1
     std = len(dims)*[std_init]
 
-    b_init = get_init_b(argv_init_S,dims)
+    #b_init = get_init_b(argv_init_S,dims)
+    if mdl_type == 'binary_tree':
+        b_init = 0.1
+    else:
+        b_init = get_init_b(argv_init_S,dims)
 
     model = mdl_type
     max_to_keep = 1
