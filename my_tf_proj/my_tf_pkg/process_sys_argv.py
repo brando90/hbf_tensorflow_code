@@ -5,6 +5,7 @@ def process_argv(argv):
     print 'len(argv) =',len(argv)
     #mdl_type = 'standard_nn'
     mdl_type = 'hbf'
+    # python main_nn.py --logdir=/tmp/mdl_logs
     #
     #train_S_type='multiple_S'
     #train_S_type='single_S'
@@ -12,13 +13,15 @@ def process_argv(argv):
     #init_type='data_init'
     #init_type='kern_init'
     #init_type='kpp_init'
-    init_type='data_trunc_norm_kern'
+    #init_type='data_trunc_norm_kern'
+    init_type='kpp_trun_norm_kern'
+    #init_type='data_trunc_norm_trunc_norm'
     #init_type='data_xavier_kern'
     #init_type='xavier'
-    #
+
     experiment_name = 'tmp_experiment'
     train_S_type = 'multiple_S'
-    units_list = [6,6]
+    units_list = [4,4,4]
     #units_list = [24,24]
     # units_list = [96,96]
     # task_name = 'task_qianli_func'
@@ -37,28 +40,29 @@ def process_argv(argv):
     # task_name = 'task_f_2d_task2_xsinglog1_x_depth3'
     # task_name = 'task_MNIST_flat'
     #
-    #bn = True
+    bn = True
     #trainable_bn=True #scale, shift BN
-    bn = False
+    #bn = False
     trainable_bn=False #scale, shift BN
     #
     mdl_save = True
     #
-    #trainable_S = 'train_S'
-    trainable_S = 'dont_train_S'
+    trainable_S = 'train_S'
+    #trainable_S = 'dont_train_S'
     #
     #data_normalize = 'normalize_input'
     data_normalize = 'dont_normalize'
     cluster = 'home'
     #
     argv_init_S = 'all_same_const-0.1'
+
     #
     #optimization_alg = 'GD'
     #optimization_alg = 'Momentum'
     #optimization_alg = 'Adadelta'
-    optimization_alg = 'Adam' # w := w - m/(sqrt(v)+eps)
+    #optimization_alg = 'Adam' # w := w - m/(sqrt(v)+eps)
     #optimization_alg = 'Adagrad'
-    #optimization_alg = 'RMSProp'
+    optimization_alg = 'RMSProp'
     print '---------> len(argv)', len(argv)
     if is_it_tensorboard_run(argv):
         if len(argv) == 7:

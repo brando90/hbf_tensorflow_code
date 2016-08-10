@@ -36,6 +36,8 @@ def build_HBF2(x, dims, inits, phase_train=None, trainable_bn=True,trainable_S=T
     layer = x
     nb_hidden_layers = len(dims)-1
     for l in xrange(1,nb_hidden_layers): # from 1 to L-1
+        #print nb_hidden_layers
+        #print len(inits_W)
         layer = get_HBF_layer2(l=str(l),x=layer,init=(inits_W[l],inits_S[l]),dims=(dims[l-1],dims[l]),phase_train=phase_train, trainable_bn=trainable_bn,trainable_S=trainable_S)
     return layer
 
@@ -58,11 +60,12 @@ def get_HBF_layer2(l, x, dims, init, phase_train=None, layer_name='HBFLayer', tr
             Z = beta * ( Delta_tilde ) # (M x D^(l))
         # if phase_train is not None:
         #     Z = add_batch_norm_layer(l, Z , phase_train, trainable_bn=trainable_bn)
-        #     #z = add_batch_norm_layer(l, z, phase_train, trainable_bn=trainable_bn)
+        #     Z = tf.abs(Z)
+            #A = tf.exp(-Z) # (M x D^(l))
         with tf.name_scope('A'+l):
             A = tf.exp(Z) # (M x D^(l))
-        if phase_train is not None:
-            A = add_batch_norm_layer(l, A , phase_train, trainable_bn=trainable_bn)
+        # if phase_train is not None:
+        #     A = add_batch_norm_layer(l, A , phase_train, trainable_bn=trainable_bn)
             #z = add_batch_norm_layer(l, z, phase_train, trainable_bn=trainable_bn)
     var_prefix = 'vars_'+layer_name+l
     put_summaries(var=W,prefix_name=var_prefix+W.name,suffix_text=W.name)
@@ -167,6 +170,30 @@ def get_NN_layer(l, x, dims, init, phase_train=None, scope="NNLayer", trainable_
             W = tf.histogram_summary('W'+l, W)
             b = tf.histogram_summary('b'+l, b)
     return a
+
+##
+
+def build_binary_tree(x,filter_size,nb_filters,mean,stddev,stride_convd1=2):
+    ## conv layer
+    l = 'Conv Layer'
+    flat_conv = get_binary_branch(l,x,filter_size,nb_filters,mean=mean,stddev=stddev,stride_convd1=stride_convd1) # N x D_conv_flat = N x (filter_size*nb_filters)
+    ## fully connected layer
+    W = get_W(init_W, l, x, dims, init)
+    f = tf.matmul(W,flat_conv)
+    return f
+
+def get_binary_branch(l,x,filter_size,nb_filters,mean,stddev,stride_convd1=2):
+    '''
+        stride_convd1 # controls the stride for 1D convolution
+    '''
+    # filter shape is "[filter_height, filter_width, in_channels, out_channels]"
+    init_W = tf.tf.truncated_normal(shape=[1,filter_size,1,nb_filters], mean=mean, stddev=stddev, dtype=tf.float32, seed=None, name=None)
+    W_filter = tf.get_variable(name='W'+l, dtype=tf.float64, initializer=init_W, regularizer=None, trainable=True)
+    conv = tf.nn.conv2d(input=x, filter=W, strides=[1, 1, stride_convd1, 1], padding="SAME", name="conv")
+    flat_conv = tf.reshape(conv, [-1,filter_size*nb_filters])
+    return flat_conv
+
+##
 
 def get_W(init_W, l, x, dims, init):
     (dim_input,dim_out) = dims
