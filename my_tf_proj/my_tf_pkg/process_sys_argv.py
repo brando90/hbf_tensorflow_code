@@ -3,9 +3,9 @@ import pdb
 def process_argv(argv):
     print 'print argv =',argv
     print 'len(argv) =',len(argv)
-    #mdl_type = 'standard_nn'
+    mdl_type = 'standard_nn'
     #mdl_type = 'hbf'
-    mdl_type = 'binary_tree'
+    #mdl_type = 'binary_tree'
     # python main_nn.py --logdir=/tmp/mdl_logs
     #
     #train_S_type='multiple_S'
@@ -22,7 +22,7 @@ def process_argv(argv):
 
     experiment_name = 'tmp_experiment'
     train_S_type = 'multiple_S'
-    units_list = [12]
+    units_list = [6,6]
     #units_list = [24,24]
     # units_list = [96,96]
     # task_name = 'task_qianli_func'
@@ -32,11 +32,11 @@ def process_argv(argv):
     # task_name = 'task_f_2d_task2_xsinglog1_x_depth2'
     # task_name = 'task_f2d_2x2_1_cosx1x2_depth_2'
     # task_name = 'task_f2d_2x2_1_cosx1_plus_x2_depth2'
-    # task_name = 'task_MNIST_flat'
-    #task_name = 'task_MNIST_flat_auto_encoder'
-    task_name = 'task_f_4d'
-    experiment_root_dir = 'om_f4d'
-    #experiment_root_dir = 'om_mnist'
+    #task_name = 'task_MNIST_flat'
+    task_name = 'task_MNIST_flat_auto_encoder'
+    #task_name = 'task_f_4d'
+    #experiment_root_dir = 'om_f4d'
+    experiment_root_dir = 'om_mnist'
     # experiment_root_dir = 'om_xsinlog1_x_depth2'
     # experiment_root_dir = 'om_xsinlog1_x_depth2_hbf'
     # experiment_root_dir = 'om_2x2_1_cosx1_plus_x2_depth2'
@@ -45,7 +45,7 @@ def process_argv(argv):
     # task_name = 'task_MNIST_flat'
     #
     bn = True
-    #trainable_bn=True #scale, shift BN
+    trainable_bn=True #scale, shift BN
     #bn = False
     trainable_bn=False #scale, shift BN
     #
@@ -62,11 +62,11 @@ def process_argv(argv):
 
     #
     #optimization_alg = 'GD'
-    #optimization_alg = 'Momentum'
+    optimization_alg = 'Momentum'
     #optimization_alg = 'Adadelta'
     #optimization_alg = 'Adam' # w := w - m/(sqrt(v)+eps)
     #optimization_alg = 'Adagrad'
-    optimization_alg = 'RMSProp'
+    #optimization_alg = 'RMSProp'
     print '---------> len(argv)', len(argv)
     if is_it_tensorboard_run(argv):
         if len(argv) == 7:

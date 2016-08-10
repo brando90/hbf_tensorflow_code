@@ -24,7 +24,7 @@ def get_initilizations_standard_NN(init_type,dims,mu,std,b_init,S_init,X_train,Y
             inits_b.append( tf.constant( b_init[l], shape=[dims[l]], dtype=tf.float64 ) )
         l=len(dims)-1
         print [dims[l-1],dims[l]]
-        inits_C=[ tf.truncated_normal(shape=[dims[l-1],dims[l]], mean=mu, stddev=std, dtype=tf.float64) ]
+        inits_C=[ tf.truncated_normal(shape=[dims[l-1],dims[l]],  mean=mu[l], stddev=std[l], dtype=tf.float64) ]
     elif init_type=='data_init':
         X_train=X_train
         pass
@@ -37,7 +37,7 @@ def get_initilizations_standard_NN(init_type,dims,mu,std,b_init,S_init,X_train,Y
             inits_b.append( tf.constant( b_init[l], shape=[dims[l]], dtype=tf.float64 ) )
         l=len(dims)-1
         print [dims[l-1],dims[l]]
-        inits_C=[ tf.truncated_normal(shape=[dims[l-1],dims[l]], mean=mu, stddev=std, dtype=tf.float64) ]
+        inits_C=[ tf.truncated_normal(shape=[dims[l-1],dims[l]], mean=mu[l], stddev=std[l], dtype=tf.float64) ]
     return (inits_C,inits_W,inits_b)
 
 def get_initilizations_HBF(init_type,dims,mu,std,b_init,S_init,X_train,Y_train,train_S_type='multiple_S'):

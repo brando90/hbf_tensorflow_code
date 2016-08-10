@@ -69,7 +69,6 @@ def get_init_b(argv_init_S,dims):
     print '++===> S/b_init ', b_init
     return b_init
 
-
 re_train = None
 #re_train = 're_train'
 results = {'train_errors':[], 'cv_errors':[],'test_errors':[]}
@@ -225,7 +224,7 @@ else:
     M = 4000 #batch-size
     print '++++> M (batch size) :', M
 
-    starter_learning_rate = 0.1
+    starter_learning_rate = 0.001
     # starter_learning_rate = 0.00001
 
     print '++> starter_learning_rate ', starter_learning_rate
@@ -282,6 +281,7 @@ nb_hidden_layers = nb_layers-1
 print( '-----> Running model: %s. (nb_hidden_layers = %d, nb_layers = %d)' % (model,nb_hidden_layers,nb_layers) )
 print( '-----> Units: %s)' % (dims) )
 if model == 'standard_nn':
+    pca_error = None
     rbf_error = None
     #tensorboard_data_dump = '/tmp/standard_nn_logs'
     float_type = tf.float64
