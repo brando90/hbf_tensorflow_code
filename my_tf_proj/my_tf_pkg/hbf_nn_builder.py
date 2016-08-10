@@ -175,9 +175,12 @@ def get_NN_layer(l, x, dims, init, phase_train=None, scope="NNLayer", trainable_
 
 def build_binary_tree(x,filter_size,nb_filters,mean,stddev,stride_convd1=2):
     ## conv layer
-    l = 'Conv Layer'
+    l = 'Conv_Layer'
     flat_conv = get_binary_branch(l,x,filter_size,nb_filters,mean=mean,stddev=stddev,stride_convd1=stride_convd1) # N x D_conv_flat = N x (filter_size*nb_filters)
     ## fully connected layer
+    init_W = tf.truncated_normal(shape=[1,filter_size*nb_filters], mean=mean, stddev=stddev, dtype=tf.float64, seed=None, name=None)
+    init, dims = None, [-1,-1]
+    l = 'Out_Layer'
     W = get_W(init_W, l, x, dims, init)
     mdl = tf.matmul(W,flat_conv)
     return mdl
@@ -189,9 +192,11 @@ def get_binary_branch(l,x,filter_size,nb_filters,mean,stddev,stride_convd1=2):
     # filter shape is "[filter_height, filter_width, in_channels, out_channels]"
     init_W = tf.truncated_normal(shape=[1,filter_size,1,nb_filters], mean=mean, stddev=stddev, dtype=tf.float64, seed=None, name=None)
     W_filters = tf.get_variable(name='W'+l, dtype=tf.float64, initializer=init_W, regularizer=None, trainable=True)
-    conv = tf.nn.conv2d(input=x, filter=W_filters, strides=[1, 1, stride_convd1, 1], padding="SAME", name="conv")
+    #b = tf.get_variable(tf.constant(0.1, shape=[-1,filter_size*nb_filters]) )
+    #W_filters = np.array([[1, 3, 5],[2, 4, 6]]).reshape(1,filter_size,1,nb_filters)
+    conv = tf.nn.conv2d(input=x, filter=W_filters, strides=[1, 1, stride_convd1, 1], padding="SAME", name="conv", use_cudnn_on_gpu=True)
     flat_conv = tf.reshape(conv, [-1,filter_size*nb_filters])
-    A = tf.relu(flat_conv)
+    A = tf.nn.relu(flat_conv )
     return A
 
 ##
