@@ -78,6 +78,7 @@ results = {'train_errors':[], 'cv_errors':[],'test_errors':[]}
 results['task_name'] = task_name
 results['argv_init_S'] = argv_init_S
 results['train_S_type'] = train_S_type
+results['trainable_S'] = trainable_S
 
 use_tensorboard = mtf.is_it_tensorboard_run(sys.argv)
 #use_tensorboard =  False
@@ -152,7 +153,7 @@ if cluster == 'OM7':
 
     report_error_freq = 50
     #steps = np.random.randint(low=3000,high=6000)
-    steps = 9000
+    steps = 14000
     M = np.random.randint(low=3000, high=9000)
     #M = 17000 #batch-size
     #M = 5000
@@ -174,6 +175,7 @@ if cluster == 'OM7':
     if optimization_alg == 'GD':
         pass
     elif optimization_alg=='Momentum':
+        #use_nesterov=False
         #momentum = 0.9
         momentum=np.random.uniform(low=0.4, high=0.99)
     elif optimization_alg == 'Adadelta':
@@ -200,13 +202,15 @@ else:
     dims = [D]+units_list+[D_out]
     mu_init = 0.0
     mu = len(dims)*[mu_init]
-    std_init = 0.1
+    std_init = 0.01
     std = len(dims)*[std_init]
+    #std = [None, std_init,std_init,10]
+    print 'std: ', std
     #low_const, high_const = 0.4, 1.0
-    init_constant = 105.3262
+    init_constant = 60
     #init_constant = 2.0
-    #b_init = len(dims)*[init_constant]
-    b_init = [None, init_constant, 3.0]
+    b_init = len(dims)*[init_constant]
+    #b_init = [None, init_constant, 2.4]
     print '++> S/b_init ', b_init
     S_init = b_init
     #
@@ -217,8 +221,8 @@ else:
     phase_train = tf.placeholder(tf.bool, name='phase_train') if bn else  None
 
     report_error_freq = 25
-    steps = 7000
-    M = 3000 #batch-size
+    steps = 14000
+    M = 4000 #batch-size
     print '++++> M (batch size) :', M
 
     starter_learning_rate = 0.1
@@ -226,14 +230,15 @@ else:
 
     print '++> starter_learning_rate ', starter_learning_rate
     ## decayed_learning_rate = learning_rate * decay_rate ^ (global_step / decay_steps)
-    decay_rate = 0.9
-    decay_steps = 2000
+    decay_rate = 0.8
+    decay_steps = 1000
     staircase = True
     print '++> decay_rate ', decay_rate
     print '++> decay_steps ', decay_steps
     print '++> staircase ', staircase
 
     if optimization_alg=='Momentum':
+        #use_nesterov=False
         momentum = 0.9
     elif optimization_alg == 'Adadelta':
         rho = 0.95
@@ -245,8 +250,9 @@ else:
         beta2=nhigh=0.999 # v = b2 v + (1 - b2)v
         # w := w - m/(sqrt(v)+eps)
     elif optimization_alg =='RMSProp':
-        decay = 0.001
-        momentum = 0.0
+        decay = 0.9 #Discounting factor for the history/coming gradient
+        momentum = 0.75
+        #momentum = 0.0
 
 ##############################
 ##
@@ -259,7 +265,7 @@ if task_name == 'task_MNIST_flat_auto_encoder':
     else:
         k = units_list[0] * len(units_list)
     if not k in PCA_errors.keys():
-        print 'COMPUTING PCA...'
+        print 'COMPUTING PCA... k = ', k
         X_reconstruct_pca, _, _ = mtf. get_reconstruction_pca(X_train,k=units_list[0])
         pca_error = mtf.report_l2_loss(Y=X_train,Y_pred=X_reconstruct_pca)
         PCA_errors[k] = pca_error
@@ -291,6 +297,17 @@ elif model == 'hbf':
     with tf.name_scope("HBF") as scope:
         mdl = mtf.build_HBF2(x,dims,(inits_C,inits_W,inits_S),phase_train,trainable_bn,trainable_S)
         mdl = mtf.get_summation_layer(l=str(nb_layers),x=mdl,init=inits_C[0])
+elif model == 'binary_tree':
+    #tensorboard_data_dump = '/tmp/hbf_logs'
+    rbf_error = None
+    #
+    filter_size = 2
+    nb_filters = 3
+    mean = 0.0
+    stddev = 1.0
+    x = tf.placeholder(tf.float64, shape=[None,1,D,1], name='x-input')
+    with tf.name_scope("build_binary_model") as scope:
+        mdl = mtf.build_binary_tree(x,filter_size,nb_filters,mean,stddev,stride_convd1=2)
 
 ##
 hbf1_error = None
@@ -303,7 +320,8 @@ if rbf_error != None:
         rbf_error, _, _, _, _ = mtf.report_RBF_error_from_data(X_train, X_train, nb_units, S_init[1])
         print rbf_error
         hbf1={12:26.7595}
-        hbf1_error = hbf1[k]
+        if k in hbf1.keys():
+            hbf1_error = hbf1[k]
     else:
         nb_units = dims
         rbf_error, _, _, _, _ = mtf.report_RBF_error_from_data(X_train, X_train, nb_units, S_init[1])
