@@ -144,7 +144,7 @@ if cluster == 'OM7':
     std = len(dims)*[std_init]
 
     #b_init = get_init_b(argv_init_S,dims)
-    if mdl_type == 'binary_tree':
+    if mdl_type == 'binary_tree' or mdl_type='standard_nn':
         b_init = 0.1
     else:
         b_init = get_init_b(argv_init_S,dims)
