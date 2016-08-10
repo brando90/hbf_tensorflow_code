@@ -177,20 +177,26 @@ if cluster == 'OM7':
         #use_nesterov=False
         #momentum = 0.9
         momentum=np.random.uniform(low=0.4, high=0.99)
+        results['momentum']=float(momentum)
     elif optimization_alg == 'Adadelta':
         #rho = 0.95
         rho=np.random.uniform(low=0.4, high=0.99)
+        results['rho']=float(rho)
     elif optimization_alg == 'Adagrad':
         #only has learning rate
         pass
     elif optimization_alg == 'Adam':
         beta1=0.99 # m = b1m + (1 - b1)m
-        beta2=nhigh=0.999 # v = b2 v + (1 - b2)v
+        beta2=0.999 # v = b2 v + (1 - b2)v
         #beta1=np.random.uniform(low=0.7, high=0.99) # m = b1m + (1 - b1)m
         #beta2=np.random.uniform(low=0.8, high=0.999) # v = b2 v + (1 - b2)v
+        results['beta1']=float(beta1)
+        results['beta2']=float(beta2)
     elif optimization_alg == 'RMSProp':
         decay = np.random.uniform(low=0.75,high=0.99)
         momentum = np.random.uniform(low=0.3,high=0.9)
+        results['decay']=float(decay)
+        results['momentum']=float(momentum)
     else:
         pass
 
@@ -220,8 +226,8 @@ else:
     phase_train = tf.placeholder(tf.bool, name='phase_train') if bn else  None
 
     report_error_freq = 25
-    steps = 5000
-    M = 9000 #batch-size
+    steps = 2000
+    M = 1000 #batch-size
     print '++++> M (batch size) :', M
 
     starter_learning_rate = 0.001
@@ -239,8 +245,10 @@ else:
     if optimization_alg=='Momentum':
         #use_nesterov=False
         momentum = 0.4
+        results['momentum']=float(momentum)
     elif optimization_alg == 'Adadelta':
         rho = 0.95
+        results['rho']=float(rho)
     elif optimization_alg == 'Adagrad':
         #only has learning rate
         pass
@@ -248,10 +256,14 @@ else:
         beta1=0.99 # m = b1m + (1 - b1)m
         beta2=nhigh=0.999 # v = b2 v + (1 - b2)v
         # w := w - m/(sqrt(v)+eps)
+        results['beta1']=float(beta1)
+        results['beta2']=float(beta2)
     elif optimization_alg =='RMSProp':
         decay = 0.9 #Discounting factor for the history/coming gradient
         momentum = 0.75
         #momentum = 0.0
+        results['decay']=float(decay)
+        results['momentum']=float(momentum)
 
 ##############################
 ##
