@@ -277,7 +277,6 @@ S_init = b_init
 ##
 
 ## Make Model
-x = tf.placeholder(tf.float64, shape=[None, D], name='x-input') # M x D
 nb_layers = len(dims)-1
 nb_hidden_layers = nb_layers-1
 print( '-----> Running model: %s. (nb_hidden_layers = %d, nb_layers = %d)' % (model,nb_hidden_layers,nb_layers) )
@@ -285,6 +284,8 @@ print( '-----> Units: %s)' % (dims) )
 if model == 'standard_nn':
     rbf_error = None
     #tensorboard_data_dump = '/tmp/standard_nn_logs'
+    float_type = tf.float64
+    x = tf.placeholder(float_type, shape=[None, D], name='x-input') # M x D
     (inits_C,inits_W,inits_b) = mtf.get_initilizations_standard_NN(init_type=init_type,dims=dims,mu=mu,std=std,b_init=b_init,S_init=S_init, X_train=X_train, Y_train=Y_train)
     with tf.name_scope("standardNN") as scope:
         mdl = mtf.build_standard_NN(x,dims,(inits_C,inits_W,inits_b),phase_train,trainable_bn)
@@ -292,6 +293,8 @@ if model == 'standard_nn':
     inits_S = inits_b
 elif model == 'hbf':
     #tensorboard_data_dump = '/tmp/hbf_logs'
+    float_type = tf.float64
+    x = tf.placeholder(float_type, shape=[None, D], name='x-input') # M x D
     (inits_C,inits_W,inits_S,rbf_error) = mtf.get_initilizations_HBF(init_type=init_type,dims=dims,mu=mu,std=std,b_init=b_init,S_init=S_init, X_train=X_train, Y_train=Y_train, train_S_type=train_S_type)
     print inits_W
     with tf.name_scope("HBF") as scope:
@@ -299,15 +302,37 @@ elif model == 'hbf':
         mdl = mtf.get_summation_layer(l=str(nb_layers),x=mdl,init=inits_C[0])
 elif model == 'binary_tree':
     #tensorboard_data_dump = '/tmp/hbf_logs'
+    inits_S = None
+    pca_error = None
     rbf_error = None
+    float_type = tf.float32
+    # things that need reshaping
+    N_cv = X_cv.shape[0]
+    N_test = X_test.shape[0]
+    #
+    X_train = X_train.reshape(N_train,1,D,1)
+    #Y_train = Y_train.reshape(N_train,1,D,1)
+    X_cv = X_cv.reshape(N_cv,1,D,1)
+    #Y_cv = Y_cv.reshape(N_cv,1,D,1)
+    X_test = X_test.reshape(N_test,1,D,1)
+    #Y_test = Y_test.reshape(N_test,1,D,1)
+    x = tf.placeholder(float_type, shape=[None,1,D,1], name='x-input')
     #
     filter_size = 2
     nb_filters = 3
     mean = 0.0
     stddev = 1.0
-    x = tf.placeholder(tf.float64, shape=[None,1,D,1], name='x-input')
+    x = tf.placeholder(float_type, shape=[None,1,D,1], name='x-input')
     with tf.name_scope("build_binary_model") as scope:
         mdl = mtf.build_binary_tree(x,filter_size,nb_filters,mean,stddev,stride_convd1=2)
+
+## Output and Loss
+y = mdl
+y_ = tf.placeholder(float_type, shape=[None, D_out]) # (M x D)
+with tf.name_scope("L2_loss") as scope:
+    l2_loss = tf.reduce_sum( tf.reduce_mean(tf.square(y_-y), 0) )
+    #l2_loss = (2.0/N_train)*tf.nn.l2_loss(y_-y)
+    #l2_loss = tf.reduce_mean(tf.square(y_-y))
 
 ##
 hbf1_error = None
@@ -325,15 +350,6 @@ if rbf_error != None:
     else:
         nb_units = dims
         rbf_error, _, _, _, _ = mtf.report_RBF_error_from_data(X_train, X_train, nb_units, S_init[1])
-
-
-## Output and Loss
-y = mdl
-y_ = tf.placeholder(tf.float64, shape=[None, D_out]) # (M x D)
-with tf.name_scope("L2_loss") as scope:
-    l2_loss = tf.reduce_sum( tf.reduce_mean(tf.square(y_-y), 0) )
-    #l2_loss = (2.0/N_train)*tf.nn.l2_loss(y_-y)
-    #l2_loss = tf.reduce_mean(tf.square(y_-y))
 
 with tf.name_scope("train") as scope:
     # starter_learning_rate = 0.0000001
@@ -373,17 +389,18 @@ else:
 with tf.name_scope("l2_loss") as scope:
     ls_scalar_summary = tf.scalar_summary("l2_loss", l2_loss)
 
-with tf.name_scope('input_reshape'):
-    x_image = tf.to_float(x, name='ToFloat')
-    image_shaped_input_x = tf.reshape(x_image, [-1, 28, 28, 1])
-    # tf.image_summary(tag, tensor, max_images=3, collections=None, name=None)
-    tf.image_summary('input', image_shaped_input_x, 10)
+if task_name == 'task_MNIST_flat_auto_encoder':
+    with tf.name_scope('input_reshape'):
+        x_image = tf.to_float(x, name='ToFloat')
+        image_shaped_input_x = tf.reshape(x_image, [-1, 28, 28, 1])
+        # tf.image_summary(tag, tensor, max_images=3, collections=None, name=None)
+        tf.image_summary('input', image_shaped_input_x, 10)
 
-with tf.name_scope('reconstruct'):
-    y_image = tf.to_float(y, name='ToFloat')
-    image_shaped_input_y = tf.reshape(x_image, [-1, 28, 28, 1])
-    # tf.image_summary(tag, tensor, max_images=3, collections=None, name=None)
-    tf.image_summary('reconstruct', image_shaped_input_y, 10)
+    with tf.name_scope('reconstruct'):
+        y_image = tf.to_float(y, name='ToFloat')
+        image_shaped_input_y = tf.reshape(x_image, [-1, 28, 28, 1])
+        # tf.image_summary(tag, tensor, max_images=3, collections=None, name=None)
+        tf.image_summary('reconstruct', image_shaped_input_y, 10)
 
 def register_all_variables_and_grads(y):
     all_vars = tf.all_variables()
