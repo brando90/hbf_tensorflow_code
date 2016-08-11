@@ -465,9 +465,10 @@ def print_messages(*args):
     for i, msg in enumerate(args):
         print ('>',msg)
 
-if tf.gfile.Exists('/tmp/mdl_logs'):
-  tf.gfile.DeleteRecursively('/tmp/mdl_logs')
-tf.gfile.MakeDirs('/tmp/mdl_logs')
+if use_tensorboard:
+    if tf.gfile.Exists('/tmp/mdl_logs'):
+      tf.gfile.DeleteRecursively('/tmp/mdl_logs')
+    tf.gfile.MakeDirs('/tmp/mdl_logs')
 
 tf.add_check_numerics_ops()
 
