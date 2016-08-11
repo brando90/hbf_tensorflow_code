@@ -157,7 +157,7 @@ if cluster == 'OM7':
 
     report_error_freq = 100
     #steps = np.random.randint(low=3000,high=6000)
-    steps = 1000
+    steps = 20000
     M = np.random.randint(low=500, high=9000)
     #M = 17000 #batch-size
     #M = 5000
