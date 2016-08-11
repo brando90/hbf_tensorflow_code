@@ -141,22 +141,23 @@ if cluster == 'OM7':
     mu_init = 0.0
     mu = len(dims)*[mu_init]
     std_init = 0.1
+    std_init = float( np.random.uniform(low=0.001, high=0.5) )
     std = len(dims)*[std_init]
 
-    #b_init = get_init_b(argv_init_S,dims)
-    if mdl_type == 'binary_tree' or mdl_type='standard_nn':
-        b_init = 0.1
-    else:
-        b_init = get_init_b(argv_init_S,dims)
+    b_init = get_init_b(argv_init_S,dims)
+    # if mdl_type == 'binary_tree' or mdl_type=='standard_nn':
+    #     b_init = 0.1
+    # else:
+    #     b_init = get_init_b(argv_init_S,dims)
 
     model = mdl_type
     max_to_keep = 1
 
     phase_train = tf.placeholder(tf.bool, name='phase_train') if bn else  None
 
-    report_error_freq = 50
+    report_error_freq = 100
     #steps = np.random.randint(low=3000,high=6000)
-    steps = 20000
+    steps = 1000
     M = np.random.randint(low=500, high=9000)
     #M = 17000 #batch-size
     #M = 5000
@@ -211,12 +212,13 @@ else:
     dims = [D]+units_list+[D_out]
     mu_init = 0.0
     mu = len(dims)*[mu_init]
+    #std_init = 0.01
     std_init = 0.01
     std = len(dims)*[std_init]
     #std = [None, std_init,std_init,10]
     print 'std: ', std
     #low_const, high_const = 0.4, 1.0
-    init_constant = 60
+    init_constant = 0.1
     #init_constant = 2.0
     b_init = len(dims)*[init_constant]
     #b_init = [None, init_constant, 2.4]
@@ -229,17 +231,17 @@ else:
 
     phase_train = tf.placeholder(tf.bool, name='phase_train') if bn else  None
 
-    report_error_freq = 25
-    steps = 2000
+    report_error_freq = 100
+    steps = 9000
     M = 1000 #batch-size
     print '++++> M (batch size) :', M
 
-    starter_learning_rate = 0.001
+    starter_learning_rate = 0.1
     # starter_learning_rate = 0.00001
 
     print '++> starter_learning_rate ', starter_learning_rate
     ## decayed_learning_rate = learning_rate * decay_rate ^ (global_step / decay_steps)
-    decay_rate = 0.8
+    decay_rate = 0.99
     decay_steps = 1000
     staircase = True
     print '++> decay_rate ', decay_rate
@@ -248,7 +250,7 @@ else:
 
     if optimization_alg=='Momentum':
         #use_nesterov=False
-        momentum = 0.4
+        momentum = 0.8
         results['momentum']=float(momentum)
     elif optimization_alg == 'Adadelta':
         rho = 0.95
@@ -263,8 +265,8 @@ else:
         results['beta1']=float(beta1)
         results['beta2']=float(beta2)
     elif optimization_alg =='RMSProp':
-        decay = 0.9 #Discounting factor for the history/coming gradient
-        momentum = 0.75
+        decay = 0.75 #Discounting factor for the history/coming gradient
+        momentum = 0.9
         #momentum = 0.0
         results['decay']=float(decay)
         results['momentum']=float(momentum)
@@ -287,6 +289,25 @@ if task_name == 'task_MNIST_flat_auto_encoder':
     else:
         pca_error = PCA_errors[k]
     print '*************> PCA error: ', pca_error
+else:
+    pca_error = None
+    rbf_error = None
+
+hbf1_error = None
+if model == 'hbf':
+    #error, Y_pred, Kern, C, subsampled_data_points = report_RBF_error_from_data(X_train, dims, stddev)
+    if len(units_list) > 1:
+        k = units_list[0]*len(units_list)
+        print 'k', k
+        nb_units = [None, k]
+        rbf_error, _, _, _, _ = mtf.report_RBF_error_from_data(X_train, X_train, nb_units, S_init[1])
+        print rbf_error
+        hbf1={12:26.7595}
+        if k in hbf1.keys():
+            hbf1_error = hbf1[k]
+    else:
+        nb_units = dims
+        rbf_error, _, _, _, _ = mtf.report_RBF_error_from_data(X_train, X_train, nb_units, S_init[1])
 
 S_init = b_init
 ##
@@ -297,7 +318,6 @@ nb_hidden_layers = nb_layers-1
 print( '-----> Running model: %s. (nb_hidden_layers = %d, nb_layers = %d)' % (model,nb_hidden_layers,nb_layers) )
 print( '-----> Units: %s)' % (dims) )
 if model == 'standard_nn':
-    pca_error = None
     rbf_error = None
     #tensorboard_data_dump = '/tmp/standard_nn_logs'
     float_type = tf.float64
@@ -353,21 +373,6 @@ with tf.name_scope("L2_loss") as scope:
     #l2_loss = tf.reduce_mean(tf.square(y_-y))
 
 ##
-hbf1_error = None
-if rbf_error != None:
-    #error, Y_pred, Kern, C, subsampled_data_points = report_RBF_error_from_data(X_train, dims, stddev)
-    if len(units_list) > 1:
-        k = units_list[0]*len(units_list)
-        print 'k', k
-        nb_units = [None, k]
-        rbf_error, _, _, _, _ = mtf.report_RBF_error_from_data(X_train, X_train, nb_units, S_init[1])
-        print rbf_error
-        hbf1={12:26.7595}
-        if k in hbf1.keys():
-            hbf1_error = hbf1[k]
-    else:
-        nb_units = dims
-        rbf_error, _, _, _, _ = mtf.report_RBF_error_from_data(X_train, X_train, nb_units, S_init[1])
 
 with tf.name_scope("train") as scope:
     # starter_learning_rate = 0.0000001
