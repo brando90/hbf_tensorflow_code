@@ -46,7 +46,7 @@ def get_HBF_layer2(l, x, dims, init, phase_train=None, layer_name='HBFLayer', tr
     with tf.name_scope(layer_name+l):
         with tf.name_scope('templates'+l):
             #W = tf.get_variable(name='W'+l, dtype=tf.float64, initializer=init_W, regularizer=None, trainable=True)
-            W = get_W(init_W, l, x, dims, init)
+            W = get_W(init_W, l, dims)
         with tf.name_scope('rbf_stddev'+l):
             print '--> init_S: ', init_S
             print '--> trainable_S: ', trainable_S
@@ -82,7 +82,7 @@ def get_HBF_layer3(l, x, dims, init, phase_train=None, layer_name='HBFLayer', tr
     with tf.name_scope(layer_name+l):
         with tf.name_scope('templates'+l):
             #W = tf.get_variable(name='W'+l, dtype=tf.float64, initializer=init_W, regularizer=None, trainable=True)
-            W = get_W(init_W, l, x, dims, init)
+            W = get_W(init_W, l, dims)
         with tf.name_scope('rbf_stddev'+l):
             print '--> init_S: ', init_S
             print '--> trainable_S: ', trainable_S
@@ -156,20 +156,30 @@ def variable_summaries(var, name):
 def get_NN_layer(l, x, dims, init, phase_train=None, scope="NNLayer", trainable_bn=True):
     (init_W,init_b) = init
     with tf.name_scope(scope+l):
-        W = get_W(init_W, l, x, dims, init)
+        print 'init_W ', init_W
+        W = get_W(init_W, l, dims)
         b = tf.get_variable(name='b'+l, dtype=tf.float64, initializer=init_b, regularizer=None, trainable=True)
         with tf.name_scope('Z'+l):
-            z = tf.matmul(x,W) + b
+            Z = tf.matmul(x,W) + b
             if phase_train is not None:
                 #z = standard_batch_norm(l, z, 1, phase_train)
-                z = add_batch_norm_layer(l, z, phase_train, trainable_bn=trainable_bn)
+                Z = add_batch_norm_layer(l, Z, phase_train, trainable_bn=trainable_bn)
         with tf.name_scope('A'+l):
-            a = tf.nn.relu(z) # (M x D1) = (M x D) * (D x D1)
+            A = tf.nn.relu(Z) # (M x D1) = (M x D) * (D x D1)
             #a = tf.sigmoid(z)
-        with tf.name_scope('sumarries'+l):
-            W = tf.histogram_summary('W'+l, W)
-            b = tf.histogram_summary('b'+l, b)
-    return a
+    with tf.name_scope('sumarries'+l):
+        #W = tf.histogram_summary('W'+l, W)
+        #b = tf.histogram_summary('b'+l, b)
+        layer_name = scope
+        var_prefix = 'vars_'+layer_name+l
+        put_summaries(var=W,prefix_name=var_prefix+W.name,suffix_text=W.name)
+        put_summaries(var=b,prefix_name=var_prefix+b.name,suffix_text=b.name)
+        act_stats = 'acts_'+layer_name+l
+        put_summaries(Z,prefix_name=act_stats+'Z'+l,suffix_text='Z'+l)
+        put_summaries(A,prefix_name=act_stats+'A'+l,suffix_text='A'+l)
+        #put_summaries(Delta_tilde,prefix_name=act_stats+'Delta_tilde'+l,suffix_text='Delta_tilde'+l)
+        #put_summaries(beta,prefix_name=act_stats+'beta'+l,suffix_text='beta'+l)
+    return A
 
 ##
 
@@ -184,7 +194,7 @@ def build_binary_tree(x,filter_size,nb_filters,mean,stddev,stride_convd1=2):
     mdl = tf.matmul(flat_conv,C)
     return mdl
 
-def get_binary_branch(l,x,filter_size,nb_filters,mean,stddev,stride_convd1=2):
+def get_binary_branch(l,x,filter_size,nb_filters,mean,stddev,name=None, stride_convd1=2):
     '''
         stride_convd1 # controls the stride for 1D convolution
     '''
@@ -202,12 +212,50 @@ def get_binary_branch(l,x,filter_size,nb_filters,mean,stddev,stride_convd1=2):
 
 ##
 
-def get_W(init_W, l, x, dims, init, dtype=tf.float64):
+def build_binary_tree_8D(x,filter_size,nb_filters,mean,stddev,stride_convd1=2):
+    # filter shape is "[filter_height, filter_width, in_channels, out_channels]"
+    init_W = tf.truncated_normal(shape=[1,filter_size,1,nb_filters], mean=mean, stddev=stddev, dtype=tf.float32, seed=None, name=None)
+    W_filters = tf.get_variable(name='W'+l, dtype=tf.float32, initializer=init_W, regularizer=None, trainable=True)
+    #bias
+    b = tf.Variable( tf.constant(0.1, shape=[nb_filters]) )
+    # left BT
+    Y_11 = get_binary_subtree(l='Y11',x=x[0:4],W_filters=W_filters,b,stride_convd1=2)
+    Y_12 = get_binary_subtree(l='Y12',x=x[4:8],W_filters=W_filters,b,stride_convd1=2)
+    # right BT
+    Y_13 = get_binary_subtree(l='Y13',x=x[8:12],W_filters=W_filters,b,stride_convd1=2)
+    Y_14 = get_binary_subtree(l='Y14',x=x[12:16],W_filters=W_filters,b,stride_convd1=2)
+    #
+    Y_1 = tf.concat(0, [Y_11, Y_12]) # 4 x nb_filters
+    Y_2 = tf.concat(0, [Y_13, Y_14]) # 4 x nb_filters
+    #
+    K_tilde = 4 # unhard code it
+    init_W_tilde = tf.truncated_normal(shape=[K_tilde,nb_filters], mean=mean, stddev=stddev, dtype=tf.float32, seed=None, name=None)
+    W_filters_tilde = tf.get_variable(name='W'+l, dtype=tf.float32, initializer=init_W_tilde, regularizer=None, trainable=True)
+    tf.matmul(A_left,)
+    return mdl
+
+def get_binary_subtree(l,x,W_filters,stride_convd1=2):
+    '''
+        filter shape is "[filter_height, filter_width, in_channels, out_channels]"
+        stride_convd1 # controls the stride for 1D convolution
+    '''
+    # 1D conv
+    conv = tf.nn.conv2d(input=x, filter=W_filters, strides=[1, 1, stride_convd1, 1], padding="SAME", name="conv") + b
+    # get activations
+    #A = tf.reshape( tf.nn.relu(conv), [-1,filter_size*nb_filters] )
+    #flat_conv = tf.reshape(conv, [-1,filter_size*nb_filters])
+    A = tf.nn.relu( flat_conv )
+    return A
+
+##
+
+def get_W(init_W, l, dims, dtype=tf.float64):
     if isinstance(init_W, tf.python.framework.ops.Tensor):
         print 'isinstance'
         W = tf.get_variable(name='W'+l, dtype=dtype, initializer=init_W, regularizer=None, trainable=True)
     else:
         print 'XAVIER'
+        print dims
         (dim_input,dim_out) = dims
         W = tf.get_variable(name='W'+l, dtype=dtype, initializer=init_W, regularizer=None, trainable=True, shape=[dim_input,dim_out])
     return W

@@ -3,9 +3,9 @@ import pdb
 def process_argv(argv):
     print 'print argv =',argv
     print 'len(argv) =',len(argv)
-    #mdl_type = 'standard_nn'
+    mdl_type = 'standard_nn'
     #mdl_type = 'hbf'
-    mdl_type = 'binary_tree'
+    #mdl_type = 'binary_tree'
     # python main_nn.py --logdir=/tmp/mdl_logs
     #
     #train_S_type='multiple_S'
@@ -22,7 +22,7 @@ def process_argv(argv):
 
     experiment_name = 'tmp_experiment'
     train_S_type = 'multiple_S'
-    units_list = [5]
+    units_list = [12,12]
     nb_filters = 6
     #units_list = [24,24]
     # units_list = [96,96]
@@ -34,10 +34,10 @@ def process_argv(argv):
     # task_name = 'task_f2d_2x2_1_cosx1x2_depth_2'
     # task_name = 'task_f2d_2x2_1_cosx1_plus_x2_depth2'
     #task_name = 'task_MNIST_flat'
-    #task_name = 'task_MNIST_flat_auto_encoder'
-    task_name = 'task_f_4d'
-    experiment_root_dir = 'om_f4d'
-    #experiment_root_dir = 'om_mnist'
+    task_name = 'task_MNIST_flat_auto_encoder'
+    #task_name = 'task_f_4d'
+    #experiment_root_dir = 'om_f4d'
+    experiment_root_dir = 'om_mnist'
     # experiment_root_dir = 'om_xsinlog1_x_depth2'
     # experiment_root_dir = 'om_xsinlog1_x_depth2_hbf'
     # experiment_root_dir = 'om_2x2_1_cosx1_plus_x2_depth2'

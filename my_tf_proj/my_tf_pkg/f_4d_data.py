@@ -35,7 +35,7 @@ def generate_data_4D(N_train=60000, N_cv=60000, N_test=60000, low_x=-1, high_x=1
     Y_test = get_labels_4D(X_test, f)
     return (X_train, Y_train, X_cv, Y_cv, X_test, Y_test)
 
-def make_data_set():
+def make_data_set_4D():
     X_train, Y_train, X_cv, Y_cv, X_test, Y_test = generate_data_4D()
     file_name = 'f_4d_task.npz'
     np.savez(file_name, X_train=X_train,Y_train=Y_train, X_cv=X_cv,Y_cv=Y_cv, X_test=X_test,Y_test=Y_test)
