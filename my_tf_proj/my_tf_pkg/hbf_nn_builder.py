@@ -212,40 +212,77 @@ def get_binary_branch(l,x,filter_size,nb_filters,mean,stddev,name=None, stride_c
 
 ##
 
-def build_binary_tree_8D(x,filter_size,nb_filters,mean,stddev,stride_convd1=2):
+def build_binary_tree_8D(x,nb_filters1,nb_filters2,mean1,stddev1,mean2,stddev2,stride_convd1=2):
     # filter shape is "[filter_height, filter_width, in_channels, out_channels]"
-    init_W = tf.truncated_normal(shape=[1,filter_size,1,nb_filters], mean=mean, stddev=stddev, dtype=tf.float32, seed=None, name=None)
+    filter_size1 = 2
+    init_W = tf.truncated_normal(shape=[1,filter_size,1,nb_filters], mean=mean1, stddev=stddev1, dtype=tf.float32, seed=None, name=None)
+    l='conv1'
     W_filters = tf.get_variable(name='W'+l, dtype=tf.float32, initializer=init_W, regularizer=None, trainable=True)
     #bias
     b = tf.Variable( tf.constant(0.1, shape=[nb_filters]) )
-    # left BT
-    Y_11 = get_binary_subtree(l='Y11',x=x[0:4],W_filters=W_filters,b,stride_convd1=2)
-    Y_12 = get_binary_subtree(l='Y12',x=x[4:8],W_filters=W_filters,b,stride_convd1=2)
-    # right BT
-    Y_13 = get_binary_subtree(l='Y13',x=x[8:12],W_filters=W_filters,b,stride_convd1=2)
-    Y_14 = get_binary_subtree(l='Y14',x=x[12:16],W_filters=W_filters,b,stride_convd1=2)
+    # BT
+    Y_11 = get_binary_subtree(l='Y11',x=x[0:4],W_filters=W_filters,b,stride_convd1=stride_convd1) # M, 2 x nb_filters
+    Y_12 = get_binary_subtree(l='Y12',x=x[4:8],W_filters=W_filters,b,stride_convd1=stride_convd1) # M, 2 x nb_filters
+    Y_2 = tf.concat(1, [Y_11, Y_12]) # M, 4 x nb_filters
+    Y_2 = tf.reshape(Y_2, [-1,1,4*nb_filters,1]) # [N, 1, d, 1]
     #
-    Y_1 = tf.concat(0, [Y_11, Y_12]) # 4 x nb_filters
-    Y_2 = tf.concat(0, [Y_13, Y_14]) # 4 x nb_filters
-    #
-    K_tilde = 4 # unhard code it
-    init_W_tilde = tf.truncated_normal(shape=[K_tilde,nb_filters], mean=mean, stddev=stddev, dtype=tf.float32, seed=None, name=None)
+    stride_convd1 = 4*nb_filters1 # unhard code it
+    filter_size2 = stride_convd1
+    init_W_tilde = tf.truncated_normal(shape=[1,filter_size2,1,nb_filters2], mean=mean2, stddev=stddev2, dtype=tf.float32, seed=None, name=None)
+    l='conv2'
     W_filters_tilde = tf.get_variable(name='W'+l, dtype=tf.float32, initializer=init_W_tilde, regularizer=None, trainable=True)
-    tf.matmul(A_left,)
+    #
+    l = 'Out_Layer'
+    init_W = tf.truncated_normal(shape=[filter_size*nb_filters,1], mean=mean, stddev=stddev, dtype=tf.float32, seed=None, name=None)
+    C = tf.get_variable(name='W'+l, dtype=tf.float32, initializer=init_W, regularizer=None, trainable=True)
+    mdl = tf.matmul(flat_conv,C)
     return mdl
 
-def get_binary_subtree(l,x,W_filters,stride_convd1=2):
+def get_binary_subtree(l,x,W_filters,b,stride_convd1=2):
     '''
+        x = (M, 1, D, 1)
+        b = [nb_filters]
+        W_filters = (1,filter_size,1,nb_filters)  == "[filter_height, filter_width, in_channels, out_channels]"
         filter shape is "[filter_height, filter_width, in_channels, out_channels]"
         stride_convd1 # controls the stride for 1D convolution
     '''
     # 1D conv
-    conv = tf.nn.conv2d(input=x, filter=W_filters, strides=[1, 1, stride_convd1, 1], padding="SAME", name="conv") + b
+    # M, 1, 2, nb_filters
+    conv = tf.nn.conv2d(input=x, filter=W_filters, strides=[1, 1, stride_convd1, 1], padding="SAME", name="conv")
     # get activations
-    #A = tf.reshape( tf.nn.relu(conv), [-1,filter_size*nb_filters] )
-    #flat_conv = tf.reshape(conv, [-1,filter_size*nb_filters])
-    A = tf.nn.relu( flat_conv )
-    return A
+    A = tf.nn.relu( conv + b ) # M, 1, 2, nb_filters
+    A_flat = tf.reshape(A, [-1,filter_size*nb_filters]) # M , filter_size*nb_filters
+    return A_flat
+
+#
+
+def build_binary_tree_16D(x,nb_filters1,nb_filters2,mean,stddev,stride_convd1=2):
+    # # filter shape is "[filter_height, filter_width, in_channels, out_channels]"
+    # filter_size1 = 2
+    # init_W = tf.truncated_normal(shape=[1,filter_size,1,nb_filters], mean=mean, stddev=stddev, dtype=tf.float32, seed=None, name=None)
+    # W_filters = tf.get_variable(name='W'+l, dtype=tf.float32, initializer=init_W, regularizer=None, trainable=True)
+    # #bias
+    # b = tf.Variable( tf.constant(0.1, shape=[nb_filters]) )
+    # # left BT
+    # Y_11 = get_binary_subtree(l='Y11',x=x[0:4],W_filters=W_filters,b,stride_convd1=2) # M, 2 x nb_filters
+    # Y_12 = get_binary_subtree(l='Y12',x=x[4:8],W_filters=W_filters,b,stride_convd1=2) # M, 2 x nb_filters
+    # # right BT
+    # Y_13 = get_binary_subtree(l='Y13',x=x[8:12],W_filters=W_filters,b,stride_convd1=2) # M, 2 x nb_filters
+    # Y_14 = get_binary_subtree(l='Y14',x=x[12:16],W_filters=W_filters,b,stride_convd1=2) # M, 2 x nb_filters
+    # #
+    # Y_1 = tf.concat(1, [Y_11, Y_12]) # M, 4 x nb_filters
+    # Y_2 = tf.concat(1, [Y_13, Y_14]) # M, 4 x nb_filters
+    # #
+    # stride_convd1 = 4*nb_filters1 # unhard code it
+    #
+    # init_W_tilde = tf.truncated_normal(shape=[1,4*nb_filters1,1,nb_filters2], mean=mean, stddev=stddev, dtype=tf.float32, seed=None, name=None)
+    # W_filters_tilde = tf.get_variable(name='W'+l, dtype=tf.float32, initializer=init_W_tilde, regularizer=None, trainable=True)
+    # #
+    # l = 'Out_Layer'
+    # init_W = tf.truncated_normal(shape=[filter_size*nb_filters,1], mean=mean, stddev=stddev, dtype=tf.float32, seed=None, name=None)
+    # C = tf.get_variable(name='W'+l, dtype=tf.float32, initializer=init_W, regularizer=None, trainable=True)
+    # mdl = tf.matmul(flat_conv,C)
+    return mdl
 
 ##
 
