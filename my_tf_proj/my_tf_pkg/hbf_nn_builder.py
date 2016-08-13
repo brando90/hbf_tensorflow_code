@@ -231,6 +231,9 @@ def build_binary_tree_8D(x,nb_filters1,nb_filters2,mean1,stddev1,mean2,stddev2,s
     init_W_tilde = tf.truncated_normal(shape=[1,filter_size2,1,nb_filters2], mean=mean2, stddev=stddev2, dtype=tf.float32, seed=None, name=None)
     l='conv2'
     W_filters_tilde = tf.get_variable(name='W'+l, dtype=tf.float32, initializer=init_W_tilde, regularizer=None, trainable=True)
+    # biases
+    b = tf.Variable( tf.constant(0.1, shape=[nb_filters]) )
+    Y_11 = get_binary_subtree(l='Y11',x=x[0:4],W_filters=W_filters,b,stride_convd1=stride_convd1) # M, 2 x nb_filters
     #
     l = 'Out_Layer'
     init_W = tf.truncated_normal(shape=[filter_size*nb_filters,1], mean=mean, stddev=stddev, dtype=tf.float32, seed=None, name=None)
