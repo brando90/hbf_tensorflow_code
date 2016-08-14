@@ -45,7 +45,10 @@ init=all_same_const-0.1
 #init=first_rand_same_uniform_rest_uniform_random-[[1,1250.32],[2,4]]
 
 units=12
-nb_filters=18
+#nb_filters=18
+nb_filters=[6,6]
+#bn_tree_init_stats=[0.0,0.1]
+bn_tree_init_stats=[0.0,0.1,0.0,0.1,0.0,0.1]
 
 #optimization_alg=GD
 #optimization_alg=Momentum

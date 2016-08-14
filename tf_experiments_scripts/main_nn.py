@@ -385,7 +385,7 @@ elif model == 'binary_tree_D8':
     nb_filters1,nb_filters2 = nb_filters
     mean1,stddev1,mean2,stddev2,mean3,stddev3 = bn_tree_init_stats
     x = tf.placeholder(float_type, shape=[None,1,D,1], name='x-input')
-    with tf.name_scope("build_binary_model") as scope:
+    with tf.name_scope("binary_tree_D8") as scope:
         mdl = mtf.build_binary_tree_8D(x,nb_filters1,nb_filters2,mean1,stddev1,mean2,stddev2,mean3,stddev3,stride_conv1=2)
     #
     results['nb_filters'] = nb_filters

@@ -11,7 +11,8 @@ import tensorflow as tf
 
 # data shape is "[batch, in_height, in_width, in_channels]",
 # X_train = N x D
-X_train_org = np.array([[0,1,2,3],[4,5,6,7],[8,9,10,11]])
+#X_train_org = np.array([[0,1,2,3],[4,5,6,7],[8,9,10,11]])
+X_train_org = np.array([[0,1,2,3],[4,5,6,7],[8,9,10,11],[12,13,14,15],[16,17,18,19]])
 #X_train_org = np.array([[0,1,2,3]])
 #X_train_org = np.array([[0,1,2,3],[4,5,6,7]])
 N, D = X_train_org.shape
@@ -25,12 +26,13 @@ xx = tf.placeholder(tf.float32, shape=[None,1,D,1], name='xx-input')
 filter_size, nb_filters = 2, 3 # filter_size , number of hidden units/units
 # think of it as having nb_filters number of filters, each of size filter_size
 W_filters = np.array([[1, 3, 5],[2, 4, 6]]).reshape(1,filter_size,1,nb_filters)
-init_W = tf.truncated_normal(shape=[1,filter_size,1,nb_filters], mean=0.0, stddev=1.0, dtype=tf.float32, seed=None, name=None)
-W_filters = tf.get_variable(name='W', dtype=tf.float64, initializer=init_W, regularizer=None, trainable=True)
+#init_W = tf.truncated_normal(shape=[1,filter_size,1,nb_filters], mean=0.0, stddev=1.0, dtype=tf.float32, seed=None, name=None)
+#W_filters = tf.get_variable(name='W', dtype=tf.float64, initializer=init_W, regularizer=None, trainable=True)
 #W = tf.Variable( tf.truncated_normal(shape=[1,filter_size,1,nb_filters], stddev=0.1) )
-#W = tf.Variable( tf.constant(W_filters, dtype=tf.float32) )
+W = tf.Variable( tf.constant(W_filters, dtype=tf.float32) )
 W = W_filters
 stride_convd1 = 2 # controls the stride for 1D convolution
+# (M, )
 conv = tf.nn.conv2d(input=xx, filter=W, strides=[1, 1, stride_convd1, 1], padding="SAME", name="conv")
 conv_flat = tf.reshape(conv, [-1,filter_size*nb_filters])
 #C = tf.constant( (np.array([[1,1]]).T) , dtype=tf.float32 ) #
@@ -51,13 +53,15 @@ y2 = tf.matmul(x,W2) # N x 2 = N x 4 x 4 x 2
 #y = p1 + p2
 with tf.Session() as sess:
     sess.run( tf.initialize_all_variables() )
-    print 'manual conv'
-    print sess.run(fetches=y1, feed_dict={x:X_train_org})
-    print sess.run(fetches=y2, feed_dict={x:X_train_org})
+    #print 'manual conv'
+    #print sess.run(fetches=y1, feed_dict={x:X_train_org})
+    #print sess.run(fetches=y2, feed_dict={x:X_train_org})
     #print sess.run(fetches=y, feed_dict={x:X_train_org})
     print 'tf conv'
     output_conv = sess.run(fetches=conv, feed_dict={xx:X_train_1d})
     output_conv_flat = sess.run(fetches=conv_flat, feed_dict={xx:X_train_1d})
     print output_conv
+    print '--> SHAPE: ', output_conv.shape
     print output_conv_flat
+    print '--> SHAPE: ', output_conv_flat.shape
     #print sess.run(fetches=y_tf, feed_dict={xx:X_train_1d})
