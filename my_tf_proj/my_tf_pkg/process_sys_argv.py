@@ -4,8 +4,9 @@ def process_argv(argv):
     print 'print argv =',argv
     print 'len(argv) =',len(argv)
     mdl_type = 'standard_nn'
-    #mdl_type = 'hbf'
+    mdl_type = 'hbf'
     #mdl_type = 'binary_tree'
+    #mdl_type = 'binary_tree_D8'
     # python main_nn.py --logdir=/tmp/mdl_logs
     #
     #train_S_type='multiple_S'
@@ -16,43 +17,45 @@ def process_argv(argv):
     #init_type='kpp_init'
     #init_type='data_trunc_norm_kern'
     #init_type='kpp_trun_norm_kern'
-    #init_type='data_trunc_norm_trunc_norm'
+    init_type='data_trunc_norm_trunc_norm'
     #init_type='data_xavier_kern'
-    init_type='xavier'
+    #init_type='xavier'
 
     experiment_name = 'tmp_experiment'
     train_S_type = 'multiple_S'
-    units_list = [12,12]
+    units_list = [24,24]
     #
     bn_tree_init_stats = [0.0, 0.1] #mean1,stddev
     nb_filters = 6
-    bn_tree_init_stats = [0.0,0.1,0.0,0.1,0.0,0.1] # mean1,stddev1,mean2,stddev2,mean3,stddev3
-    nb_filters = [6,6] #for D8
+    bn_tree_init_stats = [0.0,0.1, 0.0,0.1, 0.0,0.1] # mean1,stddev1,mean2,stddev2,mean3,stddev3
+    nb_filters = [9,18] #for D8
     #units_list = [24,24]
     # units_list = [96,96]
     # task_name = 'task_qianli_func'
     # task_name = 'task_hrushikesh'
     # re_train = None
     # task_name = 'task_f_2D_task2'
-    # task_name = 'task_f_2d_task2_xsinglog1_x_depth2'
+    task_name = 'task_f_2d_task2_xsinglog1_x_depth2'
     # task_name = 'task_f2d_2x2_1_cosx1x2_depth_2'
     # task_name = 'task_f2d_2x2_1_cosx1_plus_x2_depth2'
     #task_name = 'task_MNIST_flat'
-    task_name = 'task_MNIST_flat_auto_encoder'
+    #task_name = 'task_MNIST_flat_auto_encoder'
     #task_name = 'task_f_4d'
+    #task_name = 'task_f_8d'
+    #experiment_root_dir = 'om_f8d'
     #experiment_root_dir = 'om_f4d'
-    experiment_root_dir = 'om_mnist'
-    # experiment_root_dir = 'om_xsinlog1_x_depth2'
-    # experiment_root_dir = 'om_xsinlog1_x_depth2_hbf'
+    #experiment_root_dir = 'om_mnist'
+    experiment_root_dir = 'om_xsinlog1_x_depth2'
+    #experiment_root_dir = 'om_xsinlog1_x_depth2_hbf'
     # experiment_root_dir = 'om_2x2_1_cosx1_plus_x2_depth2'
     # experiment_root_dir = 'om_2x2_1_cosx1_plus_x2_depth_2_hbf'
     # task_name = 'task_f_2d_task2_xsinglog1_x_depth3'
     # task_name = 'task_MNIST_flat'
     #
-    #bn = True
-    #trainable_bn=True #scale, shift BN
-    bn = False
-    trainable_bn=False #scale, shift BN
+    bn = True
+    trainable_bn=True #scale, shift BN
+    #bn = False
+    #trainable_bn=False #scale, shift BN
     #
     mdl_save = True
     #
@@ -69,7 +72,7 @@ def process_argv(argv):
     #optimization_alg = 'GD'
     #optimization_alg = 'Momentum'
     #optimization_alg = 'Adadelta'
-    #optimization_alg = 'Adam' # w := w - m/(sqrt(v)+eps)
+    optimization_alg = 'Adam' # w := w - m/(sqrt(v)+eps)
     #optimization_alg = 'Adagrad'
     optimization_alg = 'RMSProp'
     print '---------> len(argv)', len(argv)

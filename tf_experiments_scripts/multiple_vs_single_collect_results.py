@@ -314,17 +314,17 @@ def display_results_NN_xsinglog1_x():
     #
     list_units = np.array(nn1_list_units)
     print list_units
-    krls.plot_errors(list_units, nn1_list_train_errors,label='NN1 train', markersize=3, colour='b')
-    #krls.plot_errors(list_units, nn1_list_test_errors,label='NN1 test', markersize=3, colour='c')
+    #krls.plot_errors(list_units, nn1_list_train_errors,label='NN1 train', markersize=3, colour='b')
+    krls.plot_errors(list_units, nn1_list_test_errors,label='NN1 test', markersize=3, colour='c')
     #
-    list_units = 2*np.array(nn2_list_units)
+    list_units = 2*np.array(nn2_list_units[0:1]+nn2_list_units[2:])
     print list_units
-    krls.plot_errors(list_units, nn2_list_train_errors,label='NN2 train', markersize=3, colour='r')
-    #krls.plot_errors(list_units, nn2_list_test_errors,label='NN2 test', markersize=3, colour='m')
+    #krls.plot_errors(list_units, nn2_list_train_errors,label='NN2 train', markersize=3, colour='r')
+    krls.plot_errors(list_units, nn2_list_test_errors[0:1]+nn2_list_test_errors[2:],label='NN2 test', markersize=3, colour='m')
     #
     list_units = 3*np.array(nn3_list_units)
     print list_units
-    krls.plot_errors(list_units, nn3_list_train_errors,label='NN3 train', markersize=3, colour='g')
+    #krls.plot_errors(list_units, nn3_list_train_errors,label='NN3 train', markersize=3, colour='g')
     #krls.plot_errors(list_units, nn3_list_test_errors,label='NN3 test', markersize=3, colour='y')
 
     plt.legend()

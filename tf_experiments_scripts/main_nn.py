@@ -213,15 +213,15 @@ else:
     mu_init = 0.0
     mu = len(dims)*[mu_init]
     #std_init = 0.01
-    std_init = 0.01
+    std_init = 0.4
     std = len(dims)*[std_init]
     #std = [None, std_init,std_init,10]
     print 'std: ', std
     #low_const, high_const = 0.4, 1.0
-    init_constant = 0.1
+    init_constant = 0.4177
     #init_constant = 2.0
-    b_init = len(dims)*[init_constant]
-    #b_init = [None, init_constant, 2.4]
+    #b_init = len(dims)*[init_constant]
+    b_init = [None, init_constant, 1.2]
     print '++> S/b_init ', b_init
     S_init = b_init
     #
@@ -231,18 +231,17 @@ else:
 
     phase_train = tf.placeholder(tf.bool, name='phase_train') if bn else  None
 
-    report_error_freq = 100
-    steps = 10000
-    M = 1000 #batch-size
+    report_error_freq = 50
+    steps = 3000
+    M = 5000 #batch-size
     print '++++> M (batch size) :', M
 
-    starter_learning_rate = 0.01
-    # starter_learning_rate = 0.00001
+    starter_learning_rate = 0.001
 
     print '++> starter_learning_rate ', starter_learning_rate
     ## decayed_learning_rate = learning_rate * decay_rate ^ (global_step / decay_steps)
-    decay_rate = 0.99
-    decay_steps = 1000
+    decay_rate = 0.8
+    decay_steps = 75
     staircase = True
     print '++> decay_rate ', decay_rate
     print '++> decay_steps ', decay_steps
@@ -266,8 +265,8 @@ else:
         results['beta2']=float(beta2)
     elif optimization_alg =='RMSProp':
         decay = 0.9 #Discounting factor for the history/coming gradient
-        momentum = 0.9
-        #momentum = 0.0
+        #momentum = 0.85
+        momentum = 0.3
         results['decay']=float(decay)
         results['momentum']=float(momentum)
 
@@ -298,7 +297,7 @@ if model == 'hbf':
     #error, Y_pred, Kern, C, subsampled_data_points = report_RBF_error_from_data(X_train, dims, stddev)
     if len(units_list) > 1:
         k = units_list[0]*len(units_list)
-        print 'k', k
+        print 'RBF units = ', k
         nb_units = [None, k]
         rbf_error, _, _, _, _ = mtf.report_RBF_error_from_data(X_train, X_train, nb_units, S_init[1])
         print rbf_error
@@ -388,6 +387,7 @@ elif model == 'binary_tree_D8':
     with tf.name_scope("binary_tree_D8") as scope:
         mdl = mtf.build_binary_tree_8D(x,nb_filters1,nb_filters2,mean1,stddev1,mean2,stddev2,mean3,stddev3,stride_conv1=2)
     #
+    dims = [D]+nb_filters+[D_out]
     results['nb_filters'] = nb_filters
 
 ## Output and Loss
