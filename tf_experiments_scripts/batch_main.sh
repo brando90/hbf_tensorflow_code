@@ -1,12 +1,11 @@
 #!/bin/bash
-#SBATCH --job-name=HBF1_12
+#SBATCH --job-name=NN2_6_6
 #SBATCH --nodes=1
 #SBATCH --mem=14000
 #SBATCH --time=6-23
-#SBATCH --array=1-1000
+#SBATCH --array=1-300
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=rene_sax14@yahoo.com
-#SBATCH --gres=gpu:1
 
 #task_name=task_f2d_2x2_1_cosx1_plus_x2_depth2
 #task_name=task_f2d_2x2_1_cosx1x2_depth2
@@ -44,7 +43,7 @@ init=all_same_const-0.1
 #init=first_constant_rest_specific_consts-[1250.32,3]
 #init=first_rand_same_uniform_rest_uniform_random-[[1,1250.32],[2,4]]
 
-units=12
+units=48,48
 nb_filters=18
 
 #optimization_alg=GD
@@ -54,4 +53,4 @@ nb_filters=18
 #optimization_alg=Adam
 optimization_alg=RMSProp
 
-python main_nn.py $SLURM_JOBID $SLURM_ARRAY_TASK_ID $main_folder task_August_9_NN1_xavier NN1_6_6_1000 True $units multiple_S $task_name False False $mdl $init_type $data_normalize $trainable_S $init $optimization_alg $nb_filters
+python main_nn.py $SLURM_JOBID $SLURM_ARRAY_TASK_ID $main_folder task_August_9_NN2_Xavier_BN NN2_48_48_300_RMSProp True $units multiple_S $task_name True True $mdl $init_type $data_normalize $trainable_S $init $optimization_alg $nb_filters
