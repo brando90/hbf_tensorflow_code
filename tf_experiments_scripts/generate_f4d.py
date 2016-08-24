@@ -8,7 +8,8 @@ import my_tf_pkg as mtf
 
 import pdb
 
-X_train, Y_train, X_cv, Y_cv, X_test, Y_test = mtf.make_data_set_4D()
+f = mtf.f_4D_conv
+X_train, Y_train, X_cv, Y_cv, X_test, Y_test = mtf.make_data_set_4D(f)
 
 print 'max: ', np.max(Y_train)
 print 'min: ', np.min(Y_train)

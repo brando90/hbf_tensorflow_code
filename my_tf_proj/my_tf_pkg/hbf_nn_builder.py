@@ -38,8 +38,8 @@ def build_HBF2(x, dims, inits, phase_train=None, trainable_bn=True,trainable_S=T
     for l in xrange(1,nb_hidden_layers): # from 1 to L-1
         #print nb_hidden_layers
         #print len(inits_W)
-        #layer = get_HBF_layer2(l=str(l),x=layer,init=(inits_W[l],inits_S[l]),dims=(dims[l-1],dims[l]),phase_train=phase_train, trainable_bn=trainable_bn,trainable_S=trainable_S)
-        layer = get_HBF_layer3(l=str(l),x=layer,init=(inits_W[l],inits_S[l]),dims=(dims[l-1],dims[l]),phase_train=phase_train, trainable_bn=trainable_bn,trainable_S=trainable_S)
+        layer = get_HBF_layer2(l=str(l),x=layer,init=(inits_W[l],inits_S[l]),dims=(dims[l-1],dims[l]),phase_train=phase_train, trainable_bn=trainable_bn,trainable_S=trainable_S)
+        #layer = get_HBF_layer3(l=str(l),x=layer,init=(inits_W[l],inits_S[l]),dims=(dims[l-1],dims[l]),phase_train=phase_train, trainable_bn=trainable_bn,trainable_S=trainable_S)
     return layer
 
 def get_HBF_layer2(l, x, dims, init, phase_train=None, layer_name='HBFLayer', trainable_bn=True, trainable_S=True):
@@ -214,6 +214,7 @@ def get_binary_branch(l,x,filter_size,nb_filters,mean,stddev,name=None, stride_c
     # 1D conv
     conv = tf.nn.conv2d(input=x, filter=W_filters, strides=[1, 1, stride_convd1, 1], padding="SAME", name="conv") + b
     # get activations
+    print conv
     flat_conv = tf.reshape(conv, [-1,filter_size*nb_filters])
     A = tf.nn.relu( flat_conv )
     return A
