@@ -73,7 +73,7 @@ re_train = None
 #re_train = 're_train'
 results = {'train_errors':[], 'cv_errors':[],'test_errors':[]}
 # slurm values and ids
-(experiment_root_dir,slurm_jobid,slurm_array_task_id,job_name,mdl_save,experiment_name,units_list,train_S_type,task_name,bn,trainable_bn,mdl_type,init_type,cluster,data_normalize,trainable_S,argv_init_S,optimization_alg,nb_filters) = mtf.process_argv(sys.argv)
+(experiment_root_dir,slurm_jobid,slurm_array_task_id,job_name,mdl_save,experiment_name,units_list,train_S_type,task_name,bn,trainable_bn,mdl_type,init_type,cluster,data_normalize,trainable_S,argv_init_S,optimization_alg,nb_filters,bn_tree_init_stats) = mtf.process_argv(sys.argv)
 results['task_name'] = task_name
 results['argv_init_S'] = argv_init_S
 results['train_S_type'] = train_S_type
@@ -213,15 +213,15 @@ else:
     mu_init = 0.0
     mu = len(dims)*[mu_init]
     #std_init = 0.01
-    std_init = 0.01
+    std_init = 0.4
     std = len(dims)*[std_init]
     #std = [None, std_init,std_init,10]
     print 'std: ', std
     #low_const, high_const = 0.4, 1.0
-    init_constant = 0.1
+    init_constant = 0.4177
     #init_constant = 2.0
-    b_init = len(dims)*[init_constant]
-    #b_init = [None, init_constant, 2.4]
+    #b_init = len(dims)*[init_constant]
+    b_init = [None, init_constant, 1.2]
     print '++> S/b_init ', b_init
     S_init = b_init
     #
@@ -231,18 +231,17 @@ else:
 
     phase_train = tf.placeholder(tf.bool, name='phase_train') if bn else  None
 
-    report_error_freq = 100
-    steps = 9000
-    M = 1000 #batch-size
+    report_error_freq = 50
+    steps = 3000
+    M = 5000 #batch-size
     print '++++> M (batch size) :', M
 
-    starter_learning_rate = 0.1
-    # starter_learning_rate = 0.00001
+    starter_learning_rate = 0.001
 
     print '++> starter_learning_rate ', starter_learning_rate
     ## decayed_learning_rate = learning_rate * decay_rate ^ (global_step / decay_steps)
-    decay_rate = 0.99
-    decay_steps = 1000
+    decay_rate = 0.8
+    decay_steps = 75
     staircase = True
     print '++> decay_rate ', decay_rate
     print '++> decay_steps ', decay_steps
@@ -265,9 +264,9 @@ else:
         results['beta1']=float(beta1)
         results['beta2']=float(beta2)
     elif optimization_alg =='RMSProp':
-        decay = 0.75 #Discounting factor for the history/coming gradient
-        momentum = 0.9
-        #momentum = 0.0
+        decay = 0.9 #Discounting factor for the history/coming gradient
+        #momentum = 0.85
+        momentum = 0.3
         results['decay']=float(decay)
         results['momentum']=float(momentum)
 
@@ -298,7 +297,7 @@ if model == 'hbf':
     #error, Y_pred, Kern, C, subsampled_data_points = report_RBF_error_from_data(X_train, dims, stddev)
     if len(units_list) > 1:
         k = units_list[0]*len(units_list)
-        print 'k', k
+        print 'RBF units = ', k
         nb_units = [None, k]
         rbf_error, _, _, _, _ = mtf.report_RBF_error_from_data(X_train, X_train, nb_units, S_init[1])
         print rbf_error
@@ -362,6 +361,33 @@ elif model == 'binary_tree':
     with tf.name_scope("build_binary_model") as scope:
         mdl = mtf.build_binary_tree(x,filter_size,nb_filters,mean,stddev,stride_convd1=2)
     #
+    results['nb_filters'] = nb_filters
+elif model == 'binary_tree_D8':
+    #tensorboard_data_dump = '/tmp/hbf_logs'
+    inits_S = None
+    pca_error = None
+    rbf_error = None
+    float_type = tf.float32
+    # things that need reshaping
+    N_cv = X_cv.shape[0]
+    N_test = X_test.shape[0]
+    #
+    X_train = X_train.reshape(N_train,1,D,1)
+    #Y_train = Y_train.reshape(N_train,1,D,1)
+    X_cv = X_cv.reshape(N_cv,1,D,1)
+    #Y_cv = Y_cv.reshape(N_cv,1,D,1)
+    X_test = X_test.reshape(N_test,1,D,1)
+    #Y_test = Y_test.reshape(N_test,1,D,1)
+    x = tf.placeholder(float_type, shape=[None,1,D,1], name='x-input')
+    #
+    filter_size = 2 #fixed for Binary Tree BT
+    nb_filters1,nb_filters2 = nb_filters
+    mean1,stddev1,mean2,stddev2,mean3,stddev3 = bn_tree_init_stats
+    x = tf.placeholder(float_type, shape=[None,1,D,1], name='x-input')
+    with tf.name_scope("binary_tree_D8") as scope:
+        mdl = mtf.build_binary_tree_8D(x,nb_filters1,nb_filters2,mean1,stddev1,mean2,stddev2,mean3,stddev3,stride_conv1=2)
+    #
+    dims = [D]+nb_filters+[D_out]
     results['nb_filters'] = nb_filters
 
 ## Output and Loss
