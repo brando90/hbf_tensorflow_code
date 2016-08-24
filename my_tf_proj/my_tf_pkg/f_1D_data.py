@@ -106,11 +106,19 @@ def get_data(task_name):
         (X_train, Y_train, X_cv, Y_cv, X_test, Y_test) = get_data_from_file(file_name='./f_2d_2x2_1_cosx1x2_depth_2data_and_mesh.npz')
     elif task_name == 'task_f2d_2x2_1_cosx1_plus_x2_depth2':
         (X_train, Y_train, X_cv, Y_cv, X_test, Y_test) = get_data_from_file(file_name='./f_2d_2x2_1_cosx1_plus_x2_depth_2data_and_mesh.npz')
-    elif task_name == 'task_f_4d':
-        X_train, Y_train, X_cv, Y_cv, X_test, Y_test = get_data_from_file(file_name='./f_4d_task.npz')
-    elif task_name == 'task_f_8d':
+
+    elif task_name == 'task_f_4d_conv':
+        X_train, Y_train, X_cv, Y_cv, X_test, Y_test = get_data_from_file(file_name='./f_4d_task_conv.npz')
+    elif task_name == 'task_f_8d_conv':
         #print 'task_f_8dtask_f_8dtask_f_8dtask_f_8dtask_f_8dtask_f_8dtask_f_8dtask_f_8dtask_f_8dtask_f_8dtask_f_8dtask_f_8dtask_f_8d'
-        X_train, Y_train, X_cv, Y_cv, X_test, Y_test = get_data_from_file(file_name='./f_8d_task.npz')
+        X_train, Y_train, X_cv, Y_cv, X_test, Y_test = get_data_from_file(file_name='./f_8d_task_conv.npz')
+
+    elif task_name == 'task_f_4d_non_conv':
+        X_train, Y_train, X_cv, Y_cv, X_test, Y_test = get_data_from_file(file_name='./f_4d_task_non_conv.npz')
+    elif task_name == 'task_f_8d_non_conv':
+        #print 'task_f_8dtask_f_8dtask_f_8dtask_f_8dtask_f_8dtask_f_8dtask_f_8dtask_f_8dtask_f_8dtask_f_8dtask_f_8dtask_f_8dtask_f_8d'
+        X_train, Y_train, X_cv, Y_cv, X_test, Y_test = get_data_from_file(file_name='./f_8d_task_non_conv.npz')
+        
     elif task_name == 'task_MNIST_flat':
         mnist = input_data.read_data_sets("MNIST_data/", one_hot=True)
         X_train, Y_train = mnist.train.images, mnist.train.labels

@@ -155,7 +155,7 @@ if cluster == 'OM7':
 
     phase_train = tf.placeholder(tf.bool, name='phase_train') if bn else  None
 
-    report_error_freq = 100
+    report_error_freq = 15
     #steps = np.random.randint(low=3000,high=6000)
     steps = 20000
     M = np.random.randint(low=500, high=9000)
@@ -231,17 +231,17 @@ else:
 
     phase_train = tf.placeholder(tf.bool, name='phase_train') if bn else  None
 
-    report_error_freq = 50
-    steps = 3000
-    M = 5000 #batch-size
+    report_error_freq = 25
+    steps = 4000
+    M = 2000 #batch-size
     print '++++> M (batch size) :', M
 
-    starter_learning_rate = 0.001
+    starter_learning_rate = 0.01
 
     print '++> starter_learning_rate ', starter_learning_rate
     ## decayed_learning_rate = learning_rate * decay_rate ^ (global_step / decay_steps)
-    decay_rate = 0.8
-    decay_steps = 75
+    decay_rate = 0.7
+    decay_steps = 500
     staircase = True
     print '++> decay_rate ', decay_rate
     print '++> decay_steps ', decay_steps
@@ -266,7 +266,7 @@ else:
     elif optimization_alg =='RMSProp':
         decay = 0.9 #Discounting factor for the history/coming gradient
         #momentum = 0.85
-        momentum = 0.3
+        momentum = 0.9
         results['decay']=float(decay)
         results['momentum']=float(momentum)
 
@@ -335,7 +335,8 @@ elif model == 'hbf':
     with tf.name_scope("HBF") as scope:
         mdl = mtf.build_HBF2(x,dims,(inits_C,inits_W,inits_S),phase_train,trainable_bn,trainable_S)
         mdl = mtf.get_summation_layer(l=str(nb_layers),x=mdl,init=inits_C[0])
-elif model == 'binary_tree':
+elif model == 'binary_tree_4D_conv':
+    print 'binary_tree_4D'
     #tensorboard_data_dump = '/tmp/hbf_logs'
     inits_S = None
     pca_error = None
@@ -355,12 +356,12 @@ elif model == 'binary_tree':
     #
     filter_size = 2 #fixed for Binary Tree BT
     nb_filters = nb_filters
-    mean = 0.0
-    stddev = 1.0
+    mean, stddev = bn_tree_init_stats
     x = tf.placeholder(float_type, shape=[None,1,D,1], name='x-input')
     with tf.name_scope("build_binary_model") as scope:
         mdl = mtf.build_binary_tree(x,filter_size,nb_filters,mean,stddev,stride_convd1=2)
     #
+    dims = [D]+[nb_filters]+[D_out]
     results['nb_filters'] = nb_filters
 elif model == 'binary_tree_D8':
     #tensorboard_data_dump = '/tmp/hbf_logs'
