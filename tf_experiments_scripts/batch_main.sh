@@ -7,6 +7,9 @@
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=rene_sax14@yahoo.com
 
+#SLURM_JOBID=SLURM_JOBID
+#SLURM_ARRAY_TASK_ID=SLURM_ARRAY_TASK_ID
+
 #task_name=task_f2d_2x2_1_cosx1_plus_x2_depth2
 #task_name=task_f2d_2x2_1_cosx1x2_depth2
 #task_name=task_f_2d_task2_xsinglog1_x_depth2
