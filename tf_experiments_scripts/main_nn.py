@@ -140,7 +140,7 @@ if cluster == 'OM7':
     dims = [D]+units_list+[D_out]
     mu_init = 0.0
     mu = len(dims)*[mu_init]
-    std_init = 0.1
+    #std_init = 0.1
     std_init = float( np.random.uniform(low=0.001, high=0.5) )
     std = len(dims)*[std_init]
 
@@ -157,8 +157,8 @@ if cluster == 'OM7':
 
     report_error_freq = 30
     #steps = np.random.randint(low=3000,high=6000)
-    steps = 10000
-    M = np.random.randint(low=1000, high=9000)
+    steps = 20000
+    M = np.random.randint(low=1000, high=10000)
     #M = 17000 #batch-size
     #M = 5000
     print '++++> M (batch size) :', M
@@ -199,7 +199,7 @@ if cluster == 'OM7':
         results['beta2']=float(beta2)
     elif optimization_alg == 'RMSProp':
         decay = np.random.uniform(low=0.75,high=0.99)
-        momentum = np.random.uniform(low=0.3,high=0.9)
+        momentum = np.random.uniform(low=0.0,high=0.9)
         results['decay']=float(decay)
         results['momentum']=float(momentum)
     else:
@@ -218,10 +218,11 @@ else:
     #std = [None, std_init,std_init,10]
     print 'std: ', std
     #low_const, high_const = 0.4, 1.0
-    init_constant = 0.4177
+    init_constant = 0.1
+    #init_constant = 0.4177
     #init_constant = 2.0
-    #b_init = len(dims)*[init_constant]
-    b_init = [None, init_constant, 1.2]
+    b_init = len(dims)*[init_constant]
+    #b_init = [None, init_constant, 1.2]
     print '++> S/b_init ', b_init
     S_init = b_init
     #
@@ -232,15 +233,15 @@ else:
     phase_train = tf.placeholder(tf.bool, name='phase_train') if bn else  None
 
     report_error_freq = 25
-    steps = 6000
-    M = 1000 #batch-size
+    steps = 10000
+    M = 5000 #batch-size
     print '++++> M (batch size) :', M
 
-    starter_learning_rate = 0.001
+    starter_learning_rate = 0.01
 
     print '++> starter_learning_rate ', starter_learning_rate
     ## decayed_learning_rate = learning_rate * decay_rate ^ (global_step / decay_steps)
-    decay_rate = 0.9
+    decay_rate = 0.85
     decay_steps = 700
     staircase = True
     print '++> decay_rate ', decay_rate
