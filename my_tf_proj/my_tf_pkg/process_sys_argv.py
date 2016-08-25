@@ -1,4 +1,11 @@
 import pdb
+import ast
+import sys
+import namespaces as ns
+import ast
+
+def process_argv(argv):
+    args = ns.FrozenNamespace(eval(argv[1]))
 
 def process_argv(argv):
     print 'print argv =',argv
