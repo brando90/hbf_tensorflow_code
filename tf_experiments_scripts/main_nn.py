@@ -155,21 +155,21 @@ if cluster == 'OM7':
 
     phase_train = tf.placeholder(tf.bool, name='phase_train') if bn else  None
 
-    report_error_freq = 15
+    report_error_freq = 30
     #steps = np.random.randint(low=3000,high=6000)
-    steps = 20000
-    M = np.random.randint(low=500, high=9000)
+    steps = 10000
+    M = np.random.randint(low=1000, high=9000)
     #M = 17000 #batch-size
     #M = 5000
     print '++++> M (batch size) :', M
 
-    low_const_learning_rate, high_const_learning_rate = -0.01, -5
+    low_const_learning_rate, high_const_learning_rate = -0.01, -6
     log_learning_rate = np.random.uniform(low=low_const_learning_rate, high=high_const_learning_rate)
     starter_learning_rate = 10**log_learning_rate
 
     print '++> starter_learning_rate ', starter_learning_rate
     ## decayed_learning_rate = learning_rate * decay_rate ^ (global_step / decay_steps)
-    decay_rate = np.random.uniform(low=0.7, high=0.99)
+    decay_rate = np.random.uniform(low=0.3, high=0.99)
     decay_steps = np.random.randint(low=report_error_freq, high=M)
     staircase = True
     print '++> decay_rate ', decay_rate
@@ -199,7 +199,7 @@ if cluster == 'OM7':
         results['beta2']=float(beta2)
     elif optimization_alg == 'RMSProp':
         decay = np.random.uniform(low=0.75,high=0.99)
-        momentum = np.random.uniform(low=0.3,high=0.9)
+        momentum = np.random.uniform(low=0.0,high=0.9)
         results['decay']=float(decay)
         results['momentum']=float(momentum)
     else:
