@@ -113,12 +113,15 @@ def get_data(task_name):
         #print 'task_f_8dtask_f_8dtask_f_8dtask_f_8dtask_f_8dtask_f_8dtask_f_8dtask_f_8dtask_f_8dtask_f_8dtask_f_8dtask_f_8dtask_f_8d'
         X_train, Y_train, X_cv, Y_cv, X_test, Y_test = get_data_from_file(file_name='./f_8d_task_conv.npz')
 
+    elif task_name == 'task_f_4d_task_conv_2nd':
+        X_train, Y_train, X_cv, Y_cv, X_test, Y_test = get_data_from_file(file_name='./f_4d_task_conv_2nd.npz')
+
     elif task_name == 'task_f_4d_non_conv':
         X_train, Y_train, X_cv, Y_cv, X_test, Y_test = get_data_from_file(file_name='./f_4d_task_non_conv.npz')
     elif task_name == 'task_f_8d_non_conv':
         #print 'task_f_8dtask_f_8dtask_f_8dtask_f_8dtask_f_8dtask_f_8dtask_f_8dtask_f_8dtask_f_8dtask_f_8dtask_f_8dtask_f_8dtask_f_8d'
         X_train, Y_train, X_cv, Y_cv, X_test, Y_test = get_data_from_file(file_name='./f_8d_task_non_conv.npz')
-        
+
     elif task_name == 'task_MNIST_flat':
         mnist = input_data.read_data_sets("MNIST_data/", one_hot=True)
         X_train, Y_train = mnist.train.images, mnist.train.labels

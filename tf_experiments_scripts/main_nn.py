@@ -199,7 +199,7 @@ if cluster == 'OM7':
         results['beta2']=float(beta2)
     elif optimization_alg == 'RMSProp':
         decay = np.random.uniform(low=0.75,high=0.99)
-        momentum = np.random.uniform(low=0.0,high=0.9)
+        momentum = np.random.uniform(low=0.3,high=0.9)
         results['decay']=float(decay)
         results['momentum']=float(momentum)
     else:
@@ -232,16 +232,16 @@ else:
     phase_train = tf.placeholder(tf.bool, name='phase_train') if bn else  None
 
     report_error_freq = 25
-    steps = 4000
-    M = 2000 #batch-size
+    steps = 6000
+    M = 1000 #batch-size
     print '++++> M (batch size) :', M
 
-    starter_learning_rate = 0.01
+    starter_learning_rate = 0.001
 
     print '++> starter_learning_rate ', starter_learning_rate
     ## decayed_learning_rate = learning_rate * decay_rate ^ (global_step / decay_steps)
-    decay_rate = 0.7
-    decay_steps = 500
+    decay_rate = 0.9
+    decay_steps = 700
     staircase = True
     print '++> decay_rate ', decay_rate
     print '++> decay_steps ', decay_steps
@@ -355,11 +355,11 @@ elif model == 'binary_tree_4D_conv':
     x = tf.placeholder(float_type, shape=[None,1,D,1], name='x-input')
     #
     filter_size = 2 #fixed for Binary Tree BT
-    nb_filters = nb_filters
+    #nb_filters = nb_filters
     mean, stddev = bn_tree_init_stats
     x = tf.placeholder(float_type, shape=[None,1,D,1], name='x-input')
     with tf.name_scope("build_binary_model") as scope:
-        mdl = mtf.build_binary_tree(x,filter_size,nb_filters,mean,stddev,stride_convd1=2)
+        mdl = mtf.build_binary_tree(x,filter_size,nb_filters,mean,stddev,stride_convd1=2,phase_train=phase_train,trainable_bn=trainable_bn)
     #
     dims = [D]+[nb_filters]+[D_out]
     results['nb_filters'] = nb_filters

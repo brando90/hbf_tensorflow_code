@@ -10,7 +10,7 @@ def process_argv(argv):
 def process_argv(argv):
     print 'print argv =',argv
     print 'len(argv) =',len(argv)
-    #mdl_type = 'standard_nn'
+    mdl_type = 'standard_nn'
     #mdl_type = 'hbf'
     mdl_type = 'binary_tree_4D_conv'
     #mdl_type = 'binary_tree_D8'
@@ -30,15 +30,13 @@ def process_argv(argv):
 
     experiment_name = 'tmp_experiment'
     train_S_type = 'multiple_S'
-    #units_list = [24,24]
+    units_list = [5]
     # 4D
     bn_tree_init_stats = [0.0, 0.1] #mean1,stddev
     nb_filters = 6
-    units_list = []
     #8D
     #bn_tree_init_stats = [0.0,0.1, 0.0,0.1, 0.0,0.1] # mean1,stddev1,mean2,stddev2,mean3,stddev3
     #nb_filters = [9,18] #for D8
-    units_list = []
 
     #units_list = [24,24]
     # units_list = [96,96]
@@ -51,9 +49,9 @@ def process_argv(argv):
     # task_name = 'task_f2d_2x2_1_cosx1_plus_x2_depth2'
     #task_name = 'task_MNIST_flat'
     #task_name = 'task_MNIST_flat_auto_encoder'
-    #task_name = 'task_f_4d'
+    #task_name = 'task_f_4d_non_conv'
     #task_name = 'task_f_8d'
-    task_name = 'task_f_4d_conv'
+    task_name = 'task_f_4d_task_conv_2nd'
     #experiment_root_dir = 'om_f8d'
     #experiment_root_dir = 'om_f4d'
     #experiment_root_dir = 'om_mnist'
@@ -61,7 +59,8 @@ def process_argv(argv):
     #experiment_root_dir = 'om_xsinlog1_x_depth2_hbf'
     # experiment_root_dir = 'om_2x2_1_cosx1_plus_x2_depth2'
     # experiment_root_dir = 'om_2x2_1_cosx1_plus_x2_depth_2_hbf'
-    experiment_root_dir = 'om_f_4d_conv'
+    #experiment_root_dir = 'om_f_4d_conv'
+    experiment_root_dir = 'om_f_4d_task_conv_2nd'
     # task_name = 'task_f_2d_task2_xsinglog1_x_depth3'
     # task_name = 'task_MNIST_flat'
     #

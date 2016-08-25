@@ -191,12 +191,18 @@ def get_NN_layer(l, x, dims, init, phase_train=None, scope="NNLayer", trainable_
 
 ##
 
-def build_binary_tree(x,filter_size,nb_filters,mean,stddev,stride_convd1=2):
+def build_binary_tree(x,filter_size,nb_filters,mean,stddev,stride_convd1=2,phase_train=None,trainable_bn=True):
     ## conv layer
     l = 'Conv_Layer'
     flat_conv = get_binary_branch(l,x,filter_size,nb_filters,mean=mean,stddev=stddev,stride_convd1=stride_convd1) # N x D_conv_flat = N x (filter_size*nb_filters)
+
+    if phase_train is not None:
+        l = 'BN'
+        flat_conv = add_batch_norm_layer(l, flat_conv, phase_train, trainable_bn=trainable_bn)
+
     ## fully connected layer
     init_W = tf.truncated_normal(shape=[filter_size*nb_filters,1], mean=mean, stddev=stddev, dtype=tf.float32, seed=None, name=None)
+    print '-->-->-->-->-->-->-->-->-->-->-->init_C: ', init_W
     l = 'Out_Layer'
     C = tf.get_variable(name='W'+l, dtype=tf.float32, initializer=init_W, regularizer=None, trainable=True)
     mdl = tf.matmul(flat_conv,C)
@@ -208,13 +214,14 @@ def get_binary_branch(l,x,filter_size,nb_filters,mean,stddev,name=None, stride_c
     '''
     # filter shape is "[filter_height, filter_width, in_channels, out_channels]"
     init_W = tf.truncated_normal(shape=[1,filter_size,1,nb_filters], mean=mean, stddev=stddev, dtype=tf.float32, seed=None, name=None)
+    print '-->-->-->-->-->-->-->-->-->-->-->-->-->-->-->-->-->init_W', init_W
     W_filters = tf.get_variable(name='W'+l, dtype=tf.float32, initializer=init_W, regularizer=None, trainable=True)
     #bias
     b = tf.Variable( tf.constant(0.1, shape=[nb_filters]) )
     # 1D conv
     conv = tf.nn.conv2d(input=x, filter=W_filters, strides=[1, 1, stride_convd1, 1], padding="SAME", name="conv") + b
     # get activations
-    print conv
+    print 'conv: ', conv
     flat_conv = tf.reshape(conv, [-1,filter_size*nb_filters])
     A = tf.nn.relu( flat_conv )
     return A
