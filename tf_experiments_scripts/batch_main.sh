@@ -7,16 +7,15 @@
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=rene_sax14@yahoo.com
 
-#SLURM_JOBID=SLURM_JOBID
-#SLURM_ARRAY_TASK_ID=SLURM_ARRAY_TASK_ID
-
 #task_name=task_f2d_2x2_1_cosx1_plus_x2_depth2
 #task_name=task_f2d_2x2_1_cosx1x2_depth2
 #task_name=task_f_2d_task2_xsinglog1_x_depth2
 #task_name=task_MNIST_flat_auto_encoder
 #task_name=task_f_4d
-task_name=task_f_4d_conv
-main_folder=om_f_4d_conv
+#task_name=task_f_4d_conv
+task_name=task_f_4d_task_conv_2nd
+experiment_root_dir=om_f_4d_task_conv_2nd
+#main_folder=om_f_4d_conv
 #main_folder=om_f4d
 #main_folder=om_2x2_1_cosx1_plus_x2_depth2
 #main_folder=om_xsinlog1_x_depth2
@@ -39,9 +38,9 @@ mdl=binary_tree_4D_conv
 #init_type=kern_init
 #init_type=kpp_init
 #init_type=data_trunc_norm_kern
-init_type=data_trunc_norm_trunc_norm
+#init_type=data_trunc_norm_trunc_norm
 #init_type=data_xavier_kern
-#init_type=xavier
+init_type=xavier
 
 #init=all_same_const-525.32626263
 init=all_same_const-0.1
