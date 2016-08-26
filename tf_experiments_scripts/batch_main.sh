@@ -52,7 +52,7 @@ units=6,6
 #nb_filters=18
 # 4D
 nb_filters=6
-bn_tree_init_stats=[0.0,0.1]
+bn_tree_init_stats=[0.0,1.0]
 # 8D
 #nb_filters=[9,18]
 #bn_tree_init_stats=[0.0,0.1,0.0,0.1,0.0,0.1]

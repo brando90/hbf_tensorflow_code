@@ -141,7 +141,7 @@ if cluster == 'OM7':
     mu_init = 0.0
     mu = len(dims)*[mu_init]
     #std_init = 0.1
-    std_init = float( np.random.uniform(low=0.001, high=0.5) )
+    std_init = float( np.random.uniform(low=0.001, high=1.0) )
     std = len(dims)*[std_init]
 
     b_init = get_init_b(argv_init_S,dims)
@@ -157,8 +157,8 @@ if cluster == 'OM7':
 
     report_error_freq = 30
     #steps = np.random.randint(low=3000,high=6000)
-    steps = 20000
-    M = np.random.randint(low=1000, high=10000)
+    steps = 30000
+    M = np.random.randint(low=500, high=15000)
     #M = 17000 #batch-size
     #M = 5000
     print '++++> M (batch size) :', M
@@ -181,7 +181,7 @@ if cluster == 'OM7':
     elif optimization_alg=='Momentum':
         #use_nesterov=False
         #momentum = 0.9
-        momentum=np.random.uniform(low=0.4, high=0.99)
+        momentum=np.random.uniform(low=0.01, high=0.99)
         results['momentum']=float(momentum)
     elif optimization_alg == 'Adadelta':
         #rho = 0.95
@@ -213,7 +213,7 @@ else:
     mu_init = 0.0
     mu = len(dims)*[mu_init]
     #std_init = 0.01
-    std_init = 0.4
+    std_init = 0.1
     std = len(dims)*[std_init]
     #std = [None, std_init,std_init,10]
     print 'std: ', std
@@ -233,16 +233,16 @@ else:
     phase_train = tf.placeholder(tf.bool, name='phase_train') if bn else  None
 
     report_error_freq = 25
-    steps = 10000
-    M = 5000 #batch-size
+    steps = 20000
+    M = 8000 #batch-size
     print '++++> M (batch size) :', M
 
     starter_learning_rate = 0.01
 
     print '++> starter_learning_rate ', starter_learning_rate
     ## decayed_learning_rate = learning_rate * decay_rate ^ (global_step / decay_steps)
-    decay_rate = 0.85
-    decay_steps = 700
+    decay_rate = 0.9
+    decay_steps = 200
     staircase = True
     print '++> decay_rate ', decay_rate
     print '++> decay_steps ', decay_steps
@@ -358,6 +358,8 @@ elif model == 'binary_tree_4D_conv':
     filter_size = 2 #fixed for Binary Tree BT
     #nb_filters = nb_filters
     mean, stddev = bn_tree_init_stats
+    stddev = float( np.random.uniform(low=0.001, high=stddev) )
+    print 'stddev', stddev
     x = tf.placeholder(float_type, shape=[None,1,D,1], name='x-input')
     with tf.name_scope("build_binary_model") as scope:
         mdl = mtf.build_binary_tree(x,filter_size,nb_filters,mean,stddev,stride_convd1=2,phase_train=phase_train,trainable_bn=trainable_bn)
