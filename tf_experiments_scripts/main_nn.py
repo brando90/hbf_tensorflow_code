@@ -19,10 +19,12 @@ import ast
 import my_tf_pkg as mtf
 import time
 
-print 'print sys.argv =',sys.argv
-print 'len(sys.argv) =',len(sys.argv)
 
-def init_norm(loc,scale,upper_threshold,lower_threshold):
+def main():
+    print 'print sys.argv =',sys.argv
+    print 'len(sys.argv) =',len(sys.argv)
+
+    def init_norm(loc,scale,upper_threshold,lower_threshold):
     init_constant = np.random.normal(loc=loc,scale=scale)
     for i, item in enumerate(init_constant):
         if item > upper_threshold:
@@ -31,7 +33,7 @@ def init_norm(loc,scale,upper_threshold,lower_threshold):
             init_constant[i] = lower_threshold
     return
 
-def get_init_b(argv_init_S,dims):
+    def get_init_b(argv_init_S,dims):
     #parse argv input
     type_S, arg_S = argv_init_S.split('-')
     print '++> type_S ', type_S
@@ -69,43 +71,43 @@ def get_init_b(argv_init_S,dims):
     print '++===> S/b_init ', b_init
     return b_init
 
-re_train = None
-#re_train = 're_train'
-results = {'train_errors':[], 'cv_errors':[],'test_errors':[]}
-# slurm values and ids
-(experiment_root_dir,slurm_jobid,slurm_array_task_id,job_name,mdl_save,experiment_name,units_list,train_S_type,task_name,bn,trainable_bn,mdl_type,init_type,cluster,data_normalize,trainable_S,argv_init_S,optimization_alg,nb_filters,bn_tree_init_stats) = mtf.process_argv(sys.argv)
-results['task_name'] = task_name
-results['argv_init_S'] = argv_init_S
-results['train_S_type'] = train_S_type
-results['trainable_S'] = trainable_S
+    re_train = None
+    #re_train = 're_train'
+    results = {'train_errors':[], 'cv_errors':[],'test_errors':[]}
+    # slurm values and ids
+    (experiment_root_dir,slurm_jobid,slurm_array_task_id,job_name,mdl_save,experiment_name,units_list,train_S_type,task_name,bn,trainable_bn,mdl_type,init_type,cluster,data_normalize,trainable_S,argv_init_S,optimization_alg,nb_filters,bn_tree_init_stats) = mtf.process_argv(sys.argv)
+    results['task_name'] = task_name
+    results['argv_init_S'] = argv_init_S
+    results['train_S_type'] = train_S_type
+    results['trainable_S'] = trainable_S
 
-use_tensorboard = mtf.is_it_tensorboard_run(sys.argv)
-#use_tensorboard =  False
-trainable_S = True if (trainable_S=='train_S') else False
-print 'use_tensorboard', use_tensorboard
-date = datetime.date.today().strftime("%B %d").replace (" ", "_")
-print 'experiment_root_dir=%s,slurm_jobid=%s,slurm_array_task_id=%s,job_name=%s'%(experiment_root_dir,slurm_jobid,slurm_array_task_id,job_name)
+    use_tensorboard = mtf.is_it_tensorboard_run(sys.argv)
+    #use_tensorboard =  False
+    trainable_S = True if (trainable_S=='train_S') else False
+    print 'use_tensorboard', use_tensorboard
+    date = datetime.date.today().strftime("%B %d").replace (" ", "_")
+    print 'experiment_root_dir=%s,slurm_jobid=%s,slurm_array_task_id=%s,job_name=%s'%(experiment_root_dir,slurm_jobid,slurm_array_task_id,job_name)
 
-# randomness
-tf_rand_seed = int(os.urandom(32).encode('hex'), 16)
-tf.set_random_seed(tf_rand_seed)
-## directory structure for collecting data for experiments
-path_root = '../../%s/%s'%(experiment_root_dir,experiment_name)
-#
-current_experiment_folder = '/%s_j%s'%(date,job_name)
-path = path_root+current_experiment_folder
-#
-#errors_pretty_dir = '/errors_pretty_dir'
-errors_pretty = '/errors_file_%s_slurm_sj%s.txt'%(date,slurm_array_task_id)
-#
-mdl_dir ='/mdls_%s_slurm_sj%s'%(date,slurm_array_task_id)
-#
-#json_dir = '/results_json_dir'
-json_file = '/json_%s_slurm_array_id%s_jobid_%s'%(date, slurm_array_task_id, slurm_jobid)
-#
-tensorboard_data_dump_train = '/tmp/mdl_logs/train' #note these names are always saved in results even if its not done
-tensorboard_data_dump_test = '/tmp/mdl_logs/test' #note these names are always saved in results even if its not done
-if use_tensorboard:
+    # randomness
+    tf_rand_seed = int(os.urandom(32).encode('hex'), 16)
+    tf.set_random_seed(tf_rand_seed)
+    ## directory structure for collecting data for experiments
+    path_root = '../../%s/%s'%(experiment_root_dir,experiment_name)
+    #
+    current_experiment_folder = '/%s_j%s'%(date,job_name)
+    path = path_root+current_experiment_folder
+    #
+    #errors_pretty_dir = '/errors_pretty_dir'
+    errors_pretty = '/errors_file_%s_slurm_sj%s.txt'%(date,slurm_array_task_id)
+    #
+    mdl_dir ='/mdls_%s_slurm_sj%s'%(date,slurm_array_task_id)
+    #
+    #json_dir = '/results_json_dir'
+    json_file = '/json_%s_slurm_array_id%s_jobid_%s'%(date, slurm_array_task_id, slurm_jobid)
+    #
+    tensorboard_data_dump_train = '/tmp/mdl_logs/train' #note these names are always saved in results even if its not done
+    tensorboard_data_dump_test = '/tmp/mdl_logs/test' #note these names are always saved in results even if its not done
+    if use_tensorboard:
     print '==> tensorboard_data_dump_train: ', tensorboard_data_dump_train
     print '==> tensorboard_data_dump_test: ', tensorboard_data_dump_test
     print 'mdl_save',mdl_save
@@ -114,29 +116,29 @@ if use_tensorboard:
     # delete contents of tensorboard dir
     shutil.rmtree(tensorboard_data_dump_train)
     shutil.rmtree(tensorboard_data_dump_test)
-# try to make directory, if it exists do NOP
-mtf.make_and_check_dir(path=path)
-#make_and_check_dir(path=path+json_dir)
-#make_and_check_dir(path=path+errors_pretty_dir)
-mtf.make_and_check_dir(path=path+mdl_dir)
-# JSON results structure
-results_dic = mtf.fill_results_dic_with_np_seed(np_rnd_seed=np.random.get_state(), results=results)
+    # try to make directory, if it exists do NOP
+    mtf.make_and_check_dir(path=path)
+    #make_and_check_dir(path=path+json_dir)
+    #make_and_check_dir(path=path+errors_pretty_dir)
+    mtf.make_and_check_dir(path=path+mdl_dir)
+    # JSON results structure
+    results_dic = mtf.fill_results_dic_with_np_seed(np_rnd_seed=np.random.get_state(), results=results)
 
-## Data sets and task
-print '----====> TASK NAME: %s' % task_name
-(X_train, Y_train, X_cv, Y_cv, X_test, Y_test) = mtf.get_data(task_name)
-if data_normalize == 'normalize_input':
+    ## Data sets and task
+    print '----====> TASK NAME: %s' % task_name
+    (X_train, Y_train, X_cv, Y_cv, X_test, Y_test) = mtf.get_data(task_name)
+    if data_normalize == 'normalize_input':
     X_train, X_cv, X_test = preprocessing.scale(X_train), preprocessing.scale(X_cv), preprocessing.scale(X_test)
 
-(N_train,D) = X_train.shape
-(N_test,D_out) = Y_test.shape
-print '(N_train,D) = ', (N_train,D)
-print '(N_test,D_out) = ', (N_test,D_out)
+    (N_train,D) = X_train.shape
+    (N_test,D_out) = Y_test.shape
+    print '(N_train,D) = ', (N_train,D)
+    print '(N_test,D_out) = ', (N_test,D_out)
 
-init_constant = -1
-## HBF/NN params
-print 'CLUSTER: ', cluster
-if cluster == 'OM7':
+    init_constant = -1
+    ## HBF/NN params
+    print 'CLUSTER: ', cluster
+    if cluster == 'OM7':
     dims = [D]+units_list+[D_out]
     mu_init = 0.0
     mu = len(dims)*[mu_init]
@@ -207,7 +209,7 @@ if cluster == 'OM7':
 
     results['range_learning_rate'] = [low_const_learning_rate, high_const_learning_rate]
     #results['range_constant'] = [low_const, high_const]
-else:
+    else:
     print '::::+++++====> Running MANUAL SETTING OF HYPER PARAMETERS'
     dims = [D]+units_list+[D_out]
     mu_init = 0.0
@@ -271,11 +273,11 @@ else:
         results['decay']=float(decay)
         results['momentum']=float(momentum)
 
-##############################
-##
-#X_reconstruct_pca, _, _ = mtf. get_reconstruction(X_train,k=units_list[0])
-#print '*************> PCA error: ', mtf.report_l2_loss(Y=X_train,Y_pred=X_reconstruct_pca)
-if task_name == 'task_MNIST_flat_auto_encoder':
+    ##############################
+    ##
+    #X_reconstruct_pca, _, _ = mtf. get_reconstruction(X_train,k=units_list[0])
+    #print '*************> PCA error: ', mtf.report_l2_loss(Y=X_train,Y_pred=X_reconstruct_pca)
+    if task_name == 'task_MNIST_flat_auto_encoder':
     PCA_errors = {12:24.8254684915, 48:9.60052317906, 96:4.72118325768}
     if len(units_list) == 1:
         k = units_list[0]
@@ -289,12 +291,12 @@ if task_name == 'task_MNIST_flat_auto_encoder':
     else:
         pca_error = PCA_errors[k]
     print '*************> PCA error: ', pca_error
-else:
+    else:
     pca_error = None
     rbf_error = None
 
-hbf1_error = None
-if model == 'hbf':
+    hbf1_error = None
+    if model == 'hbf':
     #error, Y_pred, Kern, C, subsampled_data_points = report_RBF_error_from_data(X_train, dims, stddev)
     if len(units_list) > 1:
         k = units_list[0]*len(units_list)
@@ -309,15 +311,15 @@ if model == 'hbf':
         nb_units = dims
         rbf_error, _, _, _, _ = mtf.report_RBF_error_from_data(X_train, X_train, nb_units, S_init[1])
 
-S_init = b_init
-##
+    S_init = b_init
+    ##
 
-## Make Model
-nb_layers = len(dims)-1
-nb_hidden_layers = nb_layers-1
-print( '-----> Running model: %s. (nb_hidden_layers = %d, nb_layers = %d)' % (model,nb_hidden_layers,nb_layers) )
-print( '-----> Units: %s)' % (dims) )
-if model == 'standard_nn':
+    ## Make Model
+    nb_layers = len(dims)-1
+    nb_hidden_layers = nb_layers-1
+    print( '-----> Running model: %s. (nb_hidden_layers = %d, nb_layers = %d)' % (model,nb_hidden_layers,nb_layers) )
+    print( '-----> Units: %s)' % (dims) )
+    if model == 'standard_nn':
     rbf_error = None
     #tensorboard_data_dump = '/tmp/standard_nn_logs'
     float_type = tf.float64
@@ -327,7 +329,7 @@ if model == 'standard_nn':
         mdl = mtf.build_standard_NN(x,dims,(inits_C,inits_W,inits_b),phase_train,trainable_bn)
         mdl = mtf.get_summation_layer(l=str(nb_layers),x=mdl,init=inits_C[0])
     inits_S = inits_b
-elif model == 'hbf':
+    elif model == 'hbf':
     #tensorboard_data_dump = '/tmp/hbf_logs'
     float_type = tf.float64
     x = tf.placeholder(float_type, shape=[None, D], name='x-input') # M x D
@@ -336,7 +338,7 @@ elif model == 'hbf':
     with tf.name_scope("HBF") as scope:
         mdl = mtf.build_HBF2(x,dims,(inits_C,inits_W,inits_S),phase_train,trainable_bn,trainable_S)
         mdl = mtf.get_summation_layer(l=str(nb_layers),x=mdl,init=inits_C[0])
-elif model == 'binary_tree_4D_conv':
+    elif model == 'binary_tree_4D_conv':
     print 'binary_tree_4D'
     #tensorboard_data_dump = '/tmp/hbf_logs'
     inits_S = None
@@ -366,7 +368,7 @@ elif model == 'binary_tree_4D_conv':
     #
     dims = [D]+[nb_filters]+[D_out]
     results['nb_filters'] = nb_filters
-elif model == 'binary_tree_D8':
+    elif model == 'binary_tree_D8':
     #tensorboard_data_dump = '/tmp/hbf_logs'
     inits_S = None
     pca_error = None
@@ -394,17 +396,17 @@ elif model == 'binary_tree_D8':
     dims = [D]+nb_filters+[D_out]
     results['nb_filters'] = nb_filters
 
-## Output and Loss
-y = mdl
-y_ = tf.placeholder(float_type, shape=[None, D_out]) # (M x D)
-with tf.name_scope("L2_loss") as scope:
+    ## Output and Loss
+    y = mdl
+    y_ = tf.placeholder(float_type, shape=[None, D_out]) # (M x D)
+    with tf.name_scope("L2_loss") as scope:
     l2_loss = tf.reduce_sum( tf.reduce_mean(tf.square(y_-y), 0) )
     #l2_loss = (2.0/N_train)*tf.nn.l2_loss(y_-y)
     #l2_loss = tf.reduce_mean(tf.square(y_-y))
 
-##
+    ##
 
-with tf.name_scope("train") as scope:
+    with tf.name_scope("train") as scope:
     # starter_learning_rate = 0.0000001
     # decay_rate = 0.9
     # decay_steps = 100
@@ -429,20 +431,20 @@ with tf.name_scope("train") as scope:
     elif optimization_alg == 'RMSProp':
         opt = tf.train.RMSPropOptimizer(learning_rate=learning_rate, decay=decay, momentum=momentum, epsilon=1e-10, name='RMSProp')
 
-##
-if re_train == 're_train' and task_name == 'hrushikesh':
+    ##
+    if re_train == 're_train' and task_name == 'hrushikesh':
     print 'task_name: ', task_name
     print 're_train: ', re_train
     var_list = [v for v in tf.all_variables() if v.name == 'C:0']
     #train_step = opt.minimize(l2_loss, var_list=var_list)
-else:
+    else:
     train_step = opt.minimize(l2_loss, global_step=global_step)
 
-##
-with tf.name_scope("l2_loss") as scope:
+    ##
+    with tf.name_scope("l2_loss") as scope:
     ls_scalar_summary = tf.scalar_summary("l2_loss", l2_loss)
 
-if task_name == 'task_MNIST_flat_auto_encoder':
+    if task_name == 'task_MNIST_flat_auto_encoder':
     with tf.name_scope('input_reshape'):
         x_image = tf.to_float(x, name='ToFloat')
         image_shaped_input_x = tf.reshape(x_image, [-1, 28, 28, 1])
@@ -455,7 +457,7 @@ if task_name == 'task_MNIST_flat_auto_encoder':
         # tf.image_summary(tag, tensor, max_images=3, collections=None, name=None)
         tf.image_summary('reconstruct', image_shaped_input_y, 10)
 
-def register_all_variables_and_grads(y):
+    def register_all_variables_and_grads(y):
     all_vars = tf.all_variables()
     grad_vars = opt.compute_gradients(y,all_vars) #[ (gradient,variable) ]
     for (dldw,v) in grad_vars:
@@ -466,20 +468,20 @@ def register_all_variables_and_grads(y):
             mtf.put_summaries(var=tf.abs(dldw),prefix_name=prefix_name,suffix_text='_abs_'+suffix_text)
             tf.histogram_summary('hist'+prefix_name, dldw)
 
-register_all_variables_and_grads(y)
-## TRAIN
-if phase_train is not None:
+    register_all_variables_and_grads(y)
+    ## TRAIN
+    if phase_train is not None:
     #DO BN
     feed_dict_train = {x:X_train, y_:Y_train, phase_train: False}
     feed_dict_cv = {x:X_cv, y_:Y_cv, phase_train: False}
     feed_dict_test = {x:X_test, y_:Y_test, phase_train: False}
-else:
+    else:
     #Don't do BN
     feed_dict_train = {x:X_train, y_:Y_train}
     feed_dict_cv = {x:X_cv, y_:Y_cv}
     feed_dict_test = {x:X_test, y_:Y_test}
 
-def get_batch_feed(X, Y, M, phase_train):
+    def get_batch_feed(X, Y, M, phase_train):
     mini_batch_indices = np.random.randint(M,size=M)
     Xminibatch =  X[mini_batch_indices,:] # ( M x D^(0) )
     Yminibatch = Y[mini_batch_indices,:] # ( M x D^(L) )
@@ -491,22 +493,22 @@ def get_batch_feed(X, Y, M, phase_train):
         feed_dict = {x: Xminibatch, y_: Yminibatch}
     return feed_dict
 
-def print_messages(*args):
+    def print_messages(*args):
     for i, msg in enumerate(args):
         print ('>',msg)
 
-if use_tensorboard:
+    if use_tensorboard:
     if tf.gfile.Exists('/tmp/mdl_logs'):
       tf.gfile.DeleteRecursively('/tmp/mdl_logs')
     tf.gfile.MakeDirs('/tmp/mdl_logs')
 
-tf.add_check_numerics_ops()
+    tf.add_check_numerics_ops()
 
-# Add ops to save and restore all the variables.
-if mdl_save:
+    # Add ops to save and restore all the variables.
+    if mdl_save:
     saver = tf.train.Saver(max_to_keep=max_to_keep)
-start_time = time.time()
-with open(path+errors_pretty, 'w+') as f_err_msgs:
+    start_time = time.time()
+    with open(path+errors_pretty, 'w+') as f_err_msgs:
     with tf.Session() as sess:
         ## prepare writers and fetches
         if use_tensorboard:
@@ -566,43 +568,48 @@ with open(path+errors_pretty, 'w+') as f_err_msgs:
             else:
                 sess.run(fetches=train_step, feed_dict=feed_dict_batch) #sess.run(train_step, feed_dict={x: batch_xs, y_: batch_ys})
 
-git_hash = subprocess.check_output(['git', 'rev-parse', 'HEAD'])
-mtf.load_results_dic(results,git_hash=git_hash,dims=dims,mu=mu,std=std,init_constant=init_constant,b_init=b_init,S_init=S_init,\
+    git_hash = subprocess.check_output(['git', 'rev-parse', 'HEAD'])
+    mtf.load_results_dic(results,git_hash=git_hash,dims=dims,mu=mu,std=std,init_constant=init_constant,b_init=b_init,S_init=S_init,\
     init_type=init_type,model=model,bn=bn,path=path,\
     tensorboard_data_dump_test=tensorboard_data_dump_test,tensorboard_data_dump_train=tensorboard_data_dump_train,\
     report_error_freq=report_error_freq,steps=steps,M=M,optimization_alg=optimization_alg,\
     starter_learning_rate=starter_learning_rate,decay_rate=decay_rate,staircase=staircase)
 
-##
-results['job_name'] = job_name
-results['slurm_jobid'] = slurm_jobid
-results['slurm_array_task_id'] = slurm_array_task_id
-results['tf_rand_seed'] = tf_rand_seed
-results['date'] = date
-results['bn'] = bn
-results['trainable_bn'] = trainable_bn
+    ##
+    results['job_name'] = job_name
+    results['slurm_jobid'] = slurm_jobid
+    results['slurm_array_task_id'] = slurm_array_task_id
+    results['tf_rand_seed'] = tf_rand_seed
+    results['date'] = date
+    results['bn'] = bn
+    results['trainable_bn'] = trainable_bn
 
-seconds = (time.time() - start_time)
-minutes = seconds/ 60
-hours = minutes/ 60
-print("--- %s seconds ---" % seconds )
-print("--- %s minutes ---" % minutes )
-print("--- %s hours ---" % hours )
-## dump results to JSON
-results['seconds'] = seconds
-results['minutes'] = minutes
-results['hours'] = hours
-#print results
-with open(path+json_file, 'w+') as f_json:
+    seconds = (time.time() - start_time)
+    minutes = seconds/ 60
+    hours = minutes/ 60
+    print("--- %s seconds ---" % seconds )
+    print("--- %s minutes ---" % minutes )
+    print("--- %s hours ---" % hours )
+    ## dump results to JSON
+    results['seconds'] = seconds
+    results['minutes'] = minutes
+    results['hours'] = hours
+    #print results
+    with open(path+json_file, 'w+') as f_json:
     json.dump(results,f_json,sort_keys=True, indent=2, separators=(',', ': '))
-print '\a' #makes beep
-print '\a' #makes beep
+    print '\a' #makes beep
+    print '\a' #makes beep
 
 
-# low_const, high_const = 0.4, 1.0
-# #init_constant = np.random.uniform(low=low_const, high=high_const)
-# #b_init = list(np.random.uniform(low=low_const, high=high_const,size=len(dims)))
-# init_constant = 0.4177551
-# #b_init = len(dims)*[init_constant]
-# #[0.6374998052942504, 0.6374998052942504, 0.6374998052942504, 0.6374998052942504]
-# b_init = [None, init_constant, np.random.uniform(low=1,high=2.5)]
+    # low_const, high_const = 0.4, 1.0
+    # #init_constant = np.random.uniform(low=low_const, high=high_const)
+    # #b_init = list(np.random.uniform(low=low_const, high=high_const,size=len(dims)))
+    # init_constant = 0.4177551
+    # #b_init = len(dims)*[init_constant]
+    # #[0.6374998052942504, 0.6374998052942504, 0.6374998052942504, 0.6374998052942504]
+    # b_init = [None, init_constant, np.random.uniform(low=1,high=2.5)]
+
+if __name__ == "__main__":
+    print 'before main'
+    main()
+    print 'end of main_nn.py'
