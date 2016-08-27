@@ -30,6 +30,14 @@ def f_4D_conv_2nd(A):
     f = h21( [left,right] )
     return f
 
+def f_4D_conv_test(A):
+    h11 = lambda A: (2.0*A[0] + 3.0*A[1])**4.0
+    h12 = h11
+    h21 = lambda A: (4*A[0] + 5*A[1])**0.5
+    left, right = h11(A[0:2]), h12(A[2:4])
+    f = h21( [left,right] )
+    return f
+
 def get_labels_4D(X,f):
     N = X.shape[0] # N x D = N x 4
     Y = np.zeros( (N,1) )
