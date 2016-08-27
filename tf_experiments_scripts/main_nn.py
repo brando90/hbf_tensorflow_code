@@ -1,7 +1,3 @@
-## run cmd to collect model: python main_nn.py --logdir=/tmp/mdl_logs
-## show board on browser run cmd: tensorboard --logdir=/tmp/mdl_logs
-## browser: http://localhost:6006/
-
 import tensorflow as tf
 
 from sklearn import preprocessing
@@ -10,7 +6,7 @@ import numpy as np
 import shutil
 import subprocess
 import json
-import sys
+#import sys
 import datetime
 import os
 import pdb
@@ -20,8 +16,8 @@ import my_tf_pkg as mtf
 import time
 
 def main():
-    print 'print sys.argv =',sys.argv
-    print 'len(sys.argv) =',len(sys.argv)
+    #print 'print sys.argv =',sys.argv
+    #print 'len(sys.argv) =',len(sys.argv)
 
     def init_norm(loc,scale,upper_threshold,lower_threshold):
         init_constant = np.random.normal(loc=loc,scale=scale)
@@ -74,13 +70,15 @@ def main():
     #re_train = 're_train'
     results = {'train_errors':[], 'cv_errors':[],'test_errors':[]}
     # slurm values and ids
-    (experiment_root_dir,slurm_jobid,slurm_array_task_id,job_name,mdl_save,experiment_name,units_list,train_S_type,task_name,bn,trainable_bn,mdl_type,init_type,cluster,data_normalize,trainable_S,argv_init_S,optimization_alg,nb_filters,bn_tree_init_stats) = mtf.process_argv(sys.argv)
+    #(experiment_root_dir,slurm_jobid,slurm_array_task_id,job_name,mdl_save,experiment_name,units_list,train_S_type,task_name,bn,trainable_bn,mdl_type,init_type,cluster,data_normalize,trainable_S,argv_init_S,optimization_alg,nb_filters,bn_tree_init_stats) = mtf.process_argv(sys.argv)
+    (experiment_root_dir,slurm_jobid,slurm_array_task_id,job_name,mdl_save,experiment_name,units_list,train_S_type,task_name,bn,trainable_bn,mdl_type,init_type,cluster,data_normalize,trainable_S,argv_init_S,optimization_alg,nb_filters,bn_tree_init_stats) = mtf.process_argv('')
     results['task_name'] = task_name
     results['argv_init_S'] = argv_init_S
     results['train_S_type'] = train_S_type
     results['trainable_S'] = trainable_S
 
-    use_tensorboard = mtf.is_it_tensorboard_run(sys.argv)
+    #use_tensorboard = mtf.is_it_tensorboard_run(sys.argv)
+    use_tensorboard = False
     #use_tensorboard =  False
     trainable_S = True if (trainable_S=='train_S') else False
     print 'use_tensorboard', use_tensorboard
