@@ -505,7 +505,9 @@ def main():
     if mdl_save:
         saver = tf.train.Saver(max_to_keep=max_to_keep)
     start_time = time.time()
-    with open(path+errors_pretty, 'w+') as f_err_msgs:
+    file_for_error = './ray_error_file.txt'
+    #with open(path+errors_pretty, 'w+') as f_err_msgs:
+    with open(file_for_error, 'w+') as f_err_msgs:
         with tf.Session() as sess:
             ## prepare writers and fetches
             if use_tensorboard:
@@ -545,6 +547,9 @@ def main():
                     mdl_info_msg = "Opt:%s, BN %s, BN_trainable: %s After%d/%d iteration,Init: %s" % (optimization_alg,bn,trainable_bn,i,steps,init_type)
                     errors_to_beat = 'BEAT: hbf1_error: %s RBF error: %s PCA error: %s '%(hbf1_error, rbf_error,pca_error)
                     print_messages(loss_msg, mdl_info_msg, errors_to_beat)
+                    loss_msg+="\n"
+                    mdl_info_msg+="\n"
+                    errors_to_beat+="\n"
 
                     print 'S: ', inits_S
                     # store results
