@@ -30,12 +30,12 @@ task_name = 'task_MNIST_flat'
 task_name = 'task_MNIST_flat_auto_encoder'
 arg.task_name = task_name
 
-mdl = 'standard_nn's
+mdl = 'standard_nn'
 mdl = 'hbf'
 mdl = 'binary_tree_4D_conv'
 arg.mdl = mdl
 
-
+# train shape of Gaussians
 if arg.mdl == 'hbf':
     trainable_S = 'train_S'
     trainable_S = 'dont_train_S'
@@ -46,6 +46,11 @@ if arg.mdl == 'hbf':
     arg.trainable_S = trainable_S
     arg.train_S_type = train_S_type
 
+# BIAS or Guassian Shape
+init_S = [525.32626263]
+init_b = [0.1]
+
+# Filter/W inits
 init_type = 'truncated_normal'
 init_type = 'data_init'
 init_type = 'kern_init'
@@ -56,9 +61,7 @@ init_type = 'data_xavier_kern'
 init_type = 'xavier'
 arg.init_type = init_type
 
-init_S = [525.32626263]
-init_b = [0.1]
-
+# UNITS
 if arg.mdl == 'standard_nn':
     units=[5]
     units=[6,6]
@@ -91,19 +94,22 @@ elif arg.mdl == 'binary_tree_8D_conv':
     arg.std = std
     arg.nb_filters = nb_filters
 else:
-    raise ValueError('Need to use a valid model, incorrect or unknown model %s give.',%arg.mdl)
+    raise ValueError('Need to use a valid model, incorrect or unknown model %s give.'%arg.mdl)
 
-optimization_alg=GD
-optimization_alg=Momentum
-optimization_alg=Adadelta
-optimization_alg=Adagrad
-optimization_alg=Adam
-optimization_alg=RMSProp
+# OPTIMIZER
+optimization_alg = 'GD'
+optimization_alg = 'Momentum'
+optimization_alg = 'Adadelta'
+optimization_alg = 'Adagrad'
+optimization_alg = 'Adam'
+optimization_alg = 'RMSProp'
 arg.optimization_alg = optimization_alg
 
-data_normalize='normalize_input'
+# NORMALIZE UNIT CIRCLE
+#data_normalize='normalize_input'
 data_normalize='dont_normalize'
 arg.data_normalize = data_normalize
 
 if __name__ == '__main__':
-    main_nn.main(arg)
+    main_nn.main_old()
+    #main_nn.main(arg)
