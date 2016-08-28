@@ -6,7 +6,7 @@ import numpy as np
 import shutil
 import subprocess
 import json
-#import sys
+import sys
 import datetime
 import os
 import pdb
@@ -15,7 +15,7 @@ import ast
 import my_tf_pkg as mtf
 import time
 
-def main():
+def main_old():
     #print 'print sys.argv =',sys.argv
     #print 'len(sys.argv) =',len(sys.argv)
 
@@ -547,6 +547,7 @@ def main():
                     mdl_info_msg = "Opt:%s, BN %s, BN_trainable: %s After%d/%d iteration,Init: %s" % (optimization_alg,bn,trainable_bn,i,steps,init_type)
                     errors_to_beat = 'BEAT: hbf1_error: %s RBF error: %s PCA error: %s '%(hbf1_error, rbf_error,pca_error)
                     print_messages(loss_msg, mdl_info_msg, errors_to_beat)
+                    #sys.stdout.flush()
                     loss_msg+="\n"
                     mdl_info_msg+="\n"
                     errors_to_beat+="\n"
