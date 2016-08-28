@@ -8,10 +8,20 @@
 
 from __future__ import print_function
 
+# import sys
+# env_path = '/home/brando90/envs/tensorflow/lib/python2.7/site-packages'
+# if not env_path in sys.path:
+#     sys.path.append(env_path)
+# else:
+#     print('env_path %s present in path'%env_path)
+
+
 import os
 import namespaces as ns
 
 import main_nn
+
+print(ns)
 
 arg = ns.Namespace()
 
