@@ -1,4 +1,4 @@
-#!/bin/python
+#!/usr/bin/env
 #SBATCH --job-name=Python
 
 # import sys

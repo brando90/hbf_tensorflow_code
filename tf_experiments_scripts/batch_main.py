@@ -1,4 +1,4 @@
-#!/bin/python
+#!/usr/bin/env
 #SBATCH --job-name=Python
 #SBATCH --array=1-10
 #SBATCH --mem=14000
@@ -7,14 +7,6 @@
 #SBATCH --mail-user=rene_sax14@yahoo.com
 
 from __future__ import print_function
-
-# import sys
-# env_path = '/home/brando90/envs/tensorflow/lib/python2.7/site-packages'
-# if not env_path in sys.path:
-#     sys.path.append(env_path)
-# else:
-#     print('env_path %s present in path'%env_path)
-
 
 import os
 import namespaces as ns
