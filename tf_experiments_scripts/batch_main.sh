@@ -48,7 +48,7 @@ init=all_same_const-0.1
 #init=first_constant_rest_specific_consts-[1250.32,3]
 #init=first_rand_same_uniform_rest_uniform_random-[[1,1250.32],[2,4]]
 
-units=6,6
+units=5
 #nb_filters=18
 # 4D
 nb_filters=6

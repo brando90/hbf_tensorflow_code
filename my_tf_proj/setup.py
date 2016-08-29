@@ -9,5 +9,6 @@ setup(
     author_email='brando90@mit.edu',
     license='MIT',
     packages=['my_tf_pkg'],
-    install_requires=['numpy>=1.11.0']
+    #install_requires=['numpy','keras','namespaces','pdb','scikit-learn','scipy','virtualenv']
+    install_requires=['numpy','keras','namespaces==1.0.0','pdb','virtualenv','sklearn']
 )

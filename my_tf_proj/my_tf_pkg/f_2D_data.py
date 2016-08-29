@@ -314,7 +314,7 @@ def generate_data_task2_func(func,nb_recursive_layers, N_train=60000,N_cv=60000,
 #     np.savez(file_name, X_train=X_train,Y_train=Y_train, X_cv=X_cv,Y_cv=Y_cv, X_test=X_test,Y_test=Y_test, X_mesh_train=X_mesh_train,Y_mesh_train=Y_mesh_train,Z_mesh_train=Z_mesh_train, X_mesh_cv=X_mesh_cv,Y_mesh_cv=Y_mesh_cv,Z_mesh_cv=Z_mesh_cv, X_mesh_test=X_mesh_test,Y_mesh_test=Y_mesh_test,Z_mesh_test=Z_mesh_test)
 
 def save_data_task2_func(func,file_name,nb_recursive_layers):
-    print 'save_data_task2'
+    print( 'save_data_task2')
     (X_train,Y_train, X_cv,Y_cv, X_test,Y_test), (X_mesh_train,Y_mesh_train,Z_mesh_train, X_mesh_cv,Y_mesh_cv,Z_mesh_cv, X_mesh_test,Y_mesh_test,Z_mesh_test) = generate_data_task2_func(func=func,nb_recursive_layers=nb_recursive_layers)
-    print 'file_name: ', file_name
+    print( 'file_name: ', file_name)
     np.savez(file_name, X_train=X_train,Y_train=Y_train, X_cv=X_cv,Y_cv=Y_cv, X_test=X_test,Y_test=Y_test, X_mesh_train=X_mesh_train,Y_mesh_train=Y_mesh_train,Z_mesh_train=Z_mesh_train, X_mesh_cv=X_mesh_cv,Y_mesh_cv=Y_mesh_cv,Z_mesh_cv=Z_mesh_cv, X_mesh_test=X_mesh_test,Y_mesh_test=Y_mesh_test,Z_mesh_test=Z_mesh_test)

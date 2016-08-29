@@ -32,7 +32,7 @@ def find_closest_to_value(list_vals, target):
     return best_index, best_val
 
 def evalaute_models(data, stddevs, nb_centers_list, replace=False, nb_inits=1):
-    print 'evalauting models, nb_inits %s '%(nb_inits)
+    print( 'evalauting models, nb_inits %s '%(nb_inits))
     (X_train, Y_train, X_cv, Y_cv, X_test, Y_test) = data
     N_train = X_train.shape[0]
 
@@ -67,7 +67,7 @@ def evalaute_models(data, stddevs, nb_centers_list, replace=False, nb_inits=1):
     Y_pred_cv_stds = []
     Y_pred_test_stds = []
     for K in nb_centers_list:
-        print '----center ', K
+        print( '----center ', K)
         # get best std using CV
         mdl_best_params, mdl_mean_params, errors_best, errors_stats, reconstructions_best, reconstructions_mean = mtf.get_best_shape_and_mdl(K, data, stddevs, nb_inits=nb_inits)
         (C_hat_best, centers_best, best_stddev) = mdl_best_params

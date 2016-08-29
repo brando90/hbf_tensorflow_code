@@ -11,8 +11,8 @@ def process_argv(argv):
     slurm_jobid = 'TB'
     slurm_array_task_id = 'TB'
     job_name = 'TB'
-    print 'print argv =',argv
-    print 'len(argv) =',len(argv)
+    print( 'print argv =',argv)
+    print( 'len(argv) =',len(argv))
     mdl_type = 'standard_nn'
     #mdl_type = 'hbf'
     mdl_type = 'binary_tree_4D_conv'
@@ -225,16 +225,16 @@ def process_argv(argv):
         #     job_name = 'test'
         #     print 8
         #else:
-        #    raise ValueError('Need to specify the correct number of params; given %s, needed %s'%(len(argv),nb_params_needed))
+        #   raise ValueError('Need to specify the correct number of params; given %s, needed %s'%(len(argv),nb_params_needed))
     bn = str_to_bool(bn)
-    print 'mdl_type: ', mdl_type
+    print( 'mdl_type: ', mdl_type)
     return (experiment_root_dir,slurm_jobid,slurm_array_task_id,job_name,mdl_save,experiment_name,units_list,train_S_type,task_name,bn,trainable_bn,mdl_type,init_type,cluster,data_normalize,trainable_S,argv_init_S,optimization_alg,nb_filters,bn_tree_init_stats)
 
 def is_it_tensorboard_run(argv):
     check_args = []
     for sys_arg in argv:
         check_args.extend(sys_arg.split('='))
-    print check_args
+    print(check_args)
     return '--logdir' in check_args
 
 def str_to_bool(s):

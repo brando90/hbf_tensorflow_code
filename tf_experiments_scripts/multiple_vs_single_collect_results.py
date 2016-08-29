@@ -24,11 +24,14 @@ def get_list_errors(experiment_results):
 
 def get_list_errors2(experiment_results):
     # experiment_results : units->results
+    print 'get_list_errors2'
     list_units = []
     list_train_errors = []
     list_test_errors = []
+    #print experiment_results
     for nb_units, results in experiment_results.iteritems():
         #print 'nb_units ', nb_units
+        #print 'results', results
         train_error, cv_error, test_error = get_errors_from(results)
         #print '--nb_units', nb_units
         #print 'train_error, cv_error, test_error ', train_error, cv_error, test_error
@@ -94,14 +97,24 @@ def get_results_for_experiments(path_to_experiments, verbose=True, split_string=
     '''
         Returns a dictionary containing the best results for each experiment
     '''
-    print path_to_experiments
+    print '-----get_results_for_experiments'
+    #print path_to_experiments
     #print os.path.isdir(path_to_experiments)
     #print os.listdir(path_to_experiments)
     experiment_results = {} # maps units -> results_best_mdl e.g {'4':{'results_best_mdl':results_best_mdl}}
+    #print os.listdir(path_to_experiments)
+    #print len(os.walk(path_to_experiments).next())
     for (experiment_dir, _, potential_runs) in os.walk(path_to_experiments):
+        #print 'experiment_dir', experiment_dir
+        #print 'potential_runs', potential_runs
+        #print 'len(experiment_dir)', len(experiment_dir)
+        #print 'len(potential_runs)', len(potential_runs)
+        #print (experiment_dir != path_to_experiments)
+        #print '> path_to_experiments: ',path_to_experiments
+        #print '> experiment_dir: ',experiment_dir
         # if current dirpath is a valid experiment and not . (itself)
         if (experiment_dir != path_to_experiments):
-            print '=> experiment_dir: ', experiment_dir
+            #print '=> experiment_dir: ', experiment_dir
             #print '=> potential_runs: ', potential_runs
             results_best, best_filename, final_train_errors, final_cv_errors, final_test_errors = get_best_results_from_experiment(experiment_dirpath=experiment_dir,list_runs_filenames=potential_runs)
             nb_units = results_best['dims'][1]
@@ -386,6 +399,41 @@ def display_results_hbf_xsinglog1_x():
     plt.legend()
     plt.show()
 
+def display_results_BT():
+    # frameworkpython multiple_vs_single_collect_results.py
+    experiment_name = 'om_f_4d_conv'
+
+    path_to_experiments = '../../%s/task_August_13_BT/BT_6_12_18'%experiment_name
+    nn1_multiple_experiment_results = get_results_for_experiments(path_to_experiments,verbose=True, split_string='_jBT_[\d]*_|_jHBF[\d]*_|_jrun_HBF[\d]*_')
+
+    #path_to_experiments = '../../%s/task_August_13_BT/August_25_jBT_12_1000_RMSProp'%experiment_name
+    #nn2_multiple_experiment_results = get_results_for_experiments(path_to_experiments,verbose=True, split_string='_jBT_[\d]*_|_jHBF[\d]*_|_jrun_HBF[\d]*_')
+
+    #
+    #print nn1_multiple_experiment_results
+    nn1_list_units, nn1_list_train_errors, nn1_list_test_errors = get_list_errors2(experiment_results=nn1_multiple_experiment_results)
+    #nn2_list_units, nn2_list_train_errors, nn2_list_test_errors = get_list_errors2(experiment_results=nn2_multiple_experiment_results)
+    #
+    plt.figure(3)
+    print 'nn1_list_train_errors: ', nn1_list_train_errors
+    print 'nn1_list_test_errors: ', nn1_list_test_errors
+    #print 'nn2_list_train_errors: ', nn2_list_train_errors
+    #print 'nn2_list_test_errors: ', nn2_list_test_errors
+    #
+    list_units = np.array(nn1_list_units)
+    print list_units
+    krls.plot_errors(list_units, nn1_list_train_errors,label='BT train', markersize=3, colour='b')
+    krls.plot_errors(list_units, nn1_list_test_errors,label='BT test', markersize=3, colour='c')
+    #
+    # list_units = 2*np.array(nn2_list_units)
+    # print list_units
+    # krls.plot_errors(list_units, nn2_list_train_errors,label='BT12 train', markersize=3, colour='r')
+    # krls.plot_errors(list_units, nn2_list_test_errors,label='BT12 test', markersize=3, colour='m')
+    #
+    plt.legend()
+    plt.show()
+
 if __name__ == '__main__':
     #display_results_NN_xsinglog1_x()
-    display_results_NN_xsinglog1_x()
+    #display_results_NN_xsinglog1_x()
+    display_results_BT()

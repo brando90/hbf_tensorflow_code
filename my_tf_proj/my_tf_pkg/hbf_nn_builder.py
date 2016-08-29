@@ -7,7 +7,7 @@ import tensorflow as tf
 from tensorflow.contrib.layers.python.layers import batch_norm as batch_norm
 
 def hello_world():
-    print "Hello World!"
+    print( "Hello World!" )
 
 ## builders for Networks
 
@@ -31,8 +31,8 @@ def build_standard_NN(x, dims, inits, phase_train=None, trainable_bn=True):
 
 def build_HBF2(x, dims, inits, phase_train=None, trainable_bn=True,trainable_S=True):
     (_,inits_W,inits_S) = inits
-    print inits_S
-    print inits_W
+    print(inits_S)
+    print(inits_W)
     layer = x
     nb_hidden_layers = len(dims)-1
     for l in xrange(1,nb_hidden_layers): # from 1 to L-1
@@ -49,8 +49,8 @@ def get_HBF_layer2(l, x, dims, init, phase_train=None, layer_name='HBFLayer', tr
             #W = tf.get_variable(name='W'+l, dtype=tf.float64, initializer=init_W, regularizer=None, trainable=True)
             W = get_W(init_W, l, dims)
         with tf.name_scope('rbf_stddev'+l):
-            print '--> init_S: ', init_S
-            print '--> trainable_S: ', trainable_S
+            print( '--> init_S: ', init_S)
+            print('--> trainable_S: ', trainable_S)
             S = tf.get_variable(name='S'+l, dtype=tf.float64, initializer=init_S, regularizer=None, trainable=trainable_S)
             beta = tf.pow(tf.div( tf.constant(1.0,dtype=tf.float64),S), 2)
         with tf.name_scope('Z'+l):
@@ -85,8 +85,8 @@ def get_HBF_layer3(l, x, dims, init, phase_train=None, layer_name='HBFLayer', tr
             #W = tf.get_variable(name='W'+l, dtype=tf.float64, initializer=init_W, regularizer=None, trainable=True)
             W = get_W(init_W, l, dims)
         with tf.name_scope('rbf_stddev'+l):
-            print '--> init_S: ', init_S
-            print '--> trainable_S: ', trainable_S
+            print( '--> init_S: ', init_S)
+            print( '--> trainable_S: ', trainable_S)
             S = tf.get_variable(name='S'+l, dtype=tf.float64, initializer=init_S, regularizer=None, trainable=trainable_S)
             beta = tf.pow(tf.div( tf.constant(1.0,dtype=tf.float64),S), 2)
         with tf.name_scope('Z'+l):
@@ -164,7 +164,7 @@ def variable_summaries(var, name):
 def get_NN_layer(l, x, dims, init, phase_train=None, scope="NNLayer", trainable_bn=True):
     (init_W,init_b) = init
     with tf.name_scope(scope+l):
-        print 'init_W ', init_W
+        print( 'init_W ', init_W)
         W = get_W(init_W, l, dims)
         b = tf.get_variable(name='b'+l, dtype=tf.float64, initializer=init_b, regularizer=None, trainable=True)
         with tf.name_scope('Z'+l):
@@ -202,7 +202,7 @@ def build_binary_tree(x,filter_size,nb_filters,mean,stddev,stride_convd1=2,phase
 
     ## fully connected layer
     init_W = tf.truncated_normal(shape=[filter_size*nb_filters,1], mean=mean, stddev=stddev, dtype=tf.float32, seed=None, name=None)
-    print '-->-->-->-->-->-->-->-->-->-->-->init_C: ', init_W
+    print( '-->-->-->-->-->-->-->-->-->-->-->init_C: ', init_W)
     l = 'Out_Layer'
     C = tf.get_variable(name='W'+l, dtype=tf.float32, initializer=init_W, regularizer=None, trainable=True)
     mdl = tf.matmul(flat_conv,C)
@@ -214,14 +214,14 @@ def get_binary_branch(l,x,filter_size,nb_filters,mean,stddev,name=None, stride_c
     '''
     # filter shape is "[filter_height, filter_width, in_channels, out_channels]"
     init_W = tf.truncated_normal(shape=[1,filter_size,1,nb_filters], mean=mean, stddev=stddev, dtype=tf.float32, seed=None, name=None)
-    print '-->-->-->-->-->-->-->-->-->-->-->-->-->-->-->-->-->init_W', init_W
+    print( '-->-->-->-->-->-->-->-->-->-->-->-->-->-->-->-->-->init_W', init_W)
     W_filters = tf.get_variable(name='W'+l, dtype=tf.float32, initializer=init_W, regularizer=None, trainable=True)
     #bias
     b = tf.Variable( tf.constant(0.1, shape=[nb_filters]) )
     # 1D conv
     conv = tf.nn.conv2d(input=x, filter=W_filters, strides=[1, 1, stride_convd1, 1], padding="SAME", name="conv") + b
     # get activations
-    print 'conv: ', conv
+    print( 'conv: ', conv)
     flat_conv = tf.reshape(conv, [-1,filter_size*nb_filters])
     A = tf.nn.relu( flat_conv )
     return A
@@ -315,17 +315,17 @@ def build_binary_tree_16D(x,nb_filters1,nb_filters2,mean,stddev,stride_convd1=2)
 
 def get_W(init_W, l, dims, dtype=tf.float64):
     if isinstance(init_W, tf.python.framework.ops.Tensor):
-        print 'isinstance'
+        print( 'isinstance')
         W = tf.get_variable(name='W'+l, dtype=dtype, initializer=init_W, regularizer=None, trainable=True)
     else:
-        print 'XAVIER'
-        print dims
+        print( 'XAVIER')
+        print( dims)
         (dim_input,dim_out) = dims
         W = tf.get_variable(name='W'+l, dtype=dtype, initializer=init_W, regularizer=None, trainable=True, shape=[dim_input,dim_out])
     return W
 
 def add_batch_norm_layer(l, x, phase_train, n_out=1, scope='BN', trainable_bn=True):
-    print 'add_batch_norm_layer'
+    print( 'add_batch_norm_layer')
     #bn_layer = standard_batch_norm(l, x, n_out, phase_train, scope='BN')
     #bn_layer = batch_norm_layer(x,phase_train,scope_bn=scope+l)
     bn_layer = batch_norm_layer(x,phase_train,scope_bn=scope+l,trainable=trainable_bn)
@@ -335,8 +335,8 @@ def add_batch_norm_layer(l, x, phase_train, n_out=1, scope='BN', trainable_bn=Tr
 def batch_norm_layer(x,phase_train,scope_bn,trainable=True):
     center = True
     scale = True
-    print '======> official BN'
-    print '--> trainable_bn: ', trainable
+    print( '======> official BN')
+    print( '--> trainable_bn: ', trainable)
     bn_train = batch_norm(x, decay=0.999, center=center, scale=scale,
     updates_collections=None,
     is_training=True,

@@ -15,7 +15,7 @@ import ast
 import my_tf_pkg as mtf
 import time
 
-def main_old():
+def main():
     #print 'print sys.argv =',sys.argv
     #print 'len(sys.argv) =',len(sys.argv)
 
@@ -28,43 +28,43 @@ def main_old():
                 init_constant[i] = lower_threshold
         return
 
-    # def get_init_b(argv_init_S,dims):
-    #     #parse argv input
-    #     type_S, arg_S = argv_init_S.split('-')
-    #     print '++> type_S ', type_S
-    #     print '++> arg_S ', arg_S
-    #     # process it and choose constant list:
-    #     if type_S == 'all_same_const':
-    #         # arg_S = init_constant
-    #         init_constant = float(arg_S)
-    #         b_init = len(dims)*[init_constant]
-    #     elif type_S == 'first_constant_rest_specific_consts':
-    #         # arg_S = init_constant,const_1,...const_l,...,const_L]
-    #         b_init = ast.literal_eval(arg_S)
-    #         b_init = [None] + b_init
-    #     elif type_S == 'first_constant_rest_uniform_random':
-    #         # arg_S = [init_constant,(low_1,high_1),...(low_l,high_l),...,(low_L,high_L)]
-    #         params_S = ast.literal_eval(arg_S)
-    #         b_init = [None, params_S[0]]
-    #         for l in range(1,len(params_S)):
-    #             #b_init.append( np.random.uniform(low=1,high=2.5) )
-    #             low, high = params_S[l]
-    #             print '###########> params_S', params_S[l]
-    #             b_init.append( np.random.uniform(low=low,high=high) )
-    #     elif type_S == 'first_rand_same_uniform_rest_uniform_random':
-    #         # arg_S = [(low_1,high_1)  ,  (low_1,high_1),...(low_l,high_l),...,(low_L,high_L)]
-    #         params_S = ast.literal_eval(arg_S)
-    #         low, high = params_S[0]
-    #         b_init = [None, np.random.uniform(low=low,high=high)]
-    #         for l in range(1,len(params_S)):
-    #             #b_init.append( np.random.uniform(low=1,high=2.5) )
-    #             low, high = params_S[l]
-    #             print '###########> params_S', params_S[l]
-    #             b_init.append( np.random.uniform(low=low,high=high) )
-    #     else:
-    #         raise ValueError('Wrong type of b/S init')
-    #     print('++===> S/b_init ', b_init)
-    #     return b_init
+    def get_init_b(argv_init_S,dims):
+        #parse argv input
+        type_S, arg_S = argv_init_S.split('-')
+        print '++> type_S ', type_S
+        print '++> arg_S ', arg_S
+        # process it and choose constant list:
+        if type_S == 'all_same_const':
+            # arg_S = init_constant
+            init_constant = float(arg_S)
+            b_init = len(dims)*[init_constant]
+        elif type_S == 'first_constant_rest_specific_consts':
+            # arg_S = init_constant,const_1,...const_l,...,const_L]
+            b_init = ast.literal_eval(arg_S)
+            b_init = [None] + b_init
+        elif type_S == 'first_constant_rest_uniform_random':
+            # arg_S = [init_constant,(low_1,high_1),...(low_l,high_l),...,(low_L,high_L)]
+            params_S = ast.literal_eval(arg_S)
+            b_init = [None, params_S[0]]
+            for l in range(1,len(params_S)):
+                #b_init.append( np.random.uniform(low=1,high=2.5) )
+                low, high = params_S[l]
+                print '###########> params_S', params_S[l]
+                b_init.append( np.random.uniform(low=low,high=high) )
+        elif type_S == 'first_rand_same_uniform_rest_uniform_random':
+            # arg_S = [(low_1,high_1)  ,  (low_1,high_1),...(low_l,high_l),...,(low_L,high_L)]
+            params_S = ast.literal_eval(arg_S)
+            low, high = params_S[0]
+            b_init = [None, np.random.uniform(low=low,high=high)]
+            for l in range(1,len(params_S)):
+                #b_init.append( np.random.uniform(low=1,high=2.5) )
+                low, high = params_S[l]
+                print '###########> params_S', params_S[l]
+                b_init.append( np.random.uniform(low=low,high=high) )
+        else:
+            raise ValueError('Wrong type of b/S init')
+        print '++===> S/b_init ', b_init
+        return b_init
 
     re_train = None
     #re_train = 're_train'
@@ -81,13 +81,13 @@ def main_old():
     use_tensorboard = False
     #use_tensorboard =  False
     trainable_S = True if (trainable_S=='train_S') else False
-    print('use_tensorboard', use_tensorboard)
+    print 'use_tensorboard', use_tensorboard
     date = datetime.date.today().strftime("%B %d").replace (" ", "_")
-    print( 'experiment_root_dir=%s,slurm_jobid=%s,slurm_array_task_id=%s,job_name=%s'%(experiment_root_dir,slurm_jobid,slurm_array_task_id,job_name) )
+    print 'experiment_root_dir=%s,slurm_jobid=%s,slurm_array_task_id=%s,job_name=%s'%(experiment_root_dir,slurm_jobid,slurm_array_task_id,job_name)
 
     # randomness
-    #tf_rand_seed = int(os.urandom(32).encode('hex'), 16)
-    #tf.set_random_seed(tf_rand_seed)
+    tf_rand_seed = int(os.urandom(32).encode('hex'), 16)
+    tf.set_random_seed(tf_rand_seed)
     ## directory structure for collecting data for experiments
     path_root = '../../%s/%s'%(experiment_root_dir,experiment_name)
     #
@@ -105,9 +105,9 @@ def main_old():
     tensorboard_data_dump_train = '/tmp/mdl_logs/train' #note these names are always saved in results even if its not done
     tensorboard_data_dump_test = '/tmp/mdl_logs/test' #note these names are always saved in results even if its not done
     if use_tensorboard:
-        print( '==> tensorboard_data_dump_train: ', tensorboard_data_dump_train )
-        print( '==> tensorboard_data_dump_test: ', tensorboard_data_dump_test )
-        print( 'mdl_save',mdl_save )
+        print '==> tensorboard_data_dump_train: ', tensorboard_data_dump_train
+        print '==> tensorboard_data_dump_test: ', tensorboard_data_dump_test
+        print 'mdl_save',mdl_save
         mtf.make_and_check_dir(path=tensorboard_data_dump_train)
         mtf.make_and_check_dir(path=tensorboard_data_dump_test)
         # delete contents of tensorboard dir
@@ -122,19 +122,19 @@ def main_old():
     results_dic = mtf.fill_results_dic_with_np_seed(np_rnd_seed=np.random.get_state(), results=results)
 
     ## Data sets and task
-    print( '----====> TASK NAME: %s' % task_name )
+    print '----====> TASK NAME: %s' % task_name
     (X_train, Y_train, X_cv, Y_cv, X_test, Y_test) = mtf.get_data(task_name)
     if data_normalize == 'normalize_input':
         X_train, X_cv, X_test = preprocessing.scale(X_train), preprocessing.scale(X_cv), preprocessing.scale(X_test)
 
     (N_train,D) = X_train.shape
     (N_test,D_out) = Y_test.shape
-    print( '(N_train,D) = ', (N_train,D) )
-    print( '(N_test,D_out) = ', (N_test,D_out) )
+    print '(N_train,D) = ', (N_train,D)
+    print '(N_test,D_out) = ', (N_test,D_out)
 
     init_constant = -1
     ## HBF/NN params
-    print( 'CLUSTER: ', cluster )
+    print 'CLUSTER: ', cluster
     if cluster == 'OM7':
         dims = [D]+units_list+[D_out]
         mu_init = 0.0
@@ -154,26 +154,26 @@ def main_old():
 
         phase_train = tf.placeholder(tf.bool, name='phase_train') if bn else  None
 
-        report_error_freq = 1000
+        report_error_freq = 30
         #steps = np.random.randint(low=3000,high=6000)
         steps = 30000
         M = np.random.randint(low=500, high=15000)
         #M = 17000 #batch-size
         #M = 5000
-        print( '++++> M (batch size) :', M )
+        print '++++> M (batch size) :', M
 
         low_const_learning_rate, high_const_learning_rate = -0.01, -6
         log_learning_rate = np.random.uniform(low=low_const_learning_rate, high=high_const_learning_rate)
         starter_learning_rate = 10**log_learning_rate
 
-        print( '++> starter_learning_rate ', starter_learning_rate )
+        print '++> starter_learning_rate ', starter_learning_rate
         ## decayed_learning_rate = learning_rate * decay_rate ^ (global_step / decay_steps)
         decay_rate = np.random.uniform(low=0.3, high=0.99)
         decay_steps = np.random.randint(low=report_error_freq, high=M)
         staircase = True
-        print( '++> decay_rate ', decay_rate)
-        print( '++> decay_steps ', decay_steps)
-        print( '++> staircase ', staircase )
+        print '++> decay_rate ', decay_rate
+        print '++> decay_steps ', decay_steps
+        print '++> staircase ', staircase
 
         if optimization_alg == 'GD':
             pass
@@ -207,7 +207,7 @@ def main_old():
         results['range_learning_rate'] = [low_const_learning_rate, high_const_learning_rate]
         #results['range_constant'] = [low_const, high_const]
     else:
-        print( '::::+++++====> Running MANUAL SETTING OF HYPER PARAMETERS')
+        print '::::+++++====> Running MANUAL SETTING OF HYPER PARAMETERS'
         dims = [D]+units_list+[D_out]
         mu_init = 0.0
         mu = len(dims)*[mu_init]
@@ -215,14 +215,14 @@ def main_old():
         std_init = 0.1
         std = len(dims)*[std_init]
         #std = [None, std_init,std_init,10]
-        print( 'std: ', std)
+        print 'std: ', std
         #low_const, high_const = 0.4, 1.0
         init_constant = 0.1
         #init_constant = 0.4177
         #init_constant = 2.0
         b_init = len(dims)*[init_constant]
         #b_init = [None, init_constant, 1.2]
-        print( '++> S/b_init ', b_init)
+        print '++> S/b_init ', b_init
         S_init = b_init
         #
         model = mdl_type
@@ -231,21 +231,21 @@ def main_old():
 
         phase_train = tf.placeholder(tf.bool, name='phase_train') if bn else  None
 
-        report_error_freq = 100
+        report_error_freq = 25
         steps = 20000
         M = 8000 #batch-size
-        print ('++++> M (batch size) :', M)
+        print '++++> M (batch size) :', M
 
         starter_learning_rate = 0.01
 
-        print( '++> starter_learning_rate ', starter_learning_rate)
+        print '++> starter_learning_rate ', starter_learning_rate
         ## decayed_learning_rate = learning_rate * decay_rate ^ (global_step / decay_steps)
         decay_rate = 0.9
         decay_steps = 200
         staircase = True
-        print( '++> decay_rate ', decay_rate)
-        print( '++> decay_steps ', decay_steps)
-        print( '++> staircase ', staircase)
+        print '++> decay_rate ', decay_rate
+        print '++> decay_steps ', decay_steps
+        print '++> staircase ', staircase
 
         if optimization_alg=='Momentum':
             #use_nesterov=False
@@ -281,13 +281,13 @@ def main_old():
         else:
             k = units_list[0] * len(units_list)
         if not k in PCA_errors.keys():
-            print( 'COMPUTING PCA... k = ', k)
+            print 'COMPUTING PCA... k = ', k
             X_reconstruct_pca, _, _ = mtf. get_reconstruction_pca(X_train,k=units_list[0])
             pca_error = mtf.report_l2_loss(Y=X_train,Y_pred=X_reconstruct_pca)
             PCA_errors[k] = pca_error
         else:
             pca_error = PCA_errors[k]
-        print( '*************> PCA error: ', pca_error)
+        print '*************> PCA error: ', pca_error
     else:
         pca_error = None
         rbf_error = None
@@ -297,10 +297,10 @@ def main_old():
         #error, Y_pred, Kern, C, subsampled_data_points = report_RBF_error_from_data(X_train, dims, stddev)
         if len(units_list) > 1:
             k = units_list[0]*len(units_list)
-            print( 'RBF units = ', k)
+            print 'RBF units = ', k
             nb_units = [None, k]
             rbf_error, _, _, _, _ = mtf.report_RBF_error_from_data(X_train, X_train, nb_units, S_init[1])
-            print( rbf_error)
+            print rbf_error
             hbf1={12:26.7595}
             if k in hbf1.keys():
                 hbf1_error = hbf1[k]
@@ -331,12 +331,12 @@ def main_old():
         float_type = tf.float64
         x = tf.placeholder(float_type, shape=[None, D], name='x-input') # M x D
         (inits_C,inits_W,inits_S,rbf_error) = mtf.get_initilizations_HBF(init_type=init_type,dims=dims,mu=mu,std=std,b_init=b_init,S_init=S_init, X_train=X_train, Y_train=Y_train, train_S_type=train_S_type)
-        print(inits_W)
+        print inits_W
         with tf.name_scope("HBF") as scope:
             mdl = mtf.build_HBF2(x,dims,(inits_C,inits_W,inits_S),phase_train,trainable_bn,trainable_S)
             mdl = mtf.get_summation_layer(l=str(nb_layers),x=mdl,init=inits_C[0])
     elif model == 'binary_tree_4D_conv':
-        print( 'binary_tree_4D')
+        print 'binary_tree_4D'
         #tensorboard_data_dump = '/tmp/hbf_logs'
         inits_S = None
         pca_error = None
@@ -358,7 +358,7 @@ def main_old():
         #nb_filters = nb_filters
         mean, stddev = bn_tree_init_stats
         stddev = float( np.random.uniform(low=0.001, high=stddev) )
-        print( 'stddev', stddev)
+        print 'stddev', stddev
         x = tf.placeholder(float_type, shape=[None,1,D,1], name='x-input')
         with tf.name_scope("build_binary_model") as scope:
             mdl = mtf.build_binary_tree(x,filter_size,nb_filters,mean,stddev,stride_convd1=2,phase_train=phase_train,trainable_bn=trainable_bn)
@@ -430,8 +430,8 @@ def main_old():
 
     ##
     if re_train == 're_train' and task_name == 'hrushikesh':
-        print( 'task_name: ', task_name)
-        print( 're_train: ', re_train)
+        print 'task_name: ', task_name
+        print 're_train: ', re_train
         var_list = [v for v in tf.all_variables() if v.name == 'C:0']
         #train_step = opt.minimize(l2_loss, var_list=var_list)
     else:
@@ -492,7 +492,7 @@ def main_old():
 
     def print_messages(*args):
         for i, msg in enumerate(args):
-            print('>',msg)
+            print ('>',msg)
 
     if use_tensorboard:
         if tf.gfile.Exists('/tmp/mdl_logs'):
@@ -525,7 +525,7 @@ def main_old():
                 fetches_test = l2_loss
 
             sess.run( tf.initialize_all_variables() )
-            for i in range(steps):
+            for i in xrange(steps):
                 ## Create fake data for y = W.x + b where W = 2, b = 0
                 #(batch_xs, batch_ys) = get_batch_feed(X_train, Y_train, M, phase_train)
                 feed_dict_batch = get_batch_feed(X_train, Y_train, M, phase_train)
@@ -547,12 +547,11 @@ def main_old():
                     mdl_info_msg = "Opt:%s, BN %s, BN_trainable: %s After%d/%d iteration,Init: %s" % (optimization_alg,bn,trainable_bn,i,steps,init_type)
                     errors_to_beat = 'BEAT: hbf1_error: %s RBF error: %s PCA error: %s '%(hbf1_error, rbf_error,pca_error)
                     print_messages(loss_msg, mdl_info_msg, errors_to_beat)
-                    #sys.stdout.flush()
                     loss_msg+="\n"
                     mdl_info_msg+="\n"
                     errors_to_beat+="\n"
 
-                    print( 'S: ', inits_S)
+                    print 'S: ', inits_S
                     # store results
                     #print type(train_error)
                     results['train_errors'].append( float(train_error) )
@@ -582,7 +581,7 @@ def main_old():
     results['job_name'] = job_name
     results['slurm_jobid'] = slurm_jobid
     results['slurm_array_task_id'] = slurm_array_task_id
-    #results['tf_rand_seed'] = tf_rand_seed
+    results['tf_rand_seed'] = tf_rand_seed
     results['date'] = date
     results['bn'] = bn
     results['trainable_bn'] = trainable_bn
@@ -600,7 +599,8 @@ def main_old():
     #print results
     with open(path+json_file, 'w+') as f_json:
         json.dump(results,f_json,sort_keys=True, indent=2, separators=(',', ': '))
-    print( '\a') #makes beep
+    print '\a' #makes beep
+    print '\a' #makes beep
 
 
 # low_const, high_const = 0.4, 1.0
@@ -612,7 +612,7 @@ def main_old():
 # b_init = [None, init_constant, np.random.uniform(low=1,high=2.5)]
 
 if __name__ == '__main__':
-    print( 'in __main__')
-    print( 'start running main_nn.py')
+    print 'in __main__'
+    print 'start running main_nn.py'
     main()
-    print( 'end running main_nn.py')
+    print 'end running main_nn.py'

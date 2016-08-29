@@ -23,7 +23,7 @@ def get_initilizations_standard_NN(init_type,dims,mu,std,b_init,S_init,X_train,Y
             inits_W.append( tf.truncated_normal(shape=[dims[l-1],dims[l]], mean=mu[l], stddev=std[l], dtype=tf.float64) )
             inits_b.append( tf.constant( b_init[l], shape=[dims[l]], dtype=tf.float64 ) )
         l=len(dims)-1
-        print [dims[l-1],dims[l]]
+        print( [dims[l-1],dims[l]])
         inits_C=[ tf.truncated_normal(shape=[dims[l-1],dims[l]],  mean=mu[l], stddev=std[l], dtype=tf.float64) ]
     # elif init_type=='data_init':
     #     X_train=X_train
@@ -36,7 +36,7 @@ def get_initilizations_standard_NN(init_type,dims,mu,std,b_init,S_init,X_train,Y
             inits_W.append( tf.contrib.layers.xavier_initializer(dtype=tf.float64) )
             inits_b.append( tf.constant( b_init[l], shape=[dims[l]], dtype=tf.float64 ) )
         l=len(dims)-1
-        print [dims[l-1],dims[l]]
+        print( [dims[l-1],dims[l]])
         inits_C=[ tf.truncated_normal(shape=[dims[l-1],dims[l]], mean=mu[l], stddev=std[l], dtype=tf.float64) ]
     else:
         raise ValueError('Need to use INIT library properly')
@@ -44,9 +44,9 @@ def get_initilizations_standard_NN(init_type,dims,mu,std,b_init,S_init,X_train,Y
 
 def get_initilizations_HBF(init_type,dims,mu,std,b_init,S_init,X_train,Y_train,train_S_type='multiple_S'):
 #def get_initilizations_HBF(args):
-    print 'train_S_type: ', train_S_type
+    print( 'train_S_type: ', train_S_type)
     nb_hidden_layers=len(dims)-1
-    print init_type
+    print( init_type)
     rbf_error = None
     if init_type=='truncated_normal':
         inits_W=[None]
@@ -182,7 +182,7 @@ def get_initilizations_HBF(init_type,dims,mu,std,b_init,S_init,X_train,Y_train,t
         inits_C=[tf.constant(C)]
         #inits_C=[ tf.truncated_normal(shape=[dims[l-1],dims[l]], mean=mu[l], stddev=std[l], dtype=tf.float64)
         rbf_error=report_RBF_error(Kern, C, Y_train)
-    print 'DONE INITILIZING'
+    print( 'DONE INITILIZING')
     return (inits_C,inits_W,inits_S,rbf_error)
 
 def get_single_multiple_S(l,S_init,dims,train_S_type='multiple_S'):

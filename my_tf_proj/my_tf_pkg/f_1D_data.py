@@ -88,11 +88,11 @@ def generate_data_from_krls():
 ##
 
 def helloworld():
-    print 'helloworld'
+    print( 'helloworld')
 
 def get_data(task_name):
     ## Data sets
-    print '---> task_name: ', task_name
+    print( '---> task_name: ', task_name)
 
     if task_name == 'task_qianli_func':
         (X_train, Y_train, X_cv, Y_cv, X_test, Y_test) = get_data_from_file(file_name='./f_1d_cos_no_noise_data.npz')

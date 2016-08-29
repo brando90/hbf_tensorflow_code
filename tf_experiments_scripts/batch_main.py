@@ -6,13 +6,14 @@
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=rene_sax14@yahoo.com
 
-from __future__ import print_function
+#from __future__ import print_function
 
 import os
 import namespaces as ns
 
 import main_nn
 
+print('In batch script', flush=True)
 print(ns)
 
 arg = ns.Namespace()

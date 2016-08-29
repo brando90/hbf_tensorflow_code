@@ -57,7 +57,7 @@ def save_workspace(filename, names_of_spaces_to_save, dict_of_values_to_save):
             >>> dir()
             ['__builtins__', '__doc__', '__name__', '__package__', 'x']
     '''
-    print 'save_workspace'
+    print( 'save_workspace')
     my_shelf = shelve.open(filename,'n') # 'n' for new
     for key in names_of_spaces_to_save:
         try:
@@ -84,7 +84,7 @@ def load_workspace(filename, parent_globals):
 def save_workspace_original(filename):
     my_shelf = shelve.open(filename,'n') # 'n' for new
     for key in dir():
-        print key
+        print(key)
         try:
             my_shelf[key] = globals()[key]
         except TypeError:
