@@ -3,7 +3,7 @@ import numpy as np
 import os
 
 def load_results_dic(results,**kwargs):
-    for key, value in kwargs.iteritems():
+    for key, value in kwargs.items():
         results[key] = value
     return results
 

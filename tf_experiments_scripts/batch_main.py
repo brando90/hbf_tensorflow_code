@@ -108,10 +108,40 @@ optimization_alg = 'Adam'
 optimization_alg = 'RMSProp'
 arg.optimization_alg = optimization_alg
 
+arg.bn = False
+arg.trainable_bn = False #scale, shift BN
+
+#steps
+arg.M_low = 500
+arg.M_high = 12000
+
 # NORMALIZE UNIT CIRCLE
-#data_normalize='normalize_input'
-data_normalize='dont_normalize'
+arg.data_normalize='normalize_input'
+arg.data_normalize='dont_normalize'
 arg.data_normalize = data_normalize
+
+re_train = None
+arg.re_train = re_train
+
+#
+arg.experiment_name = 'tmp_experiment'
+arg.experiment_root_dir = mtf.get_experiment_folder(task_name)
+
+#
+slurm_jobid = 'TB'
+slurm_array_task_id = 'TB'
+job_name = 'TB'
+
+arg.slurm_jobid = slurm_jobid
+arg.slurm_array_task_id = slurm_array_task_id
+arg.job_name = job_name
+
+#
+arg.mdl_save = False
+arg.mdl_save = True
+#
+#arg.use_tensorboard = False
+arg.use_tensorboard = True
 
 if __name__ == '__main__':
     main_nn.main_old()

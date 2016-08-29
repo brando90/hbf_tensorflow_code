@@ -10,5 +10,5 @@ setup(
     license='MIT',
     packages=['my_tf_pkg'],
     #install_requires=['numpy','keras','namespaces','pdb','scikit-learn','scipy','virtualenv']
-    install_requires=['numpy','keras','namespaces==1.0.0','pdb','virtualenv','sklearn']
+    install_requires=['numpy','keras','namespaces==1.0.0','pdb','virtualenv']
 )
