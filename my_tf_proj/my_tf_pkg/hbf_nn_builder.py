@@ -15,7 +15,7 @@ def hello_world():
 #     (_,inits_W,inits_S) = inits
 #     layer = x
 #     nb_hidden_layers = len(dims)-1
-#     for l in xrange(1,nb_hidden_layers): # from 1 to L-1
+#     for l in range(1,nb_hidden_layers): # from 1 to L-1
 #         layer = get_HBF_layer(l=str(l),x=layer,init=(inits_W[l],inits_S[l]),dims=(dims[l-1],dims[l]),phase_train=phase_train)
 #     return layer
 
@@ -23,7 +23,7 @@ def build_standard_NN(x, dims, inits, phase_train=None, trainable_bn=True):
     (_,inits_W,inits_b) = inits
     layer = x
     nb_hidden_layers = len(dims)-1
-    for l in xrange(1,nb_hidden_layers): # from 1 to L-1
+    for l in range(1,nb_hidden_layers): # from 1 to L-1
         layer = get_NN_layer(l=str(l), x=layer, init=(inits_W[l],inits_b[l]), dims=(dims[l-1], dims[l]), phase_train=phase_train, trainable_bn=trainable_bn)
     return layer
 
@@ -31,11 +31,9 @@ def build_standard_NN(x, dims, inits, phase_train=None, trainable_bn=True):
 
 def build_HBF2(x, dims, inits, phase_train=None, trainable_bn=True,trainable_S=True):
     (_,inits_W,inits_S) = inits
-    print(inits_S)
-    print(inits_W)
     layer = x
     nb_hidden_layers = len(dims)-1
-    for l in xrange(1,nb_hidden_layers): # from 1 to L-1
+    for l in range(1,nb_hidden_layers): # from 1 to L-1
         #print nb_hidden_layers
         #print len(inits_W)
         layer = get_HBF_layer2(l=str(l),x=layer,init=(inits_W[l],inits_S[l]),dims=(dims[l-1],dims[l]),phase_train=phase_train, trainable_bn=trainable_bn,trainable_S=trainable_S)
@@ -164,7 +162,7 @@ def variable_summaries(var, name):
 def get_NN_layer(l, x, dims, init, phase_train=None, scope="NNLayer", trainable_bn=True):
     (init_W,init_b) = init
     with tf.name_scope(scope+l):
-        print( 'init_W ', init_W)
+        #print( 'init_W ', init_W )
         W = get_W(init_W, l, dims)
         b = tf.get_variable(name='b'+l, dtype=tf.float64, initializer=init_b, regularizer=None, trainable=True)
         with tf.name_scope('Z'+l):
@@ -376,7 +374,7 @@ def build_summed_NN(x, dims, inits, phase_train=None):
     (inits_C,inits_W,inits_b) = inits
     layer = x
     nb_hidden_layers = len(dims)-1
-    for l in xrange(1,nb_hidden_layers): # from 1 to L-1
+    for l in range(1,nb_hidden_layers): # from 1 to L-1
         layer = get_NN_layer(str(l),layer,dims,(inits_W[l],inits_b[l]), phase_train=None)
         layer = get_summation_layer(str(l),layer,inits_C[l])
     return layer
@@ -385,7 +383,7 @@ def build_summed_HBF(x, dims, inits, phase_train=None):
     (inits_C,inits_W,inits_S) = inits
     layer = x
     nb_hidden_layers = len(dims)-1
-    for l in xrange(1,nb_hidden_layers): # from 1 to L-1
+    for l in range(1,nb_hidden_layers): # from 1 to L-1
         layer = get_HBF_layer(l=str(l),x=layer,init=(inits_W[l],inits_S[l]),dims=(dims[l-1],dims[l]),phase_train=phase_train)
         layer = get_summation_layer(str(l),layer,inits_C[l])
     return layer

@@ -23,7 +23,7 @@ def get_initilizations_standard_NN(init_type,dims,mu,std,b_init,X_train,Y_train,
             inits_W.append( tf.truncated_normal(shape=[dims[l-1],dims[l]], mean=mu[l], stddev=std[l], dtype=tf.float64) )
             inits_b.append( tf.constant( b_init[l], shape=[dims[l]], dtype=tf.float64 ) )
         l=len(dims)-1
-        print( [dims[l-1],dims[l]])
+        #print( [dims[l-1],dims[l]])
         inits_C=[ tf.truncated_normal(shape=[dims[l-1],dims[l]],  mean=mu[l], stddev=std[l], dtype=tf.float64) ]
     # elif init_type=='data_init':
     #     X_train=X_train
@@ -36,7 +36,7 @@ def get_initilizations_standard_NN(init_type,dims,mu,std,b_init,X_train,Y_train,
             inits_W.append( tf.contrib.layers.xavier_initializer(dtype=tf.float64) )
             inits_b.append( tf.constant( b_init[l], shape=[dims[l]], dtype=tf.float64 ) )
         l=len(dims)-1
-        print( [dims[l-1],dims[l]])
+        #print( [dims[l-1],dims[l]])
         inits_C=[ tf.truncated_normal(shape=[dims[l-1],dims[l]], mean=mu[l], stddev=std[l], dtype=tf.float64) ]
     else:
         raise ValueError('Need to use INIT library properly')

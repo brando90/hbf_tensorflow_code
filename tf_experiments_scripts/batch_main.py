@@ -42,32 +42,41 @@ if arg.mdl == 'standard_nn':
     arg.init_type = 'truncated_normal'
     arg.init_type = 'data_xavier_kern'
     arg.init_type = 'xavier'
+
     arg.units = [5]
     arg.units = [6,6]
     arg.units = [6,6,6]
-    arg.arg.units = 0.0
+
+    arg.mu = 0.0
     arg.std = 0.0
+
     arg.W_mu_init = lambda arg: len(arg.dims)*[arg.mu]
     arg.W_std_init = lambda arg: len(arg.dims)*[arg.std]
-    arg.units = units
+
+    arg.b_init = lambda arg: len(arg.dims)*[0.1]
 elif arg.mdl == 'hbf':
     arg.init_type = 'truncated_normal'
     arg.init_type = 'data_init'
     arg.init_type = 'kern_init'
     arg.init_type = 'kpp_init'
+
     arg.units = [5]
     arg.units = [6,6]
     arg.units = [6,6,6]
+
     arg.mu = 0.0
     arg.std = 0.0
+
     arg.W_mu_init = lambda arg: len(arg.dims)*[arg.mu]
     arg.W_std_init = lambda arg: len(arg.dims)*[arg.std]
+
     # train shape of Gaussians
     #arg.trainable_S = 'train_S'
     arg.trainable_S = 'dont_train_S'
     #arg.train_S_type = 'multiple_S'
     arg.train_S_type = 'single_S'
 
+    arg.b_init = lambda: [525.32626263]
 elif arg.mdl == 'binary_tree_4D_conv':
     nb_filters = 6
     nb_filters = 12
@@ -92,13 +101,6 @@ elif arg.mdl == 'binary_tree_8D_conv':
 else:
     raise ValueError('Need to use a valid model, incorrect or unknown model %s give.'%arg.mdl)
 
-
-# BIAS or Guassian Shape
-if arg.mdl == 'hbf':
-    arg.b_init = lambda: [525.32626263]
-else:
-    arg.b_init = lambda: [0.1]
-
 #steps
 arg.steps_low = 3000
 arg.steps_high = 6000
@@ -106,7 +108,7 @@ arg.steps_high = 6000
 arg.M_low = 500
 arg.M_high = 12000
 
-arg.report_error_freq = 1000
+arg.report_error_freq = 50
 
 arg.low_log_const_learning_rate, arg.high_log_const_learning_rate = -0.01, -6
 ## decayed_learning_rate = learning_rate * decay_rate ^ (global_step / decay_steps)
