@@ -12,7 +12,7 @@ import sklearn.cluster.k_means_
 from sklearn.utils.extmath import row_norms, squared_norm
 from sklearn.utils import check_random_state
 
-def get_initilizations_standard_NN(init_type,dims,mu,std,b_init,S_init,X_train,Y_train,train_S_type='multiple_S'):
+def get_initilizations_standard_NN(init_type,dims,mu,std,b_init,X_train,Y_train,train_S_type='multiple_S'):
 #def get_initilizations_standard_NN(args):
     if  init_type=='truncated_normal':
         inits_W=[None]

@@ -12,10 +12,12 @@ import os
 import namespaces as ns
 
 import main_nn
+import my_tf_pkg as mtf
 
+##
 print('In batch script', flush=True)
 print(ns)
-
+##
 arg = ns.Namespace()
 
 task_name = 'task_qianli_func'
@@ -26,55 +28,46 @@ task_name = 'task_f2d_2x2_1_cosx1x2_depth2'
 task_name = 'task_f2d_2x2_1_cosx1_plus_x2_depth2'
 task_name = 'task_f_4d_conv'
 task_name = 'task_f_8d_conv'
-task_name = 'task_f_4d_task_conv_2nd'
-task_name = 'task_f_4d_non_conv'
-task_name = 'task_f_8d_non_conv'
-task_name = 'task_MNIST_flat'
-task_name = 'task_MNIST_flat_auto_encoder'
+task_name = 'task_f_4d_conv_2nd'
+#task_name = 'task_f_4d_non_conv'
+#task_name = 'task_f_8d_non_conv'
+#task_name = 'task_MNIST_flat'
+#task_name = 'task_MNIST_flat_auto_encoder'
 arg.task_name = task_name
 
-mdl = 'standard_nn'
-mdl = 'hbf'
-mdl = 'binary_tree_4D_conv'
-arg.mdl = mdl
-
-# train shape of Gaussians
-if arg.mdl == 'hbf':
-    trainable_S = 'train_S'
-    trainable_S = 'dont_train_S'
-
-    train_S_type = 'multiple_S'
-    train_S_type = 'single_S'
-
-    arg.trainable_S = trainable_S
-    arg.train_S_type = train_S_type
-
-# BIAS or Guassian Shape
-init_S = [525.32626263]
-init_b = [0.1]
-
-# Filter/W inits
-init_type = 'truncated_normal'
-init_type = 'data_init'
-init_type = 'kern_init'
-init_type = 'kpp_init'
-init_type = 'data_trunc_norm_kern'
-init_type = 'data_trunc_norm_trunc_norm'
-init_type = 'data_xavier_kern'
-init_type = 'xavier'
-arg.init_type = init_type
-
-# UNITS
+arg.mdl = 'standard_nn'
+#arg.mdl = 'hbf'
+#arg.mdl = 'binary_tree_4D_conv'
 if arg.mdl == 'standard_nn':
-    units=[5]
-    units=[6,6]
-    units=[6,6,6]
+    arg.init_type = 'truncated_normal'
+    arg.init_type = 'data_xavier_kern'
+    arg.init_type = 'xavier'
+    arg.units = [5]
+    arg.units = [6,6]
+    arg.units = [6,6,6]
+    arg.arg.units = 0.0
+    arg.std = 0.0
+    arg.W_mu_init = lambda arg: len(arg.dims)*[arg.mu]
+    arg.W_std_init = lambda arg: len(arg.dims)*[arg.std]
     arg.units = units
 elif arg.mdl == 'hbf':
-    units=[5]
-    units=[6,6]
-    units=[6,6,6]
-    arg.units = units
+    arg.init_type = 'truncated_normal'
+    arg.init_type = 'data_init'
+    arg.init_type = 'kern_init'
+    arg.init_type = 'kpp_init'
+    arg.units = [5]
+    arg.units = [6,6]
+    arg.units = [6,6,6]
+    arg.mu = 0.0
+    arg.std = 0.0
+    arg.W_mu_init = lambda arg: len(arg.dims)*[arg.mu]
+    arg.W_std_init = lambda arg: len(arg.dims)*[arg.std]
+    # train shape of Gaussians
+    #arg.trainable_S = 'train_S'
+    arg.trainable_S = 'dont_train_S'
+    #arg.train_S_type = 'multiple_S'
+    arg.train_S_type = 'single_S'
+
 elif arg.mdl == 'binary_tree_4D_conv':
     nb_filters = 6
     nb_filters = 12
@@ -99,7 +92,30 @@ elif arg.mdl == 'binary_tree_8D_conv':
 else:
     raise ValueError('Need to use a valid model, incorrect or unknown model %s give.'%arg.mdl)
 
-# OPTIMIZER
+
+# BIAS or Guassian Shape
+if arg.mdl == 'hbf':
+    arg.b_init = lambda: [525.32626263]
+else:
+    arg.b_init = lambda: [0.1]
+
+#steps
+arg.steps_low = 3000
+arg.steps_high = 6000
+
+arg.M_low = 500
+arg.M_high = 12000
+
+arg.report_error_freq = 1000
+
+arg.low_log_const_learning_rate, arg.high_log_const_learning_rate = -0.01, -6
+## decayed_learning_rate = learning_rate * decay_rate ^ (global_step / decay_steps)
+arg.decay_rate_low, arg.decay_rate_high = 0.3, 0.99
+arg.decay_steps_low, arg.decay_steps_high = lambda arg: arg.report_error_freq, lambda arg: arg.M
+
+#arg.staircase = False
+arg.staircase = True
+
 optimization_alg = 'GD'
 optimization_alg = 'Momentum'
 optimization_alg = 'Adadelta'
@@ -108,17 +124,35 @@ optimization_alg = 'Adam'
 optimization_alg = 'RMSProp'
 arg.optimization_alg = optimization_alg
 
+if optimization_alg == 'GD':
+    pass
+elif optimization_alg=='Momentum':
+    arg.use_nesterov = False
+    #arg.use_nesterov = True
+    arg.momentum_low, arg.momontum_high = 0.1, 0.99
+elif optimization_alg == 'Adadelta':
+    arg.rho_low, arg.rho_high = 0.1, 0.99
+elif optimization_alg == 'Adagrad':
+    #only has learning rate
+    pass
+elif optimization_alg == 'Adam':
+    arg.beta1 = lambda: 0.99 # m = b1m + (1 - b1)m
+    arg.beta2 = lambda: 0.999 # v = b2 v + (1 - b2)v
+    #arg.beta1_low, arg.beta1_high = beta1_low=0.7, beta1_high=0.99 # m = b1m + (1 - b1)m
+    #arg.beta2_low, arg.beta2_high = beta2_low=0.8, beta2_high=0.999 # v = b2 v + (1 - b2)v
+elif optimization_alg == 'RMSProp':
+    arg.decay_loc, arg.decay_high = 0.75, 0.99
+    arg.momentum_low, arg.momentum_high = 0.0, 0.9
+else:
+    pass
+
+
 arg.bn = False
 arg.trainable_bn = False #scale, shift BN
-
-#steps
-arg.M_low = 500
-arg.M_high = 12000
 
 # NORMALIZE UNIT CIRCLE
 arg.data_normalize='normalize_input'
 arg.data_normalize='dont_normalize'
-arg.data_normalize = data_normalize
 
 re_train = None
 arg.re_train = re_train
@@ -139,10 +173,13 @@ arg.job_name = job_name
 #
 arg.mdl_save = False
 arg.mdl_save = True
+
+arg.max_to_keep = 1
 #
 #arg.use_tensorboard = False
 arg.use_tensorboard = True
 
 if __name__ == '__main__':
-    main_nn.main_old()
-    #main_nn.main(arg)
+    print('In __name__ == __main__')
+    #main_nn.main_old()
+    main_nn.main(arg)

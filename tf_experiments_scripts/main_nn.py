@@ -29,7 +29,7 @@ def set_tensorboard(arg):
     if arg.use_tensorboard:
         print( '==> tensorboard_data_dump_train: ', tensorboard_data_dump_train )
         print( '==> tensorboard_data_dump_test: ', tensorboard_data_dump_test )
-        print( 'mdl_save',mdl_save )
+        print( 'mdl_save',arg.mdl_save )
         mtf.make_and_check_dir(path=tensorboard_data_dump_train)
         mtf.make_and_check_dir(path=tensorboard_data_dump_test)
         # delete contents of tensorboard dir
@@ -37,7 +37,7 @@ def set_tensorboard(arg):
         shutil.rmtree(tensorboard_data_dump_test)
     return
 
-def set_experiment_folders():
+def set_experiment_folders(arg):
     ## directory structure for collecting data for experiments
     path_root = '../../%s/%s'%(arg.experiment_root_dir,arg.experiment_name)
     #
@@ -59,6 +59,7 @@ def main(arg):
     results = {'train_errors':[], 'cv_errors':[],'test_errors':[]}
 
     path, errors_pretty, mdl_dir, json_file = set_experiment_folders(arg)
+    set_tensorboard(arg)
 
     ## Data sets and task
     print( '----====> TASK NAME: %s' % arg.task_name )
@@ -72,13 +73,6 @@ def main(arg):
     print( '(N_test,D_out) = ', (N_test,D_out) )
 
     ##
-    units_list = arg.units_list
-    dims = [D]+arg.units_list+[D_out]
-    mu = arg.W_mu_init(dims, arg)
-    std = arg.W_std_init(dims, arg)
-
-    b_init = arg.b_init()
-
     phase_train = tf.placeholder(tf.bool, name='phase_train') if arg.bn else  None
 
     steps = np.random.randint(low=arg.steps_low ,high=arg.steps_high)
@@ -95,86 +89,87 @@ def main(arg):
     decay_steps = np.random.randint(low=arg.decay_steps_low(arg), high=arg.decay_steps_high(arg) )
     staircase = arg.staircase
 
-    if optimization_alg == 'GD':
+    if arg.optimization_alg == 'GD':
         pass
-    elif optimization_alg=='Momentum':
+    elif arg.optimization_alg=='Momentum':
         use_nesterov = arg.use_nesterov
-        momentum=np.random.uniform(low=0.1, high=0.99)
+        momentum=np.random.uniform(low=arg.momentum_low,high=arg.momontum_high)
         results['momentum']=float(momentum)
-    elif optimization_alg == 'Adadelta':
-        rho=np.random.uniform(low=0.4, high=0.99)
+    elif arg.optimization_alg == 'Adadelta':
+        rho=np.random.uniform(low=arg.rho_low,high=arg.rho_high)
         results['rho']=float(rho)
-    elif optimization_alg == 'Adagrad':
+    elif arg.optimization_alg == 'Adagrad':
         #only has learning rate
         pass
-    elif optimization_alg == 'Adam':
+    elif arg.optimization_alg == 'Adam':
         beta1 = arg.get_beta1(arg)
         beta2 = arg.get_beta2(arg)
         results['beta1']=float(beta1)
         results['beta2']=float(beta2)
-    elif optimization_alg == 'RMSProp':
+    elif arg.optimization_alg == 'RMSProp':
         decay = np.random.uniform(low=arg.decay_loc,high=arg.decay_high)
         momentum = np.random.uniform(low=arg.momentum_low,high=arg.momentum_high)
         results['decay']=float(decay)
         results['momentum']=float(momentum)
     else:
         pass
-    results['range_learning_rate'] = [low_const_learning_rate, high_const_learning_rate]
 
     ##############################
-    if task_name == 'task_MNIST_flat_auto_encoder':
-        PCA_errors = {12:24.8254684915, 48:9.60052317906, 96:4.72118325768}
-        if len(units_list) == 1:
-            k = units_list[0]
-        else:
-            k = units_list[0] * len(units_list)
-        if not k in PCA_errors.keys():
-            print( 'COMPUTING PCA... k = ', k)
-            X_reconstruct_pca, _, _ = mtf. get_reconstruction_pca(X_train,k=units_list[0])
-            pca_error = mtf.report_l2_loss(Y=X_train,Y_pred=X_reconstruct_pca)
-            PCA_errors[k] = pca_error
-        else:
-            pca_error = PCA_errors[k]
-        print( '*************> PCA error: ', pca_error)
-    else:
-        pca_error = None
-        rbf_error = None
-
-    hbf1_error = None
-    if model == 'hbf':
-        #error, Y_pred, Kern, C, subsampled_data_points = report_RBF_error_from_data(X_train, dims, stddev)
-        if len(units_list) > 1:
-            k = units_list[0]*len(units_list)
-            print( 'RBF units = ', k)
-            nb_units = [None, k]
-            rbf_error, _, _, _, _ = mtf.report_RBF_error_from_data(X_train, X_train, nb_units, S_init[1])
-            print( rbf_error)
-            hbf1={12:26.7595}
-            if k in hbf1.keys():
-                hbf1_error = hbf1[k]
-        else:
-            nb_units = dims
-            rbf_error, _, _, _, _ = mtf.report_RBF_error_from_data(X_train, X_train, nb_units, S_init[1])
-
-    S_init = b_init
+    # if task_name == 'task_MNIST_flat_auto_encoder':
+    #     PCA_errors = {12:24.8254684915, 48:9.60052317906, 96:4.72118325768}
+    #     if len(units_list) == 1:
+    #         k = units_list[0]
+    #     else:
+    #         k = units_list[0] * len(units_list)
+    #     if not k in PCA_errors.keys():
+    #         print( 'COMPUTING PCA... k = ', k)
+    #         X_reconstruct_pca, _, _ = mtf. get_reconstruction_pca(X_train,k=units_list[0])
+    #         pca_error = mtf.report_l2_loss(Y=X_train,Y_pred=X_reconstruct_pca)
+    #         PCA_errors[k] = pca_error
+    #     else:
+    #         pca_error = PCA_errors[k]
+    #     print( '*************> PCA error: ', pca_error)
+    # else:
+    #     pca_error = None
+    #     rbf_error = None
+    #
+    # hbf1_error = None
+    # if model == 'hbf':
+    #     #error, Y_pred, Kern, C, subsampled_data_points = report_RBF_error_from_data(X_train, dims, stddev)
+    #     if len(units_list) > 1:
+    #         k = units_list[0]*len(units_list)
+    #         print( 'RBF units = ', k)
+    #         nb_units = [None, k]
+    #         rbf_error, _, _, _, _ = mtf.report_RBF_error_from_data(X_train, X_train, nb_units, S_init[1])
+    #         print( rbf_error)
+    #         hbf1={12:26.7595}
+    #         if k in hbf1.keys():
+    #             hbf1_error = hbf1[k]
+    #     else:
+    #         nb_units = dims
+    #         rbf_error, _, _, _, _ = mtf.report_RBF_error_from_data(X_train, X_train, nb_units, S_init[1])
     ##
 
     ## Make Model
-    nb_layers = len(dims)-1
-    nb_hidden_layers = nb_layers-1
-    print( '-----> Running model: %s. (nb_hidden_layers = %d, nb_layers = %d)' % (model,nb_hidden_layers,nb_layers) )
-    print( '-----> Units: %s)' % (dims) )
-    if model == 'standard_nn':
+    if arg.mdl == 'standard_nn':
+        arg.dims = [D]+arg.units+[D_out]
+        mu = arg.W_mu_init(arg)
+        std = arg.W_std_init(arg)
+
+        b_init = arg.b_init()
+
         rbf_error = None
-        #tensorboard_data_dump = '/tmp/standard_nn_logs'
         float_type = tf.float64
         x = tf.placeholder(float_type, shape=[None, D], name='x-input') # M x D
-        (inits_C,inits_W,inits_b) = mtf.get_initilizations_standard_NN(init_type=init_type,dims=dims,mu=mu,std=std,b_init=b_init,S_init=S_init, X_train=X_train, Y_train=Y_train)
+
+        nb_layers = len(arg.dims)-1
+        nb_hidden_layers = nb_layers-1
+        (inits_C,inits_W,inits_b) = mtf.get_initilizations_standard_NN(init_type=arg.init_type,dims=arg.dims,mu=arg.mu,std=arg.std,b_init=b_init, X_train=X_train, Y_train=Y_train)
         with tf.name_scope("standardNN") as scope:
             mdl = mtf.build_standard_NN(x,dims,(inits_C,inits_W,inits_b),phase_train,trainable_bn)
             mdl = mtf.get_summation_layer(l=str(nb_layers),x=mdl,init=inits_C[0])
         inits_S = inits_b
-    elif model == 'hbf':
+    elif arg.mdl == 'hbf':
         trainable_S = True if (arg.trainable_S=='train_S') else False
         #tensorboard_data_dump = '/tmp/hbf_logs'
         float_type = tf.float64
@@ -184,7 +179,7 @@ def main(arg):
         with tf.name_scope("HBF") as scope:
             mdl = mtf.build_HBF2(x,dims,(inits_C,inits_W,inits_S),phase_train,trainable_bn,trainable_S)
             mdl = mtf.get_summation_layer(l=str(nb_layers),x=mdl,init=inits_C[0])
-    elif model == 'binary_tree_4D_conv':
+    elif arg.mdl == 'binary_tree_4D_conv':
         print( 'binary_tree_4D')
         #tensorboard_data_dump = '/tmp/hbf_logs'
         inits_S = None
@@ -196,11 +191,8 @@ def main(arg):
         N_test = X_test.shape[0]
         #
         X_train = X_train.reshape(N_train,1,D,1)
-        #Y_train = Y_train.reshape(N_train,1,D,1)
         X_cv = X_cv.reshape(N_cv,1,D,1)
-        #Y_cv = Y_cv.reshape(N_cv,1,D,1)
         X_test = X_test.reshape(N_test,1,D,1)
-        #Y_test = Y_test.reshape(N_test,1,D,1)
         x = tf.placeholder(float_type, shape=[None,1,D,1], name='x-input')
         #
         filter_size = 2 #fixed for Binary Tree BT
@@ -214,7 +206,7 @@ def main(arg):
         #
         dims = [D]+[nb_filters]+[D_out]
         results['nb_filters'] = nb_filters
-    elif model == 'binary_tree_D8':
+    elif arg.mdl == 'binary_tree_D8':
         #tensorboard_data_dump = '/tmp/hbf_logs'
         inits_S = None
         pca_error = None
@@ -351,12 +343,12 @@ def main(arg):
     tf.add_check_numerics_ops()
 
     # Add ops to save and restore all the variables.
-    if mdl_save:
-        saver = tf.train.Saver(max_to_keep=max_to_keep)
+    if arg.mdl_save:
+        saver = tf.train.Saver(max_to_keep=arg.max_to_keep)
     start_time = time.time()
     file_for_error = './ray_error_file.txt'
-    #with open(path+errors_pretty, 'w+') as f_err_msgs:
-    with open(file_for_error, 'w+') as f_err_msgs:
+    with open(path+errors_pretty, 'w+') as f_err_msgs:
+    #with open(file_for_error, 'w+') as f_err_msgs:
         with tf.Session() as sess:
             ## prepare writers and fetches
             if use_tensorboard:

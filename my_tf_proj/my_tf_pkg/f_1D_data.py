@@ -90,6 +90,11 @@ def generate_data_from_krls():
 def helloworld():
     print( 'helloworld')
 
+def get_experiment_folder(task_name):
+    print(task_name.split('task_') )
+    task_prefix, task = task_name.split('task_')
+    return 'om_'+ task
+
 def get_data(task_name):
     ## Data sets
     print( '---> task_name: ', task_name)
@@ -113,7 +118,7 @@ def get_data(task_name):
         #print 'task_f_8dtask_f_8dtask_f_8dtask_f_8dtask_f_8dtask_f_8dtask_f_8dtask_f_8dtask_f_8dtask_f_8dtask_f_8dtask_f_8dtask_f_8d'
         X_train, Y_train, X_cv, Y_cv, X_test, Y_test = get_data_from_file(file_name='./f_8d_task_conv.npz')
 
-    elif task_name == 'task_f_4d_task_conv_2nd':
+    elif task_name == 'task_f_4d_conv_2nd':
         X_train, Y_train, X_cv, Y_cv, X_test, Y_test = get_data_from_file(file_name='./f_4d_task_conv_2nd.npz')
 
     elif task_name == 'task_f_4d_non_conv':
