@@ -110,15 +110,11 @@ def main(arg):
         #only has learning rate
         pass
     elif arg.optimization_alg == 'Adam':
-        beta1 = arg.get_beta1(arg)
-        beta2 = arg.get_beta2(arg)
-        results['beta1']=float(beta1)
-        results['beta2']=float(beta2)
+        arg.beta1 = arg.get_beta1(arg)
+        arg.beta2 = arg.get_beta2(arg)
     elif arg.optimization_alg == 'RMSProp':
-        decay = np.random.uniform(low=arg.decay_low,high=arg.decay_high)
-        momentum = arg.get_momentum(arg)
-        results['decay']=float(decay)
-        results['momentum']=float(momentum)
+        arg.decay = np.random.uniform(low=arg.decay_low,high=arg.decay_high)
+        arg.momentum = arg.get_momentum(arg)
     else:
         pass
 
@@ -255,12 +251,6 @@ def main(arg):
 
     with tf.name_scope("train") as scope:
         global_step = tf.Variable(0, trainable=False)
-        print( arg.starter_learning_rate )
-        print(global_step)
-        print(arg.decay_steps)
-        print(arg.decay_rate)
-        print(arg.staircase)
-
         learning_rate = tf.train.exponential_decay(learning_rate=arg.starter_learning_rate, global_step=global_step,decay_steps=arg.decay_steps, decay_rate=arg.decay_rate, staircase=arg.staircase)
         # Passing global_step to minimize() will increment it at each step.
         if arg.optimization_alg == 'GD':

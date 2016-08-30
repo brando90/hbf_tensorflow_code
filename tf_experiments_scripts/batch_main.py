@@ -156,8 +156,8 @@ elif optimization_alg == 'Adagrad':
     #only has learning rate
     pass
 elif optimization_alg == 'Adam':
-    arg.beta1 = lambda: 0.99 # m = b1m + (1 - b1)m
-    arg.beta2 = lambda: 0.999 # v = b2 v + (1 - b2)v
+    arg.get_beta1 = lambda: 0.99 # m = b1m + (1 - b1)m
+    arg.get_beta2w = lambda: 0.999 # v = b2 v + (1 - b2)v
     #arg.beta1_low, arg.beta1_high = beta1_low=0.7, beta1_high=0.99 # m = b1m + (1 - b1)m
     #arg.beta2_low, arg.beta2_high = beta2_low=0.8, beta2_high=0.999 # v = b2 v + (1 - b2)v
 elif optimization_alg == 'RMSProp':
