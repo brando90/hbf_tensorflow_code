@@ -108,15 +108,28 @@ else:
 #steps
 arg.steps_low = 100
 arg.steps_high = 101
+arg.get_steps = lambda arg: int( np.random.randint(low=arg.steps_low ,high=arg.steps_high) )
 
 arg.M_low = 51
 arg.M_high = 52
+arg.get_batch_size = lambda arg: int(np.random.randint(low=arg.M_low , high=arg.M_high))
 arg.report_error_freq = 50
 
 arg.low_log_const_learning_rate, arg.high_log_const_learning_rate = -0.01, -6
+arg.get_log_learning_rate =  lambda arg: np.random.uniform(low=arg.low_log_const_learning_rate, high=arg.high_log_const_learning_rate)
+arg.get_start_learning_rate = lambda arg: 10**arg.log_learning_rate
 ## decayed_learning_rate = learning_rate * decay_rate ^ (global_step / decay_steps)
 arg.decay_rate_low, arg.decay_rate_high = 0.3, 0.99
-arg.decay_steps_low, arg.decay_steps_high = lambda arg: arg.report_error_freq, lambda arg: arg.M
+arg.get_decay_rate = lambda arg: np.random.uniform(low=arg.decay_rate_low, high=arg.decay_rate_high)
+
+#arg.decay_steps_low, arg.decay_steps_high = arg.report_error_freq, arg.M
+#arg.get_decay_steps_low_high = lambda arg: arg.report_error_freq, arg.M
+#arg.get_decay_steps = lambda arg: np.random.randint(low=arg.decay_steps_low, high=arg.decay_steps_high)
+def get_decay_steps(arg):
+    arg.decay_steps_low, arg.decay_steps_high = arg.report_error_freq, arg.M
+    decay_steos = np.random.randint(low=arg.decay_steps_low, high=arg.decay_steps_high)
+    return decay_steos
+arg.get_decay_steps = get_decay_steps
 
 #arg.staircase = False
 arg.staircase = True

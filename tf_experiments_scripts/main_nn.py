@@ -68,6 +68,7 @@ def set_experiment_folders(arg):
     return path, errors_pretty, mdl_dir, json_file
 
 def main(arg):
+    print('Running main')
     results = {'train_errors':[], 'cv_errors':[],'test_errors':[]}
 
     path, errors_pretty, mdl_dir, json_file = set_experiment_folders(arg)
@@ -87,20 +88,16 @@ def main(arg):
     ##
     phase_train = tf.placeholder(tf.bool, name='phase_train') if arg.bn else  None
 
-    steps = np.random.randint(low=arg.steps_low ,high=arg.steps_high)
-    arg.steps = int(steps)
-    M = np.random.randint(low=arg.M_low , high=arg.M_high)
-    arg.M = M
+    arg.steps = arg.get_steps(arg)
+    arg.M = arg.get_batch_size(arg)
 
-    log_learning_rate = np.random.uniform(low=arg.low_log_const_learning_rate, high=arg.high_log_const_learning_rate)
-    arg.starter_learning_rate = 10**log_learning_rate
+    arg.log_learning_rate = arg.get_log_learning_rate(arg)
+    arg.starter_learning_rate = arg.get_start_learning_rate(arg)
     print( '++> starter_learning_rate ', arg.starter_learning_rate )
 
     ## decayed_learning_rate = learning_rate * decay_rate ^ (global_step / decay_steps)
-    decay_rate = np.random.uniform(low=arg.decay_rate_low, high=arg.decay_rate_high)
-    arg.decay_steps_high
-    decay_steps = np.random.randint(low=arg.decay_steps_low(arg), high=arg.decay_steps_high(arg) )
-    staircase = arg.staircase
+    arg.decay_rate = arg.get_decay_rate(arg)
+    arg.decay_steps = arg.get_decay_steps(arg)
 
     if arg.optimization_alg == 'GD':
         pass
@@ -258,7 +255,13 @@ def main(arg):
 
     with tf.name_scope("train") as scope:
         global_step = tf.Variable(0, trainable=False)
-        learning_rate = tf.train.exponential_decay(learning_rate=arg.starter_learning_rate, global_step=global_step,decay_steps=decay_steps, decay_rate=decay_rate, staircase=staircase)
+        print( arg.starter_learning_rate )
+        print(global_step)
+        print(arg.decay_steps)
+        print(arg.decay_rate)
+        print(arg.staircase)
+
+        learning_rate = tf.train.exponential_decay(learning_rate=arg.starter_learning_rate, global_step=global_step,decay_steps=arg.decay_steps, decay_rate=arg.decay_rate, staircase=arg.staircase)
         # Passing global_step to minimize() will increment it at each step.
         if arg.optimization_alg == 'GD':
             opt = tf.train.GradientDescentOptimizer(learning_rate)
@@ -350,7 +353,8 @@ def main(arg):
     if arg.mdl_save:
         saver = tf.train.Saver(max_to_keep=arg.max_to_keep)
     start_time = time.time()
-    file_for_error = './ray_error_file.txt'
+    print()
+    #file_for_error = './ray_error_file.txt'
     with open(path+errors_pretty, 'w+') as f_err_msgs:
     #with open(file_for_error, 'w+') as f_err_msgs:
         with tf.Session() as sess:
@@ -370,10 +374,10 @@ def main(arg):
                 fetches_test = l2_loss
 
             sess.run( tf.initialize_all_variables() )
-            for i in range(steps):
+            for i in range(arg.steps):
                 ## Create fake data for y = W.x + b where W = 2, b = 0
                 #(batch_xs, batch_ys) = get_batch_feed(X_train, Y_train, M, phase_train)
-                feed_dict_batch = get_batch_feed(X_train, Y_train, M, phase_train)
+                feed_dict_batch = get_batch_feed(X_train, Y_train, arg.M, phase_train)
                 ## Train
                 if i%arg.report_error_freq == 0:
                     if arg.use_tensorboard:
@@ -414,6 +418,7 @@ def main(arg):
                     sess.run(fetches=[merged,train_step], feed_dict=feed_dict_batch) #sess.run(train_step, feed_dict={x: batch_xs, y_: batch_ys})
                 else:
                     sess.run(fetches=train_step, feed_dict=feed_dict_batch) #sess.run(train_step, feed_dict={x: batch_xs, y_: batch_ys})
+    print('End of main')
 
     git_hash = subprocess.check_output(['git', 'rev-parse', 'HEAD'])
     results['git_hash'] = str(git_hash)
@@ -437,9 +442,3 @@ def main(arg):
     with open(path+json_file, 'w+') as f_json:
         json.dump(results,f_json,sort_keys=True, indent=2, separators=(',', ': '))
     print( '\a') #makes beep
-
-if __name__ == '__main__':
-    print( 'in __main__')
-    print( 'start running main_nn.py')
-    #main(arg)
-    print( 'end running main_nn.py')
