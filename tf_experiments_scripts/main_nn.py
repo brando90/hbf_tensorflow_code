@@ -115,7 +115,7 @@ def main(arg):
         results['beta1']=float(beta1)
         results['beta2']=float(beta2)
     elif arg.optimization_alg == 'RMSProp':
-        decay = np.random.uniform(low=arg.decay_loc,high=arg.decay_high)
+        decay = np.random.uniform(low=arg.decay_low,high=arg.decay_high)
         momentum = arg.get_momentum(arg)
         results['decay']=float(decay)
         results['momentum']=float(momentum)

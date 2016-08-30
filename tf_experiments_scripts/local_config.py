@@ -147,11 +147,13 @@ if optimization_alg == 'GD':
 elif optimization_alg=='Momentum':
     arg.get_use_nesterov = lambda: False
     #arg.get_use_nesterov = lambda: True
-    arg.momentum_low, arg.momontum_high = 0.1, 0.99
-    arg.get_momentum = lambda arg: np.random.uniform(low=arg.momentum_low,high=arg.momontum_high)
+    #arg.momentum_low, arg.momontum_high = 0.1, 0.99
+    #arg.get_momentum = lambda arg: np.random.uniform(low=arg.momentum_low,high=arg.momontum_high)
+    arg.get_momentum = 0.9
 elif optimization_alg == 'Adadelta':
-    arg.rho_low, arg.rho_high = 0.1, 0.99
-    arg.get_rho = lambda arg: np.random.uniform(low=arg.rho_low,high=arg.rho_high)
+    #arg.rho_low, arg.rho_high = 0.1, 0.99
+    #arg.get_rho = lambda arg: np.random.uniform(low=arg.rho_low,high=arg.rho_high)
+    arg.get_rho = 0.5
 elif optimization_alg == 'Adagrad':
     #only has learning rate
     pass
@@ -161,9 +163,11 @@ elif optimization_alg == 'Adam':
     #arg.beta1_low, arg.beta1_high = beta1_low=0.7, beta1_high=0.99 # m = b1m + (1 - b1)m
     #arg.beta2_low, arg.beta2_high = beta2_low=0.8, beta2_high=0.999 # v = b2 v + (1 - b2)v
 elif optimization_alg == 'RMSProp':
-    arg.decay_loc, arg.decay_high = 0.75, 0.99
-    arg.momentum_low, arg.momontum_high = 0.0, 0.99
-    arg.get_momentum = lambda arg: np.random.uniform(low=arg.momentum_low,high=arg.momontum_high)
+    #arg.decay_low, arg.decay_high = 0.75, 0.99
+    arg.decay_loc = lambda arg: 0.9
+    #arg.momentum_low, arg.momontum_high = 0.0, 0.99
+    #arg.get_momentum = lambda arg: np.random.uniform(low=arg.momentum_low,high=arg.momontum_high)
+    arg.get_momentum = lambda arg: 0.5
 else:
     pass
 
@@ -192,7 +196,7 @@ arg.slurm_array_task_id = slurm_array_task_id
 arg.job_name = job_name
 
 #
-arg.mdl_save = False
+#arg.mdl_save = False
 arg.mdl_save = True
 
 arg.max_to_keep = 1
