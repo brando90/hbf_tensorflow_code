@@ -245,6 +245,8 @@ with open(path+errors_pretty, 'w+') as f_err_msgs:
             if i%report_error_freq == 0:
                 (summary_str_train,train_error) = sess.run(fetches=[merged, l2_loss], feed_dict=feed_dict_train)
                 (summary_str_test,test_error) = sess.run(fetches=[merged, l2_loss], feed_dict=feed_dict_test)
+                raterate = sess.run(fetches=learning_rate, feed_dict=learning_rate)
+                print('raterate ', raterate)
 
                 train_writer.add_summary(summary_str_train, i)
                 test_writer.add_summary(summary_str_test, i)

@@ -13,7 +13,7 @@ def get_list_errors(experiment_results):
     # experiment_results : units->results
     list_units = []
     list_test_errors = []
-    for nb_units, results in experiment_results.iteritems():
+    for nb_units, results in experiment_results.items():
         #print 'nb_units ', nb_units
         train_error, cv_error, test_error = get_errors_from(results)
         list_units.append(nb_units)
@@ -24,12 +24,12 @@ def get_list_errors(experiment_results):
 
 def get_list_errors2(experiment_results):
     # experiment_results : units->results
-    print 'get_list_errors2'
+    print( 'get_list_errors2')
     list_units = []
     list_train_errors = []
     list_test_errors = []
     #print experiment_results
-    for nb_units, results in experiment_results.iteritems():
+    for nb_units, results in experiment_results.items():
         #print 'nb_units ', nb_units
         #print 'results', results
         train_error, cv_error, test_error = get_errors_from(results)
@@ -39,8 +39,8 @@ def get_list_errors2(experiment_results):
         list_train_errors.append(train_error)
         list_test_errors.append(test_error)
     # sort based on first list
-    print len(list_train_errors)
-    print len(list_test_errors)
+    print( len(list_train_errors))
+    print( len(list_test_errors))
     _, list_train_errors = zip(*sorted(zip(list_units, list_train_errors)))
     list_units, list_test_errors = zip(*sorted(zip(list_units, list_test_errors)))
     return list_units, list_train_errors, list_test_errors
@@ -97,7 +97,7 @@ def get_results_for_experiments(path_to_experiments, verbose=True, split_string=
     '''
         Returns a dictionary containing the best results for each experiment
     '''
-    print '-----get_results_for_experiments'
+    print( '-----get_results_for_experiments')
     #print path_to_experiments
     #print os.path.isdir(path_to_experiments)
     #print os.listdir(path_to_experiments)
@@ -121,16 +121,16 @@ def get_results_for_experiments(path_to_experiments, verbose=True, split_string=
             #(left, right) = experiment_dir.split('jHBF1_')
             #(left, right) = re.split('_jHBF[\d]*_',experiment_dir)
             (left, right) = re.split(split_string,experiment_dir)
-            print '=====> ', left, right
+            print( '=====> ', left, right)
             #pdb.set_trace()
             if verbose:
-                print '--'
-                print right[0]
-                print 'experiment_dir ', experiment_dir
-                print 'potential_runs ', len(potential_runs)
-                print 'type(potential_runs)', type(potential_runs)
-                print 'nb_units ', nb_units
-                print 'best_filename ', best_filename
+                print( '--')
+                print( right[0])
+                print( 'experiment_dir ', experiment_dir)
+                print( 'potential_runs ', len(potential_runs))
+                print( 'type(potential_runs)', type(potential_runs))
+                print( 'nb_units ', nb_units)
+                print( 'best_filename ', best_filename)
             experiment_results[nb_units] = results_best
             experiment_results[nb_units]['final_train_errors'] = final_train_errors
             experiment_results[nb_units]['final_cv_errors'] = final_cv_errors
@@ -185,8 +185,8 @@ def display_results_multiple_vs_single():
     path_to_experiments = './om_results_test_experiments'+experiment
     single_experiment_results = get_results_for_experiments(path_to_experiments)
     mean_train_errors, std_train_errors, mean_test_errors_single, std_test_errors_single = get_error_stats(single_experiment_results)
-    print mean_test_errors_single
-    print std_test_errors_single
+    print( mean_test_errors_single)
+    print( std_test_errors_single)
 
     #
     list_units_multiple, list_test_errors_multiple = get_list_errors(experiment_results=multiple_experiment_results)
@@ -213,8 +213,8 @@ def display_results_HBF2():
     path_to_experiments = './om_results_test_experiments'+experiment
     single_experiment_results = get_results_for_experiments(path_to_experiments,verbose=True)
     mean_train_errors, std_train_errors, mean_test_errors_single, std_test_errors_single = get_error_stats(single_experiment_results)
-    print mean_test_errors_single
-    print std_test_errors_single
+    print( mean_test_errors_single)
+    print( std_test_errors_single)
 
     #
     list_units_multiple, list_test_errors_multiple = get_list_errors(experiment_results=multiple_experiment_results)
@@ -263,8 +263,8 @@ def display_results_HBF1_vs_HBF1():
     krls.plot_errors(hbf1_list_units_multiple, hbf1_list_test_errors_multiple,label='HBF1 Multiple Standard Deviations', markersize=3, colour='r')
     #krls.plot_errors(hbf1_list_units_multiple, hbf1_list_test_errors_single,label='HBF1 Single Errors Standard Deviations', markersize=3, colour='m')
 
-    print len(hbf2_list_test_errors_multiple)
-    print len(hbf1_list_units_multiple)
+    print( len(hbf2_list_test_errors_multiple))
+    print( len(hbf1_list_units_multiple))
     krls.plot_errors(2*np.array(hbf2_list_units_multiple), hbf2_list_test_errors_multiple,label='HBF2 Multiple Standard Deviations', markersize=3, colour='b')
     #krls.plot_errors(2*np.array(hbf2_list_units_multiple), hbf2_list_test_errors_single,label='HBF2 Single Errors Standard Deviations', markersize=3, colour='c')
 
@@ -291,9 +291,9 @@ def display_results_HBF1_task2():
 
     #
     plt.figure(3)
-    print 'hbf1_list_units_multiple: ', list_units
-    print 'list_train_errors: ', list_train_errors
-    print 'list_test_errors: ', list_test_errors
+    print( 'hbf1_list_units_multiple: ', list_units)
+    print( 'list_train_errors: ', list_train_errors)
+    print( 'list_test_errors: ', list_test_errors)
     krls.plot_errors(list_units, list_train_errors,label='HBF1 not shared HBF shape', markersize=3, colour='b')
     krls.plot_errors(list_units, list_test_errors,label='HBF1 not shared HBF shape', markersize=3, colour='r')
 
@@ -326,17 +326,17 @@ def display_results_NN_xsinglog1_x():
     plt.figure(3)
     #
     list_units = np.array(nn1_list_units)
-    print list_units
+    print( list_units)
     #krls.plot_errors(list_units, nn1_list_train_errors,label='NN1 train', markersize=3, colour='b')
     krls.plot_errors(list_units, nn1_list_test_errors,label='NN1 test', markersize=3, colour='c')
     #
     list_units = 2*np.array(nn2_list_units[0:1]+nn2_list_units[2:])
-    print list_units
+    print( list_units)
     #krls.plot_errors(list_units, nn2_list_train_errors,label='NN2 train', markersize=3, colour='r')
     krls.plot_errors(list_units, nn2_list_test_errors[0:1]+nn2_list_test_errors[2:],label='NN2 test', markersize=3, colour='m')
     #
     list_units = 3*np.array(nn3_list_units)
-    print list_units
+    print( list_units)
     #krls.plot_errors(list_units, nn3_list_train_errors,label='NN3 train', markersize=3, colour='g')
     #krls.plot_errors(list_units, nn3_list_test_errors,label='NN3 test', markersize=3, colour='y')
 
@@ -377,17 +377,17 @@ def display_results_hbf_xsinglog1_x():
     #
     nn1_list_train_errors, nn1_list_test_errors = 784*np.array(nn1_list_train_errors), 784*np.array(nn1_list_test_errors)
     nn2_list_train_errors, nn2_list_test_errors = np.array(nn2_list_train_errors), np.array(nn2_list_test_errors)
-    print 'nn1_list_train_errors: ', nn1_list_train_errors
-    print 'nn1_list_test_errors: ', nn1_list_test_errors
-    print 'nn2_list_train_errors: ', nn2_list_train_errors
-    print 'nn2_list_test_errors: ', nn2_list_test_errors
+    print( 'nn1_list_train_errors: ', nn1_list_train_errors)
+    print( 'nn1_list_test_errors: ', nn1_list_test_errors)
+    print( 'nn2_list_train_errors: ', nn2_list_train_errors)
+    print( 'nn2_list_test_errors: ', nn2_list_test_errors)
     list_units = np.array(nn1_list_units)
-    print list_units
+    print( list_units)
     krls.plot_errors(list_units, nn1_list_train_errors,label='HBF1 train', markersize=3, colour='b')
     krls.plot_errors(list_units, nn1_list_test_errors,label='HBF1 test', markersize=3, colour='c')
     #
     list_units = 2*np.array(nn2_list_units)
-    print list_units
+    print( list_units)
     krls.plot_errors(list_units, nn2_list_train_errors,label='HBF2 train', markersize=3, colour='r')
     krls.plot_errors(list_units, nn2_list_test_errors,label='HBF2 test', markersize=3, colour='m')
     #
@@ -415,13 +415,13 @@ def display_results_BT():
     #nn2_list_units, nn2_list_train_errors, nn2_list_test_errors = get_list_errors2(experiment_results=nn2_multiple_experiment_results)
     #
     plt.figure(3)
-    print 'nn1_list_train_errors: ', nn1_list_train_errors
-    print 'nn1_list_test_errors: ', nn1_list_test_errors
+    print('nn1_list_train_errors: ', nn1_list_train_errors)
+    print( 'nn1_list_test_errors: ', nn1_list_test_errors)
     #print 'nn2_list_train_errors: ', nn2_list_train_errors
     #print 'nn2_list_test_errors: ', nn2_list_test_errors
     #
     list_units = np.array(nn1_list_units)
-    print list_units
+    print( list_units)
     krls.plot_errors(list_units, nn1_list_train_errors,label='BT train', markersize=3, colour='b')
     krls.plot_errors(list_units, nn1_list_test_errors,label='BT test', markersize=3, colour='c')
     #

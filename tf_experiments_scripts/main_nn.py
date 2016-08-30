@@ -69,6 +69,7 @@ def set_experiment_folders(arg):
 
 def main(arg):
     print('Running main')
+    print('--==>', dict(arg) )
     results = {'train_errors':[], 'cv_errors':[],'test_errors':[]}
 
     path, errors_pretty, mdl_dir, json_file = set_experiment_folders(arg)
@@ -104,17 +105,24 @@ def main(arg):
     elif arg.optimization_alg=='Momentum':
         arg.use_nesterov = arg.get_use_nesterov()
         arg.momentum = arg.get_momentum(arg)
+        print('arg.use_nesterov', arg.use_nesterov)
+        print('arg.momentum', arg.momentum)
     elif arg.optimization_alg == 'Adadelta':
         arg.rho = arg.get_rho(arg)
+        print('arg.rho', arg.rho)
     elif arg.optimization_alg == 'Adagrad':
         #only has learning rate
         pass
     elif arg.optimization_alg == 'Adam':
         arg.beta1 = arg.get_beta1(arg)
         arg.beta2 = arg.get_beta2(arg)
+        print('arg.beta1', arg.beta1)
+        print('arg.beta2', arg.beta2)
     elif arg.optimization_alg == 'RMSProp':
-        arg.decay = np.random.uniform(low=arg.decay_low,high=arg.decay_high)
+        arg.decay = arg.get_decay(arg)
         arg.momentum = arg.get_momentum(arg)
+        print('arg.decay', arg.decay)
+        print('arg.momentum', arg.momentum)
     else:
         pass
 
@@ -250,6 +258,8 @@ def main(arg):
     ##
 
     with tf.name_scope("train") as scope:
+        # If the argument staircase is True, then global_step / decay_steps is an integer division and the decayed earning rate follows a staircase function.
+        ## decayed_learning_rate = learning_rate * decay_rate ^ (global_step / decay_steps)
         global_step = tf.Variable(0, trainable=False)
         learning_rate = tf.train.exponential_decay(learning_rate=arg.starter_learning_rate, global_step=global_step,decay_steps=arg.decay_steps, decay_rate=arg.decay_rate, staircase=arg.staircase)
         # Passing global_step to minimize() will increment it at each step.
@@ -276,6 +286,9 @@ def main(arg):
         train_step = opt.minimize(l2_loss, global_step=global_step)
 
     ##
+    with tf.name_scope('learning_rate'):
+        learning_rate_scalar_summary = tf.scalar_summary("learning_rate", learning_rate)
+
     with tf.name_scope("l2_loss") as scope:
         ls_scalar_summary = tf.scalar_summary("l2_loss", l2_loss)
 
@@ -382,8 +395,9 @@ def main(arg):
                         cv_error = sess.run(fetches=fetches_cv, feed_dict=feed_dict_cv)
                         test_error = sess.run(fetches=fetches_test, feed_dict=feed_dict_test)
 
+                    current_learning_rate = sess.run(fetches=learning_rate)
                     loss_msg = "=> Mdl*%s%s*-units%s, task: %s, step %d/%d, train err %g, cv err: %g test err %g"%(arg.mdl,nb_hidden_layers,arg.dims,arg.task_name,i,arg.steps,train_error,cv_error,test_error)
-                    mdl_info_msg = "Opt:%s, BN %s, BN_trainable: %s After%d/%d iteration,Init: %s" % (arg.optimization_alg,arg.bn,arg.trainable_bn,i,arg.steps,arg.init_type)
+                    mdl_info_msg = "Opt:%s, BN %s, BN_trainable: %s After%d/%d iteration,Init: %s, current_learning_rate %s" % (arg.optimization_alg,arg.bn,arg.trainable_bn,i,arg.steps,arg.init_type,current_learning_rate)
                     errors_to_beat = 'BEAT: hbf1_error: %s RBF error: %s PCA error: %s '%(hbf1_error, rbf_error,pca_error)
 
                     print_messages(loss_msg, mdl_info_msg, errors_to_beat)

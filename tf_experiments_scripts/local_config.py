@@ -109,7 +109,7 @@ else:
 #arg.steps_low = 100
 #arg.steps_high = 101
 #arg.get_steps = lambda arg: int( np.random.randint(low=arg.steps_low ,high=arg.steps_high) )
-arg.get_steps = lambda arg: int( 1000 )
+arg.get_steps = lambda arg: int( 3000 )
 
 #arg.M_low = 51
 #arg.M_high = 52
@@ -121,30 +121,32 @@ arg.report_error_freq = 50
 #arg.get_log_learning_rate =  lambda arg: np.random.uniform(low=arg.low_log_const_learning_rate, high=arg.high_log_const_learning_rate)
 #arg.get_start_learning_rate = lambda arg: 10**arg.log_learning_rate
 arg.get_log_learning_rate = lambda arg: None
-arg.get_start_learning_rate = lambda arg: 0.5
+arg.get_start_learning_rate = lambda arg: 0.01
 ## decayed_learning_rate = learning_rate * decay_rate ^ (global_step / decay_steps)
 #arg.decay_rate_low, arg.decay_rate_high = 0.3, 0.99
 #arg.get_decay_rate = lambda arg: np.random.uniform(low=arg.decay_rate_low, high=arg.decay_rate_high)
-arg.get_decay_rate = lambda arg: 0.9
+arg.get_decay_rate = lambda arg: 0.8
 
 #arg.decay_steps_low, arg.decay_steps_high = arg.report_error_freq, arg.M
 #arg.get_decay_steps_low_high = lambda arg: arg.report_error_freq, arg.M
 #arg.get_decay_steps = lambda arg: np.random.randint(low=arg.decay_steps_low, high=arg.decay_steps_high)
-def get_decay_steps(arg):
-    arg.decay_steps_low, arg.decay_steps_high = arg.report_error_freq, arg.M
-    decay_steos = np.random.randint(low=arg.decay_steps_low, high=arg.decay_steps_high)
-    return decay_steos
+# def get_decay_steps(arg):
+#     arg.decay_steps_low, arg.decay_steps_high = arg.report_error_freq, arg.M
+#     decay_steos = np.random.randint(low=arg.decay_steps_low, high=arg.decay_steps_high)
+#     return decay_steos
+get_decay_steps = lambda arg: 200
 arg.get_decay_steps = get_decay_steps
 
+# If the argument staircase is True, then global_step / decay_steps is an integer division and the decayed earning rate follows a staircase function.
 #arg.staircase = False
 arg.staircase = True
 
 optimization_alg = 'GD'
-optimization_alg = 'Momentum'
-# optimization_alg = 'Adadelta'
-# optimization_alg = 'Adagrad'
-# optimization_alg = 'Adam'
-# optimization_alg = 'RMSProp'
+#optimization_alg = 'Momentum'
+#optimization_alg = 'Adadelta'
+#optimization_alg = 'Adagrad'
+#optimization_alg = 'Adam'
+#optimization_alg = 'RMSProp'
 arg.optimization_alg = optimization_alg
 
 if optimization_alg == 'GD':
@@ -154,7 +156,7 @@ elif optimization_alg=='Momentum':
     #arg.get_use_nesterov = lambda: True
     #arg.momentum_low, arg.momontum_high = 0.1, 0.99
     #arg.get_momentum = lambda arg: np.random.uniform(low=arg.momentum_low,high=arg.momontum_high)
-    arg.get_momentum = lambda arg: 0.5
+    arg.get_momentum = lambda arg: 0.9
 elif optimization_alg == 'Adadelta':
     #arg.rho_low, arg.rho_high = 0.1, 0.99
     #arg.get_rho = lambda arg: np.random.uniform(low=arg.rho_low,high=arg.rho_high)
@@ -169,7 +171,8 @@ elif optimization_alg == 'Adam':
     #arg.beta2_low, arg.beta2_high = beta2_low=0.8, beta2_high=0.999 # v = b2 v + (1 - b2)v
 elif optimization_alg == 'RMSProp':
     #arg.decay_low, arg.decay_high = 0.75, 0.99
-    arg.decay_loc = lambda arg: 0.9
+    #arg.get_decay = lambda arg: np.random.uniform(low=arg.decay_low,high=arg.decay_high)
+    arg.get_decay = lambda arg: 0.9
     #arg.momentum_low, arg.momontum_high = 0.0, 0.99
     #arg.get_momentum = lambda arg: np.random.uniform(low=arg.momentum_low,high=arg.momontum_high)
     arg.get_momentum = lambda arg: 0.5
