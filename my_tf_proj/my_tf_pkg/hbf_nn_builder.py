@@ -313,11 +313,8 @@ def build_binary_tree_16D(x,nb_filters1,nb_filters2,mean,stddev,stride_convd1=2)
 
 def get_W(init_W, l, dims, dtype=tf.float64):
     if isinstance(init_W, tf.python.framework.ops.Tensor):
-        print( 'isinstance')
         W = tf.get_variable(name='W'+l, dtype=dtype, initializer=init_W, regularizer=None, trainable=True)
     else:
-        print( 'XAVIER')
-        print( dims)
         (dim_input,dim_out) = dims
         W = tf.get_variable(name='W'+l, dtype=dtype, initializer=init_W, regularizer=None, trainable=True, shape=[dim_input,dim_out])
     return W

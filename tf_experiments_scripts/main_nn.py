@@ -15,8 +15,20 @@ import ast
 import my_tf_pkg as mtf
 import time
 
+def get_remove_functions_from_dict(arg_dict):
+    '''
+        Removes functions from dictionary and returns modified dictionary
+    '''
+    keys_to_delete = []
+    for key,value in arg_dict.items():
+        if hasattr(value, '__call__'):
+            keys_to_delete.append(key)
+    for key in keys_to_delete:
+        del arg_dict[key]
+    return arg_dict
+
 def randomnes():
-    # randomness
+    # randomness TODO
     #tf_rand_seed = int(os.urandom(32).encode('hex'), 16)
     #tf.set_random_seed(tf_rand_seed)
     return
@@ -41,15 +53,15 @@ def set_experiment_folders(arg):
     ## directory structure for collecting data for experiments
     path_root = '../../%s/%s'%(arg.experiment_root_dir,arg.experiment_name)
     #
-    date = datetime.date.today().strftime("%B %d").replace (" ", "_")
-    current_experiment_folder = '/%s_j%s'%(date,arg.job_name)
+    arg.date = datetime.date.today().strftime("%B %d").replace (" ", "_")
+    current_experiment_folder = '/%s_j%s'%(arg.date,arg.job_name)
     path = path_root+current_experiment_folder
     #
-    errors_pretty = '/errors_file_%s_slurm_sj%s.txt'%(date,arg.slurm_array_task_id)
+    errors_pretty = '/errors_file_%s_slurm_sj%s.txt'%(arg.date,arg.slurm_array_task_id)
     #
-    mdl_dir ='/mdls_%s_slurm_sj%s'%(date,arg.slurm_array_task_id)
+    mdl_dir ='/mdls_%s_slurm_sj%s'%(arg.date,arg.slurm_array_task_id)
     #
-    json_file = '/json_%s_slurm_array_id%s_jobid_%s'%(date, arg.slurm_array_task_id, arg.slurm_jobid)
+    json_file = '/json_%s_slurm_array_id%s_jobid_%s'%(arg.date, arg.slurm_array_task_id, arg.slurm_jobid)
     # try to make directory, if it exists do NOP
     mtf.make_and_check_dir(path=path)
     mtf.make_and_check_dir(path=path+mdl_dir)
@@ -81,8 +93,8 @@ def main(arg):
     arg.M = M
 
     log_learning_rate = np.random.uniform(low=arg.low_log_const_learning_rate, high=arg.high_log_const_learning_rate)
-    starter_learning_rate = 10**log_learning_rate
-    print( '++> starter_learning_rate ', starter_learning_rate )
+    arg.starter_learning_rate = 10**log_learning_rate
+    print( '++> starter_learning_rate ', arg.starter_learning_rate )
 
     ## decayed_learning_rate = learning_rate * decay_rate ^ (global_step / decay_steps)
     decay_rate = np.random.uniform(low=arg.decay_rate_low, high=arg.decay_rate_high)
@@ -93,12 +105,10 @@ def main(arg):
     if arg.optimization_alg == 'GD':
         pass
     elif arg.optimization_alg=='Momentum':
-        use_nesterov = arg.use_nesterov
-        momentum=np.random.uniform(low=arg.momentum_low,high=arg.momontum_high)
-        results['momentum']=float(momentum)
+        arg.use_nesterov = arg.get_use_nesterov()
+        arg.momentum = arg.get_momentum(arg)
     elif arg.optimization_alg == 'Adadelta':
-        rho=np.random.uniform(low=arg.rho_low,high=arg.rho_high)
-        results['rho']=float(rho)
+        arg.rho = arg.get_rho(arg)
     elif arg.optimization_alg == 'Adagrad':
         #only has learning rate
         pass
@@ -109,7 +119,7 @@ def main(arg):
         results['beta2']=float(beta2)
     elif arg.optimization_alg == 'RMSProp':
         decay = np.random.uniform(low=arg.decay_loc,high=arg.decay_high)
-        momentum = np.random.uniform(low=arg.momentum_low,high=arg.momentum_high)
+        momentum = arg.get_momentum(arg)
         results['decay']=float(decay)
         results['momentum']=float(momentum)
     else:
@@ -157,16 +167,16 @@ def main(arg):
     ## Make Model
     if arg.mdl == 'standard_nn':
         arg.dims = [D]+arg.units+[D_out]
-        mu_init_list = arg.W_mu_init(arg)
-        std_init_list = arg.W_std_init(arg)
+        arg.mu_init_list = arg.get_W_mu_init(arg)
+        arg.std_init_list = arg.get_W_std_init(arg)
 
-        b_init = arg.b_init(arg)
+        arg.b_init = arg.get_b_init(arg)
         float_type = tf.float64
         x = tf.placeholder(float_type, shape=[None, D], name='x-input') # M x D
 
         nb_layers = len(arg.dims)-1
         nb_hidden_layers = nb_layers-1
-        (inits_C,inits_W,inits_b) = mtf.get_initilizations_standard_NN(init_type=arg.init_type,dims=arg.dims,mu=mu_init_list,std=std_init_list,b_init=b_init, X_train=X_train, Y_train=Y_train)
+        (inits_C,inits_W,inits_b) = mtf.get_initilizations_standard_NN(init_type=arg.init_type,dims=arg.dims,mu=arg.mu_init_list,std=arg.std_init_list,b_init=arg.b_init, X_train=X_train, Y_train=Y_train)
         with tf.name_scope("standardNN") as scope:
             mdl = mtf.build_standard_NN(x,arg.dims,(inits_C,inits_W,inits_b),phase_train,arg.trainable_bn)
             mdl = mtf.get_summation_layer(l=str(nb_layers),x=mdl,init=inits_C[0])
@@ -247,29 +257,21 @@ def main(arg):
     ##
 
     with tf.name_scope("train") as scope:
-        # starter_learning_rate = 0.0000001
-        # decay_rate = 0.9
-        # decay_steps = 100
-        # staircase = True
-        # decay_steps = 10000000
-        # staircase = False
-        # decayed_learning_rate = learning_rate * decay_rate ^ (global_step / decay_steps)
         global_step = tf.Variable(0, trainable=False)
-        learning_rate = tf.train.exponential_decay(learning_rate=starter_learning_rate, global_step=global_step,decay_steps=decay_steps, decay_rate=decay_rate, staircase=staircase)
-
+        learning_rate = tf.train.exponential_decay(learning_rate=arg.starter_learning_rate, global_step=global_step,decay_steps=decay_steps, decay_rate=decay_rate, staircase=staircase)
         # Passing global_step to minimize() will increment it at each step.
         if arg.optimization_alg == 'GD':
             opt = tf.train.GradientDescentOptimizer(learning_rate)
         elif arg.optimization_alg == 'Momentum':
-            opt = tf.train.MomentumOptimizer(learning_rate=learning_rate,momentum=momentum,use_nesterov=use_nesterov)
+            opt = tf.train.MomentumOptimizer(learning_rate=learning_rate,momentum=arg.momentum,use_nesterov=arg.use_nesterov)
         elif arg.optimization_alg == 'Adadelta':
-            tf.train.AdadeltaOptimizer(learning_rate=learning_rate, rho=rho, epsilon=1e-08, use_locking=False, name='Adadelta')
+            tf.train.AdadeltaOptimizer(learning_rate=learning_rate, rho=arg.rho, epsilon=1e-08, use_locking=False, name='Adadelta')
         elif arg.optimization_alg == 'Adam':
-            opt = tf.train.AdamOptimizer(learning_rate=learning_rate, beta1=beta1, beta2=beta2, epsilon=1e-08, name='Adam')
+            opt = tf.train.AdamOptimizer(learning_rate=learning_rate, beta1=arg.beta1, beta2=arg.beta2, epsilon=1e-08, name='Adam')
         elif arg.optimization_alg == 'Adagrad':
             opt = tf.train.AdagradOptimizer(learning_rate)
         elif arg.optimization_alg == 'RMSProp':
-            opt = tf.train.RMSPropOptimizer(learning_rate=learning_rate, decay=decay, momentum=momentum, epsilon=1e-10, name='RMSProp')
+            opt = tf.train.RMSPropOptimizer(learning_rate=learning_rate, decay=arg.decay, momentum=arg.momentum, epsilon=1e-10, name='RMSProp')
 
     ## TODO
     if arg.re_train == 're_train' and arg.task_name == 'hrushikesh':
@@ -335,7 +337,7 @@ def main(arg):
 
     def print_messages(*args):
         for i, msg in enumerate(args):
-            print('>',msg)
+            print('>%s'%msg)
 
     if arg.use_tensorboard:
         if tf.gfile.Exists('/tmp/mdl_logs'):
@@ -386,22 +388,21 @@ def main(arg):
                         cv_error = sess.run(fetches=fetches_cv, feed_dict=feed_dict_cv)
                         test_error = sess.run(fetches=fetches_test, feed_dict=feed_dict_test)
 
-                    loss_msg = "Mdl*%s%s*-units%s, task: %s, step %d/%d, train err %g, cv err: %g test err %g"%(arg.mdl,nb_hidden_layers,arg.dims,arg.task_name,i,arg.steps,train_error,cv_error,test_error)
+                    loss_msg = "=> Mdl*%s%s*-units%s, task: %s, step %d/%d, train err %g, cv err: %g test err %g"%(arg.mdl,nb_hidden_layers,arg.dims,arg.task_name,i,arg.steps,train_error,cv_error,test_error)
                     mdl_info_msg = "Opt:%s, BN %s, BN_trainable: %s After%d/%d iteration,Init: %s" % (arg.optimization_alg,arg.bn,arg.trainable_bn,i,arg.steps,arg.init_type)
                     errors_to_beat = 'BEAT: hbf1_error: %s RBF error: %s PCA error: %s '%(hbf1_error, rbf_error,pca_error)
-                    print_messages(loss_msg, mdl_info_msg, errors_to_beat)
-                    #sys.stdout.flush()
-                    loss_msg+="\n"
-                    mdl_info_msg+="\n"
-                    errors_to_beat+="\n"
 
-                    print( 'S: ', inits_S)
+                    print_messages(loss_msg, mdl_info_msg, errors_to_beat)
+                    print('S: ', inits_S)
+                    print()
+                    #sys.stdout.flush()
+                    # loss_msg+="\n"
+                    # mdl_info_msg+="\n"
+                    # errors_to_beat+="\n"
+
                     # store results
-                    #print type(train_error)
                     results['train_errors'].append( float(train_error) )
-                    #print type(cv_error)
                     results['cv_errors'].append( float(cv_error) )
-                    #print type(test_error)
                     results['test_errors'].append( float(test_error) )
                     # write errors to pretty print
                     f_err_msgs.write(loss_msg)
@@ -415,21 +416,9 @@ def main(arg):
                     sess.run(fetches=train_step, feed_dict=feed_dict_batch) #sess.run(train_step, feed_dict={x: batch_xs, y_: batch_ys})
 
     git_hash = subprocess.check_output(['git', 'rev-parse', 'HEAD'])
-    mtf.load_results_dic(results,git_hash=git_hash,dims=dims,mu=mu,std=std,init_constant=init_constant,b_init=b_init,S_init=S_init,\
-        init_type=init_type,model=model,bn=bn,path=path,\
-        tensorboard_data_dump_test=tensorboard_data_dump_test,tensorboard_data_dump_train=tensorboard_data_dump_train,\
-        report_error_freq=report_error_freq,steps=steps,M=M,optimization_alg=optimization_alg,\
-        starter_learning_rate=starter_learning_rate,decay_rate=decay_rate,staircase=staircase)
-
-    ##
-    results['job_name'] = job_name
-    results['slurm_jobid'] = slurm_jobid
-    results['slurm_array_task_id'] = slurm_array_task_id
+    results['git_hash'] = str(git_hash)
     #results['tf_rand_seed'] = tf_rand_seed
-    results['date'] = date
-    results['bn'] = bn
-    results['trainable_bn'] = trainable_bn
-
+    #
     seconds = (time.time() - start_time)
     minutes = seconds/ 60
     hours = minutes/ 60
@@ -441,22 +430,16 @@ def main(arg):
     results['minutes'] = minutes
     results['hours'] = hours
     #print results
+    #results['arg'] = arg
+    arg_dict = dict(arg)
+    arg_dict = get_remove_functions_from_dict(arg_dict)
+    results['arg_dict'] = arg_dict
     with open(path+json_file, 'w+') as f_json:
         json.dump(results,f_json,sort_keys=True, indent=2, separators=(',', ': '))
     print( '\a') #makes beep
 
-
-
-# low_const, high_const = 0.4, 1.0
-# #init_constant = np.random.uniform(low=low_const, high=high_const)
-# #b_init = list(np.random.uniform(low=low_const, high=high_const,size=len(dims)))
-# init_constant = 0.4177551
-# #b_init = len(dims)*[init_constant]
-# #[0.6374998052942504, 0.6374998052942504, 0.6374998052942504, 0.6374998052942504]
-# b_init = [None, init_constant, np.random.uniform(low=1,high=2.5)]
-
 if __name__ == '__main__':
     print( 'in __main__')
     print( 'start running main_nn.py')
-    main()
+    #main(arg)
     print( 'end running main_nn.py')

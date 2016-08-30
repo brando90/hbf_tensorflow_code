@@ -9,7 +9,9 @@
 #from __future__ import print_function
 
 import os
+
 import namespaces as ns
+import numpy as np
 
 import main_nn
 import my_tf_pkg as mtf
@@ -19,6 +21,8 @@ print('In batch script', flush=True)
 print(ns)
 ##
 arg = ns.Namespace()
+
+print( dict(arg) )
 
 task_name = 'task_qianli_func'
 task_name = 'task_f_2D_task2'
@@ -44,16 +48,17 @@ if arg.mdl == 'standard_nn':
     arg.init_type = 'xavier'
 
     arg.units = [5]
-    arg.units = [6,6]
-    arg.units = [6,6,6]
+    #arg.units = [6,6]
+    #arg.units = [6,6,6]
 
     arg.mu = 0.0
     arg.std = 0.0
 
-    arg.W_mu_init = lambda arg: len(arg.dims)*[arg.mu]
-    arg.W_std_init = lambda arg: len(arg.dims)*[arg.std]
+    arg.get_W_mu_init = lambda arg: len(arg.dims)*[arg.mu]
+    arg.get_W_std_init = lambda arg: len(arg.dims)*[arg.std]
 
-    arg.b_init = lambda arg: len(arg.dims)*[0.1]
+    arg.b = 0.1
+    arg.get_b_init = lambda arg: len(arg.dims)*[arg.b]
 elif arg.mdl == 'hbf':
     arg.init_type = 'truncated_normal'
     arg.init_type = 'data_init'
@@ -102,12 +107,11 @@ else:
     raise ValueError('Need to use a valid model, incorrect or unknown model %s give.'%arg.mdl)
 
 #steps
-arg.steps_low = 3000
-arg.steps_high = 6000
+arg.steps_low = 100
+arg.steps_high = 101
 
-arg.M_low = 500
-arg.M_high = 12000
-
+arg.M_low = 51
+arg.M_high = 52
 arg.report_error_freq = 50
 
 arg.low_log_const_learning_rate, arg.high_log_const_learning_rate = -0.01, -6
@@ -120,20 +124,22 @@ arg.staircase = True
 
 optimization_alg = 'GD'
 optimization_alg = 'Momentum'
-optimization_alg = 'Adadelta'
-optimization_alg = 'Adagrad'
-optimization_alg = 'Adam'
-optimization_alg = 'RMSProp'
+# optimization_alg = 'Adadelta'
+# optimization_alg = 'Adagrad'
+# optimization_alg = 'Adam'
+# optimization_alg = 'RMSProp'
 arg.optimization_alg = optimization_alg
 
 if optimization_alg == 'GD':
     pass
 elif optimization_alg=='Momentum':
-    arg.use_nesterov = False
-    #arg.use_nesterov = True
+    arg.get_use_nesterov = lambda: False
+    #arg.get_use_nesterov = lambda: True
     arg.momentum_low, arg.momontum_high = 0.1, 0.99
+    arg.get_momentum = lambda arg: np.random.uniform(low=arg.momentum_low,high=arg.momontum_high)
 elif optimization_alg == 'Adadelta':
     arg.rho_low, arg.rho_high = 0.1, 0.99
+    arg.get_rho = lambda arg: np.random.uniform(low=arg.rho_low,high=arg.rho_high)
 elif optimization_alg == 'Adagrad':
     #only has learning rate
     pass
@@ -144,7 +150,8 @@ elif optimization_alg == 'Adam':
     #arg.beta2_low, arg.beta2_high = beta2_low=0.8, beta2_high=0.999 # v = b2 v + (1 - b2)v
 elif optimization_alg == 'RMSProp':
     arg.decay_loc, arg.decay_high = 0.75, 0.99
-    arg.momentum_low, arg.momentum_high = 0.0, 0.9
+    arg.momentum_low, arg.momontum_high = 0.0, 0.99
+    arg.get_momentum = lambda arg: np.random.uniform(low=arg.momentum_low,high=arg.momontum_high)
 else:
     pass
 
