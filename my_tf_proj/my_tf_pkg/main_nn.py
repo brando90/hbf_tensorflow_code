@@ -344,7 +344,7 @@ def main_nn(arg):
 
     def print_messages(*args):
         for i, msg in enumerate(args):
-            print('>%s'%msg)
+            print('>%s'%msg, flush=True)
 
     if arg.use_tensorboard:
         if tf.gfile.Exists('/tmp/mdl_logs'):
@@ -402,7 +402,7 @@ def main_nn(arg):
                     errors_to_beat = 'BEAT: hbf1_error: %s RBF error: %s PCA error: %s '%(hbf1_error, rbf_error,pca_error)
 
                     print_messages(loss_msg, mdl_info_msg, errors_to_beat)
-                    print('S: ', inits_S)
+                    print('S: ', inits_S, flush=True)
                     print()
                     #sys.stdout.flush()
                     # loss_msg+="\n"

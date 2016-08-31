@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #SBATCH --job-name=Python
-#SBATCH --array=1-10
+#SBATCH --array=1-9
 #SBATCH --mem=14000
 #SBATCH --time=30:00
 #SBATCH --mail-type=ALL
@@ -183,12 +183,12 @@ arg.experiment_name = 'tmp_experiment'
 arg.experiment_root_dir = mtf.get_experiment_folder(task_name)
 
 #
-arg.experiment_name = 'local_test' # experiment_name e.g. task_August_10_BT
+arg.experiment_name = 'om_test' # experiment_name e.g. task_August_10_BT
 arg.experiment_root_dir = mtf.get_experiment_folder(task_name)
-arg.job_name = 'TB2' # job name e.g BT_6_6_5_RMSProp_Test
+arg.job_name = 'test' # job name e.g BT_6_6_5_RMSProp_Test
 #
-arg.slurm_jobid = os.environ['slurm_jobid']
-arg.slurm_array_task_id = os.environ['slurm_array_task_id']
+arg.slurm_jobid = os.environ['SLURM_JOBID']
+arg.slurm_array_task_id = os.environ['SLURM_ARRAY_TASK_ID']
 #
 #arg.mdl_save = False
 arg.mdl_save = True
@@ -199,6 +199,6 @@ arg.use_tensorboard = False
 #arg.use_tensorboard = True
 
 if __name__ == '__main__':
-    print('In __name__ == __main__')
+    print('In __name__ == __main__', flush=True)
     #main_nn.main_old()
     mtf.main_nn(arg)
