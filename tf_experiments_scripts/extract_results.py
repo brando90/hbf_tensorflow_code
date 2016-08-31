@@ -30,7 +30,27 @@ def display_results_BT():
     list_units = np.array(nn1_list_units)
     print( list_units)
 
+def display_results():
+    # frameworkpython multiple_vs_single_collect_results.py
+    #experiment_name = 'om_f_4d_conv'
+    experiment_name = 'om_f_4d_task_conv_2nd'
+
+    path_to_experiments = '../../%s/task_August_18_BT/August_26_jBT_12_1000_RMSProp'%experiment_name
+    nn1_multiple_experiment_results = mtf.get_results_for_experiments(path_to_experiments,verbose=True, split_string='_jBT_[\d]*_|_jHBF[\d]*_|_jrun_HBF[\d]*_')
+
+    #
+    #print nn1_multiple_experiment_results
+    nn1_list_units, nn1_list_train_errors, nn1_list_test_errors = mtf.get_list_errors2(experiment_results=nn1_multiple_experiment_results)
+    #nn2_list_units, nn2_list_train_errors, nn2_list_test_errors = get_list_errors2(experiment_results=nn2_multiple_experiment_results)
+    #
+    print('nn1_list_train_errors: ', nn1_list_train_errors)
+    print('nn1_list_test_errors: ', nn1_list_test_errors)
+    #
+    list_units = np.array(nn1_list_units)
+    print( list_units)
+
 if __name__ == '__main__':
     #display_results_NN_xsinglog1_x()
     #display_results_NN_xsinglog1_x()
-    display_results_BT()
+    #display_results_BT()
+    display_results()
