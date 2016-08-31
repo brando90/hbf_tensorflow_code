@@ -183,7 +183,7 @@ arg.experiment_name = 'tmp_experiment'
 arg.experiment_root_dir = mtf.get_experiment_folder(task_name)
 
 #
-arg.experiment_name = 'tmp_experiment' # experiment_name e.g. task_August_10_BT
+arg.experiment_name = 'local_test' # experiment_name e.g. task_August_10_BT
 arg.experiment_root_dir = mtf.get_experiment_folder(task_name)
 arg.job_name = 'TB2' # job name e.g BT_6_6_5_RMSProp_Test
 #
