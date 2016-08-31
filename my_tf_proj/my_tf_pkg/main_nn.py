@@ -52,6 +52,7 @@ def set_tensorboard(arg):
 def set_experiment_folders(arg):
     ## directory structure for collecting data for experiments
     path_root = '../../%s/%s'%(arg.experiment_root_dir,arg.experiment_name)
+    print('path_root: ', path_root)
     #
     arg.date = datetime.date.today().strftime("%B %d").replace (" ", "_")
     current_experiment_folder = '/%s_j%s'%(arg.date,arg.job_name)
@@ -397,7 +398,7 @@ def main_nn(arg):
 
                     current_learning_rate = sess.run(fetches=learning_rate)
                     loss_msg = "=> Mdl*%s%s*-units%s, task: %s, step %d/%d, train err %g, cv err: %g test err %g"%(arg.mdl,nb_hidden_layers,arg.dims,arg.task_name,i,arg.steps,train_error,cv_error,test_error)
-                    mdl_info_msg = "Opt:%s, BN %s, BN_trainable: %s After%d/%d iteration,Init: %s, current_learning_rate %s" % (arg.optimization_alg,arg.bn,arg.trainable_bn,i,arg.steps,arg.init_type,current_learning_rate)
+                    mdl_info_msg = "Opt:%s, BN %s, BN_trainable: %s After%d/%d iteration,Init: %s, current_learning_rate %s, M %s, decay_rate %s" % (arg.optimization_alg,arg.bn,arg.trainable_bn,i,arg.steps,arg.init_type,current_learning_rate,arg.M,arg.decay_rate)
                     errors_to_beat = 'BEAT: hbf1_error: %s RBF error: %s PCA error: %s '%(hbf1_error, rbf_error,pca_error)
 
                     print_messages(loss_msg, mdl_info_msg, errors_to_beat)

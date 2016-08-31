@@ -105,12 +105,12 @@ else:
     raise ValueError('Need to use a valid model, incorrect or unknown model %s give.'%arg.mdl)
 
 #steps
-arg.steps_low = 100
-arg.steps_high = 101
+arg.steps_low = 2000
+arg.steps_high = 3000
 arg.get_steps = lambda arg: int( np.random.randint(low=arg.steps_low ,high=arg.steps_high) )
 
-arg.M_low = 51
-arg.M_high = 52
+arg.M_low = 500
+arg.M_high = 2000
 arg.get_batch_size = lambda arg: int(np.random.randint(low=arg.M_low , high=arg.M_high))
 arg.report_error_freq = 50
 
@@ -128,16 +128,16 @@ def get_decay_steps(arg):
     arg.decay_steps_low, arg.decay_steps_high = arg.report_error_freq, arg.M
     decay_steos = np.random.randint(low=arg.decay_steps_low, high=arg.decay_steps_high)
     return decay_steos
-arg.get_decay_steps = get_decay_steps
+arg.get_decay_steps = get_decay_steps # when stair case, how often to shrink
 
 #arg.staircase = False
 arg.staircase = True
 
 optimization_alg = 'GD'
-optimization_alg = 'Momentum'
+# optimization_alg = 'Momentum'
 # optimization_alg = 'Adadelta'
 # optimization_alg = 'Adagrad'
-# optimization_alg = 'Adam'
+optimization_alg = 'Adam'
 # optimization_alg = 'RMSProp'
 arg.optimization_alg = optimization_alg
 
@@ -155,8 +155,10 @@ elif optimization_alg == 'Adagrad':
     #only has learning rate
     pass
 elif optimization_alg == 'Adam':
-    arg.get_beta1 = lambda: 0.99 # m = b1m + (1 - b1)m
-    arg.get_beta2w = lambda: 0.999 # v = b2 v + (1 - b2)v
+    arg.beta1 = 0.99
+    arg.beta2 = 0.999
+    arg.get_beta1 = lambda arg: arg.beta1 # m = b1m + (1 - b1)m
+    arg.get_beta2 = lambda arg: arg.beta2 # v = b2 v + (1 - b2)v
     #arg.beta1_low, arg.beta1_high = beta1_low=0.7, beta1_high=0.99 # m = b1m + (1 - b1)m
     #arg.beta2_low, arg.beta2_high = beta2_low=0.8, beta2_high=0.999 # v = b2 v + (1 - b2)v
 elif optimization_alg == 'RMSProp':
@@ -176,28 +178,25 @@ arg.data_normalize='dont_normalize'
 
 re_train = None
 arg.re_train = re_train
-
 #
 arg.experiment_name = 'tmp_experiment'
 arg.experiment_root_dir = mtf.get_experiment_folder(task_name)
 
 #
-slurm_jobid = 'TB'
-slurm_array_task_id = 'TB'
-job_name = 'TB'
-
-arg.slurm_jobid = slurm_jobid
-arg.slurm_array_task_id = slurm_array_task_id
-arg.job_name = job_name
-
+arg.experiment_name = 'tmp_experiment' # experiment_name e.g. task_August_10_BT
+arg.experiment_root_dir = mtf.get_experiment_folder(task_name)
+arg.job_name = 'TB2' # job name e.g BT_6_6_5_RMSProp_Test
 #
-arg.mdl_save = False
+arg.slurm_jobid = os.environ['slurm_jobid']
+arg.slurm_array_task_id = os.environ['slurm_array_task_id']
+#
+#arg.mdl_save = False
 arg.mdl_save = True
 
 arg.max_to_keep = 1
 #
-#arg.use_tensorboard = False
-arg.use_tensorboard = True
+arg.use_tensorboard = False
+#arg.use_tensorboard = True
 
 if __name__ == '__main__':
     print('In __name__ == __main__')
