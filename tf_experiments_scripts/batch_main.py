@@ -202,4 +202,4 @@ arg.use_tensorboard = True
 if __name__ == '__main__':
     print('In __name__ == __main__')
     #main_nn.main_old()
-    my_tf_pkg.main_nn(arg)
+    mtf.main_nn(arg)
