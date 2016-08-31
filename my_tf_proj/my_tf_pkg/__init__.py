@@ -11,7 +11,8 @@ from my_tf_pkg.save_workspace import *
 from my_tf_pkg.f_2D_data import *
 from my_tf_pkg.f_4D_data import *
 from my_tf_pkg.f_8D_data import *
-from my_tf_pkg.extract_results import *
+from my_tf_pkg.extract_results_lib import *
+from my_tf_pkg.main_nn import *
 #having the package name declared
 #from pkg_1.module2 import *
 

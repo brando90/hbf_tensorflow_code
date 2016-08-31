@@ -67,7 +67,7 @@ def set_experiment_folders(arg):
     mtf.make_and_check_dir(path=path+mdl_dir)
     return path, errors_pretty, mdl_dir, json_file
 
-def main(arg):
+def main_nn(arg):
     print('Running main')
     print('--==>', dict(arg) )
     results = {'train_errors':[], 'cv_errors':[],'test_errors':[]}

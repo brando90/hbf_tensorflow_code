@@ -13,7 +13,6 @@ import os
 import namespaces as ns
 import numpy as np
 
-import main_nn
 import my_tf_pkg as mtf
 
 ##
@@ -215,4 +214,4 @@ arg.use_tensorboard = True
 if __name__ == '__main__':
     print('In __name__ == __main__')
     #main_nn.main_old()
-    main_nn.main(arg)
+    mtf.main_nn(arg)

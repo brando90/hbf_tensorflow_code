@@ -1,4 +1,4 @@
-#!/usr/bin/env
+#!/usr/bin/env python
 #SBATCH --job-name=Python
 #SBATCH --array=1-10
 #SBATCH --mem=14000
@@ -13,7 +13,6 @@ import os
 import namespaces as ns
 import numpy as np
 
-import main_nn
 import my_tf_pkg as mtf
 
 ##
@@ -203,4 +202,4 @@ arg.use_tensorboard = True
 if __name__ == '__main__':
     print('In __name__ == __main__')
     #main_nn.main_old()
-    main_nn.main(arg)
+    my_tf_pkg.main_nn(arg)
