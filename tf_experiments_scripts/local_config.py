@@ -111,7 +111,7 @@ arg.get_steps = lambda arg: int( 10000 )
 #arg.M_low = 51
 #arg.M_high = 52
 #arg.get_batch_size = lambda arg: int(np.random.randint(low=arg.M_low , high=arg.M_high))
-arg.get_batch_size = lambda arg: 2730 #M
+arg.get_batch_size = lambda arg: 3000 #M
 arg.report_error_freq = 50
 
 #arg.low_log_const_learning_rate, arg.high_log_const_learning_rate = -0.01, -6
@@ -139,10 +139,10 @@ arg.get_decay_steps = get_decay_steps # when stair case, how often to shrink
 arg.staircase = True
 
 optimization_alg = 'GD'
-optimization_alg = 'Momentum'
+#optimization_alg = 'Momentum'
 #optimization_alg = 'Adadelta'
 #optimization_alg = 'Adagrad'
-#optimization_alg = 'Adam'
+optimization_alg = 'Adam'
 #optimization_alg = 'RMSProp'
 arg.optimization_alg = optimization_alg
 

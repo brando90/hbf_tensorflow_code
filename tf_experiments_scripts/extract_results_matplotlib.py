@@ -312,7 +312,7 @@ def display_results2():
     nn1_multiple_experiment_results = mtf.get_results_for_experiments(path_to_experiments,verbose=True, split_string='_jBT_[\d]*_|_jHBF[\d]*_|_jrun_HBF[\d]*_|jNN_')
     print('LEN(NN)', len(nn1_multiple_experiment_results))
 
-    path_to_experiments = '../../%s/task_August_29_BT'%experiment_name
+    path_to_experiments = '../../%s/task_August_30_BT'%experiment_name
     bt_multiple_experiment_results = mtf.get_results_for_experiments(path_to_experiments,verbose=True, split_string='_jBT_[\d]*_|_jHBF[\d]*_|_jrun_HBF[\d]*_|jNN_')
     print('LEN(BT)', len(bt_multiple_experiment_results))
 
@@ -321,8 +321,8 @@ def display_results2():
     nn2_list_units, nn2_list_train_errors, bt_list_test_errors = mtf.get_list_errors2(experiment_results=bt_multiple_experiment_results)
     #
     print()
-    print('nn1_list_test_errors: ', nn1_list_test_errors)
-    print('bt_multiple_experiment_results: ', bt_list_test_errors)
+    print('nn1_list_test_errors = ', nn1_list_test_errors)
+    print('bt_multiple_experiment_results = ', bt_list_test_errors)
     #
     krls.plot_errors(nn1_list_units, nn1_list_test_errors,label='NN1 train', markersize=3, colour='b')
     krls.plot_errors(nn1_list_units, bt_list_test_errors,label='BT test', markersize=3, colour='c')
