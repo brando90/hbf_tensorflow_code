@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #SBATCH --job-name=Python
-#SBATCH --array=1-9
+#SBATCH --array=1-10
 #SBATCH --mem=14000
 #SBATCH --time=30:00
 #SBATCH --mail-type=ALL
@@ -36,9 +36,9 @@ task_name = 'task_f_4d_conv_2nd'
 #task_name = 'task_MNIST_flat_auto_encoder'
 arg.task_name = task_name
 
-arg.mdl = 'standard_nn'
+#arg.mdl = 'standard_nn'
 #arg.mdl = 'hbf'
-#arg.mdl = 'binary_tree_4D_conv'
+arg.mdl = 'binary_tree_4D_conv'
 if arg.mdl == 'standard_nn':
     arg.init_type = 'truncated_normal'
     arg.init_type = 'data_xavier_kern'
@@ -81,15 +81,12 @@ elif arg.mdl == 'hbf':
     #
     # arg.b_init = lambda: [525.32626263]
 elif arg.mdl == 'binary_tree_4D_conv':
-    nb_filters = 6
-    nb_filters = 12
-    nb_filters = 18
-    mu = 0.0
-    std = 1.0
-
-    arg.mu = mu
-    arg.std = std
-    arg.nb_filters = nb_filters
+    arg.init_type = 'manual_truncated_normal'
+    arg.nb_filters = 6
+    #arg.nb_filters = 12
+    #arg.nb_filters = 18
+    arg.mu = 0.0
+    arg.std = 1.0
 elif arg.mdl == 'binary_tree_8D_conv':
     # 8D
     #nb_filters=[9,18]
@@ -105,27 +102,28 @@ else:
     raise ValueError('Need to use a valid model, incorrect or unknown model %s give.'%arg.mdl)
 
 #steps
-arg.steps_low = 2000
-arg.steps_high = 3000
+arg.steps_low = 100000
+arg.steps_high = 100001
 arg.get_steps = lambda arg: int( np.random.randint(low=arg.steps_low ,high=arg.steps_high) )
 
 arg.M_low = 500
-arg.M_high = 2000
+arg.M_high = 5000
 arg.get_batch_size = lambda arg: int(np.random.randint(low=arg.M_low , high=arg.M_high))
 arg.report_error_freq = 50
 
-arg.low_log_const_learning_rate, arg.high_log_const_learning_rate = -0.01, -6
+arg.low_log_const_learning_rate, arg.high_log_const_learning_rate = -0.01, -5
 arg.get_log_learning_rate =  lambda arg: np.random.uniform(low=arg.low_log_const_learning_rate, high=arg.high_log_const_learning_rate)
 arg.get_start_learning_rate = lambda arg: 10**arg.log_learning_rate
 ## decayed_learning_rate = learning_rate * decay_rate ^ (global_step / decay_steps)
-arg.decay_rate_low, arg.decay_rate_high = 0.3, 0.99
+arg.decay_rate_low, arg.decay_rate_high = 0.8, 1.0
 arg.get_decay_rate = lambda arg: np.random.uniform(low=arg.decay_rate_low, high=arg.decay_rate_high)
 
 #arg.decay_steps_low, arg.decay_steps_high = arg.report_error_freq, arg.M
 #arg.get_decay_steps_low_high = lambda arg: arg.report_error_freq, arg.M
 #arg.get_decay_steps = lambda arg: np.random.randint(low=arg.decay_steps_low, high=arg.decay_steps_high)
 def get_decay_steps(arg):
-    arg.decay_steps_low, arg.decay_steps_high = arg.report_error_freq, arg.M
+    #arg.decay_steps_low, arg.decay_steps_high = arg.report_error_freq, arg.M
+    arg.decay_steps_low, arg.decay_steps_high = 1000, 8000
     decay_steos = np.random.randint(low=arg.decay_steps_low, high=arg.decay_steps_high)
     return decay_steos
 arg.get_decay_steps = get_decay_steps # when stair case, how often to shrink
@@ -134,18 +132,18 @@ arg.get_decay_steps = get_decay_steps # when stair case, how often to shrink
 arg.staircase = True
 
 optimization_alg = 'GD'
-# optimization_alg = 'Momentum'
+optimization_alg = 'Momentum'
 # optimization_alg = 'Adadelta'
 # optimization_alg = 'Adagrad'
-optimization_alg = 'Adam'
+# optimization_alg = 'Adam'
 # optimization_alg = 'RMSProp'
 arg.optimization_alg = optimization_alg
 
 if optimization_alg == 'GD':
     pass
 elif optimization_alg=='Momentum':
-    arg.get_use_nesterov = lambda: False
-    #arg.get_use_nesterov = lambda: True
+    #arg.get_use_nesterov = lambda: False
+    arg.get_use_nesterov = lambda: True
     arg.momentum_low, arg.momontum_high = 0.1, 0.99
     arg.get_momentum = lambda arg: np.random.uniform(low=arg.momentum_low,high=arg.momontum_high)
 elif optimization_alg == 'Adadelta':
@@ -168,7 +166,6 @@ elif optimization_alg == 'RMSProp':
 else:
     pass
 
-
 arg.bn = False
 arg.trainable_bn = False #scale, shift BN
 
@@ -183,9 +180,9 @@ arg.experiment_name = 'tmp_experiment'
 arg.experiment_root_dir = mtf.get_experiment_folder(task_name)
 
 #
-arg.experiment_name = 'om_test' # experiment_name e.g. task_August_10_BT
+arg.experiment_name = 'task_August_30_NN' # experiment_name e.g. task_August_10_BT
 arg.experiment_root_dir = mtf.get_experiment_folder(task_name)
-arg.job_name = 'test' # job name e.g BT_6_6_5_RMSProp_Test
+arg.job_name = 'BT_6_Nesterov' # job name e.g BT_6_6_5_RMSProp_Test
 #
 arg.slurm_jobid = os.environ['SLURM_JOBID']
 arg.slurm_array_task_id = os.environ['SLURM_ARRAY_TASK_ID']
@@ -199,6 +196,6 @@ arg.use_tensorboard = False
 #arg.use_tensorboard = True
 
 if __name__ == '__main__':
-    print('In __name__ == __main__', flush=True)
+    print('In __name__ == __main__')
     #main_nn.main_old()
     mtf.main_nn(arg)

@@ -30,15 +30,16 @@ task_name = 'task_f2d_2x2_1_cosx1_plus_x2_depth2'
 task_name = 'task_f_4d_conv'
 task_name = 'task_f_8d_conv'
 task_name = 'task_f_4d_conv_2nd'
+task_name = 'task_f_4d_conv_changing'
 #task_name = 'task_f_4d_non_conv'
 #task_name = 'task_f_8d_non_conv'
 #task_name = 'task_MNIST_flat'
 #task_name = 'task_MNIST_flat_auto_encoder'
 arg.task_name = task_name
 
-arg.mdl = 'standard_nn'
+#arg.mdl = 'standard_nn'
 #arg.mdl = 'hbf'
-#arg.mdl = 'binary_tree_4D_conv'
+arg.mdl = 'binary_tree_4D_conv'
 if arg.mdl == 'standard_nn':
     arg.init_type = 'truncated_normal'
     arg.init_type = 'data_xavier_kern'
@@ -81,15 +82,12 @@ elif arg.mdl == 'hbf':
     #
     # arg.b_init = lambda: [525.32626263]
 elif arg.mdl == 'binary_tree_4D_conv':
-    nb_filters = 6
-    nb_filters = 12
-    nb_filters = 18
-    mu = 0.0
-    std = 1.0
-
-    arg.mu = mu
-    arg.std = std
-    arg.nb_filters = nb_filters
+    arg.init_type = 'manual_truncated_normal'
+    arg.nb_filters = 6
+    #arg.nb_filters = 12
+    #arg.nb_filters = 18
+    arg.mu = 0.0
+    arg.std = 1.0
 elif arg.mdl == 'binary_tree_8D_conv':
     # 8D
     #nb_filters=[9,18]
@@ -108,23 +106,23 @@ else:
 #arg.steps_low = 100
 #arg.steps_high = 101
 #arg.get_steps = lambda arg: int( np.random.randint(low=arg.steps_low ,high=arg.steps_high) )
-arg.get_steps = lambda arg: int( 1000 )
+arg.get_steps = lambda arg: int( 10000 )
 
 #arg.M_low = 51
 #arg.M_high = 52
 #arg.get_batch_size = lambda arg: int(np.random.randint(low=arg.M_low , high=arg.M_high))
-arg.get_batch_size = lambda arg: 2
+arg.get_batch_size = lambda arg: 3000 #M
 arg.report_error_freq = 50
 
 #arg.low_log_const_learning_rate, arg.high_log_const_learning_rate = -0.01, -6
 #arg.get_log_learning_rate =  lambda arg: np.random.uniform(low=arg.low_log_const_learning_rate, high=arg.high_log_const_learning_rate)
 #arg.get_start_learning_rate = lambda arg: 10**arg.log_learning_rate
 arg.get_log_learning_rate = lambda arg: None
-arg.get_start_learning_rate = lambda arg: 0.1
+arg.get_start_learning_rate = lambda arg: 0.00001
 ## decayed_learning_rate = learning_rate * decay_rate ^ (global_step / decay_steps)
 #arg.decay_rate_low, arg.decay_rate_high = 0.3, 0.99
 #arg.get_decay_rate = lambda arg: np.random.uniform(low=arg.decay_rate_low, high=arg.decay_rate_high)
-arg.get_decay_rate = lambda arg: 1
+arg.get_decay_rate = lambda arg: 0.99
 
 #arg.decay_steps_low, arg.decay_steps_high = arg.report_error_freq, arg.M
 #arg.get_decay_steps_low_high = lambda arg: arg.report_error_freq, arg.M
@@ -133,7 +131,7 @@ arg.get_decay_rate = lambda arg: 1
 #     arg.decay_steps_low, arg.decay_steps_high = arg.report_error_freq, arg.M
 #     decay_steos = np.random.randint(low=arg.decay_steps_low, high=arg.decay_steps_high)
 #     return decay_steos
-get_decay_steps = lambda arg: 1000
+get_decay_steps = lambda arg: 2000
 arg.get_decay_steps = get_decay_steps # when stair case, how often to shrink
 
 # If the argument staircase is True, then global_step / decay_steps is an integer division and the decayed earning rate follows a staircase function.
@@ -141,18 +139,18 @@ arg.get_decay_steps = get_decay_steps # when stair case, how often to shrink
 arg.staircase = True
 
 optimization_alg = 'GD'
-#optimization_alg = 'Momentum'
+optimization_alg = 'Momentum'
 #optimization_alg = 'Adadelta'
 #optimization_alg = 'Adagrad'
-optimization_alg = 'Adam'
+#optimization_alg = 'Adam'
 #optimization_alg = 'RMSProp'
 arg.optimization_alg = optimization_alg
 
 if optimization_alg == 'GD':
     pass
 elif optimization_alg=='Momentum':
-    arg.get_use_nesterov = lambda: False
-    #arg.get_use_nesterov = lambda: True
+    #arg.get_use_nesterov = lambda: False
+    arg.get_use_nesterov = lambda: True
     #arg.momentum_low, arg.momontum_high = 0.1, 0.99
     #arg.get_momentum = lambda arg: np.random.uniform(low=arg.momentum_low,high=arg.momontum_high)
     arg.get_momentum = lambda arg: 0.9
@@ -194,7 +192,7 @@ arg.re_train = re_train
 #
 arg.experiment_name = 'tmp_experiment'  # experiment_name e.g. task_August_10_BT
 arg.experiment_root_dir = mtf.get_experiment_folder(task_name)
-arg.job_name = 'TB3' # job name e.g BT_6_6_5_RMSProp_Test
+arg.job_name = 'TB4' # job name e.g BT_6_6_5_RMSProp_Test
 
 #
 arg.slurm_jobid = 'TB_slurm_jobid'
