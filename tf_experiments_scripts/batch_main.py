@@ -30,6 +30,7 @@ task_name = 'task_f2d_2x2_1_cosx1_plus_x2_depth2'
 task_name = 'task_f_4d_conv'
 task_name = 'task_f_8d_conv'
 task_name = 'task_f_4d_conv_2nd'
+task_name = 'task_f_4d_conv_changing'
 #task_name = 'task_f_4d_non_conv'
 #task_name = 'task_f_8d_non_conv'
 #task_name = 'task_MNIST_flat'
@@ -179,7 +180,7 @@ arg.re_train = re_train
 arg.experiment_root_dir = mtf.get_experiment_folder(task_name)
 
 #
-arg.experiment_name = 'task_August_30_BT' # experiment_name e.g. task_August_10_BT
+arg.experiment_name = 'task_August_28_BT_TEST' # experiment_name e.g. task_August_10_BT
 arg.experiment_root_dir = mtf.get_experiment_folder(task_name)
 arg.job_name = 'BT_6_Nesterov' # job name e.g BT_6_6_5_RMSProp_Test
 #
