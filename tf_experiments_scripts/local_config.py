@@ -7,6 +7,7 @@
 #SBATCH --mail-user=rene_sax14@yahoo.com
 
 #from __future__ import print_function
+#tensorboard --logdir=/tmp/mdl_logs
 
 import os
 
@@ -37,20 +38,19 @@ task_name = 'task_f_4d_conv_changing'
 #task_name = 'task_MNIST_flat_auto_encoder'
 arg.task_name = task_name
 
-#arg.mdl = 'standard_nn'
+arg.mdl = 'standard_nn'
 #arg.mdl = 'hbf'
-arg.mdl = 'binary_tree_4D_conv'
+#arg.mdl = 'binary_tree_4D_conv'
 if arg.mdl == 'standard_nn':
     arg.init_type = 'truncated_normal'
-    arg.init_type = 'data_xavier_kern'
     arg.init_type = 'xavier'
 
-    arg.units = [5]
+    arg.units = [15]
     #arg.units = [6,6]
     #arg.units = [6,6,6]
 
     arg.mu = 0.0
-    arg.std = 0.0
+    arg.std = 0.5
 
     arg.get_W_mu_init = lambda arg: len(arg.dims)*[arg.mu]
     arg.get_W_std_init = lambda arg: len(arg.dims)*[arg.std]
@@ -111,18 +111,18 @@ arg.get_steps = lambda arg: int( 10000 )
 #arg.M_low = 51
 #arg.M_high = 52
 #arg.get_batch_size = lambda arg: int(np.random.randint(low=arg.M_low , high=arg.M_high))
-arg.get_batch_size = lambda arg: 3000 #M
+arg.get_batch_size = lambda arg: 2730 #M
 arg.report_error_freq = 50
 
 #arg.low_log_const_learning_rate, arg.high_log_const_learning_rate = -0.01, -6
 #arg.get_log_learning_rate =  lambda arg: np.random.uniform(low=arg.low_log_const_learning_rate, high=arg.high_log_const_learning_rate)
 #arg.get_start_learning_rate = lambda arg: 10**arg.log_learning_rate
 arg.get_log_learning_rate = lambda arg: None
-arg.get_start_learning_rate = lambda arg: 0.00001
+arg.get_start_learning_rate = lambda arg: 0.0104
 ## decayed_learning_rate = learning_rate * decay_rate ^ (global_step / decay_steps)
 #arg.decay_rate_low, arg.decay_rate_high = 0.3, 0.99
 #arg.get_decay_rate = lambda arg: np.random.uniform(low=arg.decay_rate_low, high=arg.decay_rate_high)
-arg.get_decay_rate = lambda arg: 0.99
+arg.get_decay_rate = lambda arg: 0.85
 
 #arg.decay_steps_low, arg.decay_steps_high = arg.report_error_freq, arg.M
 #arg.get_decay_steps_low_high = lambda arg: arg.report_error_freq, arg.M
@@ -131,7 +131,7 @@ arg.get_decay_rate = lambda arg: 0.99
 #     arg.decay_steps_low, arg.decay_steps_high = arg.report_error_freq, arg.M
 #     decay_steos = np.random.randint(low=arg.decay_steps_low, high=arg.decay_steps_high)
 #     return decay_steos
-get_decay_steps = lambda arg: 2000
+get_decay_steps = lambda arg: 2559
 arg.get_decay_steps = get_decay_steps # when stair case, how often to shrink
 
 # If the argument staircase is True, then global_step / decay_steps is an integer division and the decayed earning rate follows a staircase function.
@@ -153,7 +153,7 @@ elif optimization_alg=='Momentum':
     arg.get_use_nesterov = lambda: True
     #arg.momentum_low, arg.momontum_high = 0.1, 0.99
     #arg.get_momentum = lambda arg: np.random.uniform(low=arg.momentum_low,high=arg.momontum_high)
-    arg.get_momentum = lambda arg: 0.9
+    arg.get_momentum = lambda arg: 0.2134
 elif optimization_alg == 'Adadelta':
     #arg.rho_low, arg.rho_high = 0.1, 0.99
     #arg.get_rho = lambda arg: np.random.uniform(low=arg.rho_low,high=arg.rho_high)

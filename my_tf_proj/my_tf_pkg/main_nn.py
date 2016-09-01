@@ -15,6 +15,8 @@ import ast
 import my_tf_pkg as mtf
 import time
 
+# tensorboard --logdir=/tmp/mdl_logs
+
 def get_remove_functions_from_dict(arg_dict):
     '''
         Removes functions from dictionary and returns modified dictionary
@@ -446,3 +448,5 @@ def main_nn(arg):
     with open(path+json_file, 'w+') as f_json:
         json.dump(results,f_json,sort_keys=True, indent=2, separators=(',', ': '))
     print( '\a') #makes beep
+
+    print( 'best results: train, cv, test: ', mtf.get_errors_from(results) )

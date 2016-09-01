@@ -115,7 +115,10 @@ def get_results_for_experiments(path_to_experiments, verbose=True, split_string=
             #print '=> experiment_dir: ', experiment_dir
             #print '=> potential_runs: ', potential_runs
             results_best, best_filename, final_train_errors, final_cv_errors, final_test_errors = get_best_results_from_experiment(experiment_dirpath=experiment_dir,list_runs_filenames=potential_runs)
-            nb_units = results_best['dims'][1]
+            if not 'dims' in results_best:
+                nb_units = results_best['arg_dict']['dims'][1]
+            else:
+                nb_units = results_best['dims'][1]
             #(left, right) = experiment_dir.split('jHBF1_')
             #(left, right) = re.split('_jHBF[\d]*_',experiment_dir)
             print( '=====> SPLIT: ', re.split(split_string,experiment_dir))

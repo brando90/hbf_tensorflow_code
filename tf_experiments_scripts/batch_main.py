@@ -1,12 +1,13 @@
 #!/usr/bin/env python
 #SBATCH --job-name=Python
-#SBATCH --array=1-10
+#SBATCH --array=1-30
 #SBATCH --mem=14000
-#SBATCH --time=30:00
+#SBATCH --time=50:00
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=rene_sax14@yahoo.com
 
 #from __future__ import print_function
+#tensorboard --logdir=/tmp/mdl_logs
 
 import os
 
@@ -50,7 +51,7 @@ if arg.mdl == 'standard_nn':
     #arg.units = [6,6,6]
 
     arg.mu = 0.0
-    arg.std = 0.0
+    arg.std = 0.5
 
     arg.get_W_mu_init = lambda arg: len(arg.dims)*[arg.mu]
     arg.get_W_std_init = lambda arg: len(arg.dims)*[arg.std]
@@ -180,7 +181,7 @@ arg.re_train = re_train
 arg.experiment_root_dir = mtf.get_experiment_folder(task_name)
 
 #
-arg.experiment_name = 'task_August_28_BT_TEST' # experiment_name e.g. task_August_10_BT
+arg.experiment_name = 'task_August_29_BT' # experiment_name e.g. task_August_10_BT
 arg.experiment_root_dir = mtf.get_experiment_folder(task_name)
 arg.job_name = 'BT_6_Nesterov' # job name e.g BT_6_6_5_RMSProp_Test
 #
