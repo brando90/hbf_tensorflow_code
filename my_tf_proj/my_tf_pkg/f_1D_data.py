@@ -120,6 +120,8 @@ def get_data(task_name):
 
     elif task_name == 'task_f_4d_conv_2nd':
         X_train, Y_train, X_cv, Y_cv, X_test, Y_test = get_data_from_file(file_name='./f_4d_task_conv_2nd.npz')
+    elif task_name == 'task_f_4d_conv_changing':
+        X_train, Y_train, X_cv, Y_cv, X_test, Y_test = get_data_from_file(file_name='./f_4d_conv_changing.npz')
 
     elif task_name == 'task_f_4d_non_conv':
         X_train, Y_train, X_cv, Y_cv, X_test, Y_test = get_data_from_file(file_name='./f_4d_task_non_conv.npz')

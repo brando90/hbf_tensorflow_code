@@ -96,14 +96,14 @@ def get_results_for_experiments(path_to_experiments, verbose=True, split_string=
         Returns a dictionary containing the best results for each experiment
     '''
     print( '-----get_results_for_experiments')
-    #print path_to_experiments
-    #print os.path.isdir(path_to_experiments)
+    print( path_to_experiments )
+    print( os.path.isdir(path_to_experiments) )
     #print os.listdir(path_to_experiments)
     experiment_results = {} # maps units -> results_best_mdl e.g {'4':{'results_best_mdl':results_best_mdl}}
     #print os.listdir(path_to_experiments)
     #print len(os.walk(path_to_experiments).next())
     for (experiment_dir, _, potential_runs) in os.walk(path_to_experiments):
-        #print 'experiment_dir', experiment_dir
+        print('experiment_dir', experiment_dir)
         #print 'potential_runs', potential_runs
         #print 'len(experiment_dir)', len(experiment_dir)
         #print 'len(potential_runs)', len(potential_runs)
@@ -118,6 +118,7 @@ def get_results_for_experiments(path_to_experiments, verbose=True, split_string=
             nb_units = results_best['dims'][1]
             #(left, right) = experiment_dir.split('jHBF1_')
             #(left, right) = re.split('_jHBF[\d]*_',experiment_dir)
+            print( '=====> SPLIT: ', re.split(split_string,experiment_dir))
             (left, right) = re.split(split_string,experiment_dir)
             print( '=====> ', left, right)
             #pdb.set_trace()

@@ -209,17 +209,16 @@ def main_nn(arg):
         X_test = X_test.reshape(N_test,1,D,1)
         x = tf.placeholder(float_type, shape=[None,1,D,1], name='x-input')
         #
-        filter_size = 2 #fixed for Binary Tree BT
-        #nb_filters = nb_filters
-        mean, stddev = bn_tree_init_stats
+        arg.filter_size = 2 #fixed for Binary Tree BT
+        nb_filters = arg.nb_filters
+        mean, stddev = arg.mu, arg.std
         stddev = float( np.random.uniform(low=0.001, high=stddev) )
         print( 'stddev', stddev)
         x = tf.placeholder(float_type, shape=[None,1,D,1], name='x-input')
         with tf.name_scope("build_binary_model") as scope:
-            mdl = mtf.build_binary_tree(x,filter_size,nb_filters,mean,stddev,stride_convd1=2,phase_train=phase_train,trainable_bn=trainable_bn)
+            mdl = mtf.build_binary_tree(x,arg.filter_size,nb_filters,mean,stddev,stride_convd1=2,phase_train=phase_train,trainable_bn=arg.trainable_bn)
         #
-        dims = [D]+[nb_filters]+[D_out]
-        results['nb_filters'] = nb_filters
+        arg.dims = [D]+[nb_filters]+[D_out]
     elif arg.mdl == 'binary_tree_D8':
         #tensorboard_data_dump = '/tmp/hbf_logs'
         inits_S = None
@@ -397,8 +396,8 @@ def main_nn(arg):
                         test_error = sess.run(fetches=fetches_test, feed_dict=feed_dict_test)
 
                     current_learning_rate = sess.run(fetches=learning_rate)
-                    loss_msg = "=> Mdl*%s%s*-units%s, task: %s, step %d/%d, train err %g, cv err: %g test err %g"%(arg.mdl,nb_hidden_layers,arg.dims,arg.task_name,i,arg.steps,train_error,cv_error,test_error)
-                    mdl_info_msg = "Opt:%s, BN %s, BN_trainable: %s After%d/%d iteration,Init: %s, current_learning_rate %s, M %s, decay_rate %s" % (arg.optimization_alg,arg.bn,arg.trainable_bn,i,arg.steps,arg.init_type,current_learning_rate,arg.M,arg.decay_rate)
+                    loss_msg = "=> Mdl*%s*-units%s, task: %s, step %d/%d, train err %g, cv err: %g test err %g"%(arg.mdl,arg.dims,arg.task_name,i,arg.steps,train_error,cv_error,test_error)
+                    mdl_info_msg = "Opt:%s, BN %s, BN_trainable: %s After%d/%d iteration,Init: %s, current_learning_rate %s, M %s, decay_rate %s, decay_steps %s" % (arg.optimization_alg,arg.bn,arg.trainable_bn,i,arg.steps,arg.init_type,current_learning_rate,arg.M,arg.decay_rate,arg.decay_steps)
                     errors_to_beat = 'BEAT: hbf1_error: %s RBF error: %s PCA error: %s '%(hbf1_error, rbf_error,pca_error)
 
                     print_messages(loss_msg, mdl_info_msg, errors_to_beat)

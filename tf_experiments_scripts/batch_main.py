@@ -176,11 +176,10 @@ arg.data_normalize='dont_normalize'
 re_train = None
 arg.re_train = re_train
 #
-arg.experiment_name = 'tmp_experiment'
 arg.experiment_root_dir = mtf.get_experiment_folder(task_name)
 
 #
-arg.experiment_name = 'task_August_30_NN' # experiment_name e.g. task_August_10_BT
+arg.experiment_name = 'task_August_30_BT' # experiment_name e.g. task_August_10_BT
 arg.experiment_root_dir = mtf.get_experiment_folder(task_name)
 arg.job_name = 'BT_6_Nesterov' # job name e.g BT_6_6_5_RMSProp_Test
 #
