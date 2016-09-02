@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #SBATCH --job-name=Python
-#SBATCH --array=1-30
+#SBATCH --array=3-30
 #SBATCH --mem=14000
 #SBATCH --time=50:00
 #SBATCH --mail-type=ALL
@@ -32,6 +32,10 @@ task_name = 'task_f_4d_conv'
 task_name = 'task_f_8d_conv'
 task_name = 'task_f_4d_conv_2nd'
 task_name = 'task_f_4d_conv_changing'
+task_name = 'task_f_4D_conv_3rd'
+task_name = 'task_f_4D_conv_4th'
+task_name = 'task_f_4D_conv_5th'
+task_name = 'task_f_4D_conv_6th'
 #task_name = 'task_f_4d_non_conv'
 #task_name = 'task_f_8d_non_conv'
 #task_name = 'task_MNIST_flat'
@@ -113,7 +117,7 @@ arg.M_high = 5000
 arg.get_batch_size = lambda arg: int(np.random.randint(low=arg.M_low , high=arg.M_high))
 arg.report_error_freq = 50
 
-arg.low_log_const_learning_rate, arg.high_log_const_learning_rate = -0.01, -5
+arg.low_log_const_learning_rate, arg.high_log_const_learning_rate = -0.01, -6
 arg.get_log_learning_rate =  lambda arg: np.random.uniform(low=arg.low_log_const_learning_rate, high=arg.high_log_const_learning_rate)
 arg.get_start_learning_rate = lambda arg: 10**arg.log_learning_rate
 ## decayed_learning_rate = learning_rate * decay_rate ^ (global_step / decay_steps)
@@ -137,7 +141,7 @@ optimization_alg = 'GD'
 optimization_alg = 'Momentum'
 # optimization_alg = 'Adadelta'
 # optimization_alg = 'Adagrad'
-# optimization_alg = 'Adam'
+#optimization_alg = 'Adam'
 # optimization_alg = 'RMSProp'
 arg.optimization_alg = optimization_alg
 
@@ -146,7 +150,7 @@ if optimization_alg == 'GD':
 elif optimization_alg=='Momentum':
     #arg.get_use_nesterov = lambda: False
     arg.get_use_nesterov = lambda: True
-    arg.momentum_low, arg.momontum_high = 0.1, 0.99
+    arg.momentum_low, arg.momontum_high = 0.01, 0.99
     arg.get_momentum = lambda arg: np.random.uniform(low=arg.momentum_low,high=arg.momontum_high)
 elif optimization_alg == 'Adadelta':
     arg.rho_low, arg.rho_high = 0.1, 0.99

@@ -45,6 +45,7 @@ class TestStringMethods(unittest.TestCase):
         ##
         f_general = lambda x: f_bt(x,h_list=h_list,l=2,left=0,right=D)
         f_hard_coded = f_4D_BT_data.f_4D_conv_2nd
+        #f_general([1,2,3,4])
         ## compare the functions
         X_train = low_x + (high_x - low_x) * np.random.rand(N_train,D)
         Y_train_general = get_labels_ut(X_train, f_general)
@@ -60,7 +61,7 @@ class TestStringMethods(unittest.TestCase):
         ##
         f_general = lambda x: f_bt(x,h_list=h_list,l=3,left=0,right=D)
         f_hard_coded = f_8D_data.f_8D_test
-        f_general([1,2,3,4,5,6,7,8])
+        #f_general([1,2,3,4,5,6,7,8])
         ## compare the functions
         X_train = low_x + (high_x - low_x) * np.random.rand(N_train,D)
         Y_train_general = get_labels_ut(X_train, f_general)

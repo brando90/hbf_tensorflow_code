@@ -122,6 +122,14 @@ def get_data(task_name):
         X_train, Y_train, X_cv, Y_cv, X_test, Y_test = get_data_from_file(file_name='./f_4d_task_conv_2nd.npz')
     elif task_name == 'task_f_4d_conv_changing':
         X_train, Y_train, X_cv, Y_cv, X_test, Y_test = get_data_from_file(file_name='./f_4d_conv_changing.npz')
+    elif task_name == 'task_f_4D_conv_3rd':
+        X_train, Y_train, X_cv, Y_cv, X_test, Y_test = get_data_from_file(file_name='./f_4D_conv_3rd.npz')
+    elif task_name == 'task_f_4D_conv_4th':
+            X_train, Y_train, X_cv, Y_cv, X_test, Y_test = get_data_from_file(file_name='./f_4D_conv_4th.npz')
+    elif task_name == 'task_f_4D_conv_5th':
+            X_train, Y_train, X_cv, Y_cv, X_test, Y_test = get_data_from_file(file_name='./f_4D_conv_5th.npz')
+    elif task_name == 'task_f_4D_conv_6th':
+            X_train, Y_train, X_cv, Y_cv, X_test, Y_test = get_data_from_file(file_name='./f_4D_conv_6th.npz')
 
     elif task_name == 'task_f_4d_non_conv':
         X_train, Y_train, X_cv, Y_cv, X_test, Y_test = get_data_from_file(file_name='./f_4d_task_non_conv.npz')
