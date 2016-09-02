@@ -24,6 +24,24 @@ def f_8D(A):
     H31 = h31([H21, H22])
     return H31
 
+def f_8D_test(A):
+    h11 = lambda A: (1.0/20)*(1*A[0] + 2*A[1])**4
+    h12 = h11
+    h21 = lambda A: (1.0/50)*(5*A[0] + 6*A[1])**2
+
+    h13 = h11
+    h14 = h11
+    h22 = h21
+
+    h31 = lambda A: (1.1/1)*(A[0] + (1/100)*A[1] + 1)**0.5;
+
+    H11, H12 = h11(A[0:2]), h12(A[2:4])
+    H21 = h21([H11, H12])
+    H13, H14 = h13(A[4:6]), h14(A[6:8])
+    H22 = h22([H13, H14])
+    H31 = h31([H21, H22])
+    return H31
+
 def get_labels_8D(X,f):
     N = X.shape[0] # N x D = N x 4
     Y = np.zeros( (N,1) )
