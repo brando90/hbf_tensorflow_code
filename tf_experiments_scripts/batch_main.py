@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #SBATCH --job-name=Python
-#SBATCH --array=3-30
+#SBATCH --array=1-30
 #SBATCH --mem=14000
 #SBATCH --time=50:00
 #SBATCH --mail-type=ALL
@@ -108,12 +108,12 @@ else:
     raise ValueError('Need to use a valid model, incorrect or unknown model %s give.'%arg.mdl)
 
 #steps
-arg.steps_low = 100000
-arg.steps_high = 100001
+arg.steps_low = 200000
+arg.steps_high = 200001
 arg.get_steps = lambda arg: int( np.random.randint(low=arg.steps_low ,high=arg.steps_high) )
 
 arg.M_low = 500
-arg.M_high = 5000
+arg.M_high = 12000
 arg.get_batch_size = lambda arg: int(np.random.randint(low=arg.M_low , high=arg.M_high))
 arg.report_error_freq = 50
 
