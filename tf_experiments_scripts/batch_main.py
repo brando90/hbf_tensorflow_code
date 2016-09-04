@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #SBATCH --job-name=Python
-#SBATCH --array=1-30
+#SBATCH --array=1-1000
 #SBATCH --mem=14000
 #SBATCH --time=50:00
 #SBATCH --mail-type=ALL
@@ -44,7 +44,8 @@ arg.task_name = task_name
 
 #arg.mdl = 'standard_nn'
 #arg.mdl = 'hbf'
-arg.mdl = 'binary_tree_4D_conv'
+#arg.mdl = 'binary_tree_4D_conv'
+arg.mdl = 'binary_tree_8D_conv'
 if arg.mdl == 'standard_nn':
     arg.init_type = 'truncated_normal'
     arg.init_type = 'data_xavier_kern'

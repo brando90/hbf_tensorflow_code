@@ -8,10 +8,12 @@ import my_tf_pkg as mtf
 
 import pdb
 
-X_train, Y_train, X_cv, Y_cv, X_test, Y_test = mtf.make_data_set_8D()
+f = mtf.f_8D_conv_test
+file_name = 'f_8D_conv_test.npz'
+X_train, Y_train, X_cv, Y_cv, X_test, Y_test = mtf.make_data_set_8D(f, file_name)
 
-print 'max: ', np.max(Y_train)
-print 'min: ', np.min(Y_train)
+print('max: ', np.max(Y_train))
+print('min: ', np.min(Y_train))
 
-print 'mean: ',np.mean(Y_train)
-print 'std: ',np.std(Y_train)
+print('mean: ',np.mean(Y_train))
+print('std: ',np.std(Y_train))

@@ -30,12 +30,14 @@ task_name = 'task_f2d_2x2_1_cosx1x2_depth2'
 task_name = 'task_f2d_2x2_1_cosx1_plus_x2_depth2'
 task_name = 'task_f_4d_conv'
 task_name = 'task_f_8d_conv'
-task_name = 'task_f_4d_conv_2nd'
-task_name = 'task_f_4d_conv_changing'
-task_name = 'task_f_4D_conv_3rd'
-task_name = 'task_f_4D_conv_4th'
-task_name = 'task_f_4D_conv_5th'
-task_name = 'task_f_4D_conv_6th'
+task_name = 'task_f_8d_conv'
+task_name = 'task_f_8D_conv_test'
+# task_name = 'task_f_4d_conv_2nd'
+# task_name = 'task_f_4d_conv_changing'
+# task_name = 'task_f_4D_conv_3rd'
+# task_name = 'task_f_4D_conv_4th'
+# task_name = 'task_f_4D_conv_5th'
+# task_name = 'task_f_4D_conv_6th'
 #task_name = 'task_f_4d_non_conv'
 #task_name = 'task_f_8d_non_conv'
 #task_name = 'task_MNIST_flat'
@@ -46,12 +48,13 @@ print('====> TASK_NAME', task_name)
 
 arg.mdl = 'standard_nn'
 #arg.mdl = 'hbf'
-arg.mdl = 'binary_tree_4D_conv'
+#arg.mdl = 'binary_tree_4D_conv'
+arg.mdl = 'binary_tree_8D_conv'
 if arg.mdl == 'standard_nn':
     arg.init_type = 'truncated_normal'
     arg.init_type = 'xavier'
 
-    arg.units = [15]
+    arg.units = [45]
     #arg.units = [6,6]
     #arg.units = [6,6,6]
 
@@ -95,16 +98,14 @@ elif arg.mdl == 'binary_tree_4D_conv':
     arg.mu = 0.0
     arg.std = 1.0
 elif arg.mdl == 'binary_tree_8D_conv':
-    # 8D
-    #nb_filters=[9,18]
-    #bn_tree_init_stats=[0.0,0.1,0.0,0.1,0.0,0.1]
-    nb_filters = [9, 18]
-    mu = 0.0
-    std = 1.0
-
-    arg.mu = mu
-    arg.std = std
-    arg.nb_filters = nb_filters
+    arg.init_type = 'manual_truncated_normal'
+    arg.mu = [0.0,0.0,0.0]
+    arg.std = [1.0,1.0,1.0]
+    arg.get_W_mu_init = lambda arg: arg.mu
+    arg.get_W_std_init = lambda arg: arg.std
+    arg.nb_filters = [6, 12]
+    #arg.nb_filters = [9, 18]
+    #arg.nb_filters = [9, 18]
 else:
     raise ValueError('Need to use a valid model, incorrect or unknown model %s give.'%arg.mdl)
 
