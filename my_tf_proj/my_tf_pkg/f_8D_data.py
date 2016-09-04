@@ -24,13 +24,13 @@ def f_8D(A):
     H31 = h31([H21, H22])
     return H31
 
-def f_8D_test(A):
+def f_8D_conv_test(A):
     h11 = lambda A: (1.0/20)*(1*A[0] + 2*A[1])**4
     h12 = h11
-    h21 = lambda A: (1.0/50)*(5*A[0] + 6*A[1])**2
-
     h13 = h11
     h14 = h11
+
+    h21 = lambda A: (1.0/50)*(5*A[0] + 6*A[1])**2
     h22 = h21
 
     h31 = lambda A: (1.1/1)*(A[0] + (1/100)*A[1] + 1)**0.5;
@@ -42,6 +42,8 @@ def f_8D_test(A):
     H31 = h31([H21, H22])
     return H31
 
+##
+
 def get_labels_8D(X,f):
     N = X.shape[0] # N x D = N x 4
     Y = np.zeros( (N,1) )
@@ -49,9 +51,8 @@ def get_labels_8D(X,f):
         Y[i] = f(X[i])
     return Y
 
-def generate_data_8D(N_train=60000, N_cv=60000, N_test=60000, low_x=-1, high_x=1):
+def generate_data_8D(f, N_train=60000, N_cv=60000, N_test=60000, low_x=-1, high_x=1):
     D = 8
-    f = f_8D
     # train
     X_train = low_x + (high_x - low_x) * np.random.rand(N_train,D)
     Y_train = get_labels_8D(X_train, f)
@@ -63,8 +64,7 @@ def generate_data_8D(N_train=60000, N_cv=60000, N_test=60000, low_x=-1, high_x=1
     Y_test = get_labels_8D(X_test, f)
     return (X_train, Y_train, X_cv, Y_cv, X_test, Y_test)
 
-def make_data_set_8D():
-    X_train, Y_train, X_cv, Y_cv, X_test, Y_test = generate_data_8D()
-    file_name = 'f_8d_task.npz'
+def make_data_set_8D(f, file_name):
+    X_train, Y_train, X_cv, Y_cv, X_test, Y_test = generate_data_8D(f)
     np.savez(file_name, X_train=X_train,Y_train=Y_train, X_cv=X_cv,Y_cv=Y_cv, X_test=X_test,Y_test=Y_test)
     return X_train, Y_train, X_cv, Y_cv, X_test, Y_test

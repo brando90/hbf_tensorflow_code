@@ -221,7 +221,8 @@ def main_nn(arg):
             mdl = mtf.build_binary_tree(x,arg.filter_size,nb_filters,mean,stddev,stride_convd1=2,phase_train=phase_train,trainable_bn=arg.trainable_bn)
         #
         arg.dims = [D]+[nb_filters]+[D_out]
-    elif arg.mdl == 'binary_tree_D8':
+    elif arg.mdl == 'binary_tree_8D_conv':
+        print( 'binary_tree_8D_conv')
         #tensorboard_data_dump = '/tmp/hbf_logs'
         inits_S = None
         pca_error = None
@@ -232,22 +233,19 @@ def main_nn(arg):
         N_test = X_test.shape[0]
         #
         X_train = X_train.reshape(N_train,1,D,1)
-        #Y_train = Y_train.reshape(N_train,1,D,1)
         X_cv = X_cv.reshape(N_cv,1,D,1)
-        #Y_cv = Y_cv.reshape(N_cv,1,D,1)
         X_test = X_test.reshape(N_test,1,D,1)
-        #Y_test = Y_test.reshape(N_test,1,D,1)
         x = tf.placeholder(float_type, shape=[None,1,D,1], name='x-input')
         #
         filter_size = 2 #fixed for Binary Tree BT
-        nb_filters1,nb_filters2 = nb_filters
-        mean1,stddev1,mean2,stddev2,mean3,stddev3 = bn_tree_init_stats
+        nb_filters1,nb_filters2 = arg.nb_filters
+        mean1,mean2,mean3 = arg.get_W_mu_init(arg)
+        stddev1,stddev2,stddev3 = arg.get_W_std_init(arg)
         x = tf.placeholder(float_type, shape=[None,1,D,1], name='x-input')
         with tf.name_scope("binary_tree_D8") as scope:
             mdl = mtf.build_binary_tree_8D(x,nb_filters1,nb_filters2,mean1,stddev1,mean2,stddev2,mean3,stddev3,stride_conv1=2)
         #
-        dims = [D]+nb_filters+[D_out]
-        results['nb_filters'] = nb_filters
+        arg.dims = [D]+arg.nb_filters+[D_out]
 
     ## Output and Loss
     y = mdl

@@ -62,7 +62,6 @@ def f_4D_conv_6th(A):
     f = h21( [left,right] )
     return f
 
-
 ##
 
 def f_4D_conv_changing(A):
