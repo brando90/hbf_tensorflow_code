@@ -2,7 +2,7 @@
 #SBATCH --job-name=Python
 #SBATCH --array=3-10
 #SBATCH --mem=14000
-#SBATCH --time=30:00
+#SBATCH --time=5-20:20
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=rene_sax14@yahoo.com
 
@@ -108,9 +108,11 @@ elif arg.mdl == 'binary_tree_4D_conv_hidden_layer':
     arg.nb_filters = 6 #F1
     arg.nb_final_hidden = 2*arg.nb_filters # F2
     arg.mu = [0.0,0.0,0.0]
-    arg.std = [0.5,0.5,3.0]
+    arg.std = [0.5,0.5,0.5]
     arg.get_W_mu_init = lambda arg: arg.mu
     arg.get_W_std_init = lambda arg: arg.std
+    #arg.std_low, arg.std_high = 0.001, 0.1
+    #arg.get_W_std_init = lambda arg: float( np.random.uniform(low=arg.std_low, high=arg.std_high, size=3) )
 elif arg.mdl == 'binary_tree_8D_conv':
     arg.init_type = 'manual_truncated_normal'
     arg.mu = [0.0,0.0,0.0]
@@ -127,12 +129,12 @@ else:
 #arg.steps_low = 100
 #arg.steps_high = 101
 #arg.get_steps = lambda arg: int( np.random.randint(low=arg.steps_low ,high=arg.steps_high) )
-arg.get_steps = lambda arg: int( 10000 )
+arg.get_steps = lambda arg: int( 60000 )
 
 #arg.M_low = 51
 #arg.M_high = 52
 #arg.get_batch_size = lambda arg: int(np.random.randint(low=arg.M_low , high=arg.M_high))
-arg.get_batch_size = lambda arg: 12000 #M
+arg.get_batch_size = lambda arg: 2000 #M
 arg.report_error_freq = 50
 
 #arg.low_log_const_learning_rate, arg.high_log_const_learning_rate = -0.01, -6
@@ -200,8 +202,8 @@ else:
     pass
 
 
-arg.bn = True
-arg.trainable_bn = True #scale, shift BN
+#arg.bn = True
+#arg.trainable_bn = True #scale, shift BN
 arg.bn = False
 arg.trainable_bn = False #scale, shift BN
 

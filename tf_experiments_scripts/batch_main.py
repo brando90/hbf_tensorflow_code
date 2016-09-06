@@ -2,7 +2,7 @@
 #SBATCH --job-name=Python
 #SBATCH --array=1-1000
 #SBATCH --mem=14000
-#SBATCH --time=1-20:20
+#SBATCH --time=5-20:20
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=rene_sax14@yahoo.com
 
@@ -29,10 +29,11 @@ task_name = 'task_f_2d_task2_xsinglog1_x_depth3'
 task_name = 'task_f2d_2x2_1_cosx1x2_depth2'
 task_name = 'task_f2d_2x2_1_cosx1_plus_x2_depth2'
 task_name = 'task_f_4d_conv'
-task_name = 'task_f_8d_conv'
-task_name = 'task_f_8d_conv'
-task_name = 'task_f_8D_conv_test'
-# task_name = 'task_f_4d_conv_2nd'
+#task_name = 'task_f_4D_conv_1st'
+# task_name = 'task_f_8d_conv'
+# task_name = 'task_f_8d_conv'
+# task_name = 'task_f_8D_conv_test'
+task_name = 'task_f_4d_conv_2nd'
 # task_name = 'task_f_4d_conv_changing'
 # task_name = 'task_f_4D_conv_3rd'
 # task_name = 'task_f_4D_conv_4th'
@@ -44,10 +45,11 @@ task_name = 'task_f_8D_conv_test'
 #task_name = 'task_MNIST_flat_auto_encoder'
 arg.task_name = task_name
 
-#arg.mdl = 'standard_nn'
+arg.mdl = 'standard_nn'
 #arg.mdl = 'hbf'
 #arg.mdl = 'binary_tree_4D_conv'
-arg.mdl = 'binary_tree_8D_conv'
+arg.mdl = 'binary_tree_4D_conv_hidden_layer'
+#arg.mdl = 'binary_tree_8D_conv'
 if arg.mdl == 'standard_nn':
     arg.init_type = 'truncated_normal'
     arg.init_type = 'data_xavier_kern'
@@ -100,6 +102,16 @@ elif arg.mdl == 'binary_tree_4D_conv':
     #arg.nb_filters = 18
     arg.mu = 0.0
     arg.std = 1.0
+elif arg.mdl == 'binary_tree_4D_conv_hidden_layer':
+    arg.init_type = 'manual_truncated_normal'
+    arg.nb_filters = 6 #F1
+    arg.nb_final_hidden = 2*arg.nb_filters # F2
+    arg.mu = [0.0,0.0,0.0]
+    arg.std = [0.5,0.5,0.5]
+    arg.get_W_mu_init = lambda arg: arg.mu
+    arg.get_W_std_init = lambda arg: arg.std
+    #arg.std_low, arg.std_high = 0.001, 0.1
+    #arg.get_W_std_init = lambda arg: float( np.random.uniform(low=arg.std_low, high=arg.std_high, size=3) )
 elif arg.mdl == 'binary_tree_8D_conv':
     arg.init_type = 'manual_truncated_normal'
     arg.mu = [0.0,0.0,0.0]
@@ -113,8 +125,8 @@ else:
     raise ValueError('Need to use a valid model, incorrect or unknown model %s give.'%arg.mdl)
 
 #steps
-arg.steps_low = 20000
-arg.steps_high = 20001
+arg.steps_low = 70000
+arg.steps_high = 70001
 arg.get_steps = lambda arg: int( np.random.randint(low=arg.steps_low ,high=arg.steps_high) )
 
 arg.M_low = 500
@@ -147,7 +159,7 @@ optimization_alg = 'Momentum'
 # optimization_alg = 'Adadelta'
 # optimization_alg = 'Adagrad'
 #optimization_alg = 'Adam'
-# optimization_alg = 'RMSProp'
+optimization_alg = 'RMSProp'
 arg.optimization_alg = optimization_alg
 
 if optimization_alg == 'GD':
