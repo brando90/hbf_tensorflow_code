@@ -29,11 +29,11 @@ task_name = 'task_f_2d_task2_xsinglog1_x_depth3'
 task_name = 'task_f2d_2x2_1_cosx1x2_depth2'
 task_name = 'task_f2d_2x2_1_cosx1_plus_x2_depth2'
 task_name = 'task_f_4d_conv'
-task_name = 'task_f_4D_conv_1st'
+#task_name = 'task_f_4D_conv_1st'
 # task_name = 'task_f_8d_conv'
 # task_name = 'task_f_8d_conv'
 # task_name = 'task_f_8D_conv_test'
-# task_name = 'task_f_4d_conv_2nd'
+task_name = 'task_f_4d_conv_2nd'
 # task_name = 'task_f_4d_conv_changing'
 # task_name = 'task_f_4D_conv_3rd'
 # task_name = 'task_f_4D_conv_4th'
@@ -62,11 +62,13 @@ if arg.mdl == 'standard_nn':
     #arg.units = [6,6]
     #arg.units = [6,6,6]
 
-    arg.mu = 0.0
-    arg.std = 0.01
+    #arg.mu = 0.0
+    #arg.std = 0.01
 
-    arg.get_W_mu_init = lambda arg: len(arg.dims)*[arg.mu]
-    arg.get_W_std_init = lambda arg: len(arg.dims)*[arg.std]
+    arg.get_W_mu_init = lambda arg: [None, None, 0]
+    arg.get_W_std_init = lambda arg: [None, None, 0.1]
+    #arg.get_W_mu_init = lambda arg: len(arg.dims)*[arg.mu]
+    #arg.get_W_std_init = lambda arg: len(arg.dims)*[arg.std]
 
     arg.b = 0.1
     arg.get_b_init = lambda arg: len(arg.dims)*[arg.b]
@@ -105,8 +107,10 @@ elif arg.mdl == 'binary_tree_4D_conv_hidden_layer':
     arg.init_type = 'manual_truncated_normal'
     arg.nb_filters = 6 #F1
     arg.nb_final_hidden = 2*arg.nb_filters # F2
-    arg.mu = 0.0
-    arg.std = 1.0
+    arg.mu = [0.0,0.0,0.0]
+    arg.std = [0.5,0.5,3.0]
+    arg.get_W_mu_init = lambda arg: arg.mu
+    arg.get_W_std_init = lambda arg: arg.std
 elif arg.mdl == 'binary_tree_8D_conv':
     arg.init_type = 'manual_truncated_normal'
     arg.mu = [0.0,0.0,0.0]
@@ -128,7 +132,7 @@ arg.get_steps = lambda arg: int( 10000 )
 #arg.M_low = 51
 #arg.M_high = 52
 #arg.get_batch_size = lambda arg: int(np.random.randint(low=arg.M_low , high=arg.M_high))
-arg.get_batch_size = lambda arg: 2000 #M
+arg.get_batch_size = lambda arg: 12000 #M
 arg.report_error_freq = 50
 
 #arg.low_log_const_learning_rate, arg.high_log_const_learning_rate = -0.01, -6
@@ -148,7 +152,7 @@ arg.get_decay_rate = lambda arg: 0.9
 #     arg.decay_steps_low, arg.decay_steps_high = arg.report_error_freq, arg.M
 #     decay_steos = np.random.randint(low=arg.decay_steps_low, high=arg.decay_steps_high)
 #     return decay_steos
-get_decay_steps = lambda arg: 4000
+get_decay_steps = lambda arg: 2500
 arg.get_decay_steps = get_decay_steps # when stair case, how often to shrink
 
 # If the argument staircase is True, then global_step / decay_steps is an integer division and the decayed earning rate follows a staircase function.
@@ -191,15 +195,15 @@ elif optimization_alg == 'RMSProp':
     arg.get_decay = lambda arg: 0.9
     #arg.momentum_low, arg.momontum_high = 0.0, 0.99
     #arg.get_momentum = lambda arg: np.random.uniform(low=arg.momentum_low,high=arg.momontum_high)
-    arg.get_momentum = lambda arg: 0.0
+    arg.get_momentum = lambda arg: 0.9
 else:
     pass
 
 
 arg.bn = True
 arg.trainable_bn = True #scale, shift BN
-#arg.bn = False
-#arg.trainable_bn = False #scale, shift BN
+arg.bn = False
+arg.trainable_bn = False #scale, shift BN
 
 # NORMALIZE UNIT CIRCLE
 arg.data_normalize='normalize_input'

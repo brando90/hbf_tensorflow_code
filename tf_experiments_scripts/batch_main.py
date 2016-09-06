@@ -53,15 +53,19 @@ if arg.mdl == 'standard_nn':
     arg.init_type = 'data_xavier_kern'
     arg.init_type = 'xavier'
 
-    arg.units = [5]
+    arg.units = [11]
+    #arg.units = [22]
+    #arg.units = [45]
     #arg.units = [6,6]
     #arg.units = [6,6,6]
 
-    arg.mu = 0.0
-    arg.std = 0.5
+    #arg.mu = 0.0
+    #arg.std = 0.5
 
-    arg.get_W_mu_init = lambda arg: len(arg.dims)*[arg.mu]
-    arg.get_W_std_init = lambda arg: len(arg.dims)*[arg.std]
+    arg.get_W_mu_init = lambda arg: [None, None, 0]
+    arg.get_W_std_init = lambda arg: [None, None, 0.1]
+    #arg.get_W_mu_init = lambda arg: len(arg.dims)*[arg.mu]
+    #arg.get_W_std_init = lambda arg: len(arg.dims)*[arg.std]
 
     arg.b = 0.1
     arg.get_b_init = lambda arg: len(arg.dims)*[arg.b]
@@ -109,8 +113,8 @@ else:
     raise ValueError('Need to use a valid model, incorrect or unknown model %s give.'%arg.mdl)
 
 #steps
-arg.steps_low = 200000
-arg.steps_high = 200001
+arg.steps_low = 20000
+arg.steps_high = 20001
 arg.get_steps = lambda arg: int( np.random.randint(low=arg.steps_low ,high=arg.steps_high) )
 
 arg.M_low = 500
