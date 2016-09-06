@@ -50,7 +50,7 @@ print('====> TASK_NAME', task_name)
 arg.mdl = 'standard_nn'
 #arg.mdl = 'hbf'
 #arg.mdl = 'binary_tree_4D_conv'
-arg.mdl = 'binary_tree_4D_conv_hidden_layer'
+#arg.mdl = 'binary_tree_4D_conv_hidden_layer'
 #arg.mdl = 'binary_tree_8D_conv'
 if arg.mdl == 'standard_nn':
     arg.init_type = 'truncated_normal'
@@ -66,7 +66,7 @@ if arg.mdl == 'standard_nn':
     #arg.std = 0.01
 
     arg.get_W_mu_init = lambda arg: [None, None, 0]
-    arg.get_W_std_init = lambda arg: [None, None, 0.1]
+    arg.get_W_std_init = lambda arg: [None, None, 0.5]
     #arg.get_W_mu_init = lambda arg: len(arg.dims)*[arg.mu]
     #arg.get_W_std_init = lambda arg: len(arg.dims)*[arg.std]
 
@@ -109,8 +109,8 @@ elif arg.mdl == 'binary_tree_4D_conv_hidden_layer':
     arg.nb_final_hidden = 2*arg.nb_filters # F2
     arg.mu = [0.0,0.0,0.0]
     arg.std = [0.5,0.5,0.5]
-    arg.get_W_mu_init = lambda arg: arg.mu
-    arg.get_W_std_init = lambda arg: arg.std
+    #arg.get_W_mu_init = lambda arg: arg.mu
+    #arg.get_W_std_init = lambda arg: arg.std
     #arg.std_low, arg.std_high = 0.001, 0.1
     #arg.get_W_std_init = lambda arg: float( np.random.uniform(low=arg.std_low, high=arg.std_high, size=3) )
 elif arg.mdl == 'binary_tree_8D_conv':
@@ -129,7 +129,7 @@ else:
 #arg.steps_low = 100
 #arg.steps_high = 101
 #arg.get_steps = lambda arg: int( np.random.randint(low=arg.steps_low ,high=arg.steps_high) )
-arg.get_steps = lambda arg: int( 60000 )
+arg.get_steps = lambda arg: int( 10000 )
 
 #arg.M_low = 51
 #arg.M_high = 52

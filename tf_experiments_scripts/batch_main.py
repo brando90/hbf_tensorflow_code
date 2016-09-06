@@ -184,6 +184,7 @@ elif optimization_alg == 'Adam':
     #arg.beta2_low, arg.beta2_high = beta2_low=0.8, beta2_high=0.999 # v = b2 v + (1 - b2)v
 elif optimization_alg == 'RMSProp':
     arg.decay_loc, arg.decay_high = 0.75, 0.99
+    arg.get_decay = lambda arg: np.random.uniform(low=arg.decay_loc,high=arg.decay_high)
     arg.momentum_low, arg.momontum_high = 0.0, 0.99
     arg.get_momentum = lambda arg: np.random.uniform(low=arg.momentum_low,high=arg.momontum_high)
 else:
