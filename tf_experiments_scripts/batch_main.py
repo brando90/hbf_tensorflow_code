@@ -2,7 +2,7 @@
 #SBATCH --job-name=Python
 #SBATCH --array=1-1000
 #SBATCH --mem=14000
-#SBATCH --time=50:00
+#SBATCH --time=1-20:20
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=rene_sax14@yahoo.com
 
@@ -102,7 +102,7 @@ elif arg.mdl == 'binary_tree_8D_conv':
     arg.std = [1.0,1.0,1.0]
     arg.get_W_mu_init = lambda arg: arg.mu
     arg.get_W_std_init = lambda arg: arg.std
-    arg.nb_filters = [6, 12]
+    #arg.nb_filters = [6, 12]
     #arg.nb_filters = [9, 18]
     #arg.nb_filters = [9, 18]
 else:

@@ -8,8 +8,8 @@ import my_tf_pkg as mtf
 
 import pdb
 
-f = mtf.f_4D_conv_6th
-file_name = 'f_4D_conv_6th.npz'
+f = mtf.f_4D_conv_1st
+file_name = 'f_4D_conv_1st.npz'
 X_train, Y_train, X_cv, Y_cv, X_test, Y_test = mtf.make_data_set_4D(f, file_name)
 
 print('max: ', np.max(Y_train))

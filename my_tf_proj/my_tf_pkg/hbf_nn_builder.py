@@ -187,7 +187,40 @@ def get_NN_layer(l, x, dims, init, phase_train=None, scope="NNLayer", trainable_
         #put_summaries(beta,prefix_name=act_stats+'beta'+l,suffix_text='beta'+l)
     return A
 
-##
+## 4D BT
+
+def build_binary_tree_4D_hidden_layer(x,nb_final_hidden,filter_size,nb_filters,mean,stddev,stride_convd1=2,phase_train=None,trainable_bn=True):
+
+    ## hidden conv layer
+    l = 'Conv_Layer'
+    flat_conv = get_binary_branch(l,x,filter_size,nb_filters,mean=mean,stddev=stddev,stride_convd1=stride_convd1) # N x D_conv_flat = N x (filter_size*nb_filters)
+    print('flat_conv: ', flat_conv)
+    if phase_train is not None:
+        l = 'BN1'
+        flat_conv = add_batch_norm_layer(l, flat_conv, phase_train, trainable_bn=trainable_bn)
+
+    ## hidden layer
+    init_W = tf.truncated_normal(shape=[filter_size*nb_filters,nb_final_hidden], mean=mean, stddev=stddev, dtype=tf.float32, seed=None, name=None)
+    print( '-->-->-->-->-->-->-->-->-->-->-->W: ', init_W)
+    l = 'hidden_layer'
+    b = tf.Variable(tf.constant(0.1, shape=[nb_final_hidden]))
+    W = tf.get_variable(name='W'+l, dtype=tf.float32, initializer=init_W, regularizer=None, trainable=True)
+    hidden_layer = tf.matmul(flat_conv,W) + b
+    if phase_train is not None:
+        l = 'BN2'
+        hidden_layer = add_batch_norm_layer(l, hidden_layer, phase_train, trainable_bn=trainable_bn)
+    A_hidden_layer = tf.nn.relu(hidden_layer)
+
+    # fully connected layer
+    mean = 0.0
+    stddev = 1.0
+    print( '+++> std mu for inits_C: ',[mean,stddev] )
+    init_C = tf.truncated_normal(shape=[nb_final_hidden,1], mean=mean, stddev=stddev, dtype=tf.float32, seed=None, name=None)
+    print( '-->-->-->-->-->-->-->-->-->-->-->init_C: ', init_C)
+    l = 'Out_Layer'
+    C = tf.get_variable(name='W'+l, dtype=tf.float32, initializer=init_C, regularizer=None, trainable=True)
+    mdl = tf.matmul(A_hidden_layer,C)
+    return mdl
 
 def build_binary_tree(x,filter_size,nb_filters,mean,stddev,stride_convd1=2,phase_train=None,trainable_bn=True):
     ## conv layer
@@ -223,6 +256,8 @@ def get_binary_branch(l,x,filter_size,nb_filters,mean,stddev,name=None, stride_c
     flat_conv = tf.reshape(conv, [-1,filter_size*nb_filters])
     A = tf.nn.relu( flat_conv )
     return A
+
+
 
 ##
 
@@ -321,6 +356,7 @@ def get_W(init_W, l, dims, dtype=tf.float64):
 
 def add_batch_norm_layer(l, x, phase_train, n_out=1, scope='BN', trainable_bn=True):
     print( 'add_batch_norm_layer')
+    #phase_train = True
     #bn_layer = standard_batch_norm(l, x, n_out, phase_train, scope='BN')
     #bn_layer = batch_norm_layer(x,phase_train,scope_bn=scope+l)
     bn_layer = batch_norm_layer(x,phase_train,scope_bn=scope+l,trainable=trainable_bn)

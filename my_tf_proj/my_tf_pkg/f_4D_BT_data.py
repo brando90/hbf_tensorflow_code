@@ -22,6 +22,14 @@ def f_4D_conv(A):
     f = h21( [left,right] )
     return f
 
+def f_4D_conv_1st(A):
+    h11 = lambda A: (5.0*A[0] + 9.0*A[1])**2.0
+    h12 = h11
+    h21 = lambda A: (0.9*A[0] + 0.7*A[1])**0.5
+    left, right = h11(A[0:2]), h12(A[2:4])
+    f = h21( [left,right] )
+    return f
+
 def f_4D_conv_2nd(A):
     h11 = lambda A: (2.0*A[0] + 3.0*A[1])**4.0
     h12 = h11

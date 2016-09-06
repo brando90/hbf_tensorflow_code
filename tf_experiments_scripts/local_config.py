@@ -29,9 +29,10 @@ task_name = 'task_f_2d_task2_xsinglog1_x_depth3'
 task_name = 'task_f2d_2x2_1_cosx1x2_depth2'
 task_name = 'task_f2d_2x2_1_cosx1_plus_x2_depth2'
 task_name = 'task_f_4d_conv'
-task_name = 'task_f_8d_conv'
-task_name = 'task_f_8d_conv'
-task_name = 'task_f_8D_conv_test'
+task_name = 'task_f_4D_conv_1st'
+# task_name = 'task_f_8d_conv'
+# task_name = 'task_f_8d_conv'
+# task_name = 'task_f_8D_conv_test'
 # task_name = 'task_f_4d_conv_2nd'
 # task_name = 'task_f_4d_conv_changing'
 # task_name = 'task_f_4D_conv_3rd'
@@ -49,17 +50,20 @@ print('====> TASK_NAME', task_name)
 arg.mdl = 'standard_nn'
 #arg.mdl = 'hbf'
 #arg.mdl = 'binary_tree_4D_conv'
-arg.mdl = 'binary_tree_8D_conv'
+arg.mdl = 'binary_tree_4D_conv_hidden_layer'
+#arg.mdl = 'binary_tree_8D_conv'
 if arg.mdl == 'standard_nn':
     arg.init_type = 'truncated_normal'
     arg.init_type = 'xavier'
 
-    arg.units = [45]
+    arg.units = [11]
+    #arg.units = [22]
+    #arg.units = [45]
     #arg.units = [6,6]
     #arg.units = [6,6,6]
 
     arg.mu = 0.0
-    arg.std = 0.5
+    arg.std = 0.01
 
     arg.get_W_mu_init = lambda arg: len(arg.dims)*[arg.mu]
     arg.get_W_std_init = lambda arg: len(arg.dims)*[arg.std]
@@ -97,14 +101,20 @@ elif arg.mdl == 'binary_tree_4D_conv':
     #arg.nb_filters = 18
     arg.mu = 0.0
     arg.std = 1.0
+elif arg.mdl == 'binary_tree_4D_conv_hidden_layer':
+    arg.init_type = 'manual_truncated_normal'
+    arg.nb_filters = 6 #F1
+    arg.nb_final_hidden = 2*arg.nb_filters # F2
+    arg.mu = 0.0
+    arg.std = 1.0
 elif arg.mdl == 'binary_tree_8D_conv':
     arg.init_type = 'manual_truncated_normal'
     arg.mu = [0.0,0.0,0.0]
     arg.std = [1.0,1.0,1.0]
     arg.get_W_mu_init = lambda arg: arg.mu
     arg.get_W_std_init = lambda arg: arg.std
+    arg.nb_filters = [3, 6]
     arg.nb_filters = [6, 12]
-    #arg.nb_filters = [9, 18]
     #arg.nb_filters = [9, 18]
 else:
     raise ValueError('Need to use a valid model, incorrect or unknown model %s give.'%arg.mdl)
@@ -113,7 +123,7 @@ else:
 #arg.steps_low = 100
 #arg.steps_high = 101
 #arg.get_steps = lambda arg: int( np.random.randint(low=arg.steps_low ,high=arg.steps_high) )
-arg.get_steps = lambda arg: int( 11000 )
+arg.get_steps = lambda arg: int( 10000 )
 
 #arg.M_low = 51
 #arg.M_high = 52
@@ -150,7 +160,7 @@ optimization_alg = 'Momentum'
 #optimization_alg = 'Adadelta'
 #optimization_alg = 'Adagrad'
 #optimization_alg = 'Adam'
-#optimization_alg = 'RMSProp'
+optimization_alg = 'RMSProp'
 arg.optimization_alg = optimization_alg
 
 if optimization_alg == 'GD':
@@ -160,11 +170,11 @@ elif optimization_alg=='Momentum':
     arg.get_use_nesterov = lambda: True
     #arg.momentum_low, arg.momontum_high = 0.1, 0.99
     #arg.get_momentum = lambda arg: np.random.uniform(low=arg.momentum_low,high=arg.momontum_high)
-    arg.get_momentum = lambda arg: 0.2
+    arg.get_momentum = lambda arg: 0.9
 elif optimization_alg == 'Adadelta':
     #arg.rho_low, arg.rho_high = 0.1, 0.99
     #arg.get_rho = lambda arg: np.random.uniform(low=arg.rho_low,high=arg.rho_high)
-    arg.get_rho = lambda arg: 0.2
+    arg.get_rho = lambda arg: 0.8
 elif optimization_alg == 'Adagrad':
     #only has learning rate
     pass
@@ -181,13 +191,15 @@ elif optimization_alg == 'RMSProp':
     arg.get_decay = lambda arg: 0.9
     #arg.momentum_low, arg.momontum_high = 0.0, 0.99
     #arg.get_momentum = lambda arg: np.random.uniform(low=arg.momentum_low,high=arg.momontum_high)
-    arg.get_momentum = lambda arg: 0.5
+    arg.get_momentum = lambda arg: 0.0
 else:
     pass
 
 
-arg.bn = False
-arg.trainable_bn = False #scale, shift BN
+arg.bn = True
+arg.trainable_bn = True #scale, shift BN
+#arg.bn = False
+#arg.trainable_bn = False #scale, shift BN
 
 # NORMALIZE UNIT CIRCLE
 arg.data_normalize='normalize_input'

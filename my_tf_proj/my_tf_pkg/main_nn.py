@@ -221,6 +221,32 @@ def main_nn(arg):
             mdl = mtf.build_binary_tree(x,arg.filter_size,nb_filters,mean,stddev,stride_convd1=2,phase_train=phase_train,trainable_bn=arg.trainable_bn)
         #
         arg.dims = [D]+[nb_filters]+[D_out]
+    elif arg.mdl == 'binary_tree_4D_conv_hidden_layer':
+        print( 'binary_tree_4D')
+        #tensorboard_data_dump = '/tmp/hbf_logs'
+        inits_S = None
+        pca_error = None
+        rbf_error = None
+        float_type = tf.float32
+        # things that need reshaping
+        N_cv = X_cv.shape[0]
+        N_test = X_test.shape[0]
+        #
+        X_train = X_train.reshape(N_train,1,D,1)
+        X_cv = X_cv.reshape(N_cv,1,D,1)
+        X_test = X_test.reshape(N_test,1,D,1)
+        x = tf.placeholder(float_type, shape=[None,1,D,1], name='x-input')
+        #
+        arg.filter_size = 2 #fixed for Binary Tree BT
+        nb_filters = arg.nb_filters
+        mean, stddev = arg.mu, arg.std
+        stddev = float( np.random.uniform(low=0.001, high=stddev) )
+        print( 'stddev', stddev)
+        x = tf.placeholder(float_type, shape=[None,1,D,1], name='x-input')
+        with tf.name_scope("build_binary_model") as scope:
+            mdl = mtf.build_binary_tree_4D_hidden_layer(x,arg.nb_final_hidden,arg.filter_size,nb_filters,mean,stddev,stride_convd1=2,phase_train=phase_train,trainable_bn=arg.trainable_bn)
+        #
+        arg.dims = [D]+[arg.nb_filters]+[arg.nb_final_hidden]+[D_out]
     elif arg.mdl == 'binary_tree_8D_conv':
         print( 'binary_tree_8D_conv')
         #tensorboard_data_dump = '/tmp/hbf_logs'
@@ -444,6 +470,8 @@ def main_nn(arg):
     arg_dict = get_remove_functions_from_dict(arg_dict)
     results['arg_dict'] = arg_dict
     with open(path+json_file, 'w+') as f_json:
+        print('Writing Json')
+        print('path+json_file', path+json_file)
         json.dump(results,f_json,sort_keys=True, indent=2, separators=(',', ': '))
     print( '\a') #makes beep
 
