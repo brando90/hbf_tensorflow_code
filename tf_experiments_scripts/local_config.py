@@ -50,7 +50,7 @@ print('====> TASK_NAME', task_name)
 arg.mdl = 'standard_nn'
 #arg.mdl = 'hbf'
 #arg.mdl = 'binary_tree_4D_conv'
-#arg.mdl = 'binary_tree_4D_conv_hidden_layer'
+arg.mdl = 'binary_tree_4D_conv_hidden_layer'
 #arg.mdl = 'binary_tree_8D_conv'
 if arg.mdl == 'standard_nn':
     arg.init_type = 'truncated_normal'
@@ -66,7 +66,9 @@ if arg.mdl == 'standard_nn':
     #arg.std = 0.01
 
     arg.get_W_mu_init = lambda arg: [None, None, 0]
-    arg.get_W_std_init = lambda arg: [None, None, 0.5]
+    arg.get_W_std_init = lambda arg: [None, None, 0.1]
+    #arg.std_low, arg.std_high = 0.001, 0.1
+    #arg.get_W_std_init = lambda arg: [None, None, np.random.uniform(low=arg.std_low, high=arg.std_high, size=1)]
     #arg.get_W_mu_init = lambda arg: len(arg.dims)*[arg.mu]
     #arg.get_W_std_init = lambda arg: len(arg.dims)*[arg.std]
 
@@ -109,10 +111,10 @@ elif arg.mdl == 'binary_tree_4D_conv_hidden_layer':
     arg.nb_final_hidden = 2*arg.nb_filters # F2
     arg.mu = [0.0,0.0,0.0]
     arg.std = [0.5,0.5,0.5]
-    #arg.get_W_mu_init = lambda arg: arg.mu
-    #arg.get_W_std_init = lambda arg: arg.std
+    arg.get_W_mu_init = lambda arg: arg.mu
+    arg.get_W_std_init = lambda arg: arg.std
     #arg.std_low, arg.std_high = 0.001, 0.1
-    #arg.get_W_std_init = lambda arg: float( np.random.uniform(low=arg.std_low, high=arg.std_high, size=3) )
+    #arg.get_W_std_init = lambda arg: [float(i) for i in np.random.uniform(low=arg.std_low, high=arg.std_high, size=3)]
 elif arg.mdl == 'binary_tree_8D_conv':
     arg.init_type = 'manual_truncated_normal'
     arg.mu = [0.0,0.0,0.0]
@@ -129,7 +131,7 @@ else:
 #arg.steps_low = 100
 #arg.steps_high = 101
 #arg.get_steps = lambda arg: int( np.random.randint(low=arg.steps_low ,high=arg.steps_high) )
-arg.get_steps = lambda arg: int( 10000 )
+arg.get_steps = lambda arg: int( 60000 )
 
 #arg.M_low = 51
 #arg.M_high = 52
@@ -141,7 +143,7 @@ arg.report_error_freq = 50
 #arg.get_log_learning_rate =  lambda arg: np.random.uniform(low=arg.low_log_const_learning_rate, high=arg.high_log_const_learning_rate)
 #arg.get_start_learning_rate = lambda arg: 10**arg.log_learning_rate
 arg.get_log_learning_rate = lambda arg: None
-arg.get_start_learning_rate = lambda arg: 0.001
+arg.get_start_learning_rate = lambda arg: 0.01
 ## decayed_learning_rate = learning_rate * decay_rate ^ (global_step / decay_steps)
 #arg.decay_rate_low, arg.decay_rate_high = 0.3, 0.99
 #arg.get_decay_rate = lambda arg: np.random.uniform(low=arg.decay_rate_low, high=arg.decay_rate_high)
@@ -165,8 +167,8 @@ optimization_alg = 'GD'
 optimization_alg = 'Momentum'
 #optimization_alg = 'Adadelta'
 #optimization_alg = 'Adagrad'
-#optimization_alg = 'Adam'
-optimization_alg = 'RMSProp'
+optimization_alg = 'Adam'
+#optimization_alg = 'RMSProp'
 arg.optimization_alg = optimization_alg
 
 if optimization_alg == 'GD':

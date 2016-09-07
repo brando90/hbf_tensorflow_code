@@ -65,7 +65,9 @@ if arg.mdl == 'standard_nn':
     #arg.std = 0.5
 
     arg.get_W_mu_init = lambda arg: [None, None, 0]
-    arg.get_W_std_init = lambda arg: [None, None, 0.1]
+    #arg.get_W_std_init = lambda arg: [None, None, 0.1]
+    arg.std_low, arg.std_high = 0.001, 0.1
+    arg.get_W_std_init = lambda arg: [None, None, float(np.random.uniform(low=arg.std_low, high=arg.std_high, size=1)) ]
     #arg.get_W_mu_init = lambda arg: len(arg.dims)*[arg.mu]
     #arg.get_W_std_init = lambda arg: len(arg.dims)*[arg.std]
 
@@ -96,22 +98,23 @@ elif arg.mdl == 'hbf':
     #
     # arg.b_init = lambda: [525.32626263]
 elif arg.mdl == 'binary_tree_4D_conv':
-    arg.init_type = 'manual_truncated_normal'
-    arg.nb_filters = 6
-    #arg.nb_filters = 12
-    #arg.nb_filters = 18
-    arg.mu = 0.0
-    arg.std = 1.0
+    pass
+    # arg.init_type = 'manual_truncated_normal'
+    # arg.nb_filters = 6
+    # #arg.nb_filters = 12
+    # #arg.nb_filters = 18
+    # arg.mu = 0.0
+    # arg.std = 1.0
 elif arg.mdl == 'binary_tree_4D_conv_hidden_layer':
     arg.init_type = 'manual_truncated_normal'
     arg.nb_filters = 6 #F1
     arg.nb_final_hidden = 2*arg.nb_filters # F2
     arg.mu = [0.0,0.0,0.0]
-    arg.std = [0.5,0.5,0.5]
+    #arg.std = [0.5,0.5,0.5]
     arg.get_W_mu_init = lambda arg: arg.mu
-    arg.get_W_std_init = lambda arg: arg.std
-    #arg.std_low, arg.std_high = 0.001, 0.1
-    #arg.get_W_std_init = lambda arg: float( np.random.uniform(low=arg.std_low, high=arg.std_high, size=3) )
+    #arg.get_W_std_init = lambda arg: arg.std
+    arg.std_low, arg.std_high = 0.001, 5.0
+    arg.get_W_std_init = lambda arg: [float(i) for i in np.random.uniform(low=arg.std_low, high=arg.std_high, size=3)]
 elif arg.mdl == 'binary_tree_8D_conv':
     arg.init_type = 'manual_truncated_normal'
     arg.mu = [0.0,0.0,0.0]
@@ -125,8 +128,8 @@ else:
     raise ValueError('Need to use a valid model, incorrect or unknown model %s give.'%arg.mdl)
 
 #steps
-arg.steps_low = 70000
-arg.steps_high = 70001
+arg.steps_low = 700
+arg.steps_high = 701
 arg.get_steps = lambda arg: int( np.random.randint(low=arg.steps_low ,high=arg.steps_high) )
 
 arg.M_low = 500
@@ -134,7 +137,7 @@ arg.M_high = 12000
 arg.get_batch_size = lambda arg: int(np.random.randint(low=arg.M_low , high=arg.M_high))
 arg.report_error_freq = 50
 
-arg.low_log_const_learning_rate, arg.high_log_const_learning_rate = -0.01, -6
+arg.low_log_const_learning_rate, arg.high_log_const_learning_rate = -0.01, -4
 arg.get_log_learning_rate =  lambda arg: np.random.uniform(low=arg.low_log_const_learning_rate, high=arg.high_log_const_learning_rate)
 arg.get_start_learning_rate = lambda arg: 10**arg.log_learning_rate
 ## decayed_learning_rate = learning_rate * decay_rate ^ (global_step / decay_steps)
@@ -158,8 +161,8 @@ optimization_alg = 'GD'
 optimization_alg = 'Momentum'
 # optimization_alg = 'Adadelta'
 # optimization_alg = 'Adagrad'
-#optimization_alg = 'Adam'
-optimization_alg = 'RMSProp'
+optimization_alg = 'Adam'
+#optimization_alg = 'RMSProp'
 arg.optimization_alg = optimization_alg
 
 if optimization_alg == 'GD':
@@ -203,9 +206,9 @@ arg.re_train = re_train
 arg.experiment_root_dir = mtf.get_experiment_folder(task_name)
 
 #
-arg.experiment_name = 'task_August_29_BT' # experiment_name e.g. task_August_10_BT
+arg.experiment_name = 'task_September_1_BT' # experiment_name e.g. task_August_10_BT
 arg.experiment_root_dir = mtf.get_experiment_folder(task_name)
-arg.job_name = 'BT_6_Nesterov' # job name e.g BT_6_6_5_RMSProp_Test
+arg.job_name = 'BT_12_Adam' # job name e.g BT_6_6_5_RMSProp_Test
 #
 arg.slurm_jobid = os.environ['SLURM_JOBID']
 arg.slurm_array_task_id = os.environ['SLURM_ARRAY_TASK_ID']
