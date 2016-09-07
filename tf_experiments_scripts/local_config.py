@@ -1,4 +1,5 @@
 #!/usr/bin/env
+#SBATCH --qos=cbmm
 #SBATCH --job-name=Python
 #SBATCH --array=3-10
 #SBATCH --mem=14000
@@ -100,7 +101,7 @@ elif arg.mdl == 'hbf':
     # arg.b_init = lambda: [525.32626263]
 elif arg.mdl == 'binary_tree_4D_conv':
     arg.init_type = 'manual_truncated_normal'
-    arg.nb_filters = 18
+    arg.nb_filters = 31
     #arg.nb_filters = 12
     #arg.nb_filters = 18
     arg.mu = 0.0
@@ -131,12 +132,12 @@ else:
 #arg.steps_low = 100
 #arg.steps_high = 101
 #arg.get_steps = lambda arg: int( np.random.randint(low=arg.steps_low ,high=arg.steps_high) )
-arg.get_steps = lambda arg: int( 60000 )
+arg.get_steps = lambda arg: int( 10000 )
 
 #arg.M_low = 51
 #arg.M_high = 52
 #arg.get_batch_size = lambda arg: int(np.random.randint(low=arg.M_low , high=arg.M_high))
-arg.get_batch_size = lambda arg: 2000 #M
+arg.get_batch_size = lambda arg: 3000 #M
 arg.report_error_freq = 50
 
 #arg.low_log_const_learning_rate, arg.high_log_const_learning_rate = -0.01, -6
@@ -147,7 +148,7 @@ arg.get_start_learning_rate = lambda arg: 0.01
 ## decayed_learning_rate = learning_rate * decay_rate ^ (global_step / decay_steps)
 #arg.decay_rate_low, arg.decay_rate_high = 0.3, 0.99
 #arg.get_decay_rate = lambda arg: np.random.uniform(low=arg.decay_rate_low, high=arg.decay_rate_high)
-arg.get_decay_rate = lambda arg: 0.9
+arg.get_decay_rate = lambda arg: 1.0
 
 #arg.decay_steps_low, arg.decay_steps_high = arg.report_error_freq, arg.M
 #arg.get_decay_steps_low_high = lambda arg: arg.report_error_freq, arg.M
@@ -156,7 +157,7 @@ arg.get_decay_rate = lambda arg: 0.9
 #     arg.decay_steps_low, arg.decay_steps_high = arg.report_error_freq, arg.M
 #     decay_steos = np.random.randint(low=arg.decay_steps_low, high=arg.decay_steps_high)
 #     return decay_steos
-get_decay_steps = lambda arg: 2500
+get_decay_steps = lambda arg: 4000
 arg.get_decay_steps = get_decay_steps # when stair case, how often to shrink
 
 # If the argument staircase is True, then global_step / decay_steps is an integer division and the decayed earning rate follows a staircase function.
@@ -167,7 +168,7 @@ optimization_alg = 'GD'
 optimization_alg = 'Momentum'
 #optimization_alg = 'Adadelta'
 #optimization_alg = 'Adagrad'
-optimization_alg = 'Adam'
+#optimization_alg = 'Adam'
 #optimization_alg = 'RMSProp'
 arg.optimization_alg = optimization_alg
 

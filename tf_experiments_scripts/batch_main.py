@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+#SBATCH --qos=cbmm
 #SBATCH --job-name=Python
 #SBATCH --array=1-1000
 #SBATCH --mem=14000
@@ -64,7 +65,7 @@ if arg.mdl == 'standard_nn':
 
     arg.get_W_mu_init = lambda arg: [None, None, 0]
     #arg.get_W_std_init = lambda arg: [None, None, 0.1]
-    arg.std_low, arg.std_high = 0.001, 0.1
+    arg.std_low, arg.std_high = 0.001, 3.0
     arg.get_W_std_init = lambda arg: [None, None, float(np.random.uniform(low=arg.std_low, high=arg.std_high, size=1)) ]
     #arg.get_W_mu_init = lambda arg: len(arg.dims)*[arg.mu]
     #arg.get_W_std_init = lambda arg: len(arg.dims)*[arg.std]
@@ -209,6 +210,10 @@ arg.experiment_root_dir = mtf.get_experiment_folder(task_name)
 arg.experiment_name = 'task_September_1_BT' # experiment_name e.g. task_August_10_BT
 arg.experiment_root_dir = mtf.get_experiment_folder(task_name)
 arg.job_name = 'BT_12_Adam' # job name e.g BT_6_6_5_RMSProp_Test
+
+arg.experiment_name = 'task_September_1_NN' # experiment_name e.g. task_August_10_BT
+arg.experiment_root_dir = mtf.get_experiment_folder(task_name)
+arg.job_name = 'NN_31_Adam' # job name e.g BT_6_6_5_RMSProp_Test
 #
 arg.slurm_jobid = os.environ['SLURM_JOBID']
 arg.slurm_array_task_id = os.environ['SLURM_ARRAY_TASK_ID']

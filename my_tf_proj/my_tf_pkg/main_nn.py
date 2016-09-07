@@ -17,6 +17,12 @@ import time
 
 # tensorboard --logdir=/tmp/mdl_logs
 
+def any_is_NaN(*args):
+    is_any_nan = False
+    for val in args:
+        is_any_nan = np.isnan(val) or is_any_nan
+    return is_any_nan
+
 def get_remove_functions_from_dict(arg_dict):
     '''
         Removes functions from dictionary and returns modified dictionary
@@ -239,9 +245,8 @@ def main_nn(arg):
         x = tf.placeholder(float_type, shape=[None,1,D,1], name='x-input')
         #
         arg.filter_size = 2 #fixed for Binary Tree BT
+        arg.mean, arg.stddev = arg.get_W_mu_init(arg), arg.get_W_std_init(arg)
         nb_filters = arg.nb_filters
-        #stddev = float( np.random.uniform(low=0.001, high=stddev) )
-        #print( 'stddev', stddev)
         x = tf.placeholder(float_type, shape=[None,1,D,1], name='x-input')
         with tf.name_scope("build_binary_model") as scope:
             mdl = mtf.build_binary_tree_4D_hidden_layer(x,arg,arg.nb_final_hidden,arg.filter_size,nb_filters,stride_convd1=2,phase_train=phase_train,trainable_bn=arg.trainable_bn)
@@ -265,8 +270,10 @@ def main_nn(arg):
         #
         filter_size = 2 #fixed for Binary Tree BT
         nb_filters1,nb_filters2 = arg.nb_filters
-        mean1,mean2,mean3 = arg.get_W_mu_init(arg)
-        stddev1,stddev2,stddev3 = arg.get_W_std_init(arg)
+        arg.mean = arg.get_W_mu_init(arg)
+        mean1,mean2,mean3 = arg.mean
+        arg.stddev = arg.get_W_std_init(arg)
+        stddev1,stddev2,stddev3 = arg.stddev
         x = tf.placeholder(float_type, shape=[None,1,D,1], name='x-input')
         with tf.name_scope("binary_tree_D8") as scope:
             mdl = mtf.build_binary_tree_8D(x,nb_filters1,nb_filters2,mean1,stddev1,mean2,stddev2,mean3,stddev3,stride_conv1=2)
@@ -429,10 +436,6 @@ def main_nn(arg):
                     print_messages(loss_msg, mdl_info_msg, errors_to_beat)
                     print('S: ', inits_S, flush=True)
                     print()
-                    #sys.stdout.flush()
-                    # loss_msg+="\n"
-                    # mdl_info_msg+="\n"
-                    # errors_to_beat+="\n"
 
                     # store results
                     results['train_errors'].append( float(train_error) )
@@ -441,7 +444,10 @@ def main_nn(arg):
                     # write errors to pretty print
                     f_err_msgs.write(loss_msg)
                     f_err_msgs.write(mdl_info_msg)
-                    # save mdl
+                    if any_is_NaN(train_error,cv_error,test_error):
+                        # if its a nan make sure to stop script
+                        print('FOUND A NAN')
+                        break
                     if arg.mdl_save:
                         save_path = saver.save(sess, path+mdl_dir+'/model.ckpt',global_step=i)
                 if arg.use_tensorboard:

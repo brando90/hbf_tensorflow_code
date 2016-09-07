@@ -190,7 +190,7 @@ def get_NN_layer(l, x, dims, init, phase_train=None, scope="NNLayer", trainable_
 ## 4D BT
 
 def build_binary_tree_4D_hidden_layer(x,arg,nb_final_hidden,filter_size,nb_filters,stride_convd1=2,phase_train=None,trainable_bn=True):
-    mean, stddev = arg.get_W_mu_init(arg), arg.get_W_std_init(arg)
+    mean, stddev = arg.mean, arg.stddev
     ## hidden conv layer
     l = 'Conv_Layer'
     flat_conv = get_binary_branch(l,x,filter_size,nb_filters,mean=mean[0],stddev=stddev[0],stride_convd1=stride_convd1) # N x D_conv_flat = N x (filter_size*nb_filters)
