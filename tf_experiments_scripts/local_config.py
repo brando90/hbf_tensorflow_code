@@ -144,11 +144,11 @@ arg.report_error_freq = 50
 #arg.get_log_learning_rate =  lambda arg: np.random.uniform(low=arg.low_log_const_learning_rate, high=arg.high_log_const_learning_rate)
 #arg.get_start_learning_rate = lambda arg: 10**arg.log_learning_rate
 arg.get_log_learning_rate = lambda arg: None
-arg.get_start_learning_rate = lambda arg: 0.01
+arg.get_start_learning_rate = lambda arg: 0.001
 ## decayed_learning_rate = learning_rate * decay_rate ^ (global_step / decay_steps)
 #arg.decay_rate_low, arg.decay_rate_high = 0.3, 0.99
 #arg.get_decay_rate = lambda arg: np.random.uniform(low=arg.decay_rate_low, high=arg.decay_rate_high)
-arg.get_decay_rate = lambda arg: 1.0
+arg.get_decay_rate = lambda arg: 0.99
 
 #arg.decay_steps_low, arg.decay_steps_high = arg.report_error_freq, arg.M
 #arg.get_decay_steps_low_high = lambda arg: arg.report_error_freq, arg.M
@@ -221,11 +221,13 @@ arg.re_train = re_train
 arg.experiment_name = 'tmp_experiment'  # experiment_name e.g. task_August_10_BT
 arg.experiment_root_dir = mtf.get_experiment_folder(task_name)
 arg.job_name = 'TB4' # job name e.g BT_6_6_5_RMSProp_Test
-
 #
-arg.slurm_jobid = 'TB_slurm_jobid'
-arg.slurm_array_task_id = 'TB_slurm_array_task_id'
-
+if len(sys.argv) != 3:
+    arg.slurm_jobid = sys.argv[1]
+    arg.slurm_array_task_id = sys.argv[2]
+else:
+    arg.slurm_jobid = 'TB_slurm_jobid'
+    arg.slurm_array_task_id = 'TB_slurm_array_task_id'
 #
 #arg.mdl_save = False
 arg.mdl_save = True

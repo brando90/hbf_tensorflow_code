@@ -11,6 +11,7 @@
 #tensorboard --logdir=/tmp/mdl_logs
 
 import os
+import sys
 
 import namespaces as ns
 import numpy as np
@@ -215,8 +216,12 @@ arg.experiment_name = 'task_September_1_NN' # experiment_name e.g. task_August_1
 arg.experiment_root_dir = mtf.get_experiment_folder(task_name)
 arg.job_name = 'NN_31_Adam' # job name e.g BT_6_6_5_RMSProp_Test
 #
-arg.slurm_jobid = os.environ['SLURM_JOBID']
-arg.slurm_array_task_id = os.environ['SLURM_ARRAY_TASK_ID']
+if len(sys.argv) != 3:
+    arg.slurm_jobid = sys.argv[1]
+    arg.slurm_array_task_id = sys.argv[2]
+else:
+    arg.slurm_jobid = os.environ['SLURM_JOBID']
+    arg.slurm_array_task_id = os.environ['SLURM_ARRAY_TASK_ID']
 #
 #arg.mdl_save = False
 arg.mdl_save = True
