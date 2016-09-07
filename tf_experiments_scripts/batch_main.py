@@ -55,11 +55,9 @@ if arg.mdl == 'standard_nn':
     arg.init_type = 'data_xavier_kern'
     arg.init_type = 'xavier'
 
-    arg.units = [11]
-    #arg.units = [22]
-    #arg.units = [45]
-    #arg.units = [6,6]
-    #arg.units = [6,6,6]
+    arg.units = [31]
+    #arg.units = [110]
+    #arg.units = [237]
 
     #arg.mu = 0.0
     #arg.std = 0.5
@@ -108,6 +106,8 @@ elif arg.mdl == 'binary_tree_4D_conv':
 elif arg.mdl == 'binary_tree_4D_conv_hidden_layer':
     arg.init_type = 'manual_truncated_normal'
     arg.nb_filters = 6 #F1
+    arg.nb_filters = 12 #F1
+    arg.nb_filters = 18 #F1
     arg.nb_final_hidden = 2*arg.nb_filters # F2
     arg.mu = [0.0,0.0,0.0]
     #arg.std = [0.5,0.5,0.5]

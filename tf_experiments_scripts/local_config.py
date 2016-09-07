@@ -56,7 +56,7 @@ if arg.mdl == 'standard_nn':
     arg.init_type = 'truncated_normal'
     arg.init_type = 'xavier'
 
-    arg.units = [11]
+    arg.units = [31]
     #arg.units = [22]
     #arg.units = [45]
     #arg.units = [6,6]
