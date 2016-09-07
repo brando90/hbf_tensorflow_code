@@ -195,6 +195,8 @@ elif optimization_alg == 'RMSProp':
 else:
     pass
 
+#arg.bn = True
+#arg.trainable_bn = True #scale, shift BN
 arg.bn = False
 arg.trainable_bn = False #scale, shift BN
 
