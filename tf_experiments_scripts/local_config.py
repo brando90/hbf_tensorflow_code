@@ -53,7 +53,7 @@ print('====> TASK_NAME', task_name)
 arg.mdl = 'standard_nn'
 #arg.mdl = 'hbf'
 #arg.mdl = 'binary_tree_4D_conv'
-#arg.mdl = 'binary_tree_4D_conv_hidden_layer'
+arg.mdl = 'binary_tree_4D_conv_hidden_layer'
 #arg.mdl = 'binary_tree_8D_conv'
 if arg.mdl == 'standard_nn':
     arg.init_type = 'truncated_normal'
@@ -235,7 +235,7 @@ if len(sys.argv) == 3:
     print('Filling with old args')
     arg.slurm_jobid = sys.argv[1]
     arg.slurm_array_task_id = sys.argv[2]
-    pickled_arg_dict = pickle.load( open( "pickle-slurm-%s_%s.p"%(int(slurm_jobid)+int(slurm_array_task_id),slurm_array_task_id), "rb" ) )
+    pickled_arg_dict = pickle.load( open( "pickle-slurm-%s_%s.p"%(int(arg.slurm_jobid)+int(arg.slurm_array_task_id),arg.slurm_array_task_id), "rb" ) )
     print( pickled_arg_dict )
     # values merged with the second dict's values overwriting those from the first.
     arg_dict = {**dict(arg), **pickled_arg_dict}
