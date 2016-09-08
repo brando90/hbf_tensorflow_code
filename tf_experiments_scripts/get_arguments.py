@@ -6,7 +6,13 @@ import namespaces as ns
 # arg_dict = get_remove_functions_from_dict(arg_dict)
 # pickle.dump( arg_dict, open( "slurm-%s_%s.p"%(arg.slurm_jobid,arg.slurm_array_task_id) , "wb" ) )
 
-slurm_jobid,slurm_array_task_id = 1,2
+if len(sys.argv) == 3:
+    arg.slurm_jobid = sys.argv[1]
+    arg.slurm_array_task_id = sys.argv[2]
+else:
+    arg.slurm_jobid = 1
+    arg.slurm_array_task_id = 2
+    
 arg = pickle.load( open( "slurm-%s_%s.p"%(slurm_jobid,slurm_array_task_id), "rb" ) )
 print(arg)
 
