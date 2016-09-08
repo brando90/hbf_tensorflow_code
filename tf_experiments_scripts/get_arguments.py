@@ -10,4 +10,6 @@ slurm_jobid,slurm_array_task_id = 1,2
 arg = pickle.load( open( "slurm-%s_%s.p"%(slurm_jobid,slurm_array_task_id), "rb" ) )
 print(arg)
 
+arg_ns = ns.Namespace(arg)
 print('ns_args: ', ns.Namespace(arg) )
+print(arg_ns.dims)

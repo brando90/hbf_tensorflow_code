@@ -13,6 +13,7 @@
 import os
 import sys
 
+import pickle
 import namespaces as ns
 import numpy as np
 
@@ -232,6 +233,11 @@ arg.max_to_keep = 1
 #
 arg.use_tensorboard = False
 #arg.use_tensorboard = True
+
+#
+slurm_jobid,slurm_array_task_id = 1,2
+arg = pickle.load( open( "pickle-slurm-%s_%s.p"%(slurm_jobid,slurm_array_task_id), "rb" ) )
+arg = ns.Namespace(arg)
 
 if __name__ == '__main__':
     print('In __name__ == __main__')
