@@ -131,8 +131,8 @@ else:
     raise ValueError('Need to use a valid model, incorrect or unknown model %s give.'%arg.mdl)
 
 #steps
-arg.steps_low = 700
-arg.steps_high = 701
+arg.steps_low = 120000
+arg.steps_high = 120001
 arg.get_steps = lambda arg: int( np.random.randint(low=arg.steps_low ,high=arg.steps_high) )
 
 arg.M_low = 500
@@ -211,23 +211,34 @@ arg.re_train = re_train
 arg.experiment_root_dir = mtf.get_experiment_folder(task_name)
 
 #
-arg.experiment_name = 'task_September_1_BT' # experiment_name e.g. task_August_10_BT
+arg.experiment_name = 'task_September_1_BTHL' # experiment_name e.g. task_August_10_BT
 arg.experiment_root_dir = mtf.get_experiment_folder(task_name)
-arg.job_name = 'BT_12_Adam' # job name e.g BT_6_6_5_RMSProp_Test
+arg.job_name = 'BTHL_12_Adam' # job name e.g BT_6_6_5_RMSProp_Test
 
 arg.experiment_name = 'task_September_1_NN' # experiment_name e.g. task_August_10_BT
 arg.experiment_root_dir = mtf.get_experiment_folder(task_name)
 arg.job_name = 'NN_31_Adam' # job name e.g BT_6_6_5_RMSProp_Test
 #
+arg.debug = False
 if len(sys.argv) == 3:
+    print('Filling with old args')
     arg.slurm_jobid = sys.argv[1]
     arg.slurm_array_task_id = sys.argv[2]
+    pickled_arg_dict = pickle.load( open( "pickle-slurm-%s_%s.p"%(int(arg.slurm_jobid)+int(arg.slurm_array_task_id),arg.slurm_array_task_id), "rb" ) )
+    print( pickled_arg_dict )
+    # values merged with the second dict's values overwriting those from the first.
+    arg_dict = {**dict(arg), **pickled_arg_dict}
+    arg = ns.Namespace(arg_dict)
+elif len(sys.argv) == 2:
+    #arg.debug = sys.argv[1]
+    arg.debug = False
+    pass
 else:
     arg.slurm_jobid = os.environ['SLURM_JOBID']
     arg.slurm_array_task_id = os.environ['SLURM_ARRAY_TASK_ID']
 #
-#arg.mdl_save = False
-arg.mdl_save = True
+arg.mdl_save = False
+#arg.mdl_save = True
 
 arg.max_to_keep = 1
 #
@@ -235,11 +246,6 @@ arg.use_tensorboard = False
 #arg.use_tensorboard = True
 
 #
-# pickled_arg_dict = pickle.load( open( "pickle-slurm-%s_%s.p"%(slurm_jobid,slurm_array_task_id), "rb" ) )
-# print( pickled_arg_dict )
-# # values merged with the second dict's values overwriting those from the first.
-# arg_dict = {**dict(arg), **pickled_arg_dict}
-# arg = ns.Namespace(arg_dict)
 if __name__ == '__main__':
     print('In __name__ == __main__')
     #main_nn.main_old()
