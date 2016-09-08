@@ -450,7 +450,7 @@ def main_nn(arg):
                     f_err_msgs.write(mdl_info_msg)
                     if any_is_NaN(train_error,cv_error,test_error):
                         # if its a nan make sure to stop script
-                        print('FOUND A NAN')
+                        print('nan_found')
                         break
                     if arg.mdl_save:
                         save_path = saver.save(sess, path+mdl_dir+'/model.ckpt',global_step=i)
