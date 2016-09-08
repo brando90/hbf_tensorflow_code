@@ -235,10 +235,11 @@ arg.use_tensorboard = False
 #arg.use_tensorboard = True
 
 #
-slurm_jobid,slurm_array_task_id = 1,2
-arg = pickle.load( open( "pickle-slurm-%s_%s.p"%(slurm_jobid,slurm_array_task_id), "rb" ) )
-arg = ns.Namespace(arg)
-
+# pickled_arg_dict = pickle.load( open( "pickle-slurm-%s_%s.p"%(slurm_jobid,slurm_array_task_id), "rb" ) )
+# print( pickled_arg_dict )
+# # values merged with the second dict's values overwriting those from the first.
+# arg_dict = {**dict(arg), **pickled_arg_dict}
+# arg = ns.Namespace(arg_dict)
 if __name__ == '__main__':
     print('In __name__ == __main__')
     #main_nn.main_old()
