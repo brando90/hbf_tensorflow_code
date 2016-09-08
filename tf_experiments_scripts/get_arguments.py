@@ -1,4 +1,4 @@
-# Load the dictionary back from the pickle file.
+# Load the dictionary back from the pickle file. 
 import pickle
 import namespaces as ns
 
@@ -12,7 +12,7 @@ if len(sys.argv) == 3:
 else:
     arg.slurm_jobid = 1
     arg.slurm_array_task_id = 2
-    
+
 arg = pickle.load( open( "slurm-%s_%s.p"%(slurm_jobid,slurm_array_task_id), "rb" ) )
 print(arg)
 
