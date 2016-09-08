@@ -53,7 +53,7 @@ print('====> TASK_NAME', task_name)
 arg.mdl = 'standard_nn'
 #arg.mdl = 'hbf'
 #arg.mdl = 'binary_tree_4D_conv'
-arg.mdl = 'binary_tree_4D_conv_hidden_layer'
+#arg.mdl = 'binary_tree_4D_conv_hidden_layer'
 #arg.mdl = 'binary_tree_8D_conv'
 if arg.mdl == 'standard_nn':
     arg.init_type = 'truncated_normal'

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #SBATCH --qos=cbmm
 #SBATCH --job-name=Python
-#SBATCH --array=1-1000
+#SBATCH --array=1-100
 #SBATCH --mem=14000
 #SBATCH --time=5-20:20
 #SBATCH --mail-type=ALL
