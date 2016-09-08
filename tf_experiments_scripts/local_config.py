@@ -247,7 +247,6 @@ arg.max_to_keep = 1
 arg.use_tensorboard = True
 
 #
-slurm_jobid,slurm_array_task_id = 1,2
 pickled_arg_dict = pickle.load( open( "pickle-slurm-%s_%s.p"%(slurm_jobid,slurm_array_task_id), "rb" ) )
 print( pickled_arg_dict )
 # values merged with the second dict's values overwriting those from the first.
