@@ -232,8 +232,14 @@ arg.experiment_root_dir = mtf.get_experiment_folder(task_name)
 arg.job_name = 'TB4' # job name e.g BT_6_6_5_RMSProp_Test
 #
 if len(sys.argv) == 3:
+    print('Filling with old args')
     arg.slurm_jobid = sys.argv[1]
     arg.slurm_array_task_id = sys.argv[2]
+    pickled_arg_dict = pickle.load( open( "pickle-slurm-%s_%s.p"%(int(slurm_jobid)+int(slurm_array_task_id),slurm_array_task_id), "rb" ) )
+    print( pickled_arg_dict )
+    # values merged with the second dict's values overwriting those from the first.
+    arg_dict = {**dict(arg), **pickled_arg_dict}
+    arg = ns.Namespace(arg_dict)
 else:
     arg.slurm_jobid = 'TB_slurm_jobid'
     arg.slurm_array_task_id = 'TB_slurm_array_task_id'
@@ -247,11 +253,6 @@ arg.max_to_keep = 1
 arg.use_tensorboard = True
 
 #
-# pickled_arg_dict = pickle.load( open( "pickle-slurm-%s_%s.p"%(slurm_jobid,slurm_array_task_id), "rb" ) )
-# print( pickled_arg_dict )
-# # values merged with the second dict's values overwriting those from the first.
-# arg_dict = {**dict(arg), **pickled_arg_dict}
-# arg = ns.Namespace(arg_dict)
 if __name__ == '__main__':
     print('In __name__ == __main__')
     #main_nn.main_old()
