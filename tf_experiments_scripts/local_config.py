@@ -47,9 +47,12 @@ task_name = 'task_f_4d_conv_2nd'
 #task_name = 'task_MNIST_flat'
 #task_name = 'task_MNIST_flat_auto_encoder'
 arg.task_name = task_name
-
 print('====> TASK_NAME', task_name)
-
+#
+arg.experiment_name = 'tmp_experiment'  # experiment_name e.g. task_August_10_BT
+arg.experiment_root_dir = mtf.get_experiment_folder(task_name)
+arg.job_name = 'TB4' # job name e.g BT_6_6_5_RMSProp_Test
+#
 arg.mdl = 'standard_nn'
 #arg.mdl = 'hbf'
 #arg.mdl = 'binary_tree_4D_conv'
@@ -225,11 +228,6 @@ arg.data_normalize='dont_normalize'
 
 re_train = None
 arg.re_train = re_train
-
-#
-arg.experiment_name = 'tmp_experiment'  # experiment_name e.g. task_August_10_BT
-arg.experiment_root_dir = mtf.get_experiment_folder(task_name)
-arg.job_name = 'TB4' # job name e.g BT_6_6_5_RMSProp_Test
 #
 arg.debug = False
 if len(sys.argv) == 3:
