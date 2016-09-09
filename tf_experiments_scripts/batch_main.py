@@ -25,18 +25,19 @@ print(ns)
 ##
 arg = ns.Namespace()
 
-task_name = 'task_qianli_func'
-task_name = 'task_f_2D_task2'
-task_name = 'task_f_2d_task2_xsinglog1_x_depth2'
-task_name = 'task_f_2d_task2_xsinglog1_x_depth3'
-task_name = 'task_f2d_2x2_1_cosx1x2_depth2'
-task_name = 'task_f2d_2x2_1_cosx1_plus_x2_depth2'
-task_name = 'task_f_4d_conv'
+task_name = 'task_h_gabor_data_and_mesh'
+# task_name = 'task_qianli_func'
+# task_name = 'task_f_2D_task2'
+# task_name = 'task_f_2d_task2_xsinglog1_x_depth2'
+# task_name = 'task_f_2d_task2_xsinglog1_x_depth3'
+# task_name = 'task_f2d_2x2_1_cosx1x2_depth2'
+# task_name = 'task_f2d_2x2_1_cosx1_plus_x2_depth2'
+# task_name = 'task_f_4d_conv'
 #task_name = 'task_f_4D_conv_1st'
 # task_name = 'task_f_8d_conv'
 # task_name = 'task_f_8d_conv'
 # task_name = 'task_f_8D_conv_test'
-task_name = 'task_f_4d_conv_2nd'
+#task_name = 'task_f_4d_conv_2nd'
 # task_name = 'task_f_4d_conv_changing'
 # task_name = 'task_f_4D_conv_3rd'
 # task_name = 'task_f_4D_conv_4th'
@@ -51,7 +52,7 @@ print('====> TASK_NAME', task_name)
 #
 arg.experiment_name = 'task_September_1_BTHL' # experiment_name e.g. task_August_10_BT
 arg.experiment_root_dir = mtf.get_experiment_folder(task_name)
-arg.job_name = 'BTHL_12_Adam' # job name e.g BT_6_6_5_RMSProp_Test
+arg.job_name = 'BTHL_6_12_Adam' # job name e.g BT_6_6_5_RMSProp_Test
 
 arg.experiment_name = 'task_September_1_NN' # experiment_name e.g. task_August_10_BT
 arg.experiment_root_dir = mtf.get_experiment_folder(task_name)

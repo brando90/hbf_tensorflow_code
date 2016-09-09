@@ -193,14 +193,19 @@ def main_nn(arg):
             mdl = mtf.get_summation_layer(l=str(nb_layers),x=mdl,init=inits_C[0])
         inits_S = inits_b
     elif arg.mdl == 'hbf':
+        arg.dims = [D]+arg.units+[D_out]
         trainable_S = True if (arg.trainable_S=='train_S') else False
-        #tensorboard_data_dump = '/tmp/hbf_logs'
+        arg.b_init = arg.get_b_init(arg)
+        arg.S_init = arg.b_init
         float_type = tf.float64
+        #arg.mu , arg.std = arg.get_W_mu_init(arg), arg.get_W_std_init(arg)
         x = tf.placeholder(float_type, shape=[None, D], name='x-input') # M x D
-        (inits_C,inits_W,inits_S,rbf_error) = mtf.get_initilizations_HBF(init_type=init_type,dims=dims,mu=mu,std=std,b_init=b_init,S_init=S_init, X_train=X_train, Y_train=Y_train, train_S_type=train_S_type)
+        (inits_C,inits_W,inits_S,rbf_error) = mtf.get_initilizations_HBF(init_type=arg.init_type,dims=arg.dims,mu=arg.mu,std=arg.std,b_init=arg.b_init,S_init=arg.S_init, X_train=X_train, Y_train=Y_train, train_S_type=arg.train_S_type)
         #print(inits_W)
+        nb_layers = len(arg.dims)-1
+        nb_hidden_layers = nb_layers-1
         with tf.name_scope("HBF") as scope:
-            mdl = mtf.build_HBF2(x,dims,(inits_C,inits_W,inits_S),phase_train,trainable_bn,trainable_S)
+            mdl = mtf.build_HBF2(x,arg.dims,(inits_C,inits_W,inits_S),phase_train,arg.trainable_bn,trainable_S)
             mdl = mtf.get_summation_layer(l=str(nb_layers),x=mdl,init=inits_C[0])
     elif arg.mdl == 'binary_tree_4D_conv':
         pass
@@ -302,7 +307,7 @@ def main_nn(arg):
         elif arg.optimization_alg == 'Momentum':
             opt = tf.train.MomentumOptimizer(learning_rate=learning_rate,momentum=arg.momentum,use_nesterov=arg.use_nesterov)
         elif arg.optimization_alg == 'Adadelta':
-            tf.train.AdadeltaOptimizer(learning_rate=learning_rate, rho=arg.rho, epsilon=1e-08, use_locking=False, name='Adadelta')
+            opt = tf.train.AdadeltaOptimizer(learning_rate=learning_rate, rho=arg.rho, epsilon=1e-08, use_locking=False, name='Adadelta')
         elif arg.optimization_alg == 'Adam':
             opt = tf.train.AdamOptimizer(learning_rate=learning_rate, beta1=arg.beta1, beta2=arg.beta2, epsilon=1e-08, name='Adam')
         elif arg.optimization_alg == 'Adagrad':

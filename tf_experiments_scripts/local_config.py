@@ -25,18 +25,19 @@ print(ns)
 ##
 arg = ns.Namespace()
 
-task_name = 'task_qianli_func'
-task_name = 'task_f_2D_task2'
-task_name = 'task_f_2d_task2_xsinglog1_x_depth2'
-task_name = 'task_f_2d_task2_xsinglog1_x_depth3'
-task_name = 'task_f2d_2x2_1_cosx1x2_depth2'
-task_name = 'task_f2d_2x2_1_cosx1_plus_x2_depth2'
-task_name = 'task_f_4d_conv'
-#task_name = 'task_f_4D_conv_1st'
+task_name = 'task_h_gabor_data_and_mesh'
+# task_name = 'task_qianli_func'
+# task_name = 'task_f_2D_task2'
+# task_name = 'task_f_2d_task2_xsinglog1_x_depth2'
+# task_name = 'task_f_2d_task2_xsinglog1_x_depth3'
+# task_name = 'task_f2d_2x2_1_cosx1x2_depth2'
+# task_name = 'task_f2d_2x2_1_cosx1_plus_x2_depth2'
+# task_name = 'task_f_4d_conv'
+# task_name = 'task_f_4D_conv_1st'
 # task_name = 'task_f_8d_conv'
 # task_name = 'task_f_8d_conv'
 # task_name = 'task_f_8D_conv_test'
-task_name = 'task_f_4d_conv_2nd'
+# task_name = 'task_f_4d_conv_2nd'
 # task_name = 'task_f_4d_conv_changing'
 # task_name = 'task_f_4D_conv_3rd'
 # task_name = 'task_f_4D_conv_4th'
@@ -54,9 +55,9 @@ arg.experiment_root_dir = mtf.get_experiment_folder(task_name)
 arg.job_name = 'TB4' # job name e.g BT_6_6_5_RMSProp_Test
 #
 arg.mdl = 'standard_nn'
-#arg.mdl = 'hbf'
+arg.mdl = 'hbf'
 #arg.mdl = 'binary_tree_4D_conv'
-arg.mdl = 'binary_tree_4D_conv_hidden_layer'
+#arg.mdl = 'binary_tree_4D_conv_hidden_layer'
 #arg.mdl = 'binary_tree_8D_conv'
 if arg.mdl == 'standard_nn':
     arg.init_type = 'truncated_normal'
@@ -79,29 +80,29 @@ if arg.mdl == 'standard_nn':
     arg.b = 0.1
     arg.get_b_init = lambda arg: len(arg.dims)*[arg.b]
 elif arg.mdl == 'hbf':
-    pass
-    # arg.init_type = 'truncated_normal'
-    # arg.init_type = 'data_init'
-    # arg.init_type = 'kern_init'
-    # arg.init_type = 'kpp_init'
-    #
-    # arg.units = [5]
+    #arg.init_type = 'truncated_normal'
+    #arg.init_type = 'data_init'
+    arg.init_type = 'kern_init'
+    arg.init_type = 'kpp_init'
+
+    arg.units = [20]
     # arg.units = [6,6]
     # arg.units = [6,6,6]
-    #
-    # arg.mu = 0.0
-    # arg.std = 0.0
-    #
-    # arg.W_mu_init = lambda arg: len(arg.dims)*[arg.mu]
-    # arg.W_std_init = lambda arg: len(arg.dims)*[arg.std]
-    #
-    # # train shape of Gaussians
-    # #arg.trainable_S = 'train_S'
-    # arg.trainable_S = 'dont_train_S'
-    # #arg.train_S_type = 'multiple_S'
-    # arg.train_S_type = 'single_S'
-    #
-    # arg.b_init = lambda: [525.32626263]
+
+    arg.mu = 0.0
+    arg.std = 0.0
+
+    arg.W_mu_init = lambda arg: len(arg.dims)*[arg.mu]
+    arg.W_std_init = lambda arg: len(arg.dims)*[arg.std]
+
+    # train shape of Gaussians
+    arg.trainable_S = 'train_S'
+    #arg.trainable_S = 'dont_train_S'
+    arg.train_S_type = 'multiple_S'
+    #arg.train_S_type = 'single_S'
+
+    arg.S = [None, 0.3]
+    arg.get_b_init = lambda arg: arg.S
 elif arg.mdl == 'binary_tree_4D_conv':
     arg.init_type = 'manual_truncated_normal'
     arg.nb_filters = 31
@@ -137,15 +138,15 @@ else:
 #arg.steps_low = 100
 #arg.steps_high = 101
 #arg.get_steps = lambda arg: int( np.random.randint(low=arg.steps_low ,high=arg.steps_high) )
-arg.steps = 20000
+arg.steps = 40000
 arg.get_steps = lambda arg: int( arg.steps )
 
 #arg.M_low = 51
 #arg.M_high = 52
 #arg.get_batch_size = lambda arg: int(np.random.randint(low=arg.M_low , high=arg.M_high))
-arg.M = 4000
+arg.M = 2000
 arg.get_batch_size = lambda arg: arg.M #M
-arg.report_error_freq = 50
+arg.report_error_freq = 30
 
 #arg.low_log_const_learning_rate, arg.high_log_const_learning_rate = -0.01, -6
 #arg.get_log_learning_rate =  lambda arg: np.random.uniform(low=arg.low_log_const_learning_rate, high=arg.high_log_const_learning_rate)
@@ -166,8 +167,8 @@ arg.get_decay_rate = lambda arg: arg.decay_rate
 #     arg.decay_steps_low, arg.decay_steps_high = arg.report_error_freq, arg.M
 #     decay_steos = np.random.randint(low=arg.decay_steps_low, high=arg.decay_steps_high)
 #     return decay_steos
-arg.decay_steps = 3000
-arg.get_decay_steps = lambda arg: 3000 # when stair case, how often to shrink
+arg.decay_steps = 4000
+arg.get_decay_steps = lambda arg: arg.decay_steps # when stair case, how often to shrink
 
 # If the argument staircase is True, then global_step / decay_steps is an integer division and the decayed earning rate follows a staircase function.
 #arg.staircase = False
@@ -175,10 +176,10 @@ arg.staircase = True
 
 optimization_alg = 'GD'
 optimization_alg = 'Momentum'
-#optimization_alg = 'Adadelta'
-#optimization_alg = 'Adagrad'
-optimization_alg = 'Adam'
-#optimization_alg = 'RMSProp'
+optimization_alg = 'Adadelta'
+optimization_alg = 'Adagrad'
+#optimization_alg = 'Adam'
+optimization_alg = 'RMSProp'
 arg.optimization_alg = optimization_alg
 
 if optimization_alg == 'GD':
@@ -212,7 +213,7 @@ elif optimization_alg == 'RMSProp':
     arg.get_decay = lambda arg: arg.decay
     #arg.momentum_low, arg.momontum_high = 0.0, 0.99
     #arg.get_momentum = lambda arg: np.random.uniform(low=arg.momentum_low,high=arg.momontum_high)
-    arg.momentum = 0.9
+    arg.momentum = 0.1
     arg.get_momentum = lambda arg: arg.momentum
 else:
     pass
