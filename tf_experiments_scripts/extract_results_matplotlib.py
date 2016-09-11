@@ -359,7 +359,98 @@ def display_results3():
     plt.legend()
     plt.show()
 
+def display_results4():
+    # frameworkpython multiple_vs_single_collect_results.py
+    experiment_name = 'om_mnist'
+    #experiment_name = 'om_f_4d_task_conv_2nd'
+
+
+    path_to_experiments = '../../%s/task_August_7_NN1_xavier_momentum'%experiment_name
+    nn1_multiple_experiment_results = mtf.get_results_for_experiments(path_to_experiments,verbose=True, split_string='_jBT_[\d]*_|_jHBF[\d]*_|_jrun_HBF[\d]*_|jNN_')
+    print('LEN(NN)', len(nn1_multiple_experiment_results))
+
+    path_to_experiments = '../../%s/task_August_9_NN1_xavier/NN2rmsprop'%experiment_name
+    path_to_experiments = '../../%s/task_August_9_NN2_Xavier_BN/NN2'%experiment_name
+    nn2_multiple_experiment_results = mtf.get_results_for_experiments(path_to_experiments,verbose=True, split_string='_jBT_[\d]*_|_jHBF[\d]*_|_jrun_HBF[\d]*_|jNN_')
+    print('LEN(BT)', len(nn2_multiple_experiment_results))
+
+    #print nn1_multiple_experiment_results
+    nn1_list_units, nn1_list_train_errors, nn1_list_test_errors = mtf.get_list_errors2(experiment_results=nn1_multiple_experiment_results)
+    nn2_list_units, nn2_list_train_errors, nn2_list_test_errors = mtf.get_list_errors2(experiment_results=nn2_multiple_experiment_results)
+    #
+    print('units: ', nn1_list_units)
+    print('nn1_list_test_errors: ', nn1_list_test_errors)
+    print('bt_multiple_experiment_results: ', nn2_list_test_errors)
+    #
+    # list_units = np.array(nn1_list_units)
+    # print( list_units)
+    krls.plot_errors(nn1_list_units, nn1_list_test_errors,label='NN1 test', markersize=3, colour='b')
+    krls.plot_errors(nn1_list_units, nn2_list_test_errors,label='NN2 test', markersize=3, colour='c')
+    #
+    plt.legend()
+    plt.show()
+
+def display_results5():
+    # frameworkpython multiple_vs_single_collect_results.py
+    experiment_name = 'om_mnist'
+    #experiment_name = 'om_f_4d_task_conv_2nd'
+
+
+    path_to_experiments = '../../%s/task_August_7_NN1_xavier_momentum'%experiment_name
+    nn1_multiple_experiment_results = mtf.get_results_for_experiments(path_to_experiments,verbose=True, split_string='_jBT_[\d]*_|_jHBF[\d]*_|_jrun_HBF[\d]*_|jNN_')
+    print('LEN(NN)', len(nn1_multiple_experiment_results))
+
+    path_to_experiments = '../../%s/task_August_9_NN1_xavier/NN2rmsprop'%experiment_name
+    path_to_experiments = '../../%s/task_August_9_NN2_Xavier_BN/NN2'%experiment_name
+    nn2_multiple_experiment_results = mtf.get_results_for_experiments(path_to_experiments,verbose=True, split_string='_jBT_[\d]*_|_jHBF[\d]*_|_jrun_HBF[\d]*_|jNN_')
+    print('LEN(BT)', len(nn2_multiple_experiment_results))
+
+    #print nn1_multiple_experiment_results
+    nn1_list_units, nn1_list_train_errors, nn1_list_test_errors = mtf.get_list_errors2(experiment_results=nn1_multiple_experiment_results)
+    nn2_list_units, nn2_list_train_errors, nn2_list_test_errors = mtf.get_list_errors2(experiment_results=nn2_multiple_experiment_results)
+    #
+    print('units: ', nn1_list_units)
+    print('nn1_list_test_errors: ', nn1_list_test_errors)
+    print('bt_multiple_experiment_results: ', nn2_list_test_errors)
+    #
+    # list_units = np.array(nn1_list_units)
+    # print( list_units)
+    krls.plot_errors(nn1_list_units, nn1_list_test_errors,label='NN1 test', markersize=3, colour='b')
+    krls.plot_errors(nn1_list_units, nn2_list_test_errors,label='NN2 test', markersize=3, colour='c')
+    #
+    plt.legend()
+    plt.show()
+
+def display_results6():
+    # frameworkpython multiple_vs_single_collect_results.py
+    experiment_name = 'om_f_4d_conv_2nd'
+
+
+    path_to_experiments = '../../%s/task_September_8_NN_100'%experiment_name
+    nn1_multiple_experiment_results = mtf.get_results_for_experiments(path_to_experiments,verbose=True, split_string='_jBT_[\d]*_|_jHBF[\d]*_|_jrun_HBF[\d]*_|jNN_')
+    print('LEN(NN)', len(nn1_multiple_experiment_results))
+
+    path_to_experiments = '../../%s/task_September_8_BTHL_100'%experiment_name
+    bt_multiple_experiment_results = mtf.get_results_for_experiments(path_to_experiments,verbose=True, split_string='_jBT_[\d]*_|_jHBF[\d]*_|_jrun_HBF[\d]*_|jNN_')
+    print('LEN(BT)', len(bt_multiple_experiment_results))
+
+    #print nn1_multiple_experiment_results
+    nn1_list_units, nn1_list_train_errors, nn1_list_test_errors = mtf.get_list_errors2(experiment_results=nn1_multiple_experiment_results)
+    nn2_list_units, nn2_list_train_errors, bt_list_test_errors = mtf.get_list_errors2(experiment_results=bt_multiple_experiment_results)
+    #
+    print('units: ', nn1_list_units)
+    print('nn1_list_test_errors: ', nn1_list_test_errors)
+    print('bt_multiple_experiment_results: ', bt_list_test_errors)
+    #
+    # list_units = np.array(nn1_list_units)
+    # print( list_units)
+    krls.plot_errors(nn1_list_units, nn1_list_test_errors,label='NN1 test', markersize=3, colour='b')
+    krls.plot_errors(nn1_list_units, bt_list_test_errors,label='BT test', markersize=3, colour='c')
+    #
+    plt.legend()
+    plt.show()
+
 if __name__ == '__main__':
     #display_results_NN_xsinglog1_x()
     #display_results_NN_xsinglog1_x()
-    display_results3()
+    display_results6()
