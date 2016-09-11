@@ -55,7 +55,7 @@ arg.experiment_root_dir = mtf.get_experiment_folder(task_name)
 arg.job_name = 'TB4' # job name e.g BT_6_6_5_RMSProp_Test
 #
 arg.mdl = 'standard_nn'
-#arg.mdl = 'hbf'
+arg.mdl = 'hbf'
 #arg.mdl = 'binary_tree_4D_conv'
 #arg.mdl = 'binary_tree_4D_conv_hidden_layer'
 #arg.mdl = 'binary_tree_8D_conv'
@@ -144,7 +144,7 @@ arg.get_steps = lambda arg: int( arg.steps )
 #arg.M_low = 51
 #arg.M_high = 52
 #arg.get_batch_size = lambda arg: int(np.random.randint(low=arg.M_low , high=arg.M_high))
-arg.M = 5000
+arg.M = 2000
 arg.get_batch_size = lambda arg: arg.M #M
 arg.report_error_freq = 30
 
