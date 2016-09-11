@@ -111,6 +111,8 @@ def get_data(task_name):
         (X_train, Y_train, X_cv, Y_cv, X_test, Y_test) = get_data_from_file(file_name='./f_2d_2x2_1_cosx1x2_depth_2data_and_mesh.npz')
     elif task_name == 'task_f2d_2x2_1_cosx1_plus_x2_depth2':
         (X_train, Y_train, X_cv, Y_cv, X_test, Y_test) = get_data_from_file(file_name='./f_2d_2x2_1_cosx1_plus_x2_depth_2data_and_mesh.npz')
+    elif task_name == 'task_h_gabor_data_and_mesh':
+        (X_train, Y_train, X_cv, Y_cv, X_test, Y_test) = get_data_from_file(file_name='./h_gabor_data_and_mesh.npz')
 
     elif task_name == 'task_f_4d_conv':
         X_train, Y_train, X_cv, Y_cv, X_test, Y_test = get_data_from_file(file_name='./f_4d_task_conv.npz')

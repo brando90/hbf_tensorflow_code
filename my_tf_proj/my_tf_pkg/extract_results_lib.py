@@ -121,13 +121,15 @@ def get_results_for_experiments(path_to_experiments, verbose=True, split_string=
                 nb_units = results_best['dims'][1]
             #(left, right) = experiment_dir.split('jHBF1_')
             #(left, right) = re.split('_jHBF[\d]*_',experiment_dir)
-            print( '=====> SPLIT: ', re.split(split_string,experiment_dir))
-            (left, right) = re.split(split_string,experiment_dir)
-            print( '=====> ', left, right)
+            # print('====> split_string: ', split_string)
+            # print( '=====> SPLIT: ', re.split(split_string,experiment_dir))
+            # split_res = re.split(split_string,experiment_dir)
+            # print( '=====> split_res: ', split_res)
+            # (left, right)  = split_res
             #pdb.set_trace()
             if verbose:
                 print( '--')
-                print( right[0])
+                #print( right[0])
                 print( 'experiment_dir ', experiment_dir)
                 print( 'potential_runs ', len(potential_runs))
                 print( 'type(potential_runs)', type(potential_runs))

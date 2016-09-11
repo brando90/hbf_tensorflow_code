@@ -122,6 +122,14 @@ def f2D_func(x_1,x_2, nb_recursive_layers=2,c1=0.03*np.pi,c2=0.04*np.pi,c3=np.pi
     f = 2*A_1 + 3*A_2
     return f
 
+def h_add(x_1,x_2,nb_recursive_layers):
+    f = np.sin(2*np.pi*x_1) + 4*np.power(x_2 - 0.5, 2) # h_add
+    return f
+
+def h_gabor(x_1,x_2,nb_recursive_layers):
+    f = np.multiply( np.exp( -(np.power(x_1,2)+np.power(x_2,2) )) , np.cos(2*np.pi*(x_1+x_2) ) )
+    return f
+
 ## normal meshgrid
 
 def generate_meshgrid_h_gabor(N=60000,start_val=-1,end_val=1):
@@ -294,7 +302,8 @@ def make_meshgrid_data_from_training_data(X_data, Y_data):
 #     X_test, Y_test = make_mesh_grid_to_data_set(X_mesh_test, Y_mesh_test, Z_mesh_test)
 #     return (X_train,Y_train, X_cv,Y_cv, X_test,Y_test), (X_mesh_train,Y_mesh_train,Z_mesh_train, X_mesh_cv,Y_mesh_cv,Z_mesh_cv, X_mesh_test,Y_mesh_test,Z_mesh_test)
 
-def generate_data_task2_func(func,nb_recursive_layers, N_train=60000,N_cv=60000,N_test=60000, start_val=-1,end_val=-1):
+def generate_data_task2_func(func,nb_recursive_layers, N_train=60000,N_cv=60000,N_test=60000, start_val=-1,end_val=1):
+    print('start_val,end_val',start_val,end_val)
     # train
     X_mesh_train, Y_mesh_train, Z_mesh_train = generate_random_meshgrid_f2D_func(func=func,N=N_train,start_val=-start_val,end_val=end_val,nb_recursive_layers=nb_recursive_layers)
     X_train, Y_train = make_mesh_grid_to_data_set(X_mesh_train, Y_mesh_train, Z_mesh_train)
@@ -306,12 +315,33 @@ def generate_data_task2_func(func,nb_recursive_layers, N_train=60000,N_cv=60000,
     X_test, Y_test = make_mesh_grid_to_data_set(X_mesh_test, Y_mesh_test, Z_mesh_test)
     return (X_train,Y_train, X_cv,Y_cv, X_test,Y_test), (X_mesh_train,Y_mesh_train,Z_mesh_train, X_mesh_cv,Y_mesh_cv,Z_mesh_cv, X_mesh_test,Y_mesh_test,Z_mesh_test)
 
+def generate_data_task2_func2(func,nb_recursive_layers, N_train=60000,N_cv=60000,N_test=60000, start_val=-1,end_val=1):
+    print('start_val,end_val',start_val,end_val)
+    # train
+    X_mesh_train, Y_mesh_train, Z_mesh_train = generate_random_meshgrid_f2D_func(func=func,N=N_train,start_val=start_val,end_val=end_val,nb_recursive_layers=nb_recursive_layers)
+    X_train, Y_train = make_mesh_grid_to_data_set(X_mesh_train, Y_mesh_train, Z_mesh_train)
+    # cv
+    X_mesh_cv, Y_mesh_cv, Z_mesh_cv = generate_random_meshgrid_f2D_func(func=func,N=N_cv,start_val=start_val,end_val=end_val,nb_recursive_layers=nb_recursive_layers)
+    X_cv, Y_cv = make_mesh_grid_to_data_set(X_mesh_cv, Y_mesh_cv, Z_mesh_cv)
+    # test
+    X_mesh_test, Y_mesh_test, Z_mesh_test = generate_random_meshgrid_f2D_func(func=func,N=N_test,start_val=start_val,end_val=end_val,nb_recursive_layers=nb_recursive_layers)
+    X_test, Y_test = make_mesh_grid_to_data_set(X_mesh_test, Y_mesh_test, Z_mesh_test)
+    return (X_train,Y_train, X_cv,Y_cv, X_test,Y_test), (X_mesh_train,Y_mesh_train,Z_mesh_train, X_mesh_cv,Y_mesh_cv,Z_mesh_cv, X_mesh_test,Y_mesh_test,Z_mesh_test)
+
 # def save_data_task2():
 #     print 'save_data_task2'
 #     (X_train,Y_train, X_cv,Y_cv, X_test,Y_test), (X_mesh_train,Y_mesh_train,Z_mesh_train, X_mesh_cv,Y_mesh_cv,Z_mesh_cv, X_mesh_test,Y_mesh_test,Z_mesh_test) = generate_data_task2()
 #     file_name = 'f_2d_task2_ml_data_and_mesh' #.npz will be appended
 #     print 'file_name: ', file_name
 #     np.savez(file_name, X_train=X_train,Y_train=Y_train, X_cv=X_cv,Y_cv=Y_cv, X_test=X_test,Y_test=Y_test, X_mesh_train=X_mesh_train,Y_mesh_train=Y_mesh_train,Z_mesh_train=Z_mesh_train, X_mesh_cv=X_mesh_cv,Y_mesh_cv=Y_mesh_cv,Z_mesh_cv=Z_mesh_cv, X_mesh_test=X_mesh_test,Y_mesh_test=Y_mesh_test,Z_mesh_test=Z_mesh_test)
+
+def save_data_task2_func_0th_layer(func,file_name,nb_recursive_layers,start_val,end_val):
+    print('start_val,end_val',start_val,end_val)
+    print( 'save_data_task2')
+    (X_train,Y_train, X_cv,Y_cv, X_test,Y_test), (X_mesh_train,Y_mesh_train,Z_mesh_train, X_mesh_cv,Y_mesh_cv,Z_mesh_cv, X_mesh_test,Y_mesh_test,Z_mesh_test) = generate_data_task2_func2(func=func,nb_recursive_layers=nb_recursive_layers,start_val=start_val,end_val=end_val)
+    print( 'file_name: ', file_name)
+    np.savez(file_name, X_train=X_train,Y_train=Y_train, X_cv=X_cv,Y_cv=Y_cv, X_test=X_test,Y_test=Y_test, X_mesh_train=X_mesh_train,Y_mesh_train=Y_mesh_train,Z_mesh_train=Z_mesh_train, X_mesh_cv=X_mesh_cv,Y_mesh_cv=Y_mesh_cv,Z_mesh_cv=Z_mesh_cv, X_mesh_test=X_mesh_test,Y_mesh_test=Y_mesh_test,Z_mesh_test=Z_mesh_test)
+
 
 def save_data_task2_func(func,file_name,nb_recursive_layers):
     print( 'save_data_task2')
