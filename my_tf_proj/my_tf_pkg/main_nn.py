@@ -59,8 +59,17 @@ def set_tensorboard(arg):
     return
 
 def set_experiment_folders(arg):
+    '''
+        Way to do experiment:
+        - goes to location arg.experiment_root_dir usually = ../../TASK_DATA_NAME
+        - goes to arg.experiment_name usually indicates which experiment we want to run.
+        for example if want to test 10 centers we do NN_10 as the folder name to hold the different runs
+        - then for each hp it saves it in ../../TASK_DATA_NAME/NN_10/hp_name
+        with hp_name being some file name for those hyper_params
+    '''
     ## directory structure for collecting data for experiments
-    path_root = '../../%s/%s'%(arg.experiment_root_dir,arg.experiment_name)
+    #path_root = '%s/%s'%(arg.experiment_root_dir,arg.experiment_name)
+    path_root = arg.get_path_root(arg)
     print('path_root: ', path_root)
     #
     arg.date = datetime.date.today().strftime("%B %d").replace (" ", "_")
@@ -397,7 +406,7 @@ def main_nn(arg):
     start_time = time.time()
     print()
     #file_for_error = './ray_error_file.txt'
-    if arg.debug:
+    if arg.save_config_args:
         arg_dict = dict(arg).copy()
         arg_dict = get_remove_functions_from_dict(arg_dict)
         pickle.dump( arg_dict, open( "pickle-slurm-%s_%s.p"%(arg.slurm_jobid,arg.slurm_array_task_id) , "wb" ) )
@@ -466,6 +475,9 @@ def main_nn(arg):
                     sess.run(fetches=[merged,train_step], feed_dict=feed_dict_batch) #sess.run(train_step, feed_dict={x: batch_xs, y_: batch_ys})
                 else:
                     sess.run(fetches=train_step, feed_dict=feed_dict_batch) #sess.run(train_step, feed_dict={x: batch_xs, y_: batch_ys})
+
+    best_train, best_cv, best_test =  mtf.get_errors_from(results)
+    results['best_train'], results['best_cv'], results['best_test'] = best_train, best_cv, best_test
     print('End of main')
 
     git_hash = subprocess.check_output(['git', 'rev-parse', 'HEAD'])
@@ -492,5 +504,5 @@ def main_nn(arg):
         print('path+json_file', path+json_file)
         json.dump(results,f_json,sort_keys=True, indent=2, separators=(',', ': '))
     print( '\a') #makes beep
-
-    print( 'best results: train, cv, test: ', mtf.get_errors_from(results) )
+    print(results)
+    print( 'best results: train, cv, test: ', best_train, best_cv, best_test )

@@ -16,6 +16,7 @@ import sys
 import pickle
 import namespaces as ns
 import numpy as np
+import argparse
 
 import my_tf_pkg as mtf
 
@@ -51,7 +52,7 @@ arg.task_name = task_name
 print('====> TASK_NAME', task_name)
 #
 arg.experiment_name = 'tmp_experiment'  # experiment_name e.g. task_August_10_BT
-arg.experiment_root_dir = mtf.get_experiment_folder(task_name)
+arg.experiment_root_dir = '../../'+mtf.get_experiment_folder(task_name)
 arg.job_name = 'TB4' # job name e.g BT_6_6_5_RMSProp_Test
 #
 arg.mdl = 'standard_nn'
@@ -138,13 +139,13 @@ else:
 #arg.steps_low = 100
 #arg.steps_high = 101
 #arg.get_steps = lambda arg: int( np.random.randint(low=arg.steps_low ,high=arg.steps_high) )
-arg.steps = 40000
+arg.steps = 50
 arg.get_steps = lambda arg: int( arg.steps )
 
 #arg.M_low = 51
 #arg.M_high = 52
 #arg.get_batch_size = lambda arg: int(np.random.randint(low=arg.M_low , high=arg.M_high))
-arg.M = 2000
+arg.M = 2
 arg.get_batch_size = lambda arg: arg.M #M
 arg.report_error_freq = 30
 
@@ -230,21 +231,44 @@ arg.data_normalize='dont_normalize'
 re_train = None
 arg.re_train = re_train
 #
-arg.debug = False
-if len(sys.argv) == 3:
-    print('Filling with old args')
-    arg.slurm_jobid = sys.argv[1]
-    arg.slurm_array_task_id = sys.argv[2]
+arg.save_config_args = False
+#arg.debug = False
+arg.slurm_jobid = 'TB_slurm_jobid'
+arg.slurm_array_task_id = 'TB_slurm_array_task_id'
+#
+arg.get_path_root =  lambda arg: '%s/%s'%(arg.experiment_root_dir,arg.experiment_name)
+
+#
+
+parser = argparse.ArgumentParser()
+parser.add_argument("-d", "--debug", help="debug mode: loads the old (pickle) config file to run in debug mode", action='store_true')
+parser.add_argument("-sj", "--SLURM_JOBID", help="SLURM_JOBID for run")
+parser.add_argument("-stid", "--SLURM_ARRAY_TASK_ID", help="SLURM_ARRAY_TASK_ID for run")
+parser.add_argument("-sca", "--save_config_args", help="save_config_args saves the current config file to a picke file ")
+
+parser.add_argument("-pr", "--path_root", help="path_root: specifies the path root to save hyper params")
+#parser.add_argument("-hp", "--hyper_parameter", help="hyper_parameter: when searching for hp on needs to specify were to store the results of experiment or it will default.")
+
+cmd_args = parser.parse_args()
+if cmd_args.save_config_args:
+    # flag to save current config files to pickle file
+    print(cmd_args.save_config_args)
+    arg.save_config_args = cmd_args.save_config_args
+elif cmd_args.debug:
+    #arg.debug = cmd_args.debug
+    # if sj, stid arguments given set them else leave them default values
+    arg.slurm_jobid = cmd_args.SLURM_JOBID if not cmd_args.SLURM_JOBID else arg.slurm_jobid
+    arg.slurm_array_task_id = cmd_args.SLURM_ARRAY_TASK_ID if not cmd_args.SLURM_ARRAY_TASK_ID else arg.slurm_array_task_id
+    # load old pickle config
     pickled_arg_dict = pickle.load( open( "pickle-slurm-%s_%s.p"%(int(arg.slurm_jobid)+int(arg.slurm_array_task_id),arg.slurm_array_task_id), "rb" ) )
     print( pickled_arg_dict )
     # values merged with the second dict's values overwriting those from the first.
     arg_dict = {**dict(arg), **pickled_arg_dict}
     arg = ns.Namespace(arg_dict)
-elif len(sys.argv) == 2:
-    arg.debug = sys.argv[1]
-else:
-    arg.slurm_jobid = 'TB_slurm_jobid'
-    arg.slurm_array_task_id = 'TB_slurm_array_task_id'
+elif cmd_args.path_root:
+    arg.path_root = cmd_args.path_root
+    arg.get_path_root =  lambda arg: arg.path_root
+
 #
 arg.mdl_save = False
 #arg.mdl_save = True
