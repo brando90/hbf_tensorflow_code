@@ -425,7 +425,6 @@ def display_results6():
     # frameworkpython multiple_vs_single_collect_results.py
     experiment_name = 'om_f_4d_conv_2nd'
 
-
     path_to_experiments = '../../%s/task_September_8_NN_100'%experiment_name
     nn1_multiple_experiment_results = mtf.get_results_for_experiments(path_to_experiments,verbose=True, split_string='_jBT_[\d]*_|_jHBF[\d]*_|_jrun_HBF[\d]*_|jNN_')
     print('LEN(NN)', len(nn1_multiple_experiment_results))
