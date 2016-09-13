@@ -198,7 +198,8 @@ def build_binary_tree_4D_hidden_layer(x,arg,nb_final_hidden,filter_size,nb_filte
     if phase_train is not None:
         l = 'BN1'
         flat_conv = add_batch_norm_layer(l, flat_conv, phase_train, trainable_bn=trainable_bn)
-
+    #A = tf.nn.relu( flat_conv )
+    A = tf.nn.elu( flat_conv )
     ## hidden layer
     init_W = tf.truncated_normal(shape=[filter_size*nb_filters,nb_final_hidden], mean=mean[1], stddev=stddev[1], dtype=tf.float32, seed=None, name=None)
     print( '-->-->-->-->-->-->-->-->-->-->-->W: ', init_W)
@@ -209,7 +210,8 @@ def build_binary_tree_4D_hidden_layer(x,arg,nb_final_hidden,filter_size,nb_filte
     if phase_train is not None:
         l = 'BN2'
         hidden_layer = add_batch_norm_layer(l, hidden_layer, phase_train, trainable_bn=trainable_bn)
-    A_hidden_layer = tf.nn.relu(hidden_layer)
+    #A_hidden_layer = tf.nn.relu(hidden_layer)
+    A_hidden_layer = tf.nn.elu(hidden_layer)
 
     # fully connected layer
     print( '+++> std mu for inits_C: ',[mean[2],stddev[2]] )
@@ -252,8 +254,7 @@ def get_binary_branch(l,x,filter_size,nb_filters,mean,stddev,name=None, stride_c
     # get activations
     print( 'conv: ', conv)
     flat_conv = tf.reshape(conv, [-1,filter_size*nb_filters])
-    A = tf.nn.relu( flat_conv )
-    return A
+    return flat_conv
 
 ##
 

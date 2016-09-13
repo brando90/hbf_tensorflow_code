@@ -504,5 +504,5 @@ def main_nn(arg):
         print('path+json_file', path+json_file)
         json.dump(results,f_json,sort_keys=True, indent=2, separators=(',', ': '))
     print( '\a') #makes beep
-    print(results)
+    #print(results)
     print( 'best results: train, cv, test: ', best_train, best_cv, best_test )
