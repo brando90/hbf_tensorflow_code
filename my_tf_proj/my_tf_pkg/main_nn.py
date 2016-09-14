@@ -89,6 +89,7 @@ def set_experiment_folders(arg):
 def main_nn(arg):
     print('Running main')
     print('--==>', dict(arg) )
+    arg.act_name = arg.act.__name__
     results = {'train_errors':[], 'cv_errors':[],'test_errors':[]}
 
     path, errors_pretty, mdl_dir, json_file = set_experiment_folders(arg)
