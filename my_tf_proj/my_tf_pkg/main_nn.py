@@ -198,7 +198,7 @@ def main_nn(arg):
         nb_hidden_layers = nb_layers-1
         (inits_C,inits_W,inits_b) = mtf.get_initilizations_standard_NN(init_type=arg.init_type,dims=arg.dims,mu=arg.mu_init_list,std=arg.std_init_list,b_init=arg.b_init, X_train=X_train, Y_train=Y_train)
         with tf.name_scope("standardNN") as scope:
-            mdl = mtf.build_standard_NN(arg, x,arg.dims,(inits_C,inits_W,inits_b),phase_train,arg.trainable_bn)
+            mdl = mtf.build_standard_NN(arg, x,arg.dims,(None,inits_W,inits_b),phase_train,arg.trainable_bn)
             mdl = mtf.get_summation_layer(l=str(nb_layers),x=mdl,init=inits_C[0])
         inits_S = inits_b
     elif arg.mdl == 'hbf':
@@ -241,59 +241,52 @@ def main_nn(arg):
         # x = tf.placeholder(float_type, shape=[None,1,D,1], name='x-input')
         # with tf.name_scope("build_binary_model") as scope:
         #     mdl = mtf.build_binary_tree(x,arg.filter_size,nb_filters,mean,stddev,stride_convd1=2,phase_train=phase_train,trainable_bn=arg.trainable_bn)
-        # #
+        #
         # arg.dims = [D]+[nb_filters]+[D_out]
     elif arg.mdl == 'binary_tree_4D_conv_hidden_layer':
-        print( 'binary_tree_4D')
-        #tensorboard_data_dump = '/tmp/hbf_logs'
+        print( 'binary_tree_4D' )
         inits_S = None
-        pca_error = None
-        rbf_error = None
+        pca_error, rbf_error = None, None
         float_type = tf.float32
-        # things that need reshaping
-        N_cv = X_cv.shape[0]
-        N_test = X_test.shape[0]
-        #
-        X_train = X_train.reshape(N_train,1,D,1)
-        X_cv = X_cv.reshape(N_cv,1,D,1)
-        X_test = X_test.reshape(N_test,1,D,1)
+        # Data sizes needed for reshaping
+        N_cv, N_test = X_cv.shape[0], X_test.shape[0]
+        # reshape data sets
+        X_train, X_cv, X_test = X_train.reshape(N_train,1,D,1), X_cv.reshape(N_cv,1,D,1), X_test.reshape(N_test,1,D,1)
         x = tf.placeholder(float_type, shape=[None,1,D,1], name='x-input')
         #
-        arg.filter_size = 2 #fixed for Binary Tree BT
+        arg.stride_convd1, arg.filter_size = 2, 2 #fixed for Binary Tree BT
         arg.mean, arg.stddev = arg.get_W_mu_init(arg), arg.get_W_std_init(arg)
-        nb_filters = arg.nb_filters
-        x = tf.placeholder(float_type, shape=[None,1,D,1], name='x-input')
         with tf.name_scope("build_binary_model") as scope:
-            mdl = mtf.build_binary_tree_4D_hidden_layer(x,arg,arg.nb_final_hidden,arg.filter_size,nb_filters,stride_convd1=2,phase_train=phase_train,trainable_bn=arg.trainable_bn)
-        #
-        arg.dims = [D]+[arg.nb_filters]+[arg.nb_final_hidden]+[D_out]
+            mdl = mtf.build_binary_tree_4D_hidden_layer(x,arg,phase_train=phase_train)
+        arg.dims = [D]+[arg.nb_filters]+[arg.nb_final_hidden_units]+[D_out]
     elif arg.mdl == 'binary_tree_8D_conv':
-        print( 'binary_tree_8D_conv')
-        #tensorboard_data_dump = '/tmp/hbf_logs'
-        inits_S = None
-        pca_error = None
-        rbf_error = None
-        float_type = tf.float32
-        # things that need reshaping
-        N_cv = X_cv.shape[0]
-        N_test = X_test.shape[0]
-        #
-        X_train = X_train.reshape(N_train,1,D,1)
-        X_cv = X_cv.reshape(N_cv,1,D,1)
-        X_test = X_test.reshape(N_test,1,D,1)
-        x = tf.placeholder(float_type, shape=[None,1,D,1], name='x-input')
-        #
-        filter_size = 2 #fixed for Binary Tree BT
-        nb_filters1,nb_filters2 = arg.nb_filters
-        arg.mean = arg.get_W_mu_init(arg)
-        mean1,mean2,mean3 = arg.mean
-        arg.stddev = arg.get_W_std_init(arg)
-        stddev1,stddev2,stddev3 = arg.stddev
-        x = tf.placeholder(float_type, shape=[None,1,D,1], name='x-input')
-        with tf.name_scope("binary_tree_D8") as scope:
-            mdl = mtf.build_binary_tree_8D(x,nb_filters1,nb_filters2,mean1,stddev1,mean2,stddev2,mean3,stddev3,stride_conv1=2)
-        #
-        arg.dims = [D]+arg.nb_filters+[D_out]
+        pass
+        # print( 'binary_tree_8D_conv')
+        # #tensorboard_data_dump = '/tmp/hbf_logs'
+        # inits_S = None
+        # pca_error = None
+        # rbf_error = None
+        # float_type = tf.float32
+        # # things that need reshaping
+        # N_cv = X_cv.shape[0]
+        # N_test = X_test.shape[0]
+        # #
+        # X_train = X_train.reshape(N_train,1,D,1)
+        # X_cv = X_cv.reshape(N_cv,1,D,1)
+        # X_test = X_test.reshape(N_test,1,D,1)
+        # x = tf.placeholder(float_type, shape=[None,1,D,1], name='x-input')
+        # #
+        # filter_size = 2 #fixed for Binary Tree BT
+        # nb_filters1,nb_filters2 = arg.nb_filters
+        # arg.mean = arg.get_W_mu_init(arg)
+        # mean1,mean2,mean3 = arg.mean
+        # arg.stddev = arg.get_W_std_init(arg)
+        # stddev1,stddev2,stddev3 = arg.stddev
+        # x = tf.placeholder(float_type, shape=[None,1,D,1], name='x-input')
+        # with tf.name_scope("binary_tree_D8") as scope:
+        #     mdl = mtf.build_binary_tree_8D(x,nb_filters1,nb_filters2,mean1,stddev1,mean2,stddev2,mean3,stddev3,stride_conv1=2)
+        # #
+        # arg.dims = [D]+arg.nb_filters+[D_out]
 
     ## Output and Loss
     y = mdl

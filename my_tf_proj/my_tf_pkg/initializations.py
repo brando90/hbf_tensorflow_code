@@ -12,6 +12,28 @@ import sklearn.cluster.k_means_
 from sklearn.utils.extmath import row_norms, squared_norm
 from sklearn.utils import check_random_state
 
+def get_initilizations_BT_4D(arg):
+    pass
+    # if init_type=='truncated_normal':
+    #     inits_W=[None]
+    #     inits_b=[None]
+    #     init_W = tf.truncated_normal(shape=[1,filter_size,1,nb_filters], mean=arg.mean, stddev=arg.stddev, dtype=tf.float32, seed=None, name=None)
+    #     inits_C = [ tf.truncated_normal(shape=[dims[l-1],dims[l]],  mean=mu[l], stddev=std[l], dtype=tf.float32) ]
+    # elif init_type=='xavier':
+    #     inits_W=[None]
+    #     inits_b=[None]
+    #     nb_hidden_layers=len(dims)-1
+    #     for l in range(1,nb_hidden_layers):
+    #         inits_W.append( tf.contrib.layers.xavier_initializer(dtype=tf.float32) )
+    #         inits_b.append( tf.constant( b_init[l], shape=[dims[l]], dtype=tf.float32 ) )
+    #     l=len(dims)-1
+    #     #print( 'dims inits_C: ',[dims[l-1],dims[l]] )
+    #     print( '+++> std mu for inits_C: ',[mu[l],std[l]] )
+    #     inits_C=[ tf.truncated_normal(shape=[dims[l-1],dims[l]], mean=mu[l], stddev=std[l], dtype=tf.float32) ]
+    # else:
+    #     raise ValueError('Need to use INIT library properly')
+    # return (inits_C,inits_W,inits_b)
+
 def get_initilizations_standard_NN(init_type,dims,mu,std,b_init,X_train,Y_train,train_S_type='multiple_S'):
 #def get_initilizations_standard_NN(args):
     if  init_type=='truncated_normal':
