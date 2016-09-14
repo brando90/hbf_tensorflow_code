@@ -193,7 +193,7 @@ def build_binary_tree_4D_hidden_layer(x,arg,phase_train=None):
     ## 1st hidden conv layer
     Z1 = get_binary_branch(x,arg,l=0,name='Conv_Layer') # N x D_conv_flat = N x (filter_size*nb_filters)
     if phase_train is not None:
-        Z1 = add_batch_norm_layer(l='BN1',x=flat_conv,phase_train=phase_train,trainable_bn=arg.trainable_bn)
+        Z1 = add_batch_norm_layer(l='BN1',x=Z1,phase_train=phase_train,trainable_bn=arg.trainable_bn)
     A1 = arg.act( Z1 ) # N x D_conv_flat = N x (filter_size*nb_filters)
     ## 2nd hidden layer
     b2 = tf.Variable(tf.constant(0.1, shape=[arg.nb_final_hidden_units]))
