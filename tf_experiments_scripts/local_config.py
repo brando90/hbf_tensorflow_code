@@ -15,8 +15,11 @@ import sys
 
 import pickle
 import namespaces as ns
-import numpy as np
 import argparse
+import pdb
+
+import numpy as np
+import tensorflow as tf
 
 import my_tf_pkg as mtf
 
@@ -56,7 +59,7 @@ arg.experiment_root_dir = '../../'+mtf.get_experiment_folder(task_name)
 arg.job_name = 'TB4' # job name e.g BT_6_6_5_RMSProp_Test
 #
 arg.mdl = 'standard_nn'
-arg.mdl = 'hbf'
+#arg.mdl = 'hbf'
 #arg.mdl = 'binary_tree_4D_conv'
 #arg.mdl = 'binary_tree_4D_conv_hidden_layer'
 #arg.mdl = 'binary_tree_8D_conv'
@@ -80,6 +83,9 @@ if arg.mdl == 'standard_nn':
 
     arg.b = 0.1
     arg.get_b_init = lambda arg: len(arg.dims)*[arg.b]
+
+    arg.act = tf.nn.relu
+    #arg.act = tf.nn.elu
 elif arg.mdl == 'hbf':
     #arg.init_type = 'truncated_normal'
     #arg.init_type = 'data_init'
@@ -118,11 +124,14 @@ elif arg.mdl == 'binary_tree_4D_conv_hidden_layer':
     #arg.nb_filters = 18 #F1
     arg.nb_final_hidden = 2*arg.nb_filters # F2
     arg.mu = [0.0,0.0,0.0]
-    arg.std = [0.5,0.5,0.5]
+    #arg.std = [0.5,0.5,0.5]
+    arg.std = [0.9,0.9,0.9]
     arg.get_W_mu_init = lambda arg: arg.mu
     arg.get_W_std_init = lambda arg: arg.std
     #arg.std_low, arg.std_high = 0.001, 0.1
     #arg.get_W_std_init = lambda arg: [float(i) for i in np.random.uniform(low=arg.std_low, high=arg.std_high, size=3)]
+    arg.act = tf.nn.relu
+    #arg.act = tf.nn.elu
 elif arg.mdl == 'binary_tree_8D_conv':
     arg.init_type = 'manual_truncated_normal'
     arg.mu = [0.0,0.0,0.0]
@@ -139,15 +148,15 @@ else:
 #arg.steps_low = 100
 #arg.steps_high = 101
 #arg.get_steps = lambda arg: int( np.random.randint(low=arg.steps_low ,high=arg.steps_high) )
-arg.steps = 50
+arg.steps = 80000
 arg.get_steps = lambda arg: int( arg.steps )
 
 #arg.M_low = 51
 #arg.M_high = 52
 #arg.get_batch_size = lambda arg: int(np.random.randint(low=arg.M_low , high=arg.M_high))
-arg.M = 2
+arg.M = 5000
 arg.get_batch_size = lambda arg: arg.M #M
-arg.report_error_freq = 30
+arg.report_error_freq = 50
 
 #arg.low_log_const_learning_rate, arg.high_log_const_learning_rate = -0.01, -6
 #arg.get_log_learning_rate =  lambda arg: np.random.uniform(low=arg.low_log_const_learning_rate, high=arg.high_log_const_learning_rate)
@@ -158,7 +167,7 @@ arg.get_start_learning_rate = lambda arg: arg.starter_learning_rate
 ## decayed_learning_rate = learning_rate * decay_rate ^ (global_step / decay_steps)
 #arg.decay_rate_low, arg.decay_rate_high = 0.3, 0.99
 #arg.get_decay_rate = lambda arg: np.random.uniform(low=arg.decay_rate_low, high=arg.decay_rate_high)
-arg.decay_rate  = 0.85
+arg.decay_rate  = 0.95
 arg.get_decay_rate = lambda arg: arg.decay_rate
 
 #arg.decay_steps_low, arg.decay_steps_high = arg.report_error_freq, arg.M
@@ -239,12 +248,18 @@ arg.slurm_array_task_id = 'TB_slurm_array_task_id'
 arg.get_path_root =  lambda arg: '%s/%s'%(arg.experiment_root_dir,arg.experiment_name)
 
 #
+#arg.use_tensorboard = False
+arg.use_tensorboard = True
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-d", "--debug", help="debug mode: loads the old (pickle) config file to run in debug mode", action='store_true')
 parser.add_argument("-sj", "--SLURM_JOBID", help="SLURM_JOBID for run")
 parser.add_argument("-stid", "--SLURM_ARRAY_TASK_ID", help="SLURM_ARRAY_TASK_ID for run")
 parser.add_argument("-sca", "--save_config_args", help="save_config_args saves the current config file to a picke file ")
+
+parser.add_argument("-tb", "--tensorboard", dest='tensorboard', help="tensorboard mode: save tensorboard data", action='store_true')
+parser.add_argument('-notb', "--no-tensorboard", dest='tensorboard', help="tensorboard mode: save tensorboard data", action='store_false')
+parser.set_defaults(tensorboard=True)
 
 parser.add_argument("-pr", "--path_root", help="path_root: specifies the path root to save hyper params")
 #parser.add_argument("-hp", "--hyper_parameter", help="hyper_parameter: when searching for hp on needs to specify were to store the results of experiment or it will default.")
@@ -254,7 +269,7 @@ if cmd_args.save_config_args:
     # flag to save current config files to pickle file
     print(cmd_args.save_config_args)
     arg.save_config_args = cmd_args.save_config_args
-elif cmd_args.debug:
+if cmd_args.debug:
     #arg.debug = cmd_args.debug
     # if sj, stid arguments given set them else leave them default values
     arg.slurm_jobid = cmd_args.SLURM_JOBID if not cmd_args.SLURM_JOBID else arg.slurm_jobid
@@ -265,7 +280,7 @@ elif cmd_args.debug:
     # values merged with the second dict's values overwriting those from the first.
     arg_dict = {**dict(arg), **pickled_arg_dict}
     arg = ns.Namespace(arg_dict)
-elif cmd_args.path_root:
+if cmd_args.path_root:
     arg.path_root = cmd_args.path_root
     arg.get_path_root =  lambda arg: arg.path_root
 
@@ -273,12 +288,20 @@ elif cmd_args.path_root:
 arg.mdl_save = False
 #arg.mdl_save = True
 
-arg.max_to_keep = 1
 #
-#arg.use_tensorboard = False
-arg.use_tensorboard = True
+arg.use_tensorboard = cmd_args.tensorboard
+print('---> cmd_args.tensorboard: ', cmd_args.tensorboard)
 
-#
+arg.max_to_keep = 1
+
+# scp -r brando90@polestar.mit.edu:/cbcl/cbcl01/brando90/Documents/MEng/hbf_tensorflow_code/tf_experiments_scripts/hp1  /Users/brandomiranda/Documents/MIT/MEng/hbf_tensorflow_code/tf_experiments_scripts
+
+# scp -r brando90@polestar.mit.edu:/cbcl/cbcl01/brando90/Documents/MEng/hbf_tensorflow_code/tf_experiments_scripts/hp2  /Users/brandomiranda/Documents/MIT/MEng/hbf_tensorflow_code/tf_experiments_scripts
+
+# scp -r brando90@polestar.mit.edu:/cbcl/cbcl01/brando90/Documents/MEng/hbf_tensorflow_code/tf_experiments_scripts/hp3  /Users/brandomiranda/Documents/MIT/MEng/hbf_tensorflow_code/tf_experiments_scripts
+
+# scp -r brando90@polestar.mit.edu:/cbcl/cbcl01/brando90/Documents/MEng/hbf_tensorflow_code/tf_experiments_scripts/hp4  /Users/brandomiranda/Documents/MIT/MEng/hbf_tensorflow_code/tf_experiments_scripts
+
 if __name__ == '__main__':
     print('In __name__ == __main__')
     #main_nn.main_old()

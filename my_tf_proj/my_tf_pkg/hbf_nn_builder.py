@@ -19,12 +19,12 @@ def hello_world():
 #         layer = get_HBF_layer(l=str(l),x=layer,init=(inits_W[l],inits_S[l]),dims=(dims[l-1],dims[l]),phase_train=phase_train)
 #     return layer
 
-def build_standard_NN(x, dims, inits, phase_train=None, trainable_bn=True):
+def build_standard_NN(arg, x, dims, inits, phase_train=None, trainable_bn=True):
     (_,inits_W,inits_b) = inits
     layer = x
     nb_hidden_layers = len(dims)-1
     for l in range(1,nb_hidden_layers): # from 1 to L-1
-        layer = get_NN_layer(l=str(l), x=layer, init=(inits_W[l],inits_b[l]), dims=(dims[l-1], dims[l]), phase_train=phase_train, trainable_bn=trainable_bn)
+        layer = get_NN_layer(arg, l=str(l), x=layer, init=(inits_W[l],inits_b[l]), dims=(dims[l-1], dims[l]), phase_train=phase_train, trainable_bn=trainable_bn)
     return layer
 
 ## build layers blocks NN
@@ -159,7 +159,7 @@ def variable_summaries(var, name):
     tf.scalar_summary('min/' + name, tf.reduce_min(var))
     tf.histogram_summary(name, var)
 
-def get_NN_layer(l, x, dims, init, phase_train=None, scope="NNLayer", trainable_bn=True):
+def get_NN_layer(arg, l, x, dims, init, phase_train=None, scope="NNLayer", trainable_bn=True):
     (init_W,init_b) = init
     with tf.name_scope(scope+l):
         #print( 'init_W ', init_W )
@@ -171,8 +171,8 @@ def get_NN_layer(l, x, dims, init, phase_train=None, scope="NNLayer", trainable_
                 #z = standard_batch_norm(l, z, 1, phase_train)
                 Z = add_batch_norm_layer(l, Z, phase_train, trainable_bn=trainable_bn)
         with tf.name_scope('A'+l):
-            A = tf.nn.relu(Z) # (M x D1) = (M x D) * (D x D1)
-            #a = tf.sigmoid(z)
+            #A = tf.nn.relu(Z) # (M x D1) = (M x D) * (D x D1)
+            A = arg.act(Z)
     with tf.name_scope('sumarries'+l):
         #W = tf.histogram_summary('W'+l, W)
         #b = tf.histogram_summary('b'+l, b)
@@ -199,7 +199,8 @@ def build_binary_tree_4D_hidden_layer(x,arg,nb_final_hidden,filter_size,nb_filte
         l = 'BN1'
         flat_conv = add_batch_norm_layer(l, flat_conv, phase_train, trainable_bn=trainable_bn)
     #A = tf.nn.relu( flat_conv )
-    A = tf.nn.elu( flat_conv )
+    #A = tf.nn.elu( flat_conv )
+    A = arg.act( flat_conv )
     ## hidden layer
     init_W = tf.truncated_normal(shape=[filter_size*nb_filters,nb_final_hidden], mean=mean[1], stddev=stddev[1], dtype=tf.float32, seed=None, name=None)
     print( '-->-->-->-->-->-->-->-->-->-->-->W: ', init_W)
@@ -211,7 +212,8 @@ def build_binary_tree_4D_hidden_layer(x,arg,nb_final_hidden,filter_size,nb_filte
         l = 'BN2'
         hidden_layer = add_batch_norm_layer(l, hidden_layer, phase_train, trainable_bn=trainable_bn)
     #A_hidden_layer = tf.nn.relu(hidden_layer)
-    A_hidden_layer = tf.nn.elu(hidden_layer)
+    #A_hidden_layer = tf.nn.elu(hidden_layer)
+    A_hidden_layer = arg.act( flat_conv )
 
     # fully connected layer
     print( '+++> std mu for inits_C: ',[mean[2],stddev[2]] )
