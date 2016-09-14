@@ -444,7 +444,7 @@ def main_nn(arg):
 
                     current_learning_rate = sess.run(fetches=learning_rate)
                     loss_msg = "=> Mdl*%s*-units%s, task: %s, step %d/%d, train err %g, cv err: %g test err %g"%(arg.mdl,arg.dims,arg.task_name,i,arg.steps,train_error,cv_error,test_error)
-                    mdl_info_msg = "Opt:%s, BN %s, BN_trainable: %s After%d/%d iteration,Init: %s, current_learning_rate %s, M %s, decay_rate %s, decay_steps %s" % (arg.optimization_alg,arg.bn,arg.trainable_bn,i,arg.steps,arg.init_type,current_learning_rate,arg.M,arg.decay_rate,arg.decay_steps)
+                    mdl_info_msg = "Act: %s, Opt:%s, BN %s, BN_trainable: %s After%d/%d iteration,Init: %s, current_learning_rate %s, M %s, decay_rate %s, decay_steps %s" % (arg.act.__name__,arg.optimization_alg,arg.bn,arg.trainable_bn,i,arg.steps,arg.init_type,current_learning_rate,arg.M,arg.decay_rate,arg.decay_steps)
                     errors_to_beat = 'BEAT: hbf1_error: %s RBF error: %s PCA error: %s '%(hbf1_error, rbf_error,pca_error)
 
                     print_messages(loss_msg, mdl_info_msg, errors_to_beat)
