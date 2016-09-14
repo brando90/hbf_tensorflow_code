@@ -61,14 +61,14 @@ arg.job_name = 'TB4' # job name e.g BT_6_6_5_RMSProp_Test
 arg.mdl = 'standard_nn'
 #arg.mdl = 'hbf'
 #arg.mdl = 'binary_tree_4D_conv'
-#arg.mdl = 'binary_tree_4D_conv_hidden_layer'
+arg.mdl = 'binary_tree_4D_conv_hidden_layer'
 #arg.mdl = 'binary_tree_8D_conv'
 if arg.mdl == 'standard_nn':
     arg.init_type = 'truncated_normal'
     arg.init_type = 'xavier'
 
     arg.units = [31]
-    arg.units = [110]
+    #arg.units = [110]
     #arg.units = [237]
 
     #arg.mu = 0.0
@@ -110,37 +110,44 @@ elif arg.mdl == 'hbf':
 
     arg.S = [None, 0.4]
     arg.get_b_init = lambda arg: arg.S
+
+    arg.act = tf.nn.exp
 elif arg.mdl == 'binary_tree_4D_conv':
-    arg.init_type = 'manual_truncated_normal'
-    arg.nb_filters = 31
-    #arg.nb_filters = 12
-    #arg.nb_filters = 18
-    arg.mu = 0.0
-    arg.std = 1.0
+    pass
+    # arg.init_type = 'manual_truncated_normal'
+    # arg.nb_filters = 31
+    # #arg.nb_filters = 12
+    # #arg.nb_filters = 18
+    # arg.mu = 0.0
+    # arg.std = 1.0
 elif arg.mdl == 'binary_tree_4D_conv_hidden_layer':
     arg.init_type = 'manual_truncated_normal'
-    #arg.nb_filters = 6 #F1
-    arg.nb_filters = 12 #F1
+    arg.init_type = 'xavier'
+    arg.nb_filters = 6 #F1
+    #arg.nb_filters = 12 #F1
     #arg.nb_filters = 18 #F1
-    arg.nb_final_hidden = 2*arg.nb_filters # F2
+    arg.nb_final_hidden_units = 2*arg.nb_filters # F2
     arg.mu = [0.0,0.0,0.0]
-    #arg.std = [0.5,0.5,0.5]
     arg.std = [0.9,0.9,0.9]
+    #arg.mu = [None, None, 0.0]
+    #arg.std = [None, None, 0.1]
     arg.get_W_mu_init = lambda arg: arg.mu
     arg.get_W_std_init = lambda arg: arg.std
     #arg.std_low, arg.std_high = 0.001, 0.1
     #arg.get_W_std_init = lambda arg: [float(i) for i in np.random.uniform(low=arg.std_low, high=arg.std_high, size=3)]
+
     arg.act = tf.nn.relu
     #arg.act = tf.nn.elu
 elif arg.mdl == 'binary_tree_8D_conv':
-    arg.init_type = 'manual_truncated_normal'
-    arg.mu = [0.0,0.0,0.0]
-    arg.std = [1.0,1.0,1.0]
-    arg.get_W_mu_init = lambda arg: arg.mu
-    arg.get_W_std_init = lambda arg: arg.std
-    arg.nb_filters = [3, 6]
-    arg.nb_filters = [6, 12]
-    #arg.nb_filters = [9, 18]
+    pass
+    # arg.init_type = 'manual_truncated_normal'
+    # arg.mu = [0.0,0.0,0.0]
+    # arg.std = [1.0,1.0,1.0]
+    # arg.get_W_mu_init = lambda arg: arg.mu
+    # arg.get_W_std_init = lambda arg: arg.std
+    # arg.nb_filters = [3, 6]
+    # arg.nb_filters = [6, 12]
+    # #arg.nb_filters = [9, 18]
 else:
     raise ValueError('Need to use a valid model, incorrect or unknown model %s give.'%arg.mdl)
 
@@ -245,8 +252,8 @@ arg.save_config_args = False
 arg.slurm_jobid = 'TB_slurm_jobid'
 arg.slurm_array_task_id = 'TB_slurm_array_task_id'
 #
-arg.get_path_root =  lambda arg: '%s/%s'%(arg.experiment_root_dir,arg.experiment_name)
-
+arg.path_root = '%s/%s'%(arg.experiment_root_dir,arg.experiment_name)
+arg.get_path_root =  lambda arg: arg.path_root
 #
 parser = argparse.ArgumentParser()
 parser.add_argument("-d", "--debug", help="debug mode: loads the old (pickle) config file to run in debug mode", action='store_true')
