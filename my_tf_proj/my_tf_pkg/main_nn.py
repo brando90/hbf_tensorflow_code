@@ -198,7 +198,7 @@ def main_nn(arg):
         nb_hidden_layers = nb_layers-1
         (inits_C,inits_W,inits_b) = mtf.get_initilizations_standard_NN(init_type=arg.init_type,dims=arg.dims,mu=arg.mu_init_list,std=arg.std_init_list,b_init=arg.b_init, X_train=X_train, Y_train=Y_train)
         with tf.name_scope("standardNN") as scope:
-            mdl = mtf.build_standard_NN(x,arg.dims,(inits_C,inits_W,inits_b),phase_train,arg.trainable_bn)
+            mdl = mtf.build_standard_NN(arg, x,arg.dims,(inits_C,inits_W,inits_b),phase_train,arg.trainable_bn)
             mdl = mtf.get_summation_layer(l=str(nb_layers),x=mdl,init=inits_C[0])
         inits_S = inits_b
     elif arg.mdl == 'hbf':
