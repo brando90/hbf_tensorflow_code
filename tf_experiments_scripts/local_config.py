@@ -288,6 +288,7 @@ arg.mdl_save = False
 #
 arg.use_tensorboard = cmd_args.tensorboard
 print('---> arg.use_tensorboard: ', arg.use_tensorboard)
+print('---> cmd_args.tensorboard: ', cmd_args.tensorboard)
 
 arg.max_to_keep = 1
 
