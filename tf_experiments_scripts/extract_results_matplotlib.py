@@ -517,11 +517,11 @@ def display_results9():
     var_Y_test = np.var(Y_test)
     print('var_Y_test: ', var_Y_test)
 
-    path_to_experiments = '../../%s/task_September_14_NN_runs100_elu_initXav'%experiment_name
+    path_to_experiments = '../../%s/task_September_14_NN_run100_elu_initXav'%experiment_name
     nn1_multiple_experiment_results = mtf.get_results_for_experiments(path_to_experiments,verbose=True, split_string='_jBT_[\d]*_|_jHBF[\d]*_|_jrun_HBF[\d]*_|jNN_')
     print('LEN(NN)', len(nn1_multiple_experiment_results))
 
-    path_to_experiments = '../../%s/task_September_14_BTHL_run100_elu_initXav'%experiment_name
+    path_to_experiments = '../../%s/task_September_14_BTHL_runs100_elu_initXav'%experiment_name
     bt_multiple_experiment_results = mtf.get_results_for_experiments(path_to_experiments,verbose=True, split_string='_jBT_[\d]*_|_jHBF[\d]*_|_jrun_HBF[\d]*_|jNN_')
     print('LEN(BT)', len(bt_multiple_experiment_results))
 
