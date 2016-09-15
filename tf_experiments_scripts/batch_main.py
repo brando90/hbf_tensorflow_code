@@ -65,7 +65,7 @@ arg.job_name = 'NN_31_Adam' # job name e.g BT_6_6_5_RMSProp_Test
 arg.mdl = 'standard_nn'
 #arg.mdl = 'hbf'
 #arg.mdl = 'binary_tree_4D_conv'
-arg.mdl = 'binary_tree_4D_conv_hidden_layer'
+#arg.mdl = 'binary_tree_4D_conv_hidden_layer'
 #arg.mdl = 'binary_tree_8D_conv'
 if arg.mdl == 'standard_nn':
     arg.init_type = 'truncated_normal'
@@ -90,7 +90,8 @@ if arg.mdl == 'standard_nn':
     arg.get_b_init = lambda arg: len(arg.dims)*[arg.b]
 
     #arg.act = tf.nn.relu
-    arg.act = tf.nn.elu
+    #arg.act = tf.nn.elu
+    arg.act = tf.nn.softplus
 elif arg.mdl == 'hbf':
     pass
     # arg.init_type = 'truncated_normal'
@@ -140,7 +141,8 @@ elif arg.mdl == 'binary_tree_4D_conv_hidden_layer':
     arg.get_W_std_init = lambda arg: [float(i) for i in np.random.uniform(low=arg.std_low, high=arg.std_high, size=3)]
 
     #arg.act = tf.nn.relu
-    arg.act = tf.nn.elu
+    #arg.act = tf.nn.elu
+    arg.act = tf.nn.softplus
 elif arg.mdl == 'binary_tree_8D_conv':
     pass
     # arg.init_type = 'manual_truncated_normal'
