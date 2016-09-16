@@ -54,11 +54,18 @@ def plot_one_func(fig_num, X_original,Y_original, markersize=3, title_name='Reco
     plt.title(title_name)
     plt.plot(X_original, Y_original,'bo', label='Original data', markersize=markersize)
 
-def plot_errors(nb_centers, rbf_errors,label='Errors', markersize=3, colour='b'):
-    plt.xlabel('number of units')
-    plt.ylabel('squared error (l2 loss)')
+def plot_errors(nb_centers,rbf_errors,xlabel='number of units',y_label='squared error (l2 loss)',label='Errors',markersize=3,colour='b'):
+    plt.xlabel(xlabel)
+    plt.ylabel(y_label)
     plt.plot(nb_centers, rbf_errors, colour, label=label, markersize=3)
     plt.plot(nb_centers, rbf_errors, colour+'o')
+    plt.title("Erors vs centers")
+
+def plot_values(x_values,y_values,xlabel='number of units',y_label='squared error (l2 loss)',label='Errors',markersize=3,colour='b'):
+    plt.xlabel(xlabel)
+    plt.ylabel(y_label)
+    plt.plot(x_values, y_values, colour, label=label, markersize=3)
+    plt.plot(x_values, y_values, colour+'o')
     plt.title("Erors vs centers")
 
 def plot_errors_and_bars(nb_centers, rbf_errors, rbf_error_std, label='Errors', markersize=3, colour='b'):
