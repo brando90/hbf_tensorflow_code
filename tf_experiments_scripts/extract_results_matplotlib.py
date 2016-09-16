@@ -370,7 +370,7 @@ def display_results4():
     print('LEN(NN)', len(nn1_multiple_experiment_results))
 
     path_to_experiments = '../../%s/task_August_9_NN1_xavier/NN2rmsprop'%experiment_name
-    path_to_experiments = '../../%s/task_August_9_NN2_Xavier_BN/NN2'%experiment_name
+    #path_to_experiments = '../../%s/task_August_9_NN2_Xavier_BN/NN2'%experiment_name
     nn2_multiple_experiment_results = mtf.get_results_for_experiments(path_to_experiments,verbose=True, split_string='_jBT_[\d]*_|_jHBF[\d]*_|_jrun_HBF[\d]*_|jNN_')
     print('LEN(BT)', len(nn2_multiple_experiment_results))
 
@@ -386,6 +386,8 @@ def display_results4():
     # print( list_units)
     krls.plot_errors(nn1_list_units, nn1_list_test_errors,label='NN1 test', markersize=3, colour='b')
     krls.plot_errors(nn1_list_units, nn2_list_test_errors,label='NN2 test', markersize=3, colour='c')
+    krls.plot_values(nn1_list_units,nn1_list_test_errors,xlabel='number of units',y_label='squared error (l2 loss)',label='NN1 test',markersize=3,colour='b')
+    krls.plot_values(nn1_list_units,nn2_list_test_errors,xlabel='number of units',y_label='squared error (l2 loss)',label='NN2 test',markersize=3,colour='c')
     #
     plt.legend()
     plt.show()
@@ -415,8 +417,10 @@ def display_results5():
     #
     # list_units = np.array(nn1_list_units)
     # print( list_units)
-    krls.plot_errors(nn1_list_units, nn1_list_test_errors,label='NN1 test', markersize=3, colour='b')
-    krls.plot_errors(nn1_list_units, nn2_list_test_errors,label='NN2 test', markersize=3, colour='c')
+    # krls.plot_errors(nn1_list_units, nn1_list_test_errors,label='NN1 test', markersize=3, colour='b')
+    # krls.plot_errors(nn1_list_units, nn2_list_test_errors,label='NN2 test', markersize=3, colour='c')
+    krls.plot_values(nn1_list_units,nn1_list_test_errors,xlabel='number of units',y_label='squared error (l2 loss)',label='NN1 test',markersize=3,colour='b')
+    krls.plot_values(nn1_list_units,nn2_list_test_errors,xlabel='number of units',y_label='squared error (l2 loss)',label='NN2 test',markersize=3,colour='c')
     #
     plt.legend()
     plt.show()
@@ -542,6 +546,10 @@ def display_results9():
     plt.show()
 
 def display_results10():
+    get_k = lambda a: 7*a + 4*3*2*a**2
+    shallow = lambda k: 4*k+k+k
+    bt = lambda f: 2*f+f +2*f*(2*f)+ 2*(2*f)
+
     task_name = 'task_f_4d_conv_2nd'
     experiment_name = mtf.get_experiment_folder(task_name)
     #experiment_name = 'om_f_4d_conv_2nd'
@@ -567,16 +575,15 @@ def display_results10():
     #
     # list_units = np.array(nn1_list_units)
     # print( list_units)
-    krls.plot_errors(nn1_list_units, nn1_list_test_errors,label='NN1 test', markersize=3, colour='b')
-    krls.plot_errors(nn1_list_units, bt_list_test_errors,label='BT test', markersize=3, colour='c')
+    nb_params = [ bt(nb_units) for nb_units in nn1_list_units ]
+    krls.plot_values(nb_params,nn1_list_test_errors,xlabel='number of parameters',y_label='squared error (l2 loss)',label='NN1 test',markersize=3,colour='b')
+    krls.plot_values(nb_params,bt_list_test_errors,xlabel='number of parameters',y_label='squared error (l2 loss)',label='BT test',markersize=3,colour='c')
     #
     plt.legend()
     plt.show()
 
-
-
 if __name__ == '__main__':
-    #display_results_NN_xsinglog1_x()
-    #display_results_NN_xsinglog1_x()
-    display_results9()
-    display_results10()
+    #display_results4()
+    display_results5()
+    #display_results9()
+    #display_results10()
