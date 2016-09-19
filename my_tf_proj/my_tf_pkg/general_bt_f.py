@@ -35,7 +35,7 @@ def f_bt(x, h_list, l, left, right):
 
 ##
 
-class TestStringMethods(unittest.TestCase):
+class TestF_BT(unittest.TestCase):
     #make sure methods start with word test
 
     def test_BT4D(self, D=4, N_train=100, low_x=-1, high_x=1):
