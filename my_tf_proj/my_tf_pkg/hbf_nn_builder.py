@@ -193,7 +193,7 @@ def build_binary_tree_4D_hidden_layer(x,arg,phase_train=None):
     ## 1st hidden conv layer
     Z1 = get_binary_branch(x,arg,l=0,name='Conv_Layer') # N x D_conv_flat = N x (filter_size*nb_filters)
     if phase_train is not None:
-        Z1 = add_batch_norm_layer(l='BN1',x=Z1,phase_train=phase_train,trainable_bn=arg.trainable_bn)
+        Z1 = add_batch_norm_layer(l='BN1',x=flat_conv,phase_train=phase_train,trainable_bn=arg.trainable_bn)
     A1 = arg.act( Z1 ) # N x D_conv_flat = N x (filter_size*nb_filters)
     ## 2nd hidden layer
     b2 = tf.Variable(tf.constant(0.1, shape=[arg.nb_final_hidden_units]))
@@ -206,7 +206,7 @@ def build_binary_tree_4D_hidden_layer(x,arg,phase_train=None):
     init_C = tf.truncated_normal(shape=[arg.nb_final_hidden_units,1], mean=arg.mean[2], stddev=arg.stddev[2], dtype=tf.float32, seed=None, name=None)
     C = tf.get_variable(name='W'+'Out_Layer',dtype=tf.float32,initializer=init_C,regularizer=None,trainable=True)
     f = tf.matmul(A2,C)
-    return f
+    return mdl
 
 def get_binary_branch(x,arg,l,name=None):
     '''
@@ -332,7 +332,7 @@ def get_W_conv2d(arg,l,name,dtype=tf.float32):
         W = tf.get_variable(name='W'+name,dtype=dtype,initializer=init_W,regularizer=None,trainable=True,shape=[1,arg.filter_size,1,arg.nb_filters])
     else:
         init_W = tf.truncated_normal(shape=[1,arg.filter_size,1,arg.nb_filters], mean=arg.mean[l], stddev=arg.stddev[l], dtype=dtype)
-        W = tf.get_variable(name='W'+name, dtype=dtype, initializer=init_W, regularizer=None, trainable=True)
+        W = tf.get_variable(name='W'+l, dtype=dtype, initializer=init_W, regularizer=None, trainable=True)
     return W
 
 def get_W_BT4D(arg,l,name,dtype=tf.float32):
@@ -344,7 +344,7 @@ def get_W_BT4D(arg,l,name,dtype=tf.float32):
         W = tf.get_variable(name='W'+name,dtype=dtype,initializer=init_W,regularizer=None,trainable=True,shape=[dim_input,dim_out])
     else:
         init_W = tf.truncated_normal(shape=[dim_input,dim_out], mean=arg.mean[l], stddev=arg.stddev[l], dtype=dtype)
-        W = tf.get_variable(name='W'+name, dtype=dtype, initializer=init_W, regularizer=None, trainable=True)
+        W = tf.get_variable(name='W'+name, dtype=dtype, initializer=init_W, regularizer=None, trainable=True, shape=[dim_input,dim_out])
     return W
 
 def get_W(init_W,l,dims,dtype=tf.float64):
