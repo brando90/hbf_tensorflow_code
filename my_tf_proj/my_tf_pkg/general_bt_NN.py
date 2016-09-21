@@ -46,7 +46,7 @@ def get_activated_conv_layer(l,arg,x,kernel_size,stride,scope):
         num_outputs=arg.F[l],
         kernel_size=[kernel_height, kernel_width],
         stride=[stride_height, stride_width],
-        padding='VALID',
+        padding=arg.padding,
         rate=1,
         activation_fn=arg.act,
         normalizer_fn=arg.normalizer_fn,
@@ -63,12 +63,8 @@ def get_activated_conv_layer(l,arg,x,kernel_size,stride,scope):
 class TestNN_BT(unittest.TestCase):
     #make sure methods start with word test
 
-    def test_NN_BT4D(self):
-        print('test')
-        D = 5
-        x = tf.placeholder(tf.float32, shape=[None,1,D,1], name='x-input') #[M, 1, D, 1]
-        # prepare args
-        arg = ns.Namespace(L=2)
+    def get_args(self,L,F):
+        arg = ns.Namespace(L=L,padding='VALID')
         arg.act = tf.nn.relu
         #weights_initializer = tf.contrib.layers.xavier_initializer(dtype=tf.float32)
         arg.weights_initializer = tf.constant_initializer(value=1.0, dtype=tf.float32)
@@ -78,7 +74,15 @@ class TestNN_BT(unittest.TestCase):
         arg.normalizer_fn = None
         #arg.normalizer_fn = tf.contrib.layers.batch_norm
 
-        arg.F = [3,5]
+        arg.F = F
+        return arg
+
+    def test_NN_BT4D(self):
+        print('test')
+        D = 5
+        x = tf.placeholder(tf.float32, shape=[None,1,D,1], name='x-input') #[M, 1, D, 1]
+        # prepare args
+        arg = self.get_args(L=2,F=[3,5])
         # get NN BT
         bt_mdl = bt_mdl_conv(arg,x)
         # do check
@@ -91,7 +95,20 @@ class TestNN_BT(unittest.TestCase):
         #self.assertTrue(correct)
 
     def test_NN_BT8D(self):
-        pass
+        print('test')
+        D = 5
+        x = tf.placeholder(tf.float32, shape=[None,1,D,1], name='x-input') #[M, 1, D, 1]
+        # prepare args
+        arg = self.get_args(L=3,F=[3,5,7])
+        # get NN BT
+        bt_mdl = bt_mdl_conv(arg,x)
+        # do check
+        M = 2
+        X_data = np.array( [np.arange(0,5),np.arange(5,10)] )
+        X_data = X_data.reshape(M,1,D,1)
+        with tf.Session() as sess:
+            sess.run( tf.initialize_all_variables() )
+            print( sess.run(fetches=bt_mdl, feed_dict={x:X_data}) )
         #self.assertTrue(correct)
 
 if __name__ == '__main__':
