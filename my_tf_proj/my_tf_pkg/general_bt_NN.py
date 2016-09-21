@@ -32,14 +32,14 @@ def bt_mdl_conv(arg,x):
     conv = x
     kernel_width = 2
     stride_width = kernel_width
-    for l in range(arg.L,0,-1):
-        conv = get_activated_conv_layer(arg,conv,kernel_size=[1,kernel_width],stride=[1,kernel_width],scope='conv_'+str(l))
+    for l in range(arg.L-1,0,-1):
+        conv = get_activated_conv_layer(l,arg,x=conv,kernel_size=[1,kernel_width],stride=[1,kernel_width],scope='conv_'+str(l))
         # setup for next iteration
-        kernel_width = 2*F[l]
+        kernel_width = 2*arg.F[l]
         stride_width = kernel_width
     return conv
 
-def get_activated_conv_layer(arg,x,l,kernel_size,stride,scope):
+def get_activated_conv_layer(l,arg,x,kernel_size,stride,scope):
     kernel_height, kernel_width = kernel_size
     stride_height, stride_width = stride
     conv = tf.contrib.layers.convolution2d(inputs=x,
@@ -65,9 +65,11 @@ class TestNN_BT(unittest.TestCase):
 
     def test_NN_BT4D(self):
         print('test')
+        D = 5
         x = tf.placeholder(tf.float32, shape=[None,1,D,1], name='x-input') #[M, 1, D, 1]
         # prepare args
-        arg = ns.Namespace(L=3)
+        arg = ns.Namespace(L=2)
+        arg.act = tf.nn.relu
         #weights_initializer = tf.contrib.layers.xavier_initializer(dtype=tf.float32)
         arg.weights_initializer = tf.constant_initializer(value=1.0, dtype=tf.float32)
         #biases_initializer = tf.constant_initializer(value=0.0, dtype=tf.float32)
@@ -76,20 +78,21 @@ class TestNN_BT(unittest.TestCase):
         arg.normalizer_fn = None
         #arg.normalizer_fn = tf.contrib.layers.batch_norm
 
-        arg.F = [3,5,7]
+        arg.F = [3,5]
         # get NN BT
         bt_mdl = bt_mdl_conv(arg,x)
         # do check
-        D = 5
         M = 2
         X_data = np.array( [np.arange(0,5),np.arange(5,10)] )
+        X_data = X_data.reshape(M,1,D,1)
         with tf.Session() as sess:
             sess.run( tf.initialize_all_variables() )
-            print( sess.run(fetches=conv, feed_dict={x:X_data}) )
+            print( sess.run(fetches=bt_mdl, feed_dict={x:X_data}) )
         #self.assertTrue(correct)
 
     def test_NN_BT8D(self):
         pass
         #self.assertTrue(correct)
 
-##
+if __name__ == '__main__':
+    unittest.main()
