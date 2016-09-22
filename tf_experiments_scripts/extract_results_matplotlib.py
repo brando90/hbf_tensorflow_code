@@ -17,7 +17,6 @@ def display_results4():
     experiment_name = 'om_mnist'
     #experiment_name = 'om_f_4d_task_conv_2nd'
 
-
     path_to_experiments = '../../%s/task_August_7_NN1_xavier_momentum'%experiment_name
     nn1_multiple_experiment_results = mtf.get_results_for_experiments(path_to_experiments,get_errors_from,verbose=True, split_string='_jBT_[\d]*_|_jHBF[\d]*_|_jrun_HBF[\d]*_|jNN_')
     print('LEN(NN)', len(nn1_multiple_experiment_results))
@@ -588,6 +587,8 @@ def display_results10():
     plt.show()
 
 def display_results11():
+    get_errors_from = mtf.get_errors_based_on_train_error
+    #
     get_k = lambda a: 7*a + 4*3*2*a**2
     shallow = lambda k: 4*k+k+k
     bt = lambda f: 2*f+f +2*f*(2*f)+ 2*(2*f)
@@ -601,16 +602,16 @@ def display_results11():
     print('var_Y_test: ', var_Y_test)
 
     path_to_experiments = '../../%s/task_September_14_NN_runs200_xavier_softplus'%experiment_name
-    nn1_multiple_experiment_results = mtf.get_results_for_experiments(path_to_experiments,verbose=True, split_string='_jBT_[\d]*_|_jHBF[\d]*_|_jrun_HBF[\d]*_|jNN_')
+    nn1_multiple_experiment_results = mtf.get_results_for_experiments(path_to_experiments,get_errors_from,verbose=True, split_string='_jBT_[\d]*_|_jHBF[\d]*_|_jrun_HBF[\d]*_|jNN_')
     print('LEN(NN)', len(nn1_multiple_experiment_results))
 
     path_to_experiments = '../../%s/task_September_14_BTHL_runs200_xavier_softplus'%experiment_name
-    bt_multiple_experiment_results = mtf.get_results_for_experiments(path_to_experiments,verbose=True, split_string='_jBT_[\d]*_|_jHBF[\d]*_|_jrun_HBF[\d]*_|jNN_')
+    bt_multiple_experiment_results = mtf.get_results_for_experiments(path_to_experiments,get_errors_from,verbose=True, split_string='_jBT_[\d]*_|_jHBF[\d]*_|_jrun_HBF[\d]*_|jNN_')
     print('LEN(BT)', len(bt_multiple_experiment_results))
 
     #print nn1_multiple_experiment_results
-    nn1_list_units, nn1_list_train_errors, nn1_list_test_errors = mtf.get_list_errors(experiment_results=nn1_multiple_experiment_results,get_errors_from=mtf.get_errors_based_on_train_error)
-    bt_list_units, bt_list_train_errors, bt_list_test_errors = mtf.get_list_errors(experiment_results=bt_multiple_experiment_results,get_errors_from=mtf.get_errors_based_on_train_error)
+    nn1_list_units, nn1_list_train_errors, nn1_list_test_errors = mtf.get_list_errors(experiment_results=nn1_multiple_experiment_results,get_errors_from=get_errors_from)
+    bt_list_units, bt_list_train_errors, bt_list_test_errors = mtf.get_list_errors(experiment_results=bt_multiple_experiment_results,get_errors_from=get_errors_from)
     #
     nb_params = [ shallow(nb_units) for nb_units in nn1_list_units ]
     print('shallow units = ', nn1_list_units)
