@@ -7,20 +7,20 @@ import re
 
 
 ##
-def get_list_errors(experiment_results):
-    # experiment_results : units->results
-    list_units = []
-    list_test_errors = []
-    for nb_units, results in experiment_results.items():
-        #print 'nb_units ', nb_units
-        train_error, cv_error, test_error = get_errors_from(results)
-        list_units.append(nb_units)
-        list_test_errors.append(test_error)
-    # sort based on first list
-    list_units, list_test_errors = zip(*sorted(zip(list_units, list_test_errors)))
-    return list_units, list_test_errors
+# def get_list_errors(experiment_results):
+#     # experiment_results : units->results
+#     list_units = []
+#     list_test_errors = []
+#     for nb_units, results in experiment_results.items():
+#         #print 'nb_units ', nb_units
+#         train_error, cv_error, test_error = get_errors_from(results)
+#         list_units.append(nb_units)
+#         list_test_errors.append(test_error)
+#     # sort based on first list
+#     list_units, list_test_errors = zip(*sorted(zip(list_units, list_test_errors)))
+#     return list_units, list_test_errors
 
-def get_list_errors2(experiment_results):
+def get_list_errors(experiment_results, get_errors_from=get_errors_based_on_train_error):
     # experiment_results : units->results
     print( 'get_list_errors2')
     list_units = []
@@ -46,27 +46,26 @@ def get_list_errors2(experiment_results):
     list_units, list_test_errors = sort_and_pair_units_with_errors(list_units, list_test_errors)
     return list_units, list_train_errors, list_test_errors
 
-def sort_and_pair_units_with_errors(array):
-    '''
-        Gets a list of units and a list of error that correspond to each other and sorts it into two seperate lists.
-        Note that the error[i] must correspond to the error given by unit[i] for the algorithm to work.
-
-        Ex: units = [12,5,20], errors = [5.3,20.2,0.1] => [5,12,20],[20.2,5.3,0.1]
-
-        implements: list_units, list_test_errors = zip( *sorted( zip(list_units, list_test_errors)  ) )
-        http://stackoverflow.com/questions/39629253/what-does-the-code-zip-sorted-zipunits-errors-do
-    '''
-    #list_units, list_test_errors = zip( *sorted( zip(list_units, list_test_errors)  ) )
-    units_error_pair_list = zip(list_units, list_test_errors) # [...,(unit, error),...]
-    # sort by first entry (break ties by second, essentially sorts tuples a number is sorted)
-    sort_by_units = sorted(units_error_pair_list) # [..,(units, error),...] but units_i < units_j (i.e. sorted by unit number)
-    # collect the units in one list and the errors in another (note they are sorted)
-    list_units, list_test_errors = zip(*sort_by_units) # [units, ..., units] , [error, ..., error]
-    return list_units, list_test_errors
-
 ##
 
-def get_errors_from(results):
+def get_errors_based_on_train_error(results):
+    '''
+        Gets the train,test errors based on the minimizer of the train error.
+        The train error is the min train error and test error is the corresponding test error of the model
+        with the smallest train error.
+    '''
+    # get error lists
+    (train_errors, cv_errors, test_errors) = (results['train_errors'], results['cv_errors'], results['test_errors'])
+    min_train_index = np.argmin(train_errors)
+    (train_error, cv_error, test_error) = train_errors[min_train_index], cv_errors[min_train_index], test_errors[min_train_index]
+    return train_error, cv_error, test_error
+
+def get_errors_based_on_validation_error(results):
+    '''
+        Gets the train,validation,test errors based on the minimizer of the validation error.
+        The validation error is the min validation error and test error is the corresponding test error of the model
+        with the smallest validation error. Similarly, the train error is the train error of the smallest validation error.
+    '''
     # get error lists
     (train_errors, cv_errors, test_errors) = (results['train_errors'], results['cv_errors'], results['test_errors'])
     # get most recent error
@@ -74,6 +73,11 @@ def get_errors_from(results):
     min_cv_index = np.argmin(cv_errors)
     (train_error, cv_error, test_error) = train_errors[min_cv_index], cv_errors[min_cv_index], test_errors[min_cv_index]
     return train_error, cv_error, test_error
+
+def get_most_recent_error(train_errors, cv_errors, test_errors):
+    # get most recent error
+    (train_error, cv_error, test_error) = train_errors[-1], cv_errors[-1], test_errors[-1]
+    return (train_error, cv_error, test_error)
 
 def get_results(dirpath, filename):
     train_error, cv_error, test_error = (None, None, None)
@@ -200,3 +204,21 @@ def get_error_stats(experiment_results):
         std_cv_errors.append(std_cv_error)
         std_test_errors.append(std_test_error)
     return mean_train_errors, std_train_errors, mean_test_errors, std_test_errors
+
+def sort_and_pair_units_with_errors(array):
+    '''
+        Gets a list of units and a list of error that correspond to each other and sorts it into two seperate lists.
+        Note that the error[i] must correspond to the error given by unit[i] for the algorithm to work.
+
+        Ex: units = [12,5,20], errors = [5.3,20.2,0.1] => [5,12,20],[20.2,5.3,0.1]
+
+        implements: list_units, list_test_errors = zip( *sorted( zip(list_units, list_test_errors)  ) )
+        http://stackoverflow.com/questions/39629253/what-does-the-code-zip-sorted-zipunits-errors-do
+    '''
+    #list_units, list_test_errors = zip( *sorted( zip(list_units, list_test_errors)  ) )
+    units_error_pair_list = zip(list_units, list_test_errors) # [...,(unit, error),...]
+    # sort by first entry (break ties by second, essentially sorts tuples a number is sorted)
+    sort_by_units = sorted(units_error_pair_list) # [..,(units, error),...] but units_i < units_j (i.e. sorted by unit number)
+    # collect the units in one list and the errors in another (note they are sorted), note the * is needed to have zip not receive a single list
+    list_units, list_test_errors = zip(*sort_by_units) # [units, ..., units] , [error, ..., error]
+    return list_units, list_test_errors
