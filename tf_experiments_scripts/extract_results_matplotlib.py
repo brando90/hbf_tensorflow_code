@@ -570,15 +570,13 @@ def display_results10():
     nn1_list_units, nn1_list_train_errors, nn1_list_test_errors = mtf.get_list_errors2(experiment_results=nn1_multiple_experiment_results)
     nn2_list_units, nn2_list_train_errors, bt_list_test_errors = mtf.get_list_errors2(experiment_results=bt_multiple_experiment_results)
     #
-    print('units: ', nn1_list_units)
-    print('nn1_list_test_errors: ', nn1_list_test_errors)
-    print('bt_multiple_experiment_results: ', bt_list_test_errors)
-    #
-    # list_units = np.array(nn1_list_units)
-    # print( list_units)
     nb_params = [ shallow(nb_units) for nb_units in nn1_list_units ]
-    krls.plot_values(nb_params,nn1_list_test_errors,xlabel='number of parameters',y_label='squared error (l2 loss)',label='NN1 test',markersize=3,colour='b')
-    krls.plot_values(nb_params,bt_list_test_errors,xlabel='number of parameters',y_label='squared error (l2 loss)',label='BT test',markersize=3,colour='c')
+    print('shallow units = ', nn1_list_units)
+    print('nn1_list_test_errors = ', nn1_list_test_errors)
+    print('bt_multiple_experiment_results = ', bt_list_test_errors)
+    print('nb_params = ', nb_params)
+    krls.plot_values(nb_params,nn1_list_test_errors,xlabel='number of parameters',y_label='squared error (l2 loss)',label='Shallow NN test',markersize=3,colour='b')
+    krls.plot_values(nb_params,bt_list_test_errors,xlabel='number of parameters',y_label='squared error (l2 loss)',label='Binary Tree NN test',markersize=3,colour='c')
     #
     plt.legend()
     plt.show()
