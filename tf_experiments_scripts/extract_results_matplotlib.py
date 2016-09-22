@@ -609,7 +609,7 @@ def display_results11():
     bt_list_units, bt_list_train_errors, bt_list_test_errors = mtf.get_list_errors(experiment_results=bt_multiple_experiment_results,get_errors_from=get_errors_from)
     #
     nb_params_shallow = [ shallow(nb_units) for nb_units in nn1_list_units ]
-    nb_params_bt = [ bt(bt_list_units) for nb_units in bt_list_units ]
+    nb_params_bt = [ bt(nb_units) for nb_units in bt_list_units ]
     print('get_errors_from = ', get_errors_from.__name__)
 
     print('shallow units = ', nn1_list_units)
@@ -618,8 +618,8 @@ def display_results11():
     print('nb_params_shallow = ', nb_params_shallow)
     print('nb_params_bt = ', nb_params_bt)
 
-    print('nn1_list_test_errors = ', nn1_list_test_errors)
-    print('bt_multiple_experiment_results = ', bt_list_test_errors)
+    print('nn1_list_train_errors = ', nn1_list_train_errors)
+    print('bt_list_train_errors = ', bt_list_train_errors)
     print('nn1_list_test_errors = ', nn1_list_test_errors)
     print('bt_multiple_experiment_results = ', bt_list_test_errors)
     # plot train errors
