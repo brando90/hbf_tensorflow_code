@@ -137,7 +137,7 @@ elif arg.mdl == 'binary_tree_4D_conv_hidden_layer':
     #arg.std = [None, None, 0.1]
     arg.get_W_mu_init = lambda arg: arg.mu
     #arg.get_W_std_init = lambda arg: arg.std
-    arg.std_low, arg.std_high = 0.001, 5.0
+    arg.std_low, arg.std_high = 0.001, 1.0
     arg.get_W_std_init = lambda arg: [float(i) for i in np.random.uniform(low=arg.std_low, high=arg.std_high, size=3)]
 
     #arg.act = tf.nn.relu
@@ -157,7 +157,7 @@ else:
     raise ValueError('Need to use a valid model, incorrect or unknown model %s give.'%arg.mdl)
 
 #steps
-arg.steps_low = 60000
+arg.steps_low = 60
 arg.steps_high = arg.steps_low+1
 arg.get_steps = lambda arg: int( np.random.randint(low=arg.steps_low ,high=arg.steps_high) )
 
@@ -236,10 +236,10 @@ arg.re_train = re_train
 #
 arg.save_config_args = False
 #arg.debug = False
-arg.slurm_jobid = 'TB_slurm_jobid'
-arg.slurm_array_task_id = 'TB_slurm_array_task_id'
+arg.slurm_jobid = os.environ['SLURM_JOBID']
+arg.slurm_array_task_id = os.environ['SLURM_ARRAY_TASK_ID']
 #
-arg.path_root = '%s/%s'%(arg.experiment_root_dir,arg.experiment_name)
+arg.path_root = '../../%s/%s'%(arg.experiment_root_dir,arg.experiment_name)
 arg.get_path_root =  lambda arg: arg.path_root
 #
 parser = argparse.ArgumentParser()
@@ -285,6 +285,9 @@ print('---> arg.use_tensorboard: ', arg.use_tensorboard)
 print('---> cmd_args.tensorboard: ', cmd_args.tensorboard)
 
 arg.max_to_keep = 1
+
+arg.get_errors_from = mtf.get_errors_based_on_train_error
+#arg.get_errors_from = mtf.get_errors_based_on_validation_error
 
 #
 if __name__ == '__main__':
