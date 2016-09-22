@@ -549,6 +549,7 @@ def display_results10():
     get_k = lambda a: 7*a + 4*3*2*a**2
     shallow = lambda k: 4*k+k+k
     bt = lambda f: 2*f+f +2*f*(2*f)+ 2*(2*f)
+    get_f = lambda a: 3*2*a
 
     task_name = 'task_f_4d_conv_2nd'
     experiment_name = mtf.get_experiment_folder(task_name)
@@ -575,7 +576,7 @@ def display_results10():
     #
     # list_units = np.array(nn1_list_units)
     # print( list_units)
-    nb_params = [ bt(nb_units) for nb_units in nn1_list_units ]
+    nb_params = [ shallow(nb_units) for nb_units in nn1_list_units ]
     krls.plot_values(nb_params,nn1_list_test_errors,xlabel='number of parameters',y_label='squared error (l2 loss)',label='NN1 test',markersize=3,colour='b')
     krls.plot_values(nb_params,bt_list_test_errors,xlabel='number of parameters',y_label='squared error (l2 loss)',label='BT test',markersize=3,colour='c')
     #
