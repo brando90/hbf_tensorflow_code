@@ -58,7 +58,7 @@ arg.experiment_name = 'task_September_1_BTHL' # experiment_name e.g. task_August
 arg.experiment_root_dir = mtf.get_experiment_folder(task_name)
 arg.job_name = 'BTHL_6_12_Adam' # job name e.g BT_6_6_5_RMSProp_Test
 
-arg.experiment_name = 'task_September_1_NN' # experiment_name e.g. task_August_10_BT
+arg.experiment_name = 'task_September_date_NN' # experiment_name e.g. task_August_10_BT
 arg.experiment_root_dir = mtf.get_experiment_folder(task_name)
 arg.job_name = 'NN_31_Adam' # job name e.g BT_6_6_5_RMSProp_Test
 #
