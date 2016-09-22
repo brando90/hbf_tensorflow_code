@@ -39,9 +39,30 @@ def get_list_errors2(experiment_results):
     # sort based on first list
     print( len(list_train_errors))
     print( len(list_test_errors))
-    _, list_train_errors = zip(*sorted(zip(list_units, list_train_errors)))
-    list_units, list_test_errors = zip(*sorted(zip(list_units, list_test_errors)))
+    #_, list_train_errors = zip(*sorted(zip(list_units, list_train_errors)))
+    #list_units, list_test_errors = zip( *sorted( zip(list_units, list_test_errors)  ) )
+    #
+    _, list_train_errors = sort_and_pair_units_with_errors(list_units, list_train_errors)
+    list_units, list_test_errors = sort_and_pair_units_with_errors(list_units, list_test_errors)
     return list_units, list_train_errors, list_test_errors
+
+def sort_and_pair_units_with_errors(array):
+    '''
+        Gets a list of units and a list of error that correspond to each other and sorts it into two seperate lists.
+        Note that the error[i] must correspond to the error given by unit[i] for the algorithm to work.
+
+        Ex: units = [12,5,20], errors = [5.3,20.2,0.1] => [5,12,20],[20.2,5.3,0.1]
+
+        implements: list_units, list_test_errors = zip( *sorted( zip(list_units, list_test_errors)  ) )
+        http://stackoverflow.com/questions/39629253/what-does-the-code-zip-sorted-zipunits-errors-do
+    '''
+    #list_units, list_test_errors = zip( *sorted( zip(list_units, list_test_errors)  ) )
+    units_error_pair_list = zip(list_units, list_test_errors) # [...,(unit, error),...]
+    # sort by first entry (break ties by second, essentially sorts tuples a number is sorted)
+    sort_by_units = sorted(units_error_pair_list) # [..,(units, error),...] but units_i < units_j (i.e. sorted by unit number)
+    # collect the units in one list and the errors in another (note they are sorted)
+    list_units, list_test_errors = zip(*sort_by_units) # [units, ..., units] , [error, ..., error]
+    return list_units, list_test_errors
 
 ##
 
