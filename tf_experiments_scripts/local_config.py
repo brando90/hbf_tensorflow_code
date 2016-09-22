@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #SBATCH --qos=cbmm
 #SBATCH --job-name=Python
-#SBATCH --array=3-10
+#SBATCH --array=1-2
 #SBATCH --mem=14000
 #SBATCH --time=5-20:20
 #SBATCH --mail-type=ALL
@@ -156,7 +156,7 @@ else:
 #arg.steps_low = 100
 #arg.steps_high = 101
 #arg.get_steps = lambda arg: int( np.random.randint(low=arg.steps_low ,high=arg.steps_high) )
-arg.steps = 10000
+arg.steps = 10
 arg.get_steps = lambda arg: int( arg.steps )
 
 #arg.M_low = 51
@@ -299,6 +299,9 @@ print('---> arg.use_tensorboard: ', arg.use_tensorboard)
 print('---> cmd_args.tensorboard: ', cmd_args.tensorboard)
 
 arg.max_to_keep = 1
+
+arg.get_errors_from = mtf.get_errors_based_on_train_error
+#arg.get_errors_from = mtf.get_errors_based_on_validation_error
 
 # scp -r brando90@polestar.mit.edu:/cbcl/cbcl01/brando90/Documents/MEng/hbf_tensorflow_code/tf_experiments_scripts/hp1  /Users/brandomiranda/Documents/MIT/MEng/hbf_tensorflow_code/tf_experiments_scripts
 
