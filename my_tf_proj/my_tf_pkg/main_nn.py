@@ -470,7 +470,7 @@ def main_nn(arg):
                 else:
                     sess.run(fetches=train_step, feed_dict=feed_dict_batch) #sess.run(train_step, feed_dict={x: batch_xs, y_: batch_ys})
 
-    best_train, best_cv, best_test =  mtf.get_errors_from(results)
+    best_train, best_cv, best_test =  arg.get_errors_from(results)
     results['best_train'], results['best_cv'], results['best_test'] = best_train, best_cv, best_test
     print('End of main')
 
@@ -499,4 +499,5 @@ def main_nn(arg):
         json.dump(results,f_json,sort_keys=True, indent=2, separators=(',', ': '))
     print( '\a') #makes beep
     #print(results)
-    print( 'best results: train, cv, test: ', best_train, best_cv, best_test )
+    print('get_errors_from: ', arg.get_errors_from.__name__)
+    print('best results: train, cv, test: ', best_train, best_cv, best_test )
