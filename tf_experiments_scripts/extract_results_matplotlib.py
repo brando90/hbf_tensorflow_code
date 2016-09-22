@@ -9,6 +9,44 @@ import re
 import krls
 import my_tf_pkg as mtf
 
+##
+
+def display_results4():
+    get_errors_from = mtf.get_errors_based_on_train_error
+    # frameworkpython multiple_vs_single_collect_results.py
+    experiment_name = 'om_mnist'
+    #experiment_name = 'om_f_4d_task_conv_2nd'
+
+
+    path_to_experiments = '../../%s/task_August_7_NN1_xavier_momentum'%experiment_name
+    nn1_multiple_experiment_results = mtf.get_results_for_experiments(path_to_experiments,get_errors_from,verbose=True, split_string='_jBT_[\d]*_|_jHBF[\d]*_|_jrun_HBF[\d]*_|jNN_')
+    print('LEN(NN)', len(nn1_multiple_experiment_results))
+
+    path_to_experiments = '../../%s/task_August_9_NN1_xavier/NN2rmsprop'%experiment_name
+    #path_to_experiments = '../../%s/task_August_9_NN2_Xavier_BN/NN2'%experiment_name
+    nn2_multiple_experiment_results = mtf.get_results_for_experiments(path_to_experiments,get_errors_from,verbose=True, split_string='_jBT_[\d]*_|_jHBF[\d]*_|_jrun_HBF[\d]*_|jNN_')
+    print('LEN(BT)', len(nn2_multiple_experiment_results))
+
+    #print nn1_multiple_experiment_results
+    nn1_list_units, nn1_list_train_errors, nn1_list_test_errors = mtf.get_list_errors(experiment_results=nn1_multiple_experiment_results,get_errors_from=get_errors_from)
+    nn2_list_units, nn2_list_train_errors, nn2_list_test_errors = mtf.get_list_errors(experiment_results=nn2_multiple_experiment_results,get_errors_from=get_errors_from)
+    #
+    print('units: ', nn1_list_units)
+    print('nn1_list_test_errors: ', nn1_list_test_errors)
+    print('bt_multiple_experiment_results: ', nn2_list_test_errors)
+    #
+    # list_units = np.array(nn1_list_units)
+    # print( list_units)
+    krls.plot_errors(nn1_list_units, nn1_list_test_errors,label='NN1 test', markersize=3, colour='b')
+    krls.plot_errors(nn1_list_units, nn2_list_test_errors,label='NN2 test', markersize=3, colour='c')
+    krls.plot_values(nn1_list_units,nn1_list_test_errors,xlabel='number of units',y_label='squared error (l2 loss)',label='NN1 test',markersize=3,colour='b')
+    krls.plot_values(nn1_list_units,nn2_list_test_errors,xlabel='number of units',y_label='squared error (l2 loss)',label='NN2 test',markersize=3,colour='c')
+    #
+    plt.legend()
+    plt.show()
+
+##
+
 def display_results_multiple_vs_single():
     ##
     experiment = '/multiple_S_dir'
@@ -359,39 +397,6 @@ def display_results3():
     plt.legend()
     plt.show()
 
-def display_results4():
-    # frameworkpython multiple_vs_single_collect_results.py
-    experiment_name = 'om_mnist'
-    #experiment_name = 'om_f_4d_task_conv_2nd'
-
-
-    path_to_experiments = '../../%s/task_August_7_NN1_xavier_momentum'%experiment_name
-    nn1_multiple_experiment_results = mtf.get_results_for_experiments(path_to_experiments,verbose=True, split_string='_jBT_[\d]*_|_jHBF[\d]*_|_jrun_HBF[\d]*_|jNN_')
-    print('LEN(NN)', len(nn1_multiple_experiment_results))
-
-    path_to_experiments = '../../%s/task_August_9_NN1_xavier/NN2rmsprop'%experiment_name
-    #path_to_experiments = '../../%s/task_August_9_NN2_Xavier_BN/NN2'%experiment_name
-    nn2_multiple_experiment_results = mtf.get_results_for_experiments(path_to_experiments,verbose=True, split_string='_jBT_[\d]*_|_jHBF[\d]*_|_jrun_HBF[\d]*_|jNN_')
-    print('LEN(BT)', len(nn2_multiple_experiment_results))
-
-    #print nn1_multiple_experiment_results
-    nn1_list_units, nn1_list_train_errors, nn1_list_test_errors = mtf.get_list_errors2(experiment_results=nn1_multiple_experiment_results)
-    nn2_list_units, nn2_list_train_errors, nn2_list_test_errors = mtf.get_list_errors2(experiment_results=nn2_multiple_experiment_results)
-    #
-    print('units: ', nn1_list_units)
-    print('nn1_list_test_errors: ', nn1_list_test_errors)
-    print('bt_multiple_experiment_results: ', nn2_list_test_errors)
-    #
-    # list_units = np.array(nn1_list_units)
-    # print( list_units)
-    krls.plot_errors(nn1_list_units, nn1_list_test_errors,label='NN1 test', markersize=3, colour='b')
-    krls.plot_errors(nn1_list_units, nn2_list_test_errors,label='NN2 test', markersize=3, colour='c')
-    krls.plot_values(nn1_list_units,nn1_list_test_errors,xlabel='number of units',y_label='squared error (l2 loss)',label='NN1 test',markersize=3,colour='b')
-    krls.plot_values(nn1_list_units,nn2_list_test_errors,xlabel='number of units',y_label='squared error (l2 loss)',label='NN2 test',markersize=3,colour='c')
-    #
-    plt.legend()
-    plt.show()
-
 def display_results5():
     # frameworkpython multiple_vs_single_collect_results.py
     experiment_name = 'om_mnist'
@@ -624,7 +629,5 @@ def display_results11():
     plt.show()
 
 if __name__ == '__main__':
-    #display_results4()
-    #display_results5()
-    #display_results9()
-    display_results11()
+    display_results4()
+    #display_results11()

@@ -5,48 +5,6 @@ import pdb
 import numpy as np
 import re
 
-
-##
-##
-# def get_list_errors(experiment_results):
-#     # experiment_results : units->results
-#     list_units = []
-#     list_test_errors = []
-#     for nb_units, results in experiment_results.items():
-#         #print 'nb_units ', nb_units
-#         train_error, cv_error, test_error = get_errors_from(results)
-#         list_units.append(nb_units)
-#         list_test_errors.append(test_error)
-#     # sort based on first list
-#     list_units, list_test_errors = zip(*sorted(zip(list_units, list_test_errors)))
-#     return list_units, list_test_errors
-
-def get_list_errors(experiment_results, get_errors_from=get_errors_based_on_train_error):
-    # experiment_results : units->results
-    print( 'get_list_errors2')
-    list_units = []
-    list_train_errors = []
-    list_test_errors = []
-    #print experiment_results
-    for nb_units, results in experiment_results.items():
-        #print 'nb_units ', nb_units
-        #print 'results', results
-        train_error, cv_error, test_error = get_errors_from(results)
-        #print '--nb_units', nb_units
-        #print 'train_error, cv_error, test_error ', train_error, cv_error, test_error
-        list_units.append(nb_units)
-        list_train_errors.append(train_error)
-        list_test_errors.append(test_error)
-    # sort based on first list
-    print( len(list_train_errors))
-    print( len(list_test_errors))
-    #_, list_train_errors = zip(*sorted(zip(list_units, list_train_errors)))
-    #list_units, list_test_errors = zip( *sorted( zip(list_units, list_test_errors)  ) )
-    #
-    _, list_train_errors = sort_and_pair_units_with_errors(list_units, list_train_errors)
-    list_units, list_test_errors = sort_and_pair_units_with_errors(list_units, list_test_errors)
-    return list_units, list_train_errors, list_test_errors
-
 ##
 
 def get_errors_based_on_train_error(results):
@@ -80,6 +38,36 @@ def get_most_recent_error(train_errors, cv_errors, test_errors):
     (train_error, cv_error, test_error) = train_errors[-1], cv_errors[-1], test_errors[-1]
     return (train_error, cv_error, test_error)
 
+#
+
+def get_list_errors(experiment_results,get_errors_from):
+    # experiment_results : units->results
+    print( 'get_list_errors2')
+    list_units = []
+    list_train_errors = []
+    list_test_errors = []
+    #print experiment_results
+    for nb_units, results in experiment_results.items():
+        #print 'nb_units ', nb_units
+        #print 'results', results
+        train_error, cv_error, test_error = get_errors_from(results)
+        #print '--nb_units', nb_units
+        #print 'train_error, cv_error, test_error ', train_error, cv_error, test_error
+        list_units.append(nb_units)
+        list_train_errors.append(train_error)
+        list_test_errors.append(test_error)
+    # sort based on first list
+    print( len(list_train_errors))
+    print( len(list_test_errors))
+    #_, list_train_errors = zip(*sorted(zip(list_units, list_train_errors)))
+    #list_units, list_test_errors = zip( *sorted( zip(list_units, list_test_errors)  ) )
+    #
+    _, list_train_errors = sort_and_pair_units_with_errors(list_units, list_train_errors)
+    list_units, list_test_errors = sort_and_pair_units_with_errors(list_units, list_test_errors)
+    return list_units, list_train_errors, list_test_errors
+
+#
+
 def get_results(dirpath, filename):
     train_error, cv_error, test_error = (None, None, None)
     results = None
@@ -89,7 +77,7 @@ def get_results(dirpath, filename):
         results = json.load(data_file)
     return results
 
-def get_best_results_from_experiment(experiment_dirpath, list_runs_filenames):
+def get_best_results_from_experiment(experiment_dirpath, list_runs_filenames, get_errors_from):
     '''
         Returns the best result structure for the current experiment from all the runs.
 
@@ -117,7 +105,7 @@ def get_best_results_from_experiment(experiment_dirpath, list_runs_filenames):
                 results_best = results_current_run
     return results_best, best_cv_filname, final_train_errors, final_cv_errors, final_test_errors
 
-def get_results_for_experiments(path_to_experiments, verbose=True, split_string='_jHBF[\d]*_|_jrun_HBF[\d]*_|_jNN[\d]*_'):
+def get_results_for_experiments(path_to_experiments, get_errors_from, verbose=True, split_string='_jHBF[\d]*_|_jrun_HBF[\d]*_|_jNN[\d]*_'):
     '''
         Returns a dictionary containing the best results for each experiment
     '''
@@ -140,7 +128,7 @@ def get_results_for_experiments(path_to_experiments, verbose=True, split_string=
         if (experiment_dir != path_to_experiments):
             #print '=> experiment_dir: ', experiment_dir
             #print '=> potential_runs: ', potential_runs
-            results_best, best_filename, final_train_errors, final_cv_errors, final_test_errors = get_best_results_from_experiment(experiment_dirpath=experiment_dir,list_runs_filenames=potential_runs)
+            results_best, best_filename, final_train_errors, final_cv_errors, final_test_errors = get_best_results_from_experiment(experiment_dirpath=experiment_dir,list_runs_filenames=potential_runs,get_errors_from=get_errors_from)
             if results_best == None:
                 continue
             if not 'dims' in results_best:
@@ -206,7 +194,7 @@ def get_error_stats(experiment_results):
         std_test_errors.append(std_test_error)
     return mean_train_errors, std_train_errors, mean_test_errors, std_test_errors
 
-def sort_and_pair_units_with_errors(array):
+def sort_and_pair_units_with_errors(list_units,list_test_errors):
     '''
         Gets a list of units and a list of error that correspond to each other and sorts it into two seperate lists.
         Note that the error[i] must correspond to the error given by unit[i] for the algorithm to work.
