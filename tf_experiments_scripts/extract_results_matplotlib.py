@@ -568,10 +568,11 @@ def display_results10():
 
     #print nn1_multiple_experiment_results
     nn1_list_units, nn1_list_train_errors, nn1_list_test_errors = mtf.get_list_errors2(experiment_results=nn1_multiple_experiment_results)
-    nn2_list_units, nn2_list_train_errors, bt_list_test_errors = mtf.get_list_errors2(experiment_results=bt_multiple_experiment_results)
+    bt_list_units, nn2_list_train_errors, bt_list_test_errors = mtf.get_list_errors2(experiment_results=bt_multiple_experiment_results)
     #
     nb_params = [ shallow(nb_units) for nb_units in nn1_list_units ]
     print('shallow units = ', nn1_list_units)
+    print('bt_list_units = ', bt_list_units)
     print('nn1_list_test_errors = ', nn1_list_test_errors)
     print('bt_multiple_experiment_results = ', bt_list_test_errors)
     print('nb_params = ', nb_params)
@@ -583,6 +584,6 @@ def display_results10():
 
 if __name__ == '__main__':
     #display_results4()
-    display_results5()
+    #display_results5()
     #display_results9()
-    #display_results10()
+    display_results10()
