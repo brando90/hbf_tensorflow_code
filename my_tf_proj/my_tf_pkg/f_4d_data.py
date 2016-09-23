@@ -6,6 +6,18 @@ from tensorflow.examples.tutorials.mnist import input_data
 
 import pdb
 
+def ReLu(x):
+    return max(0,x)
+
+def f_4D_simple_ReLu_BT(A):
+    h11 = lambda A: ReLu( (1.0*A[0] + 3.0*A[1]) ) # [0,4]
+    h12 = h11
+    h21 = lambda A: ReLu( 1.3*A[0] - 1.5*A[1] )
+    left, right = h11(A[0:2]), h12(A[2:4])
+    f = h21( [left,right] )
+    return f
+#
+
 def f_4D_non_conv(A):
     h11 = lambda A: (1.0/20)*(1.0*A[0] + 2.0*A[1])**2.0
     h12 = lambda A: (1.0/10)*(3.0*A[0] + 4.0*A[1])**4.0

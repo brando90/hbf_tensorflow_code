@@ -144,6 +144,10 @@ def get_data(task_name):
         #print 'task_f_8dtask_f_8dtask_f_8dtask_f_8dtask_f_8dtask_f_8dtask_f_8dtask_f_8dtask_f_8dtask_f_8dtask_f_8dtask_f_8dtask_f_8d'
         X_train, Y_train, X_cv, Y_cv, X_test, Y_test = get_data_from_file(file_name='./data/f_8D_task_non_conv.npz')
 
+    elif task_name == 'f_4D_simple_ReLu_BT':
+        #print 'task_f_8dtask_f_8dtask_f_8dtask_f_8dtask_f_8dtask_f_8dtask_f_8dtask_f_8dtask_f_8dtask_f_8dtask_f_8dtask_f_8dtask_f_8d'
+        X_train, Y_train, X_cv, Y_cv, X_test, Y_test = get_data_from_file(file_name='./data/f_4D_simple_ReLu_BT.npz')
+
     elif task_name == 'task_MNIST_flat':
         mnist = input_data.read_data_sets("MNIST_data/", one_hot=True)
         X_train, Y_train = mnist.train.images, mnist.train.labels
