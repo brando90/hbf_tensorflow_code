@@ -16,6 +16,8 @@ import pickle
 import my_tf_pkg as mtf
 import time
 
+#from memory_profiler import memory_usage
+
 # tensorboard --logdir=/tmp/mdl_logs
 
 def any_is_NaN(*args):
@@ -457,8 +459,8 @@ def main_nn(arg):
                     results['cv_errors'].append( float(cv_error) )
                     results['test_errors'].append( float(test_error) )
                     # write errors to pretty print
-                    f_err_msgs.write(loss_msg)
-                    f_err_msgs.write(mdl_info_msg)
+                    f_err_msgs.write(loss_msg+'\n')
+                    f_err_msgs.write(mdl_info_msg+'\n')
                     if any_is_NaN(train_error,cv_error,test_error):
                         # if its a nan make sure to stop script
                         print('nan_found')
@@ -496,7 +498,7 @@ def main_nn(arg):
     with open(path+json_file, 'w+') as f_json:
         print('Writing Json')
         print('path+json_file', path+json_file)
-        json.dump(results,f_json,sort_keys=True, indent=2, separators=(',', ': '))
+        json.dump(results,f_json,indent=2, separators=(',', ': '))
     print( '\a') #makes beep
     #print(results)
     print('get_errors_from: ', arg.get_errors_from.__name__)
