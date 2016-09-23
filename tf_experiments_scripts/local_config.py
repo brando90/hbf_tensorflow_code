@@ -10,6 +10,7 @@
 #from __future__ import print_function
 #tensorboard --logdir=/tmp/mdl_logs
 
+
 import os
 import sys
 
@@ -30,25 +31,25 @@ print(ns)
 arg = ns.Namespace()
 
 task_name = 'task_h_gabor_data_and_mesh'
-# task_name = 'task_qianli_func'
-# task_name = 'task_f_2D_task2'
-# task_name = 'task_f_2d_task2_xsinglog1_x_depth2'
-# task_name = 'task_f_2d_task2_xsinglog1_x_depth3'
-# task_name = 'task_f2d_2x2_1_cosx1x2_depth2'
-# task_name = 'task_f2d_2x2_1_cosx1_plus_x2_depth2'
-# task_name = 'task_f_4d_conv'
-# task_name = 'task_f_4D_conv_1st'
-# task_name = 'task_f_8d_conv'
-# task_name = 'task_f_8d_conv'
+task_name = 'task_qianli_func'
+task_name = 'task_f_2D_task2'
+task_name = 'task_f_2D_task2_xsinglog1_x_depth2'
+task_name = 'task_f_2D_task2_xsinglog1_x_depth3'
+task_name = 'task_f2D_2x2_1_cosx1x2_depth2'
+task_name = 'task_f2D_2x2_1_cosx1_plus_x2_depth2'
+task_name = 'task_f_4D_conv'
+#task_name = 'task_f_4D_conv_1st'
+# task_name = 'task_f_8D_conv'
+# task_name = 'task_f_8D_conv'
 # task_name = 'task_f_8D_conv_test'
-# task_name = 'task_f_4d_conv_2nd'
-# task_name = 'task_f_4d_conv_changing'
-task_name = 'task_f_4D_conv_3rd'
+task_name = 'task_f_4D_conv_2nd'
+# task_name = 'task_f_4D_conv_changing'
+# task_name = 'task_f_4D_conv_3rd'
 # task_name = 'task_f_4D_conv_4th'
 # task_name = 'task_f_4D_conv_5th'
 # task_name = 'task_f_4D_conv_6th'
-#task_name = 'task_f_4d_non_conv'
-#task_name = 'task_f_8d_non_conv'
+#task_name = 'task_f_4D_non_conv'
+#task_name = 'task_f_8D_non_conv'
 #task_name = 'task_MNIST_flat'
 #task_name = 'task_MNIST_flat_auto_encoder'
 arg.task_name = task_name

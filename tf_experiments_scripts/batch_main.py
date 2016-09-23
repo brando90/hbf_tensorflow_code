@@ -1,14 +1,15 @@
 #!/usr/bin/env python
 #SBATCH --qos=cbmm
 #SBATCH --job-name=Python
-#SBATCH --array=1-100
+#SBATCH --array=1-200
 #SBATCH --mem=14000
-#SBATCH --time=5-20:20
+#SBATCH --time=6-20:20
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=rene_sax14@yahoo.com
 
 #from __future__ import print_function
 #tensorboard --logdir=/tmp/mdl_logs
+
 
 import os
 import sys
@@ -41,8 +42,8 @@ task_name = 'task_f_4D_conv'
 # task_name = 'task_f_8D_conv'
 # task_name = 'task_f_8D_conv'
 # task_name = 'task_f_8D_conv_test'
-task_name = 'task_f_4D_conv_2nd'
 # task_name = 'task_f_4D_conv_changing'
+task_name = 'task_f_4D_conv_2nd'
 # task_name = 'task_f_4D_conv_3rd'
 # task_name = 'task_f_4D_conv_4th'
 # task_name = 'task_f_4D_conv_5th'
