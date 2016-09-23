@@ -271,15 +271,16 @@ parser.add_argument("-pr", "--path_root", help="path_root: specifies the path ro
 #parser.add_argument("-hp", "--hyper_parameter", help="hyper_parameter: when searching for hp on needs to specify were to store the results of experiment or it will default.")
 
 cmd_args = parser.parse_args()
+
+# if sj, stid arguments given set them else leave them default values
+arg.slurm_jobid = cmd_args.SLURM_JOBID if not cmd_args.SLURM_JOBID else arg.slurm_jobid
+arg.slurm_array_task_id = cmd_args.SLURM_ARRAY_TASK_ID if not cmd_args.SLURM_ARRAY_TASK_ID else arg.slurm_array_task_id
 if cmd_args.save_config_args:
     # flag to save current config files to pickle file
     print(cmd_args.save_config_args)
     arg.save_config_args = cmd_args.save_config_args
 if cmd_args.debug:
     #arg.debug = cmd_args.debug
-    # if sj, stid arguments given set them else leave them default values
-    arg.slurm_jobid = cmd_args.SLURM_JOBID if not cmd_args.SLURM_JOBID else arg.slurm_jobid
-    arg.slurm_array_task_id = cmd_args.SLURM_ARRAY_TASK_ID if not cmd_args.SLURM_ARRAY_TASK_ID else arg.slurm_array_task_id
     # load old pickle config
     pickled_arg_dict = pickle.load( open( "pickle-slurm-%s_%s.p"%(int(arg.slurm_jobid)+int(arg.slurm_array_task_id),arg.slurm_array_task_id), "rb" ) )
     print( pickled_arg_dict )
