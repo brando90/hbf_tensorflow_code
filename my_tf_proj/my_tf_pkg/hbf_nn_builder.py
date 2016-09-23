@@ -206,7 +206,7 @@ def build_binary_tree_4D_hidden_layer(x,arg,phase_train=None):
     init_C = tf.truncated_normal(shape=[arg.nb_final_hidden_units,1], mean=arg.mean[2], stddev=arg.stddev[2], dtype=tf.float32, seed=None, name=None)
     C = tf.get_variable(name='W'+'Out_Layer',dtype=tf.float32,initializer=init_C,regularizer=None,trainable=True)
     f = tf.matmul(A2,C)
-    return mdl
+    return f
 
 def get_binary_branch(x,arg,l,name=None):
     '''
