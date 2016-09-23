@@ -2,8 +2,8 @@
 #SBATCH --qos=cbmm
 #SBATCH --job-name=Python
 #SBATCH --array=1-2
-#SBATCH --mem=14000
-#SBATCH --time=5-20:20
+#SBATCH --mem=1000
+#SBATCH --time=0-2:20
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=rene_sax14@yahoo.com
 
@@ -71,7 +71,7 @@ if arg.mdl == 'standard_nn':
     arg.init_type = 'xavier'
 
     arg.units = [31]
-    arg.units = [110]
+    #arg.units = [110]
     #arg.units = [237]
 
     #arg.mu = 0.0
@@ -89,6 +89,7 @@ if arg.mdl == 'standard_nn':
 
     arg.act = tf.nn.relu
     #arg.act = tf.nn.elu
+    #arg.act = tf.nn.softplus
 elif arg.mdl == 'hbf':
     #arg.init_type = 'truncated_normal'
     #arg.init_type = 'data_init'
@@ -127,7 +128,7 @@ elif arg.mdl == 'binary_tree_4D_conv_hidden_layer':
     arg.init_type = 'manual_truncated_normal'
     arg.init_type = 'xavier'
     arg.nb_filters = 6 #F1
-    #arg.nb_filters = 12 #F1
+    arg.nb_filters = 12 #F1
     #arg.nb_filters = 18 #F1
     arg.nb_final_hidden_units = 2*arg.nb_filters # F2
     arg.mu = [0.0,0.0,0.0]
@@ -141,6 +142,7 @@ elif arg.mdl == 'binary_tree_4D_conv_hidden_layer':
 
     arg.act = tf.nn.relu
     #arg.act = tf.nn.elu
+    #arg.act = tf.nn.softplus
 elif arg.mdl == 'binary_tree_8D_conv':
     pass
     # arg.init_type = 'manual_truncated_normal'
@@ -158,13 +160,13 @@ else:
 #arg.steps_low = 100
 #arg.steps_high = 101
 #arg.get_steps = lambda arg: int( np.random.randint(low=arg.steps_low ,high=arg.steps_high) )
-arg.steps = 10
+arg.steps = 200
 arg.get_steps = lambda arg: int( arg.steps )
 
 #arg.M_low = 51
 #arg.M_high = 52
 #arg.get_batch_size = lambda arg: int(np.random.randint(low=arg.M_low , high=arg.M_high))
-arg.M = 10000
+arg.M = 150
 arg.get_batch_size = lambda arg: arg.M #M
 arg.report_error_freq = 50
 
@@ -177,7 +179,7 @@ arg.get_start_learning_rate = lambda arg: arg.starter_learning_rate
 ## decayed_learning_rate = learning_rate * decay_rate ^ (global_step / decay_steps)
 #arg.decay_rate_low, arg.decay_rate_high = 0.3, 0.99
 #arg.get_decay_rate = lambda arg: np.random.uniform(low=arg.decay_rate_low, high=arg.decay_rate_high)
-arg.decay_rate  = 0.95
+arg.decay_rate  = 0.5
 arg.get_decay_rate = lambda arg: arg.decay_rate
 
 #arg.decay_steps_low, arg.decay_steps_high = arg.report_error_freq, arg.M

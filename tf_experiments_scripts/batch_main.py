@@ -2,8 +2,8 @@
 #SBATCH --qos=cbmm
 #SBATCH --job-name=Python
 #SBATCH --array=1-200
-#SBATCH --mem=14000
-#SBATCH --time=6-20:20
+#SBATCH --mem=1000
+#SBATCH --time=0-2:20
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=rene_sax14@yahoo.com
 
@@ -91,9 +91,9 @@ if arg.mdl == 'standard_nn':
     arg.b = 0.1
     arg.get_b_init = lambda arg: len(arg.dims)*[arg.b]
 
-    #arg.act = tf.nn.relu
+    arg.act = tf.nn.relu
     #arg.act = tf.nn.elu
-    arg.act = tf.nn.softplus
+    #arg.act = tf.nn.softplus
 elif arg.mdl == 'hbf':
     pass
     # arg.init_type = 'truncated_normal'
