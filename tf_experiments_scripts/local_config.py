@@ -271,10 +271,9 @@ parser.add_argument("-pr", "--path_root", help="path_root: specifies the path ro
 #parser.add_argument("-hp", "--hyper_parameter", help="hyper_parameter: when searching for hp on needs to specify were to store the results of experiment or it will default.")
 
 cmd_args = parser.parse_args()
-
 # if sj, stid arguments given set them else leave them default values
-arg.slurm_jobid = cmd_args.SLURM_JOBID if not cmd_args.SLURM_JOBID else arg.slurm_jobid
-arg.slurm_array_task_id = cmd_args.SLURM_ARRAY_TASK_ID if not cmd_args.SLURM_ARRAY_TASK_ID else arg.slurm_array_task_id
+arg.slurm_jobid = cmd_args.SLURM_JOBID if cmd_args.SLURM_JOBID else arg.slurm_jobid
+arg.slurm_array_task_id = cmd_args.SLURM_ARRAY_TASK_ID if cmd_args.SLURM_ARRAY_TASK_ID else arg.slurm_array_task_id
 if cmd_args.save_config_args:
     # flag to save current config files to pickle file
     print(cmd_args.save_config_args)
