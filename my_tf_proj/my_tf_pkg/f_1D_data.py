@@ -100,49 +100,49 @@ def get_data(task_name):
     print( '---> task_name: ', task_name)
 
     if task_name == 'task_qianli_func':
-        (X_train, Y_train, X_cv, Y_cv, X_test, Y_test) = get_data_from_file(file_name='./f_1D_cos_no_noise_data.npz')
+        (X_train, Y_train, X_cv, Y_cv, X_test, Y_test) = get_data_from_file(file_name='./data/f_1D_cos_no_noise_data.npz')
     elif task_name == 'task_f_2D_task2':
-        (X_train, Y_train, X_cv, Y_cv, X_test, Y_test) = get_data_from_file(file_name='./f_2D_task2_ml_data_and_mesh.npz')
+        (X_train, Y_train, X_cv, Y_cv, X_test, Y_test) = get_data_from_file(file_name='./data/f_2D_task2_ml_data_and_mesh.npz')
     elif task_name == 'task_f_2D_task2_xsinglog1_x_depth2':
-        (X_train, Y_train, X_cv, Y_cv, X_test, Y_test) = get_data_from_file(file_name='./f_2D_task2_ml_xsinlog1_x_depth_2data_and_mesh.npz')
+        (X_train, Y_train, X_cv, Y_cv, X_test, Y_test) = get_data_from_file(file_name='./data/f_2D_task2_ml_xsinlog1_x_depth_2data_and_mesh.npz')
     elif task_name == 'task_f_2D_task2_xsinglog1_x_depth3':
-        (X_train, Y_train, X_cv, Y_cv, X_test, Y_test) = get_data_from_file(file_name='./f_2D_task2_ml_xsinlog1_x_depth_3data_and_mesh.npz')
+        (X_train, Y_train, X_cv, Y_cv, X_test, Y_test) = get_data_from_file(file_name='./data/f_2D_task2_ml_xsinlog1_x_depth_3data_and_mesh.npz')
     elif task_name == 'task_f2D_2x2_1_cosx1x2_depth2':
-        (X_train, Y_train, X_cv, Y_cv, X_test, Y_test) = get_data_from_file(file_name='./f_2D_2x2_1_cosx1x2_depth_2data_and_mesh.npz')
+        (X_train, Y_train, X_cv, Y_cv, X_test, Y_test) = get_data_from_file(file_name='./data/f_2D_2x2_1_cosx1x2_depth_2data_and_mesh.npz')
     elif task_name == 'task_f2D_2x2_1_cosx1_plus_x2_depth2':
-        (X_train, Y_train, X_cv, Y_cv, X_test, Y_test) = get_data_from_file(file_name='./f_2D_2x2_1_cosx1_plus_x2_depth_2data_and_mesh.npz')
+        (X_train, Y_train, X_cv, Y_cv, X_test, Y_test) = get_data_from_file(file_name='./data/f_2D_2x2_1_cosx1_plus_x2_depth_2data_and_mesh.npz')
     elif task_name == 'task_h_gabor_data_and_mesh':
-        (X_train, Y_train, X_cv, Y_cv, X_test, Y_test) = get_data_from_file(file_name='./h_gabor_data_and_mesh.npz')
+        (X_train, Y_train, X_cv, Y_cv, X_test, Y_test) = get_data_from_file(file_name='./data/h_gabor_data_and_mesh.npz')
 
     elif task_name == 'task_f_4D_conv':
-        X_train, Y_train, X_cv, Y_cv, X_test, Y_test = get_data_from_file(file_name='./f_4D_task_conv.npz')
+        X_train, Y_train, X_cv, Y_cv, X_test, Y_test = get_data_from_file(file_name='./data/f_4D_task_conv.npz')
     elif task_name == 'task_f_8D_conv':
         #print 'task_f_8dtask_f_8dtask_f_8dtask_f_8dtask_f_8dtask_f_8dtask_f_8dtask_f_8dtask_f_8dtask_f_8dtask_f_8dtask_f_8dtask_f_8d'
-        X_train, Y_train, X_cv, Y_cv, X_test, Y_test = get_data_from_file(file_name='./f_8D_task_conv.npz')
+        X_train, Y_train, X_cv, Y_cv, X_test, Y_test = get_data_from_file(file_name='./data/f_8D_task_conv.npz')
     elif task_name == 'task_f_8D_conv_test':
         #print 'task_f_8dtask_f_8dtask_f_8dtask_f_8dtask_f_8dtask_f_8dtask_f_8dtask_f_8dtask_f_8dtask_f_8dtask_f_8dtask_f_8dtask_f_8d'
-        X_train, Y_train, X_cv, Y_cv, X_test, Y_test = get_data_from_file(file_name='./f_8D_conv_test.npz')
+        X_train, Y_train, X_cv, Y_cv, X_test, Y_test = get_data_from_file(file_name='./data/f_8D_conv_test.npz')
 
     elif task_name == 'task_f_4D_conv_1st':
-        X_train, Y_train, X_cv, Y_cv, X_test, Y_test = get_data_from_file(file_name='./f_4D_conv_1st.npz')
+        X_train, Y_train, X_cv, Y_cv, X_test, Y_test = get_data_from_file(file_name='./data/f_4D_conv_1st.npz')
     elif task_name == 'task_f_4D_conv_2nd':
-        X_train, Y_train, X_cv, Y_cv, X_test, Y_test = get_data_from_file(file_name='./f_4D_task_conv_2nd.npz')
+        X_train, Y_train, X_cv, Y_cv, X_test, Y_test = get_data_from_file(file_name='./data/f_4D_conv_2nd.npz')
     elif task_name == 'task_f_4D_conv_changing':
-        X_train, Y_train, X_cv, Y_cv, X_test, Y_test = get_data_from_file(file_name='./f_4D_conv_changing.npz')
+        X_train, Y_train, X_cv, Y_cv, X_test, Y_test = get_data_from_file(file_name='./data/f_4D_conv_changing.npz')
     elif task_name == 'task_f_4D_conv_3rd':
-        X_train, Y_train, X_cv, Y_cv, X_test, Y_test = get_data_from_file(file_name='./f_4D_conv_3rd.npz')
+        X_train, Y_train, X_cv, Y_cv, X_test, Y_test = get_data_from_file(file_name='./data/f_4D_conv_3rd.npz')
     elif task_name == 'task_f_4D_conv_4th':
-            X_train, Y_train, X_cv, Y_cv, X_test, Y_test = get_data_from_file(file_name='./f_4D_conv_4th.npz')
+            X_train, Y_train, X_cv, Y_cv, X_test, Y_test = get_data_from_file(file_name='./data/f_4D_conv_4th.npz')
     elif task_name == 'task_f_4D_conv_5th':
-            X_train, Y_train, X_cv, Y_cv, X_test, Y_test = get_data_from_file(file_name='./f_4D_conv_5th.npz')
+            X_train, Y_train, X_cv, Y_cv, X_test, Y_test = get_data_from_file(file_name='./data/f_4D_conv_5th.npz')
     elif task_name == 'task_f_4D_conv_6th':
-            X_train, Y_train, X_cv, Y_cv, X_test, Y_test = get_data_from_file(file_name='./f_4D_conv_6th.npz')
+            X_train, Y_train, X_cv, Y_cv, X_test, Y_test = get_data_from_file(file_name='./data/f_4D_conv_6th.npz')
 
     elif task_name == 'task_f_4D_non_conv':
-        X_train, Y_train, X_cv, Y_cv, X_test, Y_test = get_data_from_file(file_name='./f_4D_task_non_conv.npz')
+        X_train, Y_train, X_cv, Y_cv, X_test, Y_test = get_data_from_file(file_name='./data/f_4D_task_non_conv.npz')
     elif task_name == 'task_f_8D_non_conv':
         #print 'task_f_8dtask_f_8dtask_f_8dtask_f_8dtask_f_8dtask_f_8dtask_f_8dtask_f_8dtask_f_8dtask_f_8dtask_f_8dtask_f_8dtask_f_8d'
-        X_train, Y_train, X_cv, Y_cv, X_test, Y_test = get_data_from_file(file_name='./f_8D_task_non_conv.npz')
+        X_train, Y_train, X_cv, Y_cv, X_test, Y_test = get_data_from_file(file_name='./data/f_8D_task_non_conv.npz')
 
     elif task_name == 'task_MNIST_flat':
         mnist = input_data.read_data_sets("MNIST_data/", one_hot=True)
