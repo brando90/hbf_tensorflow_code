@@ -27,7 +27,7 @@ import my_tf_pkg as mtf
 ##
 print('In batch script', flush=True)
 print(ns)
-##
+###
 arg = ns.Namespace()
 
 task_name = 'task_h_gabor_data_and_mesh'
@@ -42,7 +42,7 @@ task_name = 'task_f_4D_conv'
 # task_name = 'task_f_8D_conv'
 # task_name = 'task_f_8D_conv'
 # task_name = 'task_f_8D_conv_test'
-task_name = 'task_f_4D_conv_2nd'
+#task_name = 'task_f_4D_conv_2nd'
 # task_name = 'task_f_4D_conv_changing'
 # task_name = 'task_f_4D_conv_3rd'
 # task_name = 'task_f_4D_conv_4th'
@@ -50,6 +50,7 @@ task_name = 'task_f_4D_conv_2nd'
 # task_name = 'task_f_4D_conv_6th'
 #task_name = 'task_f_4D_non_conv'
 #task_name = 'task_f_8D_non_conv'
+task_name = 'task_f_4D_simple_ReLu_BT'
 #task_name = 'task_MNIST_flat'
 #task_name = 'task_MNIST_flat_auto_encoder'
 arg.task_name = task_name
