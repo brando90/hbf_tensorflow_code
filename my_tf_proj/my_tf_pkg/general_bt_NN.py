@@ -64,8 +64,8 @@ def bt_mdl_conv(arg,x):
         filter_width = 2*nb_filters
         stride_width = filter_width
     print('----')
-    conv = tf.reshape(conv, [-1,filter_width*nb_filters])
-    C = get_final_weight(arg)
+    conv = tf.squeeze(conv)
+    C = get_final_weight(arg=arg,shape=[arg.F[len(arg.F)-1],1])
     mdl = tf.matmul(conv,C)
     return mdl
 
@@ -106,16 +106,18 @@ def flatten_conv_layer(x,l,nb_filters,L):
         Equivalently, we apply one convolution locally at the image/vector depending on how many times the function is locally composed.
         So a binary tree in 4D the layer 1, has 4 = 2^3 - l = 2^2 locations where the function is locally shared.
     nb_filters = how many units each local convolutions has for this layer.
-    L = number of total layers the BT network has (not including the approximation layer). Similarly, its just the index of the layer right before the approximation layer.
+    L = number of total (conv) layers the BT network has (not including the approximation layer). Similarly, its just the index of the layer right before the approximation layer.
         For example, if we have a BT in 8D then we have 3 convolution layers and 1 approximation layer. Thus, we get that L = 3. For a 4D L=2, for 16D L = 4. etc.
+        Note that the final conv layer is just a fully connected layer. i.e. at L = len(arg.F) - 1
     '''
     #conv = tf.reshape(conv, [-1,1,filter_width*nb_filters,1]) #flat
     nb_convolution_sections = 2**(L-l)
     conv = tf.reshape(x, [-1,1,nb_convolution_sections*nb_filters,1]) #flat
     return conv
 
-def get_final_weight(arg):
-    return
+def get_final_weight(arg,shape,name='C',dtype=tf.float32,regularizer=None,trainable=True):
+    C = tf.get_variable(shape=shape,name=name,dtype=dtype,initializer=arg.weights_initializer,regularizer=regularizer,trainable=True)
+    return C
 
 ##
 
