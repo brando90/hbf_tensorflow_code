@@ -32,18 +32,21 @@ def bt_mdl_conv(arg,x):
     '''
     Returns a BT NN.
     '''
-    print('len(arg.F) ', len(arg.F))
-    print('range(1,len(arg.F) ', list(range(1,len(arg.F))) )
-    print('arg.F ', arg.F)
+    # print('len(arg.F) ', len(arg.F))
+    # print('range(1,len(arg.F) ', list(range(1,len(arg.F))) )
+    # print('arg.F ', arg.F)
     # zeroth layer (the data)
     conv = x
     filter_width = 2 # 2 because of a binary tree
     stride_width = filter_width
     l=0
+    print('------------------------------------------------------------------')
     print('--')
     print('l ', l)
     print('arg.F', arg.F)
     print('nb_filters ', arg.F[l])
+    print('filter_width ', filter_width)
+    print('stride_width ', stride_width)
     print(conv)
     # make each layer
     for l in range(1,len(arg.F)):
@@ -52,24 +55,26 @@ def bt_mdl_conv(arg,x):
         print('l ', l)
         print('arg.F', arg.F)
         print('nb_filters ', arg.F[l])
-        # print('nb_filters ', nb_filters)
-        # print('filter_width ', filter_width)
-        # print('stride_width ', stride_width)
+        print('filter_width ', filter_width)
+        print('stride_width ', stride_width)
         #pdb.set_trace()
-        conv = get_activated_conv_layer(arg=arg,x=conv,filter_width=filter_width,nb_filters=nb_filters,stride_width=stride_width,scope=arg.scope_name+str(l))
+        conv = get_activated_conv_layer(arg=arg,x=conv,l=l,filter_width=filter_width,nb_filters=nb_filters,stride_width=stride_width,scope=arg.scope_name+str(l))
         print(conv)
         # setup for next iteration
         filter_width = 2*nb_filters
         stride_width = filter_width
     print('----')
-    return conv
+    conv = tf.reshape(conv, [-1,filter_width*nb_filters])
+    C = get_final_weight(arg)
+    mdl = tf.matmul(conv,C)
+    return mdl
 
-def get_activated_conv_layer(arg,x,filter_width,nb_filters,stride_width,scope):
+def get_activated_conv_layer(arg,x,l,filter_width,nb_filters,stride_width,scope):
     '''
     arg = NS arg for params: act, normalization (BN) layer
     x = x-input (ahouls be previous activated conv layer)
-    filter_shape/kernel_size = kernel/filter size/shape, also means the width and height of the filters/kernel for convolution
-    stride_width = stride for conv (not stride height is 1)
+    filter_width/kernel_size = kernel/filter width/shape, also means the width and height of the filters/kernel for convolution
+    stride_width = stride for conv (not stride height is 1), note for BT should be equal to filter_shape
     scope = scope (name)
 
     NOTE: height is 1 because data are vectors
@@ -91,8 +96,26 @@ def get_activated_conv_layer(arg,x,filter_width,nb_filters,stride_width,scope):
         trainable=True,
         reuse=False
     )
-    conv = tf.reshape(conv, [-1,1,filter_width*nb_filters,1]) #flat
+    #flatten layer
+    conv = flatten_conv_layer(x=conv,l=l,nb_filters=nb_filters,L=len(arg.F)-1)
     return conv
+
+def flatten_conv_layer(x,l,nb_filters,L):
+    '''
+    l = which layer in the BT we want to flatten. This tells use how to flatten because it will tell us how many times we used the convolution in a layer.
+        Equivalently, we apply one convolution locally at the image/vector depending on how many times the function is locally composed.
+        So a binary tree in 4D the layer 1, has 4 = 2^3 - l = 2^2 locations where the function is locally shared.
+    nb_filters = how many units each local convolutions has for this layer.
+    L = number of total layers the BT network has (not including the approximation layer). Similarly, its just the index of the layer right before the approximation layer.
+        For example, if we have a BT in 8D then we have 3 convolution layers and 1 approximation layer. Thus, we get that L = 3. For a 4D L=2, for 16D L = 4. etc.
+    '''
+    #conv = tf.reshape(conv, [-1,1,filter_width*nb_filters,1]) #flat
+    nb_convolution_sections = 2**(L-l)
+    conv = tf.reshape(x, [-1,1,nb_convolution_sections*nb_filters,1]) #flat
+    return conv
+
+def get_final_weight(arg):
+    return
 
 ##
 
