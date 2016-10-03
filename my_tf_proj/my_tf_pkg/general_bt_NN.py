@@ -40,32 +40,34 @@ def bt_mdl_conv(arg,x):
     filter_width = 2 # 2 because of a binary tree
     stride_width = filter_width
     l=0
-    print('------------------------------------------------------------------')
-    print('--')
-    print('l ', l)
-    print('arg.F', arg.F)
-    print('nb_filters ', arg.F[l])
-    print('filter_width ', filter_width)
-    print('stride_width ', stride_width)
-    print(conv)
-    # make each layer
-    for l in range(1,len(arg.F)):
-        nb_filters = arg.F[l] # nb of filters for current layer
+    if arg.verbose:
+        print('------------------------------------------------------------------')
         print('--')
         print('l ', l)
         print('arg.F', arg.F)
         print('nb_filters ', arg.F[l])
         print('filter_width ', filter_width)
         print('stride_width ', stride_width)
+        print(conv)
+    # make each layer
+    for l in range(1,len(arg.F)):
+        nb_filters = arg.F[l] # nb of filters for current layer
+        if arg.verbose:
+            print('--')
+            print('l ', l)
+            print('arg.F', arg.F)
+            print('nb_filters ', arg.F[l])
+            print('filter_width ', filter_width)
+            print('stride_width ', stride_width)
         #pdb.set_trace()
         conv = get_activated_conv_layer(arg=arg,x=conv,l=l,filter_width=filter_width,nb_filters=nb_filters,stride_width=stride_width,scope=arg.scope_name+str(l))
-        print(conv)
+        if arg.verbose:
+            print(conv)
         # setup for next iteration
         filter_width = 2*nb_filters
         stride_width = filter_width
-    print('----')
     conv = tf.squeeze(conv)
-    C = get_final_weight(arg=arg,shape=[arg.F[len(arg.F)-1],1])
+    C = get_final_weight(arg=arg,shape=[arg.F[len(arg.F)-1],1],name='C_'+str(len(arg.F)))
     mdl = tf.matmul(conv,C)
     return mdl
 
@@ -124,7 +126,7 @@ def get_final_weight(arg,shape,name='C',dtype=tf.float32,regularizer=None,traina
 class TestNN_BT(unittest.TestCase):
     #make sure methods start with word test
 
-    def get_args(self,L,F):
+    def get_args(self,L,F,verbose=False):
         '''
         L = layers
         F = list of nb of filters [F^(1),F^(2),...]
@@ -138,6 +140,7 @@ class TestNN_BT(unittest.TestCase):
         arg.normalizer_fn = None
         #arg.normalizer_fn = tf.contrib.layers.batch_norm
         arg.F = F
+        arg.verbose = verbose
         return arg
 
     def test_NN_BT4D(self):
@@ -145,38 +148,38 @@ class TestNN_BT(unittest.TestCase):
         D = 4
         x = tf.placeholder(tf.float32, shape=[None,1,D,1], name='x-input') #[M, 1, D, 1]
         # prepare args
-        arg = self.get_args(L=2,F=[None,3,5])
+        arg = self.get_args(L=2,F=[None,3,5],verbose=False)
         arg.scope_name = 'BT4D'
         # get NN BT
         bt_mdl = bt_mdl_conv(arg,x)
         # do check
         M = 2
-        X_data = np.array( [np.arange(0,4),np.arange(4,8)] )
-        print('X_data ', X_data)
+        X_data = np.arange(D*M).reshape((M, D))
+        #print('X_data ', X_data)
         X_data = X_data.reshape(M,1,D,1)
         with tf.Session() as sess:
             sess.run( tf.initialize_all_variables() )
             print('output: ', sess.run(fetches=bt_mdl, feed_dict={x:X_data}) )
         #self.assertTrue(correct)
 
-    # def test_NN_BT8D(self):
-    #     print('\n -------test')
-    #     D = 8
-    #     x = tf.placeholder(tf.float32, shape=[None,1,D,1], name='x-input') #[M, 1, D, 1]
-    #     # prepare args
-    #     arg = self.get_args(L=3,F=[3,5,7])
-    #     arg.scope_name = 'BT8D'
-    #     # get NN BT
-    #     bt_mdl = bt_mdl_conv(arg,x)
-    #     # do check
-    #     M = 2
-    #     X_data = np.array( [np.arange(0,9),np.arange(9,17)] )
-    #     print('X_data ', X_data)
-    #     X_data = X_data.reshape(M,1,D,1)
-    #     with tf.Session() as sess:
-    #         sess.run( tf.initialize_all_variables() )
-    #         print('output: ', sess.run(fetches=bt_mdl, feed_dict={x:X_data}) )
-    #     #self.assertTrue(correct)
+    def test_NN_BT8D(self):
+        print('\n -------test')
+        D = 8
+        x = tf.placeholder(tf.float32, shape=[None,1,D,1], name='x-input') #[M, 1, D, 1]
+        # prepare args
+        arg = self.get_args(L=3,F=[None,3,5,7],verbose=False)
+        arg.scope_name = 'BT'+str(D)+'D'
+        # get NN BT
+        bt_mdl = bt_mdl_conv(arg,x)
+        # do check
+        M = 2
+        X_data = np.arange(D*M).reshape((M, D))
+        #print('X_data ', X_data)
+        X_data = X_data.reshape(M,1,D,1)
+        with tf.Session() as sess:
+            sess.run( tf.initialize_all_variables() )
+            print('output: ', sess.run(fetches=bt_mdl, feed_dict={x:X_data}) )
+        #self.assertTrue(correct)
 
 if __name__ == '__main__':
     unittest.main()
