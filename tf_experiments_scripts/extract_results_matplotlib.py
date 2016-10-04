@@ -11,6 +11,23 @@ import my_tf_pkg as mtf
 
 ##
 
+def debug_plot():
+    # plt.subplot(211)
+    # plt.plot([1,2,3], label="test1")
+    # plt.plot([3,2,1], label="test2")
+    # # Place a legend above this subplot, expanding itself to
+    # # fully use the given bounding box.
+    # plt.legend(bbox_to_anchor=(0., 1.02, 1., .102), loc=3,
+    #            ncol=2, mode="expand", borderaxespad=0.)
+
+    plt.subplot(121)
+    plt.plot([1,2,3], label="test1")
+    plt.plot([3,2,1], label="test2")
+    # Place a legend to the right of this smaller subplot.
+    plt.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
+
+    plt.show()
+
 def display_results4():
     get_errors_from = mtf.get_errors_based_on_train_error
     #
@@ -34,10 +51,12 @@ def display_results4():
     print('nn1_list_test_errors = ', nn1_list_test_errors)
     print('bt_multiple_experiment_results = ', nn2_list_test_errors)
     #
+    plt.subplot(121)
     krls.plot_values(nn1_list_units,nn1_list_test_errors,xlabel='number of units',y_label='squared error (l2 loss)',label='NN1 test',markersize=3,colour='b')
     krls.plot_values(nn1_list_units,nn2_list_test_errors,xlabel='number of units',y_label='squared error (l2 loss)',label='NN2 test',markersize=3,colour='c')
     #
-    plt.legend()
+    plt.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
+    #plt.legend()
     plt.show()
 
 ##
@@ -640,7 +659,7 @@ def display_results12():
     #
     get_errors_from = mtf.get_errors_based_on_train_error
 
-    task_name = 'task_f_4d_conv_2nd'
+    task_name = 'task_f_4D_conv_2nd'
     experiment_name = mtf.get_experiment_folder(task_name)
 
     (X_train, Y_train, X_cv, Y_cv, X_test, Y_test) = mtf.get_data(task_name)
@@ -723,6 +742,7 @@ def display_results13():
     print('nn1_list_test_errors = ', nn1_list_test_errors)
     print('bt_multiple_experiment_results = ', bt_list_test_errors)
     # plot train errors
+    plt.subplot(121)
     krls.plot_values(nb_params_shallow,nn1_list_train_errors,xlabel='number of parameters',y_label='squared error (l2 loss)',label='Shallow NN train',markersize=3,colour='b')
     krls.plot_values(nb_params_bt,bt_list_train_errors,xlabel='number of parameters',y_label='squared error (l2 loss)',label='Binary Tree NN train',markersize=3,colour='c')
     # plot test errors
@@ -730,8 +750,12 @@ def display_results13():
     krls.plot_values(nb_params_bt,bt_list_test_errors,xlabel='number of parameters',y_label='squared error (l2 loss)',label='Binary Tree NN test',markersize=3,colour='c')
     #
     plt.legend()
+    plt.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
     plt.show()
 
+
+
 if __name__ == '__main__':
-    display_results4()
-    #display_results11()
+    #debug_plot()
+    #display_results4()
+    display_results11()
