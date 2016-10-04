@@ -203,8 +203,9 @@ def build_binary_tree_4D_hidden_layer(x,arg,phase_train=None):
         Z2 = add_batch_norm_layer(l='BN2',x=Z2,phase_train=phase_train,trainable_bn=trainable_bn)
     A2 = arg.act( Z2 )
     # 3rd fully connected layer
-    init_C = tf.truncated_normal(shape=[arg.nb_final_hidden_units,1], mean=arg.mean[2], stddev=arg.stddev[2], dtype=tf.float32, seed=None, name=None)
-    C = tf.get_variable(name='W'+'Out_Layer',dtype=tf.float32,initializer=init_C,regularizer=None,trainable=True)
+    #init_C = tf.truncated_normal(shape=[arg.nb_final_hidden_units,1], mean=arg.mean[2], stddev=arg.stddev[2], dtype=tf.float32, seed=None, name=None)
+    #C = tf.get_variable(name='W'+'Out_Layer',dtype=tf.float32,initializer=init_C,regularizer=None,trainable=True)
+    C = get_W(init_W=arg.weights_initializer,l='Out_Layer',dims=[arg.nb_final_hidden_units,1],dtype=tf.float32)
     f = tf.matmul(A2,C)
     return f
 
@@ -215,7 +216,7 @@ def get_binary_branch(x,arg,l,name=None):
     # filter shape is "[filter_height, filter_width, in_channels, out_channels]"
     W_filters = get_W_conv2d(arg,l,name) # [1,arg.filter_size,1,arg.nb_filters]
     b = tf.Variable( tf.constant(0.1, shape=[arg.nb_filters]) )
-    # 1D conv
+    # 1D conv˚
     conv = tf.nn.conv2d(input=x, filter=W_filters, strides=[1, 1, arg.stride_convd1, 1], padding="SAME", name="conv")
     flat_conv = tf.reshape(conv + b, [-1,arg.filter_size*arg.nb_filters])
     return flat_conv
@@ -295,32 +296,7 @@ def get_binary_subtree(l,x,W_filters,b,nb_filters,stride_convd1=2):
 #
 
 def build_binary_tree_16D(x,nb_filters1,nb_filters2,mean,stddev,stride_convd1=2):
-    # # filter shape is "[filter_height, filter_width, in_channels, out_channels]"
-    # filter_size1 = 2
-    # init_W = tf.truncated_normal(shape=[1,filter_size,1,nb_filters], mean=mean, stddev=stddev, dtype=tf.float32, seed=None, name=None)
-    # W_filters = tf.get_variable(name='W'+l, dtype=tf.float32, initializer=init_W, regularizer=None, trainable=True)
-    # #bias
-    # b = tf.Variable( tf.constant(0.1, shape=[nb_filters]) )
-    # # left BT
-    # Y_11 = get_binary_subtree(l='Y11',x=x[0:4],W_filters=W_filters,b,stride_convd1=2) # M, 2 x nb_filters
-    # Y_12 = get_binary_subtree(l='Y12',x=x[4:8],W_filters=W_filters,b,stride_convd1=2) # M, 2 x nb_filters
-    # # right BT
-    # Y_13 = get_binary_subtree(l='Y13',x=x[8:12],W_filters=W_filters,b,stride_convd1=2) # M, 2 x nb_filters
-    # Y_14 = get_binary_subtree(l='Y14',x=x[12:16],W_filters=W_filters,b,stride_convd1=2) # M, 2 x nb_filters
-    # #
-    # Y_1 = tf.concat(1, [Y_11, Y_12]) # M, 4 x nb_filters
-    # Y_2 = tf.concat(1, [Y_13, Y_14]) # M, 4 x nb_filters
-    # #
-    # stride_convd1 = 4*nb_filters1 # unhard code it
-    #
-    # init_W_tilde = tf.truncated_normal(shape=[1,4*nb_filters1,1,nb_filters2], mean=mean, stddev=stddev, dtype=tf.float32, seed=None, name=None)
-    # W_filters_tilde = tf.get_variable(name='W'+l, dtype=tf.float32, initializer=init_W_tilde, regularizer=None, trainable=True)
-    # #
-    # l = 'Out_Layer'
-    # init_W = tf.truncated_normal(shape=[filter_size*nb_filters,1], mean=mean, stddev=stddev, dtype=tf.float32, seed=None, name=None)
-    # C = tf.get_variable(name='W'+l, dtype=tf.float32, initializer=init_W, regularizer=None, trainable=True)
-    # mdl = tf.matmul(flat_conv,C)
-    return mdl
+    pass
 
 ##
 
@@ -329,6 +305,9 @@ def get_W_conv2d(arg,l,name,dtype=tf.float32):
     #W_filters = tf.get_variable(name='W'+name, dtype=tf.float32, initializer=init_W, regularizer=None, trainable=True)
     if arg.init_type == 'xavier':
         init_W = tf.contrib.layers.xavier_initializer_conv2d(uniform=True,dtype=dtype)
+        W = tf.get_variable(name='W'+name,dtype=dtype,initializer=init_W,regularizer=None,trainable=True,shape=[1,arg.filter_size,1,arg.nb_filters])
+    elif arg.init_type == 'manual':
+        init_W = arg.weights_initializer
         W = tf.get_variable(name='W'+name,dtype=dtype,initializer=init_W,regularizer=None,trainable=True,shape=[1,arg.filter_size,1,arg.nb_filters])
     else:
         init_W = tf.truncated_normal(shape=[1,arg.filter_size,1,arg.nb_filters], mean=arg.mean[l], stddev=arg.stddev[l], dtype=dtype)
@@ -342,7 +321,10 @@ def get_W_BT4D(arg,l,name,dtype=tf.float32):
     if arg.init_type == 'xavier':
         init_W =tf.contrib.layers.xavier_initializer(dtype=dtype)
         W = tf.get_variable(name='W'+name,dtype=dtype,initializer=init_W,regularizer=None,trainable=True,shape=[dim_input,dim_out])
-    else:
+    elif arg.init_type == 'manual':
+         init_W = arg.weights_initializer
+         W = tf.get_variable(name='W'+name,dtype=dtype,initializer=init_W,regularizer=None,trainable=True,shape=[dim_input,dim_out])
+    else :
         init_W = tf.truncated_normal(shape=[dim_input,dim_out], mean=arg.mean[l], stddev=arg.stddev[l], dtype=dtype)
         W = tf.get_variable(name='W'+name, dtype=dtype, initializer=init_W, regularizer=None, trainable=True, shape=[dim_input,dim_out])
     return W
@@ -353,7 +335,11 @@ def get_W(init_W,l,dims,dtype=tf.float64):
     else:
         (dim_input,dim_out) = dims
         W = tf.get_variable(name='W'+l, dtype=dtype, initializer=init_W, regularizer=None, trainable=True, shape=[dim_input,dim_out])
+    # init_C = tf.truncated_normal(shape=[arg.nb_final_hidden_units,1], mean=arg.mean[2], stddev=arg.stddev[2], dtype=tf.float32, seed=None, name=None)
+    # C = tf.get_variable(name='W'+'Out_Layer',dtype=tf.float32,initializer=init_C,regularizer=None,trainable=True)
     return W
+
+##
 
 def add_batch_norm_layer(l, x, phase_train, n_out=1, scope='BN', trainable_bn=True):
     print( 'add_batch_norm_layer')

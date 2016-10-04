@@ -10,23 +10,36 @@ from sklearn.metrics.pairwise import euclidean_distances
 import tensorflow as tf
 from tensorflow.contrib.layers.python.layers import batch_norm as batch_norm
 
+import my_tf_pkg as mtf
+
 def bt_mdl(arg,x,W,l,left,right):
     '''
     Returns a BT NN.
+
+    generates the tree
     '''
-    # TODO: tramsfpr,pseudocode to real code:
-    # if l == 1:
-    #     z = x[:,left:right] * W[l] # (M x F^(1)) = (M x D) x (D x F^(1))
-    #     a = arg.act(z)  # (M x F^(1))
-    #     return a # (M x F^(l)) = (M x F^(1))
-    # else:
-    #     dif = int((right - left)/2)
-    #     bt_left = bt_mdl(x, W, l-1, left, left+dif) # (M x F^(l-1))
-    #     bt_right = bt_mdl(x, W, l-1, left+dif, right) # (M x F^(l-1))
-    #     bt = bt_left + bt_right # (M x 2F^(l-1))
-    #     bt = bt * W[l] # (M x F^(l)) = (M x 2F^(l-1)) x (2F^(l-1) x F^(l))
-    #     return arg.act( bt )
+    if l == 1:
+        z = x[:,left:right] * W[l] # (M x F^(1)) = (M x D) x (D x F^(1))
+        a = arg.act(z)  # (M x F^(1))
+        return a # (M x F^(l)) = (M x F^(1))
+    elif l == len(arg.F):
+        return bt
+    else:
+        dif = int((right - left)/2)
+        bt_left = bt_mdl(x, W, l-1, left, left+dif) # (M x F^(l-1))
+        bt_right = bt_mdl(x, W, l-1, left+dif, right) # (M x F^(l-1))
+        bt = bt_left + bt_right # (M x 2F^(l-1))
+        #bt = bt * W[l] # (M x F^(l)) = (M x 2F^(l-1)) x (2F^(l-1) x F^(l))
+        bt = tf.matmul(bt,W[l])
+        return arg.act( bt )
     pass
+
+def get_recursive_bt(arg,x,D):
+    bt = bt_mdl(x,W=W,l=len(arg.F),left=0,right=D)
+    # final layer (function approximation)
+    C = mtf.get_W(init_W=arg.weights_initializer,l='Out_Layer',dims=[arg.F[len(arg.F)-1],1],dtype=tf.float32)
+    bt = tf.matmul(A2,C)
+    return bt
 
 def bt_mdl_conv(arg,x):
     '''
@@ -126,12 +139,12 @@ def get_final_weight(arg,shape,name='C',dtype=tf.float32,regularizer=None,traina
 class TestNN_BT(unittest.TestCase):
     #make sure methods start with word test
 
-    def get_args(self,L,F,verbose=False):
+    def get_args(self,L,F,verbose=False,scope_name='BT'):
         '''
         L = layers
         F = list of nb of filters [F^(1),F^(2),...]
         '''
-        arg = ns.Namespace(L=L,padding='VALID')
+        arg = ns.Namespace(L=L,padding='VALID',scope_name=scope_name)
         arg.act = tf.nn.relu
         #weights_initializer = tf.contrib.layers.xavier_initializer(dtype=tf.float32)
         arg.weights_initializer = tf.constant_initializer(value=1.0, dtype=tf.float32)
@@ -143,43 +156,83 @@ class TestNN_BT(unittest.TestCase):
         arg.verbose = verbose
         return arg
 
-    def test_NN_BT4D(self):
-        print('\n -------test')
-        D = 4
-        x = tf.placeholder(tf.float32, shape=[None,1,D,1], name='x-input') #[M, 1, D, 1]
-        # prepare args
-        arg = self.get_args(L=2,F=[None,3,5],verbose=False)
-        arg.scope_name = 'BT4D'
-        # get NN BT
-        bt_mdl = bt_mdl_conv(arg,x)
+    def get_test_data(self,M,D):
         # do check
         M = 2
         X_data = np.arange(D*M).reshape((M, D))
         #print('X_data ', X_data)
         X_data = X_data.reshape(M,1,D,1)
-        with tf.Session() as sess:
-            sess.run( tf.initialize_all_variables() )
-            print('output: ', sess.run(fetches=bt_mdl, feed_dict={x:X_data}) )
-        #self.assertTrue(correct)
+        return X_data
 
-    def test_NN_BT8D(self):
+    def get_hard_coded_bt4D(self,x):
+        arg = ns.Namespace()
+        #arg.init_type = 'xavier'
+        arg.init_type = 'manual'
+        arg.weights_initializer = tf.constant_initializer(value=1.0, dtype=tf.float32)
+        arg.nb_filters = 3 #F1
+        arg.nb_final_hidden_units = 5 # F2
+        #arg.mu = [0.0,0.0,0.0]
+        #arg.std = [0.9,0.9,0.9]
+        #arg.mu = [None, None, 0.0]
+        #arg.std = [None, None, 0.1]
+        #arg.get_W_mu_init = lambda arg: arg.mu
+        #arg.get_W_std_init = lambda arg: arg.std
+        #arg.std_low, arg.std_high = 0.001, 0.1
+        #arg.get_W_std_init = lambda arg: [float(i) for i in np.random.uniform(low=arg.std_low, high=arg.std_high, size=3)]
+        arg.act = tf.nn.relu
+        #arg.act = tf.nn.elu
+        #arg.act = tf.nn.softplus
+        #
+        arg.stride_convd1, arg.filter_size = 2, 2 #fixed for Binary Tree BT
+        #arg.mean, arg.stddev = arg.get_W_mu_init(arg), arg.get_W_std_init(arg)
+        mdl = mtf.build_binary_tree_4D_hidden_layer(x,arg,phase_train=None)
+        return mdl
+
+    def test_NN_BT4D(self,M=2,D=4,F=[None,3,5],L=2):
         print('\n -------test')
-        D = 8
+        # D, F, L = 4, [None,3,5], 2
+        #
         x = tf.placeholder(tf.float32, shape=[None,1,D,1], name='x-input') #[M, 1, D, 1]
         # prepare args
-        arg = self.get_args(L=3,F=[None,3,5,7],verbose=False)
-        arg.scope_name = 'BT'+str(D)+'D'
+        arg = self.get_args(L=L,F=F,verbose=False,scope_name='BT'+str(D)+'D')
         # get NN BT
         bt_mdl = bt_mdl_conv(arg,x)
-        # do check
-        M = 2
-        X_data = np.arange(D*M).reshape((M, D))
-        #print('X_data ', X_data)
-        X_data = X_data.reshape(M,1,D,1)
+        X_data = self.get_test_data(M,D)
         with tf.Session() as sess:
             sess.run( tf.initialize_all_variables() )
-            print('output: ', sess.run(fetches=bt_mdl, feed_dict={x:X_data}) )
-        #self.assertTrue(correct)
+            bt_output = sess.run(fetches=bt_mdl, feed_dict={x:X_data})
+
+        bt_hardcoded = self.get_hard_coded_bt4D(x)
+        with tf.Session() as sess:
+            sess.run( tf.initialize_all_variables() )
+            bt_hardcoded_output = sess.run(fetches=bt_hardcoded, feed_dict={x:X_data})
+
+        print(bt_output)
+        print(bt_output.shape)
+
+        print(bt_hardcoded_output)
+        print(bt_hardcoded_output.shape)
+        correct = np.array_equal(bt_output, bt_hardcoded_output)
+        self.assertTrue(correct)
+
+    # def test_NN_BT8D(self):
+    #     print('\n -------test')
+    #     D = 8
+    #     x = tf.placeholder(tf.float32, shape=[None,1,D,1], name='x-input') #[M, 1, D, 1]
+    #     # prepare args
+    #     arg = self.get_args(L=3,F=[None,3,5,7],verbose=False)
+    #     arg.scope_name = 'BT'+str(D)+'D'
+    #     # get NN BT
+    #     bt_mdl = bt_mdl_conv(arg,x)
+    #     # do check
+    #     M = 2
+    #     X_data = np.arange(D*M).reshape((M, D))
+    #     #print('X_data ', X_data)
+    #     X_data = X_data.reshape(M,1,D,1)
+    #     with tf.Session() as sess:
+    #         sess.run( tf.initialize_all_variables() )
+    #         print('output: ', sess.run(fetches=bt_mdl, feed_dict={x:X_data}) )
+    #     #self.assertTrue(correct)
 
 if __name__ == '__main__':
     unittest.main()
