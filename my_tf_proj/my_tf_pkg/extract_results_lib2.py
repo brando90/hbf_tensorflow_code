@@ -109,85 +109,24 @@ def get_best_results_from_experiment(experiment_dirpath, list_runs_filenames, ge
                 results_best = results_current_run
     return results_best, best_cv_filname, final_train_errors, final_cv_errors, final_test_errors
 
-def get_results_for_experiments(path_to_experiments, get_errors_from, verbose=True, split_string='_jHBF[\d]*_|_jrun_HBF[\d]*_|_jNN[\d]*_'):
+def get_results_for_experiments(path_to_all_experiments_for_task, get_errors_from, verbose=True):
     '''
-        Returns a dictionary containing the best results for each experiment.
 
-        path_to_experiments = point to the path of all the experiments from a specific task. Like: ../../om_mnist/task_August_7_NN1_xavier_momentum
-        get_errors_from =
+    example:
+    path_to_all_experiments_for_task = ../../om_mnist/task_August_7_NN1_xavier_momentum
     '''
-    print( '-----get_results_for_experiments')
-    print( path_to_experiments )
-    print( os.path.isdir(path_to_experiments) )
     experiment_results = {} # maps units -> results_best_mdl e.g {'4':{'results_best_mdl':results_best_mdl}}
-    #print os.listdir(path_to_experiments)
-    for (experiment_dirpath, _, potential_runs_filenames) in os.walk(path_to_experiments):
-        print('experiment_dirpath', experiment_dirpath)
-        if (experiment_dirpath != path_to_experiments): # if current dirpath is a valid experiment and not . (itself)
+    for (dirpath, dirnames, filenames) in os.walk(top=path_to_all_experiments_for_task,topdown=True):
+        #dirpath = om_task_data_set/august_NN1_xavier/
+        if (dirpath != path_to_all_experiments_for_task): # if current dirpath is a valid experiment and not . (itself)
             #print('=> potential_runs_filenames: ', potential_runs_filenames)
-
             results_best, best_filename, final_train_errors, final_cv_errors, final_test_errors = get_best_results_from_experiment(
                 experiment_dirpath=experiment_dirpath,
                 list_runs_filenames=potential_runs_filenames,
                 get_errors_from=get_errors_from)
 
-            if results_best == None:
-                continue
-            if not 'dims' in results_best:
-                nb_units = results_best['arg_dict']['dims'][1]
-            else:
-                nb_units = results_best['dims'][1]
-            #pdb.set_trace()
-            if verbose:
-                print( '--')
-                #print( right[0])
-                print( 'experiment_dirpath ', experiment_dirpath)
-                print( 'potential_runs_filenames ', len(potential_runs_filenames))
-                print( 'type(potential_runs_filenames)', type(potential_runs_filenames))
-                print( 'nb_units ', nb_units)
-                print( 'best_filename ', best_filename)
-            experiment_results[nb_units] = results_best
-            experiment_results[nb_units]['final_train_errors'] = final_train_errors
-            experiment_results[nb_units]['final_cv_errors'] = final_cv_errors
-            experiment_results[nb_units]['final_test_errors'] = final_test_errors
-    return experiment_results
 
-def get_error_stats(experiment_results):
-    '''
-        Inserts (mutates) the dictionary results with mean std of errors.
-    '''
-    mean_train_errors = []
-    mean_cv_errors = []
-    mean_test_errors = []
-    #
-    std_train_errors = []
-    std_cv_errors = []
-    std_test_errors = []
-    for nb_units in experiment_results.iterkeys():
-        final_train_errors = experiment_results[nb_units]['final_train_errors']
-        final_cv_errors = experiment_results[nb_units]['final_cv_errors']
-        final_test_errors = experiment_results[nb_units]['final_test_errors']
-        #
-        mean_train_error = np.mean(final_train_errors)
-        mean_cv_error = np.mean(final_cv_errors)
-        mean_test_error = np.mean(final_test_errors)
-        # experiment_results[nb_units]['mean_train_error'] = mean_train_error
-        # experiment_results[nb_units]['mean_cv_error'] = mean_cv_error
-        # experiment_results[nb_units]['mean_test_error'] = mean_test_error
-        mean_train_errors.append(mean_train_error)
-        mean_cv_errors.append(mean_cv_error)
-        mean_test_errors.append(mean_test_error)
-        #
-        std_train_error = np.std(final_train_errors)
-        std_cv_error = np.std(final_cv_errors)
-        std_test_error = np.std(final_test_errors)
-        # experiment_results[nb_units]['std_train_error'] = std_train_error
-        # experiment_results[nb_units]['std_cv_error'] = std_cv_error
-        # experiment_results[nb_units]['std_test_error'] = std_test_error
-        std_train_errors.append(std_train_error)
-        std_cv_errors.append(std_cv_error)
-        std_test_errors.append(std_test_error)
-    return mean_train_errors, std_train_errors, mean_test_errors, std_test_errors
+    return experiment_results
 
 def sort_and_pair_units_with_errors(list_units,list_test_errors):
     '''
@@ -206,12 +145,3 @@ def sort_and_pair_units_with_errors(list_units,list_test_errors):
     # collect the units in one list and the errors in another (note they are sorted), note the * is needed to have zip not receive a single list
     list_units, list_test_errors = zip(*sort_by_units) # [units, ..., units] , [error, ..., error]
     return list_units, list_test_errors
-
-
-#(left, right) = experiment_dirpath.split('jHBF1_')
-#(left, right) = re.split('_jHBF[\d]*_',experiment_dirpath)
-# print('====> split_string: ', split_string)
-# print( '=====> SPLIT: ', re.split(split_string,experiment_dirpath))
-# split_res = re.split(split_string,experiment_dirpath)
-# print( '=====> split_res: ', split_res)
-# (left, right)  = split_res
