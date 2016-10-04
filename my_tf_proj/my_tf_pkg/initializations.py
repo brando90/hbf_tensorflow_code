@@ -42,9 +42,8 @@ def get_initilizations_standard_NN(init_type,dims,mu,std,b_init,X_train,Y_train,
         nb_hidden_layers=len(dims)-1
         for l in range(1,nb_hidden_layers):
             #inits_W.append( tf.truncated_normal(shape=[dims[l-1],dims[l]], mean=mu[l], stddev=std[l], dtype=tf.float64) )
-            inits_W.append( tf.
-            (shape=[dims[l-1],dims[l]], mean=mu[l], stddev=std[l], dtype=tf.float64) )
-            inits_b.append( tf.constant( b_init[l], shape=[dims[l]], dtype=tf.float64 ) )
+            inits_W.append( tf.truncated_normal(shape=[dims[l-1],dims[l]], mean=mu[l], stddev=std[l], dtype=tf.float64) )
+            inits_b.append( tf.constant( b_init[l], shape=[ dims[l] ], dtype=tf.float64 ) ) 
         l=len(dims)-1
         #print( [dims[l-1],dims[l]])
         inits_C=[ tf.truncated_normal(shape=[dims[l-1],dims[l]],  mean=mu[l], stddev=std[l], dtype=tf.float64) ]
@@ -208,26 +207,6 @@ def get_initilizations_HBF(init_type,dims,mu,std,b_init,S_init,X_train,Y_train,t
         rbf_error=report_RBF_error(Kern, C, Y_train)
     print( 'DONE INITILIZING')
     return (inits_C,inits_W,inits_S,rbf_error)
-
-def get_initilizations_standard_NN(init_type,dims,mu,std,b_init,X_train,Y_train,train_S_type='multiple_S'):
-#def get_initilizations_standard_NN(args):
-    if  init_type=='truncated_normal':
-        inits_W=[None]
-        inits_b=[None]
-        nb_hidden_layers=len(dims)-1
-        for l in range(1,nb_hidden_layers):
-            #inits_W.append( tf.truncated_normal(shape=[dims[l-1],dims[l]], mean=mu[l], stddev=std[l], dtype=tf.float64) )
-            inits_W.append( tf.
-            (shape=[dims[l-1],dims[l]], mean=mu[l], stddev=std[l], dtype=tf.float64) )
-            inits_b.append( tf.constant( b_init[l], shape=[dims[l]], dtype=tf.float64 ) )
-        l=len(dims)-1
-        #print( [dims[l-1],dims[l]])
-        inits_C=[ tf.truncated_normal(shape=[dims[l-1],dims[l]],  mean=mu[l], stddev=std[l], dtype=tf.float64) ]
-    return (inits_C,inits_W,inits_b)
-
-
-
-#
 
 def get_single_multiple_S(l,S_init,dims,train_S_type='multiple_S'):
     if train_S_type == 'multiple_S':
