@@ -651,13 +651,14 @@ def display_results11():
     plt.legend()
     plt.show()
 
-def display_results12():
+def display_results_task_f_4D_conv_2nd():
     get_k = lambda a: 7*a + 4*3*2*a**2
     shallow = lambda k: 4*k+k+k
     bt = lambda f: 2*f+f +2*f*(2*f)+ 2*(2*f)
     get_f = lambda a: 3*2*a
     #
     get_errors_from = mtf.get_errors_based_on_train_error
+    get_errors_from = mtf.get_errors_based_on_validation_error
 
     task_name = 'task_f_4D_conv_2nd'
     experiment_name = mtf.get_experiment_folder(task_name)
@@ -701,7 +702,7 @@ def display_results12():
     plt.legend()
     plt.show()
 
-def display_results13():
+def display_results_task_f_4D_simple_ReLu_BT():
     get_k = lambda a: 7*a + 4*3*2*a**2
     shallow = lambda k: 4*k+k+k
     bt = lambda f: 2*f+f +2*f*(2*f)+ 2*(2*f)
@@ -759,4 +760,5 @@ def display_results13():
 if __name__ == '__main__':
     #debug_plot()
     #display_results4()
-    display_results13()
+    display_results_task_f_4D_conv_2nd()
+    display_results_task_f_4D_simple_ReLu_BT()
