@@ -609,7 +609,7 @@ def display_results11():
     #
     get_errors_from = mtf.get_errors_based_on_train_error
 
-    task_name = 'task_f_4d_conv_2nd'
+    task_name = 'task_f_4D_conv_2nd'
     experiment_name = mtf.get_experiment_folder(task_name)
 
     (X_train, Y_train, X_cv, Y_cv, X_test, Y_test) = mtf.get_data(task_name)
@@ -708,8 +708,9 @@ def display_results13():
     get_f = lambda a: 3*2*a
     #
     get_errors_from = mtf.get_errors_based_on_train_error
+    get_errors_from = mtf.get_errors_based_on_validation_error
 
-    task_name = 'om_f_4D_simple_ReLu_BT'
+    task_name = 'task_f_4D_simple_ReLu_BT'
     experiment_name = mtf.get_experiment_folder(task_name)
 
     (X_train, Y_train, X_cv, Y_cv, X_test, Y_test) = mtf.get_data(task_name)
@@ -758,4 +759,4 @@ def display_results13():
 if __name__ == '__main__':
     #debug_plot()
     #display_results4()
-    display_results11()
+    display_results13()
