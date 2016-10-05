@@ -130,7 +130,7 @@ def get_results_for_experiments(path_to_all_experiments_for_task,decider,verbose
         #dirpath = om_task_data_set/august_NN1_xavier/NN1_xavier
         #dirnames = _ (essentially empty for what we care)
         #filenames = [file conents of current dirpath]
-        if (dirpath != path_to_all_experiments_for_task): # if current dirpath is a valid experiment and not . (itself)
+        if (dirpath != path_to_all_experiments_for_task) and (not 'mdls' in dirpath): # if current dirpath is a valid experiment and not . (itself)
             #print('=> potential_runs_filenames: ', potential_runs_filenames)
             print('dirpath ' , dirpath)
             best_data = get_best_results_from_experiment(experiment_dirpath=dirpath,list_runs_filenames=filenames,decider=decider)
