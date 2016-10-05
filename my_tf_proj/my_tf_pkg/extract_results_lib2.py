@@ -9,6 +9,8 @@ import six
 
 import namespaces as ns
 
+import pdb
+
 ##
 
 def get_errors_based_on_train_error(results):
@@ -136,7 +138,7 @@ def get_results_for_experiments(path_to_all_experiments_for_task,decider,verbose
             best_data = get_best_results_from_experiment(experiment_dirpath=dirpath,list_runs_filenames=filenames,decider=decider)
             #
             #nb_units = best_data.results_best['dims'][1]
-            nb_units = best_data.results_best['arg_dict']['dims'][1] if not 'dims' in results_best else results_best['dims'][1]
+            nb_units = best_data.results_best['arg_dict']['dims'][1] if not 'dims' in best_data.results_best else results_best['dims'][1]
             del best_data['results_best']
             expts_best_results[nb_units] = best_data
     #print(expts_best_results)
