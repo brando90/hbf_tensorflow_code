@@ -68,16 +68,12 @@ def display_results_task_f_4D_conv_2nd():
     bt = lambda f: 2*f+f +2*f*(2*f)+ 2*(2*f)
     get_f = lambda a: 3*2*a
     #
-    task_name = 'task_f_4D_conv_2nd'
-    experiment_name = mtf.get_experiment_folder(task_name)
-
-    nn1_list_units, nn1_list_train_errors, nn1_list_test_errors = mtf.get_list_errors(experiment_results=nn1_multiple_experiment_results,get_errors_from=get_errors_from)
-    bt_list_units, bt_list_train_errors, bt_list_test_errors = mtf.get_list_errors(experiment_results=bt_multiple_experiment_results,get_errors_from=get_errors_from)
-    #
-
     get_errors_from = mtf.get_errors_based_on_train_error
     #get_errors_from = mtf.get_errors_based_on_validation_error
     decider = ns.Namespace(get_errors_from=get_errors_from)
+    #
+    task_name = 'task_f_4D_conv_2nd'
+    experiment_name = mtf.get_experiment_folder(task_name)
 
     path_to_experiments = '../../%s/task_September_23_NN_xavier_softplus'%experiment_name
     expts_best_results = mtf.get_results_for_experiments(path_to_experiments,decider,verbose=False)
@@ -170,8 +166,8 @@ def display_test():
     plt.show()
 
 if __name__ == '__main__':
-    display_test()
+    #display_test()
     #debug_plot()
     #display_results4()
-    #display_results_task_f_4D_conv_2nd()
+    display_results_task_f_4D_conv_2nd()
     #display_results_task_f_4D_simple_ReLu_BT()
