@@ -157,7 +157,8 @@ def display_test():
     sorted_units, sorted_train_errors, sorted_validation_errors, sorted_test_errors = mtf.get_errors_for_display(expts_best_results1)
     krls.plot_values(sorted_units,sorted_test_errors,xlabel='number of units',y_label='squared error (l2 loss)',label='NN1 test',markersize=3,colour='b')
 
-    path_to_experiments = '../../%s/task_August_9_NN1_xavier/NN2rmsprop'%experiment_name
+    #path_to_experiments = '../../%s/task_August_9_NN1_xavier/NN2rmsprop'%experiment_name
+    path_to_experiments = '../../%s/task_August_9_NN2_Xavier_BN/NN2'%experiment_name
     expts_best_results1 = mtf.get_results_for_experiments(path_to_experiments,decider,verbose=False)
     _, sorted_train_errors, sorted_validation_errors, sorted_test_errors = mtf.get_errors_for_display(expts_best_results1)
     krls.plot_values(sorted_units,sorted_test_errors,xlabel='number of units',y_label='squared error (l2 loss)',label='NN2 test',markersize=3,colour='c')
@@ -166,8 +167,8 @@ def display_test():
     plt.show()
 
 if __name__ == '__main__':
-    #display_test()
+    display_test()
     #debug_plot()
     #display_results4()
-    display_results_task_f_4D_conv_2nd()
+    #display_results_task_f_4D_conv_2nd()
     #display_results_task_f_4D_simple_ReLu_BT()
