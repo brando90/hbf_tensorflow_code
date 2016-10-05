@@ -173,8 +173,6 @@ def display_test():
     #
     experiment_name = 'om_mnist'
 
-    #plt.subplot(121)
-
     path_to_experiments = '../../%s/task_August_7_NN1_xavier_momentum'%experiment_name
     expts_best_results1 = mtf.get_results_for_experiments(path_to_experiments,decider,verbose=False)
     sorted_units, sorted_train_errors, sorted_validation_errors, sorted_test_errors = mtf.get_errors_for_display(expts_best_results1)
@@ -185,9 +183,6 @@ def display_test():
     _, sorted_train_errors, sorted_validation_errors, sorted_test_errors = mtf.get_errors_for_display(expts_best_results1)
     krls.plot_values(sorted_units,sorted_test_errors,xlabel='number of units',y_label='squared error (l2 loss)',label='NN2 test',markersize=3,colour='c')
 
-    #plt.subplot(121)
-    #krls.plot_values(sorted_units,nn1_list_test_errors,xlabel='number of units',y_label='squared error (l2 loss)',label='NN1 test',markersize=3,colour='b')
-    #krls.plot_values(sorted_units,nn2_list_test_errors,xlabel='number of units',y_label='squared error (l2 loss)',label='NN2 test',markersize=3,colour='c')
     plt.legend()
     plt.show()
 
