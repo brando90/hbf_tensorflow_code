@@ -145,7 +145,6 @@ class TestNN_BT(unittest.TestCase):
         F = list of nb of filters [F^(1),F^(2),...]
         '''
         arg = ns.Namespace(L=L,padding='VALID',scope_name=scope_name)
-        arg.act = tf.nn.relu
         #weights_initializer = tf.contrib.layers.xavier_initializer(dtype=tf.float32)
         arg.weights_initializer = tf.constant_initializer(value=1.0, dtype=tf.float32)
         #biases_initializer = tf.constant_initializer(value=0.0, dtype=tf.float32)
@@ -153,6 +152,7 @@ class TestNN_BT(unittest.TestCase):
         arg.normalizer_fn = None
         #arg.normalizer_fn = tf.contrib.layers.batch_norm
         arg.F = F
+        arg.act = tf.nn.relu
         arg.verbose = verbose
         return arg
 
@@ -189,12 +189,11 @@ class TestNN_BT(unittest.TestCase):
         return mdl
 
     def test_NN_BT4D(self,M=2,D=4,F=[None,3,5],L=2):
-        print('\n -------test')
-        # D, F, L = 4, [None,3,5], 2
+        print('\n -------test'+str(D))
         #
         x = tf.placeholder(tf.float32, shape=[None,1,D,1], name='x-input') #[M, 1, D, 1]
         # prepare args
-        arg = self.get_args(L=L,F=F,verbose=False,scope_name='BT'+str(D)+'D')
+        arg = self.get_args(L=L,F=F,verbose=False,scope_name='BT_'+str(D)+'D')
         # get NN BT
         bt_mdl = bt_mdl_conv(arg,x)
         X_data = self.get_test_data(M,D)
@@ -207,32 +206,65 @@ class TestNN_BT(unittest.TestCase):
             sess.run( tf.initialize_all_variables() )
             bt_hardcoded_output = sess.run(fetches=bt_hardcoded, feed_dict={x:X_data})
 
-        print(bt_output)
-        print(bt_output.shape)
+        #print(bt_output)
+        #print(bt_output.shape)
 
-        print(bt_hardcoded_output)
-        print(bt_hardcoded_output.shape)
+        #print(bt_hardcoded_output)
+        #print(bt_hardcoded_output.shape)
         correct = np.array_equal(bt_output, bt_hardcoded_output)
         self.assertTrue(correct)
 
-    # def test_NN_BT8D(self):
-    #     print('\n -------test')
-    #     D = 8
-    #     x = tf.placeholder(tf.float32, shape=[None,1,D,1], name='x-input') #[M, 1, D, 1]
-    #     # prepare args
-    #     arg = self.get_args(L=3,F=[None,3,5,7],verbose=False)
-    #     arg.scope_name = 'BT'+str(D)+'D'
-    #     # get NN BT
-    #     bt_mdl = bt_mdl_conv(arg,x)
-    #     # do check
-    #     M = 2
-    #     X_data = np.arange(D*M).reshape((M, D))
-    #     #print('X_data ', X_data)
-    #     X_data = X_data.reshape(M,1,D,1)
-    #     with tf.Session() as sess:
-    #         sess.run( tf.initialize_all_variables() )
-    #         print('output: ', sess.run(fetches=bt_mdl, feed_dict={x:X_data}) )
-    #     #self.assertTrue(correct)
+    def test_NN_BT8D(self,M=2,D=8,F=[None,3,5,7],L=3):
+        print('\n -------test'+str(D))
+        #
+        x = tf.placeholder(tf.float32, shape=[None,1,D,1], name='x-input') #[M, 1, D, 1]
+        # prepare args
+        arg = self.get_args(L=L,F=F,verbose=False,scope_name='BT'+str(D)+'D')
+        # get NN BT
+        bt_mdl = bt_mdl_conv(arg,x)
+        X_data = self.get_test_data(M,D)
+        with tf.Session() as sess:
+            sess.run( tf.initialize_all_variables() )
+            bt_output = sess.run(fetches=bt_mdl, feed_dict={x:X_data})
+
+        #bt_hardcoded = self.get_hard_coded_bt4D(x)
+        #with tf.Session() as sess:
+        #    sess.run( tf.initialize_all_variables() )
+        #    bt_hardcoded_output = sess.run(fetches=bt_hardcoded, feed_dict={x:X_data})
+
+        #print(bt_output)
+        #print(bt_output.shape)
+
+        #print(bt_hardcoded_output)
+        #print(bt_hardcoded_output.shape)
+        #correct = np.array_equal(bt_output, bt_hardcoded_output)
+        #self.assertTrue(correct)
+
+    def test_NN_BT16D(self,M=2,D=16,F=[None,3,5,7,9],L=4):
+        print('\n -------test'+str(D))
+        #
+        x = tf.placeholder(tf.float32, shape=[None,1,D,1], name='x-input') #[M, 1, D, 1]
+        # prepare args
+        arg = self.get_args(L=L,F=F,verbose=False,scope_name='BT'+str(D)+'D')
+        # get NN BT
+        bt_mdl = bt_mdl_conv(arg,x)
+        X_data = self.get_test_data(M,D)
+        with tf.Session() as sess:
+            sess.run( tf.initialize_all_variables() )
+            bt_output = sess.run(fetches=bt_mdl, feed_dict={x:X_data})
+
+        #bt_hardcoded = self.get_hard_coded_bt4D(x)
+        #with tf.Session() as sess:
+        #    sess.run( tf.initialize_all_variables() )
+        #    bt_hardcoded_output = sess.run(fetches=bt_hardcoded, feed_dict={x:X_data})
+
+        #print(bt_output)
+        #print(bt_output.shape)
+
+        #print(bt_hardcoded_output)
+        #print(bt_hardcoded_output.shape)
+        #correct = np.array_equal(bt_output, bt_hardcoded_output)
+        #self.assertTrue(correct)
 
 if __name__ == '__main__':
     unittest.main()
