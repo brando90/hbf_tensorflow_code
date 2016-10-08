@@ -222,3 +222,30 @@ def sort_and_pair_units_with_errors(list_units,list_errors):
     # collect the units in one list and the errors in another (note they are sorted), note the * is needed to have zip not receive a single list
     list_units_out, list_errors_out = zip(*sort_by_units) # [units, ..., units] , [error, ..., error]
     return list(list_units_out), list(list_errors_out)
+
+#
+
+def debug(experiment_dirpath,list_runs_filenames,decider):
+    expts_best_results = {} #maps units -> to corresponding best data (note: keys are numbers so it can't be a namespace)
+    for (dirpath, dirnames, filenames) in os.walk(top=path_to_all_experiments_for_task,topdown=True):
+        if (dirpath != path_to_all_experiments_for_task) and (not 'mdls' in dirpath): # if current dirpath is a valid experiment and not . (itself)
+            #print('=> potential_runs_filenames: ', potential_runs_filenames)
+            print('dirpath ' , dirpath)
+            #nb_units = best_data.results_best['dims'][1]
+            #best_data = ns.Namespace(best_decider_error=float('inf'))
+            errors_for_dirpath = []
+            for run_filename in filenames:
+                if 'json' in run_filename: # if current run=filenmae is a json struct then it has the results
+                    #print('run_filename', run_filename)
+                    with open(dirpath+'/'+run_filename, 'r') as data_file:
+                        results_current_run = json.load(data_file)
+                    decider_error, train_error, cv_error, test_error = decider.get_errors_from(results_current_run)
+                    errors_for_dirpath.append(train_error)
+                    # if decider_error < best_data.best_decider_error:
+                    #     update(best_data,decider_error,run_filename,results_current_run, train_error,cv_error,test_error)
+            #
+            nb_units = best_data.results_best['arg_dict']['dims'][1] if not 'dims' in best_data.results_best else results_best['dims'][1]
+            #del best_data['results_best']
+            expts_best_results[nb_units] = np.min(errors_for_dirpath)
+    #print(expts_best_results)
+    return expts_best_results

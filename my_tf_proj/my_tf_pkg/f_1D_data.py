@@ -143,6 +143,9 @@ def get_data(task_name):
     elif task_name == 'task_f_8D_non_conv':
         #print 'task_f_8dtask_f_8dtask_f_8dtask_f_8dtask_f_8dtask_f_8dtask_f_8dtask_f_8dtask_f_8dtask_f_8dtask_f_8dtask_f_8dtask_f_8d'
         X_train, Y_train, X_cv, Y_cv, X_test, Y_test = get_data_from_file(file_name='./data/f_8D_task_non_conv.npz')
+    elif task_name == 'task_f_8D_conv_cos_poly1_poly1':
+        #print 'task_f_8dtask_f_8dtask_f_8dtask_f_8dtask_f_8dtask_f_8dtask_f_8dtask_f_8dtask_f_8dtask_f_8dtask_f_8dtask_f_8dtask_f_8d'
+        X_train, Y_train, X_cv, Y_cv, X_test, Y_test = get_data_from_file(file_name='./data/f_8D_conv_cos_poly1_poly1.npz')
 
     elif task_name == 'task_f_4D_simple_ReLu_BT':
         #print 'task_f_8dtask_f_8dtask_f_8dtask_f_8dtask_f_8dtask_f_8dtask_f_8dtask_f_8dtask_f_8dtask_f_8dtask_f_8dtask_f_8dtask_f_8d'

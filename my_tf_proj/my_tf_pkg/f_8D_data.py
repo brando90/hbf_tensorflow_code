@@ -6,6 +6,8 @@ from tensorflow.examples.tutorials.mnist import input_data
 
 import pdb
 
+import my_tf_pkg as mtf
+
 def f_8D(A):
     h11 = lambda A: (1.0/20)*(1*A[0] + 2*A[1])**4
     h12 = lambda A: (1.0/2)*(3*A[0] + 4*A[1])**3
@@ -41,6 +43,17 @@ def f_8D_conv_test(A):
     H22 = h22([H13, H14])
     H31 = h31([H21, H22])
     return H31
+##
+
+def f_8D_conv_cos_poly1_poly1():
+    h1 = lambda A: (0.59)*np.cos( 1.5*np.pi*(A[0]+A[1])  )
+    h2 = lambda A: 1.1*(A[0]+A[1]+1)**2 - 1
+    h3 = lambda A: 1.1*(A[0]+A[1]+1)**2 - 1
+    h_list = [None, h1, h2, h3]
+    ##
+    D = 8
+    f8D = lambda x: mtf.f_bt(x,h_list=h_list,l=3,left=0,right=D)
+    return f8D
 
 ##
 
@@ -48,6 +61,7 @@ def get_labels_8D(X,f):
     N = X.shape[0] # N x D = N x 4
     Y = np.zeros( (N,1) )
     for i in range(N):
+        #pdb.set_trace()
         Y[i] = f(X[i])
     return Y
 

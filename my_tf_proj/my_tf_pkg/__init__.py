@@ -14,6 +14,8 @@ from my_tf_pkg.f_8D_data import *
 from my_tf_pkg.extract_results_lib2 import *
 from my_tf_pkg.main_nn import *
 from my_tf_pkg.f_4D_BT_data import *
+from my_tf_pkg.general_bt_f import *
+from my_tf_pkg.general_bt_NN import *
 #having the package name declared
 #from pkg_1.module2 import *
 

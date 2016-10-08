@@ -1,10 +1,10 @@
 import numpy as np
 import unittest
 
-import f_4D_BT_data
-import f_8D_data
+import my_tf_pkg.f_4D_BT_data
+import my_tf_pkg.f_8D_data
 
-def get_labels_ut(X,f):
+def get_labels_bt(X,f):
     N = X.shape[0] # N x D = N x 4
     Y = np.zeros( (N,1) )
     for i in range(N):
@@ -48,8 +48,8 @@ class TestF_BT(unittest.TestCase):
         #f_general([1,2,3,4])
         ## compare the functions
         X_train = low_x + (high_x - low_x) * np.random.rand(N_train,D)
-        Y_train_general = get_labels_ut(X_train, f_general)
-        Y_train_hard_coded  = get_labels_ut(X_train, f_hard_coded)
+        Y_train_general = get_labels_bt(X_train, f_general)
+        Y_train_hard_coded  = get_labels_bt(X_train, f_hard_coded)
         correct = np.array_equal(Y_train_general, Y_train_hard_coded)
         self.assertTrue(correct)
 
@@ -64,8 +64,8 @@ class TestF_BT(unittest.TestCase):
         #f_general([1,2,3,4,5,6,7,8])
         ## compare the functions
         X_train = low_x + (high_x - low_x) * np.random.rand(N_train,D)
-        Y_train_general = get_labels_ut(X_train, f_general)
-        Y_train_hard_coded  = get_labels_ut(X_train, f_hard_coded)
+        Y_train_general = get_labels_bt(X_train, f_general)
+        Y_train_hard_coded  = get_labels_bt(X_train, f_hard_coded)
         correct = np.array_equal(Y_train_general, Y_train_hard_coded)
         self.assertTrue(correct)
 
