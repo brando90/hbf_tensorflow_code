@@ -50,11 +50,13 @@ task_name = 'task_f_4D_conv'
 # task_name = 'task_f_4D_conv_6th'
 #task_name = 'task_f_4D_non_conv'
 #task_name = 'task_f_8D_non_conv'
-task_name = 'task_f_4D_simple_ReLu_BT'
+#task_name = 'task_f_4D_simple_ReLu_BT'
+task_name = 'task_f_8D_conv_cos_poly1_poly1'
 #task_name = 'task_MNIST_flat'
 #task_name = 'task_MNIST_flat_auto_encoder'
 arg.task_name = task_name
-print('====> TASK_NAME', task_name)
+print('====> TASK_NAME', arg.task_name)
+arg.task_folder_name = mtf.get_experiment_folder(arg.task_name) #om_f_4d_conv
 #
 arg.experiment_name = 'task_September_1_BTHL' # experiment_name e.g. task_August_10_BT
 arg.experiment_root_dir = mtf.get_experiment_folder(task_name)
@@ -64,11 +66,11 @@ arg.experiment_name = 'task_September_date_NN' # experiment_name e.g. task_Augus
 arg.experiment_root_dir = mtf.get_experiment_folder(task_name)
 arg.job_name = 'NN_31_Adam' # job name e.g BT_6_6_5_RMSProp_Test
 #
-arg.mdl = 'standard_nn'
+#arg.mdl = 'standard_nn'
 #arg.mdl = 'hbf'
 #arg.mdl = 'binary_tree_4D_conv'
 #arg.mdl = 'binary_tree_4D_conv_hidden_layer'
-#arg.mdl = 'binary_tree_8D_conv'
+arg.mdl = 'binary_tree_8D_conv_hidden_layer'
 if arg.mdl == 'standard_nn':
     arg.init_type = 'truncated_normal'
     arg.init_type = 'data_xavier_kern'
@@ -145,21 +147,27 @@ elif arg.mdl == 'binary_tree_4D_conv_hidden_layer':
     #arg.act = tf.nn.relu
     #arg.act = tf.nn.elu
     arg.act = tf.nn.softplus
-elif arg.mdl == 'binary_tree_8D_conv':
-    pass
-    # arg.init_type = 'manual_truncated_normal'
-    # arg.mu = [0.0,0.0,0.0]
-    # arg.std = [1.0,1.0,1.0]
-    # arg.get_W_mu_init = lambda arg: arg.mu
-    # arg.get_W_std_init = lambda arg: arg.std
-    # #arg.nb_filters = [6, 12]
-    # #arg.nb_filters = [9, 18]
-    # #arg.nb_filters = [9, 18]
+elif arg.mdl == 'binary_tree_8D_conv_hidden_layer':
+    arg.L, arg.padding, arg.scope_name, arg.verbose = 3, 'VALID', 'BT_8D', False
+    #
+    arg.init_type = 'xavier'
+    arg.weights_initializer = tf.contrib.layers.xavier_initializer(dtype=tf.float32)
+    arg.biases_initializer = tf.constant_initializer(value=0.1, dtype=tf.float32)
+    #
+    F1 = 10
+    arg.F = [None, F1, 2*F1, 4*F1]
+    #
+    arg.normalizer_fn = None
+    #arg.normalizer_fn = tf.contrib.layers.batch_norm
+
+    #arg.act = tf.nn.relu
+    #arg.act = tf.nn.elu
+    arg.act = tf.nn.softplus
 else:
     raise ValueError('Need to use a valid model, incorrect or unknown model %s give.'%arg.mdl)
 
 #steps
-arg.steps_low = 60
+arg.steps_low = 152
 arg.steps_high = arg.steps_low+1
 arg.get_steps = lambda arg: int( np.random.randint(low=arg.steps_low ,high=arg.steps_high) )
 

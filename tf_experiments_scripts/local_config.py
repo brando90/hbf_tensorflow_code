@@ -50,14 +50,15 @@ task_name = 'task_f_4D_conv'
 # task_name = 'task_f_4D_conv_6th'
 #task_name = 'task_f_4D_non_conv'
 #task_name = 'task_f_8D_non_conv'
-task_name = 'task_f_4D_simple_ReLu_BT'
+task_name = 'task_f_8D_conv_cos_poly1_poly1'
+#task_name = 'task_f_4D_simple_ReLu_BT'
 #task_name = 'task_MNIST_flat'
 #task_name = 'task_MNIST_flat_auto_encoder'
 arg.task_name = task_name
-print('====> TASK_NAME', task_name)
+print('====> TASK_NAME', arg.task_name)
+arg.task_folder_name = mtf.get_experiment_folder(arg.task_name) #om_f_4d_conv
 #
 arg.experiment_name = 'tmp_experiment'  # experiment_name e.g. task_August_10_BT
-arg.task_folder_name = mtf.get_experiment_folder(task_name) #om_f_4d_conv
 arg.experiment_root_dir = '../../'+arg.task_folder_name
 arg.job_name = 'TB4' # job name e.g BT_6_6_5_RMSProp_Test
 #
@@ -65,12 +66,12 @@ arg.mdl = 'standard_nn'
 #arg.mdl = 'hbf'
 #arg.mdl = 'binary_tree_4D_conv'
 #arg.mdl = 'binary_tree_4D_conv_hidden_layer'
-#arg.mdl = 'binary_tree_8D_conv'
+#arg.mdl = 'binary_tree_8D_conv_hidden_layer'
 if arg.mdl == 'standard_nn':
     arg.init_type = 'truncated_normal'
     arg.init_type = 'xavier'
 
-    arg.units = [31]
+    arg.units = [213]
     #arg.units = [110]
     #arg.units = [237]
 
@@ -143,16 +144,22 @@ elif arg.mdl == 'binary_tree_4D_conv_hidden_layer':
     arg.act = tf.nn.relu
     #arg.act = tf.nn.elu
     #arg.act = tf.nn.softplus
-elif arg.mdl == 'binary_tree_8D_conv':
-    pass
-    # arg.init_type = 'manual_truncated_normal'
-    # arg.mu = [0.0,0.0,0.0]
-    # arg.std = [1.0,1.0,1.0]
-    # arg.get_W_mu_init = lambda arg: arg.mu
-    # arg.get_W_std_init = lambda arg: arg.std
-    # arg.nb_filters = [3, 6]
-    # arg.nb_filters = [6, 12]
-    # #arg.nb_filters = [9, 18]
+elif arg.mdl == 'binary_tree_8D_conv_hidden_layer':
+    arg.L, arg.padding, arg.scope_name, arg.verbose = 3, 'VALID', 'BT_8D', False
+    #
+    arg.init_type = 'xavier'
+    arg.weights_initializer = tf.contrib.layers.xavier_initializer(dtype=tf.float32)
+    arg.biases_initializer = tf.constant_initializer(value=0.1, dtype=tf.float32)
+    #
+    F1 = 10
+    arg.F = [None, F1, 2*F1, 4*F1]
+    #
+    arg.normalizer_fn = None
+    #arg.normalizer_fn = tf.contrib.layers.batch_norm
+
+    #arg.act = tf.nn.relu
+    #arg.act = tf.nn.elu
+    arg.act = tf.nn.softplus
 else:
     raise ValueError('Need to use a valid model, incorrect or unknown model %s give.'%arg.mdl)
 
@@ -160,13 +167,13 @@ else:
 #arg.steps_low = 100
 #arg.steps_high = 101
 #arg.get_steps = lambda arg: int( np.random.randint(low=arg.steps_low ,high=arg.steps_high) )
-arg.steps = 200
+arg.steps = 5000
 arg.get_steps = lambda arg: int( arg.steps )
 
 #arg.M_low = 51
 #arg.M_high = 52
 #arg.get_batch_size = lambda arg: int(np.random.randint(low=arg.M_low , high=arg.M_high))
-arg.M = 150
+arg.M = 5000
 arg.get_batch_size = lambda arg: arg.M #M
 arg.report_error_freq = 50
 
@@ -174,12 +181,12 @@ arg.report_error_freq = 50
 #arg.get_log_learning_rate =  lambda arg: np.random.uniform(low=arg.low_log_const_learning_rate, high=arg.high_log_const_learning_rate)
 #arg.get_start_learning_rate = lambda arg: 10**arg.log_learning_rate
 arg.get_log_learning_rate = lambda arg: None
-arg.starter_learning_rate = 0.01
+arg.starter_learning_rate = 0.001
 arg.get_start_learning_rate = lambda arg: arg.starter_learning_rate
 ## decayed_learning_rate = learning_rate * decay_rate ^ (global_step / decay_steps)
 #arg.decay_rate_low, arg.decay_rate_high = 0.3, 0.99
 #arg.get_decay_rate = lambda arg: np.random.uniform(low=arg.decay_rate_low, high=arg.decay_rate_high)
-arg.decay_rate  = 0.5
+arg.decay_rate  = 0.9
 arg.get_decay_rate = lambda arg: arg.decay_rate
 
 #arg.decay_steps_low, arg.decay_steps_high = arg.report_error_freq, arg.M
