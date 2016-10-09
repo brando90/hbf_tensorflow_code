@@ -10,7 +10,6 @@
 #from __future__ import print_function
 #tensorboard --logdir=/tmp/mdl_logs
 
-
 import os
 import sys
 
