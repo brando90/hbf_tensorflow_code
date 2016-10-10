@@ -60,14 +60,15 @@ arg.task_folder_name = mtf.get_experiment_folder(arg.task_name) #om_f_4d_conv
 arg.N_frac = 2000
 print('arg.N_frac: ', arg.N_frac)
 #
-arg.experiment_name = 'tmp_experiment'  # experiment_name e.g. task_August_10_BT
+arg.experiment_name = 'task_Oct_tmp'  # experiment_name e.g. task_August_10_BT
 arg.experiment_root_dir = '../../'+arg.task_folder_name
 arg.job_name = 'TB4' # job name e.g BT_6_6_5_RMSProp_Test
 #
 arg.mdl = 'standard_nn'
 #arg.mdl = 'hbf'
 #arg.mdl = 'binary_tree_4D_conv'
-#arg.mdl = 'binary_tree_4D_conv_hidden_layer'
+arg.mdl = 'binary_tree_4D_conv_hidden_layer'
+#arg.mdl = "binary_tree_4D_conv_hidden_layer_automatic"
 #arg.mdl = 'binary_tree_8D_conv_hidden_layer'
 if arg.mdl == 'standard_nn':
     arg.init_type = 'truncated_normal'
@@ -134,14 +135,31 @@ elif arg.mdl == 'binary_tree_4D_conv_hidden_layer':
     #arg.nb_filters = 12 #F1
     #arg.nb_filters = 18 #F1
     arg.nb_final_hidden_units = 2*arg.nb_filters # F2
-    arg.mu = [0.0,0.0,0.0]
-    arg.std = [0.9,0.9,0.9]
+    #arg.mu = [0.0,0.0,0.0]
+    #arg.std = [0.9,0.9,0.9]
     #arg.mu = [None, None, 0.0]
     #arg.std = [None, None, 0.1]
-    arg.get_W_mu_init = lambda arg: arg.mu
-    arg.get_W_std_init = lambda arg: arg.std
+    #arg.get_W_mu_init = lambda arg: arg.mu
+    #arg.get_W_std_init = lambda arg: arg.std
     #arg.std_low, arg.std_high = 0.001, 0.1
     #arg.get_W_std_init = lambda arg: [float(i) for i in np.random.uniform(low=arg.std_low, high=arg.std_high, size=3)]
+    arg.weights_initializer = arg.weights_initializer = tf.contrib.layers.xavier_initializer(dtype=tf.float32)
+
+    arg.act = tf.nn.relu
+    #arg.act = tf.nn.elu
+    #arg.act = tf.nn.softplus
+elif arg.mdl == "binary_tree_4D_conv_hidden_layer_automatic":
+    arg.L, arg.padding, arg.scope_name, arg.verbose = 2, 'VALID', 'BT_4D', False
+    #
+    arg.init_type = 'xavier'
+    arg.weights_initializer = tf.contrib.layers.xavier_initializer(dtype=tf.float32)
+    arg.biases_initializer = tf.constant_initializer(value=0.1, dtype=tf.float32)
+    #
+    F1 = 6
+    arg.F = [None, F1, 2*F1]
+    #
+    arg.normalizer_fn = None
+    #arg.normalizer_fn = tf.contrib.layers.batch_norm
 
     arg.act = tf.nn.relu
     #arg.act = tf.nn.elu
@@ -169,7 +187,7 @@ else:
 #arg.steps_low = 100
 #arg.steps_high = 101
 #arg.get_steps = lambda arg: int( np.random.randint(low=arg.steps_low ,high=arg.steps_high) )
-arg.steps = 20000
+arg.steps = 5*2000
 arg.get_steps = lambda arg: int( arg.steps )
 
 #arg.M_low = 51
@@ -183,7 +201,7 @@ arg.report_error_freq = 50
 #arg.get_log_learning_rate =  lambda arg: np.random.uniform(low=arg.low_log_const_learning_rate, high=arg.high_log_const_learning_rate)
 #arg.get_start_learning_rate = lambda arg: 10**arg.log_learning_rate
 arg.get_log_learning_rate = lambda arg: None
-arg.starter_learning_rate = 0.01
+arg.starter_learning_rate = 0.0001
 arg.get_start_learning_rate = lambda arg: arg.starter_learning_rate
 ## decayed_learning_rate = learning_rate * decay_rate ^ (global_step / decay_steps)
 #arg.decay_rate_low, arg.decay_rate_high = 0.3, 0.99
@@ -198,7 +216,7 @@ arg.get_decay_rate = lambda arg: arg.decay_rate
 #     arg.decay_steps_low, arg.decay_steps_high = arg.report_error_freq, arg.M
 #     decay_steos = np.random.randint(low=arg.decay_steps_low, high=arg.decay_steps_high)
 #     return decay_steos
-arg.decay_steps = 2000
+arg.decay_steps = 3000
 arg.get_decay_steps = lambda arg: arg.decay_steps # when stair case, how often to shrink
 
 # If the argument staircase is True, then global_step / decay_steps is an integer division and the decayed earning rate follows a staircase function.
