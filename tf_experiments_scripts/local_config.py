@@ -41,7 +41,7 @@ task_name = 'task_f_4D_conv'
 # task_name = 'task_f_8D_conv'
 # task_name = 'task_f_8D_conv'
 # task_name = 'task_f_8D_conv_test'
-#task_name = 'task_f_4D_conv_2nd'
+task_name = 'task_f_4D_conv_2nd'
 # task_name = 'task_f_4D_conv_changing'
 # task_name = 'task_f_4D_conv_3rd'
 # task_name = 'task_f_4D_conv_4th'
@@ -49,7 +49,7 @@ task_name = 'task_f_4D_conv'
 # task_name = 'task_f_4D_conv_6th'
 #task_name = 'task_f_4D_non_conv'
 #task_name = 'task_f_8D_non_conv'
-task_name = 'task_f_8D_conv_cos_poly1_poly1'
+#task_name = 'task_f_8D_conv_cos_poly1_poly1'
 #task_name = 'task_f_4D_simple_ReLu_BT'
 #task_name = 'task_MNIST_flat'
 #task_name = 'task_MNIST_flat_auto_encoder'
@@ -57,7 +57,7 @@ arg.task_name = task_name
 print('====> TASK_NAME', arg.task_name)
 arg.task_folder_name = mtf.get_experiment_folder(arg.task_name) #om_f_4d_conv
 #
-arg.N_frac = 5000
+arg.N_frac = 2000
 print('arg.N_frac: ', arg.N_frac)
 #
 arg.experiment_name = 'tmp_experiment'  # experiment_name e.g. task_August_10_BT
@@ -73,7 +73,7 @@ if arg.mdl == 'standard_nn':
     arg.init_type = 'truncated_normal'
     arg.init_type = 'xavier'
 
-    arg.units = [213]
+    arg.units = [31]
     #arg.units = [110]
     #arg.units = [237]
 
@@ -131,7 +131,7 @@ elif arg.mdl == 'binary_tree_4D_conv_hidden_layer':
     arg.init_type = 'manual_truncated_normal'
     arg.init_type = 'xavier'
     arg.nb_filters = 6 #F1
-    arg.nb_filters = 12 #F1
+    #arg.nb_filters = 12 #F1
     #arg.nb_filters = 18 #F1
     arg.nb_final_hidden_units = 2*arg.nb_filters # F2
     arg.mu = [0.0,0.0,0.0]
@@ -169,13 +169,13 @@ else:
 #arg.steps_low = 100
 #arg.steps_high = 101
 #arg.get_steps = lambda arg: int( np.random.randint(low=arg.steps_low ,high=arg.steps_high) )
-arg.steps = 5000
+arg.steps = 20000
 arg.get_steps = lambda arg: int( arg.steps )
 
 #arg.M_low = 51
 #arg.M_high = 52
 #arg.get_batch_size = lambda arg: int(np.random.randint(low=arg.M_low , high=arg.M_high))
-arg.M = 500
+arg.M = 1
 arg.get_batch_size = lambda arg: arg.M #M
 arg.report_error_freq = 50
 
@@ -183,7 +183,7 @@ arg.report_error_freq = 50
 #arg.get_log_learning_rate =  lambda arg: np.random.uniform(low=arg.low_log_const_learning_rate, high=arg.high_log_const_learning_rate)
 #arg.get_start_learning_rate = lambda arg: 10**arg.log_learning_rate
 arg.get_log_learning_rate = lambda arg: None
-arg.starter_learning_rate = 0.001
+arg.starter_learning_rate = 0.01
 arg.get_start_learning_rate = lambda arg: arg.starter_learning_rate
 ## decayed_learning_rate = learning_rate * decay_rate ^ (global_step / decay_steps)
 #arg.decay_rate_low, arg.decay_rate_high = 0.3, 0.99
@@ -198,18 +198,18 @@ arg.get_decay_rate = lambda arg: arg.decay_rate
 #     arg.decay_steps_low, arg.decay_steps_high = arg.report_error_freq, arg.M
 #     decay_steos = np.random.randint(low=arg.decay_steps_low, high=arg.decay_steps_high)
 #     return decay_steos
-arg.decay_steps = 4000
+arg.decay_steps = 2000
 arg.get_decay_steps = lambda arg: arg.decay_steps # when stair case, how often to shrink
 
 # If the argument staircase is True, then global_step / decay_steps is an integer division and the decayed earning rate follows a staircase function.
 #arg.staircase = False
 arg.staircase = True
 
-#optimization_alg = 'GD'
+optimization_alg = 'GD'
 #optimization_alg = 'Momentum'
 #optimization_alg = 'Adadelta'
 #optimization_alg = 'Adagrad'
-optimization_alg = 'Adam'
+#optimization_alg = 'Adam'
 #optimization_alg = 'RMSProp'
 arg.optimization_alg = optimization_alg
 
@@ -275,7 +275,7 @@ parser.add_argument("-sj", "--SLURM_JOBID", help="SLURM_JOBID for run")
 parser.add_argument("-stid", "--SLURM_ARRAY_TASK_ID", help="SLURM_ARRAY_TASK_ID for run")
 parser.add_argument("-sca", "--save_config_args", help="save_config_args saves the current config file to a picke file ")
 
-parser.add_argument("-tb", "--tensorboard", dest='tensorboard', help="tensorboard mode: save tensorboard data", action='store_true')
+parser.add_argument("-tb", "--tensorboard", dest='tensorboard', help="tensorboard mode: save tensorboard data", action='store_true') #if the flag is present then DO use tensorboard else don't
 parser.add_argument('-notb', "--no-tensorboard", dest='tensorboard', help="tensorboard mode: save tensorboard data", action='store_false')
 parser.set_defaults(tensorboard=False)
 
@@ -307,6 +307,7 @@ arg.mdl_save = False
 #arg.mdl_save = True
 
 #
+#if the flag is present then DO use tensorboard else don't
 arg.use_tensorboard = cmd_args.tensorboard
 print('---> arg.use_tensorboard: ', arg.use_tensorboard)
 print('---> cmd_args.tensorboard: ', cmd_args.tensorboard)

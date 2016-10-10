@@ -57,6 +57,9 @@ arg.task_name = task_name
 print('====> TASK_NAME', arg.task_name)
 arg.task_folder_name = mtf.get_experiment_folder(arg.task_name) #om_f_4d_conv
 #
+arg.N_frac = 60000
+print('arg.N_frac: ', arg.N_frac)
+#
 arg.experiment_name = 'task_September_1_BTHL' # experiment_name e.g. task_August_10_BT
 arg.experiment_root_dir = mtf.get_experiment_folder(task_name)
 arg.job_name = 'BTHL_6_12_Adam' # job name e.g BT_6_6_5_RMSProp_Test
@@ -166,7 +169,7 @@ else:
     raise ValueError('Need to use a valid model, incorrect or unknown model %s give.'%arg.mdl)
 
 #steps
-arg.steps_low = 152
+arg.steps_low = 20000
 arg.steps_high = arg.steps_low+1
 arg.get_steps = lambda arg: int( np.random.randint(low=arg.steps_low ,high=arg.steps_high) )
 
