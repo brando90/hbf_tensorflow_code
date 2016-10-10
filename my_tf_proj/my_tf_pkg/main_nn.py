@@ -123,6 +123,10 @@ def main_nn(arg):
     ## Data sets and task
     print( '----====> TASK NAME: %s' % arg.task_name )
     (X_train, Y_train, X_cv, Y_cv, X_test, Y_test) = mtf.get_data(arg.task_name)
+
+    N_frac = arg.N_frac
+    X_train, Y_train, X_cv, Y_cv, X_test, Y_test = X_train[:N_frac,:], Y_train[:N_frac,:], X_cv[:N_frac,:], Y_cv[:N_frac,:], X_test[:N_frac,:], Y_test[:N_frac,:]
+
     if arg.data_normalize == 'normalize_input':
         X_train, X_cv, X_test = preprocessing.scale(X_train), preprocessing.scale(X_cv), preprocessing.scale(X_test)
 

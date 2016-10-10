@@ -87,24 +87,24 @@ def get_best_results_from_experiment(experiment_dirpath, list_runs_filenames, ge
                 results_best = results_current_run
     return results_best, best_cv_filname, final_train_errors, final_cv_errors, final_test_errors
 
-def get_results_for_experiments(path_to_all_experiments_for_task, get_errors_from, verbose=True):
-    '''
-
-    example:
-    path_to_all_experiments_for_task = ../../om_mnist/task_August_7_NN1_xavier_momentum
-    '''
-    experiment_results = {} # maps units -> results_best_mdl e.g {'4':{'results_best_mdl':results_best_mdl}}
-    for (dirpath, dirnames, filenames) in os.walk(top=path_to_all_experiments_for_task,topdown=True):
-        #dirpath = om_task_data_set/august_NN1_xavier/
-        if (dirpath != path_to_all_experiments_for_task): # if current dirpath is a valid experiment and not . (itself)
-            #print('=> potential_runs_filenames: ', potential_runs_filenames)
-            results_best, best_filename, final_train_errors, final_cv_errors, final_test_errors = get_best_results_from_experiment(
-                experiment_dirpath=experiment_dirpath,
-                list_runs_filenames=potential_runs_filenames,
-                get_errors_from=get_errors_from)
-
-
-    return experiment_results
+# def get_results_for_experiments(path_to_all_experiments_for_task, get_errors_from, verbose=True):
+#     '''
+#
+#     example:
+#     path_to_all_experiments_for_task = ../../om_mnist/task_August_7_NN1_xavier_momentum
+#     '''
+#     experiment_results = {} # maps units -> results_best_mdl e.g {'4':{'results_best_mdl':results_best_mdl}}
+#     for (dirpath, dirnames, filenames) in os.walk(top=path_to_all_experiments_for_task,topdown=True):
+#         #dirpath = om_task_data_set/august_NN1_xavier/
+#         if (dirpath != path_to_all_experiments_for_task): # if current dirpath is a valid experiment and not . (itself)
+#             #print('=> potential_runs_filenames: ', potential_runs_filenames)
+#             results_best, best_filename, final_train_errors, final_cv_errors, final_test_errors = get_best_results_from_experiment(
+#                 experiment_dirpath=experiment_dirpath,
+#                 list_runs_filenames=potential_runs_filenames,
+#                 get_errors_from=get_errors_from)
+#
+#
+#     return experiment_results
 
 #
 
@@ -140,7 +140,13 @@ def get_results_for_experiments(path_to_all_experiments_for_task,decider,verbose
             #nb_units = best_data.results_best['dims'][1]
             nb_units = best_data.results_best['arg_dict']['dims'][1] if not 'dims' in best_data.results_best else results_best['dims'][1]
             del best_data['results_best']
-            expts_best_results[nb_units] = best_data
+            # check if there are repeated runs/simulations results for this dirpath.
+            if nb_units in expts_best_results:
+                prev_data = expts_best_results[nb_units]
+                if best_data.best_decider_error < prev_data.best_decider_error:
+                    expts_best_results[nb_units] = best_data
+            else:
+                expts_best_results[nb_units] = best_data
     #print(expts_best_results)
     return expts_best_results
 
@@ -225,27 +231,27 @@ def sort_and_pair_units_with_errors(list_units,list_errors):
 
 #
 
-def debug(experiment_dirpath,list_runs_filenames,decider):
-    expts_best_results = {} #maps units -> to corresponding best data (note: keys are numbers so it can't be a namespace)
-    for (dirpath, dirnames, filenames) in os.walk(top=path_to_all_experiments_for_task,topdown=True):
-        if (dirpath != path_to_all_experiments_for_task) and (not 'mdls' in dirpath): # if current dirpath is a valid experiment and not . (itself)
-            #print('=> potential_runs_filenames: ', potential_runs_filenames)
-            print('dirpath ' , dirpath)
-            #nb_units = best_data.results_best['dims'][1]
-            #best_data = ns.Namespace(best_decider_error=float('inf'))
-            errors_for_dirpath = []
-            for run_filename in filenames:
-                if 'json' in run_filename: # if current run=filenmae is a json struct then it has the results
-                    #print('run_filename', run_filename)
-                    with open(dirpath+'/'+run_filename, 'r') as data_file:
-                        results_current_run = json.load(data_file)
-                    decider_error, train_error, cv_error, test_error = decider.get_errors_from(results_current_run)
-                    errors_for_dirpath.append(train_error)
-                    # if decider_error < best_data.best_decider_error:
-                    #     update(best_data,decider_error,run_filename,results_current_run, train_error,cv_error,test_error)
-            #
-            nb_units = best_data.results_best['arg_dict']['dims'][1] if not 'dims' in best_data.results_best else results_best['dims'][1]
-            #del best_data['results_best']
-            expts_best_results[nb_units] = np.min(errors_for_dirpath)
-    #print(expts_best_results)
-    return expts_best_results
+# def debug(experiment_dirpath,list_runs_filenames,decider):
+#     expts_best_results = {} #maps units -> to corresponding best data (note: keys are numbers so it can't be a namespace)
+#     for (dirpath, dirnames, filenames) in os.walk(top=path_to_all_experiments_for_task,topdown=True):
+#         if (dirpath != path_to_all_experiments_for_task) and (not 'mdls' in dirpath): # if current dirpath is a valid experiment and not . (itself)
+#             #print('=> potential_runs_filenames: ', potential_runs_filenames)
+#             print('dirpath ' , dirpath)
+#             #nb_units = best_data.results_best['dims'][1]
+#             #best_data = ns.Namespace(best_decider_error=float('inf'))
+#             errors_for_dirpath = []
+#             for run_filename in filenames:
+#                 if 'json' in run_filename: # if current run=filenmae is a json struct then it has the results
+#                     #print('run_filename', run_filename)
+#                     with open(dirpath+'/'+run_filename, 'r') as data_file:
+#                         results_current_run = json.load(data_file)
+#                     decider_error, train_error, cv_error, test_error = decider.get_errors_from(results_current_run)
+#                     errors_for_dirpath.append(train_error)
+#                     # if decider_error < best_data.best_decider_error:
+#                     #     update(best_data,decider_error,run_filename,results_current_run, train_error,cv_error,test_error)
+#             #
+#             nb_units = best_data.results_best['arg_dict']['dims'][1] if not 'dims' in best_data.results_best else results_best['dims'][1]
+#             #del best_data['results_best']
+#             expts_best_results[nb_units] = np.min(errors_for_dirpath)
+#     #print(expts_best_results)
+#     return expts_best_results

@@ -57,6 +57,9 @@ arg.task_name = task_name
 print('====> TASK_NAME', arg.task_name)
 arg.task_folder_name = mtf.get_experiment_folder(arg.task_name) #om_f_4d_conv
 #
+arg.N_frac = 5000
+print('arg.N_frac: ', arg.N_frac)
+#
 arg.experiment_name = 'tmp_experiment'  # experiment_name e.g. task_August_10_BT
 arg.experiment_root_dir = '../../'+arg.task_folder_name
 arg.job_name = 'TB4' # job name e.g BT_6_6_5_RMSProp_Test
@@ -172,7 +175,7 @@ arg.get_steps = lambda arg: int( arg.steps )
 #arg.M_low = 51
 #arg.M_high = 52
 #arg.get_batch_size = lambda arg: int(np.random.randint(low=arg.M_low , high=arg.M_high))
-arg.M = 5000
+arg.M = 500
 arg.get_batch_size = lambda arg: arg.M #M
 arg.report_error_freq = 50
 
