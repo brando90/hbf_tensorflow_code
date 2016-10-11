@@ -10,6 +10,7 @@
 #from __future__ import print_function
 #tensorboard --logdir=/tmp/mdl_logs
 
+
 import os
 import sys
 
@@ -66,7 +67,7 @@ arg.job_name = 'BTHL_4D_6_12_MGD_200' # job name e.g BTHL_4D_6_12_MGD_200
 
 arg.experiment_name = 'task_Oct_10_NN_MGD_xavier_relu_N2000' # experiment_name e.g. task_Oct_10_NN_MGD_xavier_relu_N2000
 arg.experiment_root_dir = mtf.get_experiment_folder(task_name)
-arg.job_name = 'NN_4D_6_12_MGD_200' # job name e.g NN_4D_6_12_MGD_200
+arg.job_name = 'NN_4D_31_MGD_200' # job name e.g NN_4D_31_MGD_200
 #
 #arg.mdl = 'standard_nn'
 #arg.mdl = 'hbf'
