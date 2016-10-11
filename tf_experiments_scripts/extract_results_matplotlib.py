@@ -108,7 +108,7 @@ def display_results_task_f_4D_conv_2nd():
     #plt.legend()
     plt.show()
 
-def display_results_task_f_4D_conv_2nd():
+def display_oct_relu():
     get_k = lambda a: 7*a + 4*3*2*a**2
     shallow = lambda k: 4*k+k+k
     bt = lambda f: 2*f+f +2*f*(2*f)+ 2*(2*f)
@@ -230,5 +230,6 @@ if __name__ == '__main__':
     #display_test()
     #debug_plot()
     #display_results4()
-    display_results_task_f_4D_conv_2nd()
+    #display_results_task_f_4D_conv_2nd()
     #display_results_task_f_4D_simple_ReLu_BT()
+    display_oct_relu()
