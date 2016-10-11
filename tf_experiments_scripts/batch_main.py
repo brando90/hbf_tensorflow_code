@@ -42,7 +42,7 @@ task_name = 'task_f_4D_conv'
 # task_name = 'task_f_8D_conv'
 # task_name = 'task_f_8D_conv_test'
 # task_name = 'task_f_4D_conv_changing'
-#task_name = 'task_f_4D_conv_2nd'
+task_name = 'task_f_4D_conv_2nd'
 # task_name = 'task_f_4D_conv_3rd'
 # task_name = 'task_f_4D_conv_4th'
 # task_name = 'task_f_4D_conv_5th'
@@ -50,37 +50,40 @@ task_name = 'task_f_4D_conv'
 #task_name = 'task_f_4D_non_conv'
 #task_name = 'task_f_8D_non_conv'
 #task_name = 'task_f_4D_simple_ReLu_BT'
-task_name = 'task_f_8D_conv_cos_poly1_poly1'
+#task_name = 'task_f_8D_conv_cos_poly1_poly1'
 #task_name = 'task_MNIST_flat'
 #task_name = 'task_MNIST_flat_auto_encoder'
 arg.task_name = task_name
 print('====> TASK_NAME', arg.task_name)
 arg.task_folder_name = mtf.get_experiment_folder(arg.task_name) #om_f_4d_conv
 #
-arg.N_frac = 60000
+arg.N_frac = 2000
 print('arg.N_frac: ', arg.N_frac)
 #
-arg.experiment_name = 'task_September_1_BTHL' # experiment_name e.g. task_August_10_BT
+arg.experiment_name = 'task_Oct_10_BT4D_MGD_xavier_relu_N2000' # task_Oct_10_BT4D_MGD_xavier_relu_N2000 e.g. task_August_10_BT
 arg.experiment_root_dir = mtf.get_experiment_folder(task_name)
-arg.job_name = 'BTHL_6_12_Adam' # job name e.g BT_6_6_5_RMSProp_Test
+arg.job_name = 'BTHL_4D_6_12_MGD_200' # job name e.g BTHL_4D_6_12_MGD_200
 
-arg.experiment_name = 'task_September_date_NN' # experiment_name e.g. task_August_10_BT
+arg.experiment_name = 'task_Oct_10_NN_MGD_xavier_relu_N2000' # experiment_name e.g. task_Oct_10_NN_MGD_xavier_relu_N2000
 arg.experiment_root_dir = mtf.get_experiment_folder(task_name)
-arg.job_name = 'NN_31_Adam' # job name e.g BT_6_6_5_RMSProp_Test
+arg.job_name = 'NN_4D_6_12_MGD_200' # job name e.g NN_4D_6_12_MGD_200
 #
 #arg.mdl = 'standard_nn'
 #arg.mdl = 'hbf'
-#arg.mdl = 'binary_tree_4D_conv'
-#arg.mdl = 'binary_tree_4D_conv_hidden_layer'
-arg.mdl = 'binary_tree_8D_conv_hidden_layer'
+arg.mdl = 'binary_tree_4D_conv_hidden_layer'
+#arg.mdl = "binary_tree_4D_conv_hidden_layer_automatic"
+#arg.mdl = 'binary_tree_8D_conv_hidden_layer'
 if arg.mdl == 'standard_nn':
     arg.init_type = 'truncated_normal'
     arg.init_type = 'data_xavier_kern'
     arg.init_type = 'xavier'
 
     arg.units = [31]
-    #arg.units = [110]
-    #arg.units = [237]
+    arg.units = [110]
+    arg.units = [237]
+    arg.units = [412]
+    #arg.units = [635]
+    arg.units = [906]
 
     #arg.mu = 0.0
     #arg.std = 0.5
@@ -95,9 +98,9 @@ if arg.mdl == 'standard_nn':
     arg.b = 0.1
     arg.get_b_init = lambda arg: len(arg.dims)*[arg.b]
 
-    arg.act = tf.nn.relu
+    #arg.act = tf.nn.relu
     #arg.act = tf.nn.elu
-    #arg.act = tf.nn.softplus
+    arg.act = tf.nn.softplus
 elif arg.mdl == 'hbf':
     pass
     # arg.init_type = 'truncated_normal'
@@ -122,29 +125,22 @@ elif arg.mdl == 'hbf':
     # arg.train_S_type = 'single_S'
     #
     # arg.b_init = lambda: [525.32626263]
-elif arg.mdl == 'binary_tree_4D_conv':
-    pass
-    # arg.init_type = 'manual_truncated_normal'
-    # arg.nb_filters = 6
-    # #arg.nb_filters = 12
-    # #arg.nb_filters = 18
-    # arg.mu = 0.0
-    # arg.std = 1.0
 elif arg.mdl == 'binary_tree_4D_conv_hidden_layer':
-    arg.init_type = 'xavier'
     #arg.init_type = 'manual_truncated_normal'
+    arg.init_type = 'xavier'
     arg.nb_filters = 6 #F1
-    arg.nb_filters = 12 #F1
-    arg.nb_filters = 18 #F1
+    #arg.nb_filters = 12 #F1
+    #arg.nb_filters = 18 #F1
     arg.nb_final_hidden_units = 2*arg.nb_filters # F2
-    arg.mu = [0.0,0.0,0.0]
-    #arg.std = [0.5,0.5,0.5]
+    #arg.mu = [0.0,0.0,0.0]
+    #arg.std = [0.9,0.9,0.9]
     #arg.mu = [None, None, 0.0]
     #arg.std = [None, None, 0.1]
-    arg.get_W_mu_init = lambda arg: arg.mu
+    #arg.get_W_mu_init = lambda arg: arg.mu
     #arg.get_W_std_init = lambda arg: arg.std
-    arg.std_low, arg.std_high = 0.001, 1.0
-    arg.get_W_std_init = lambda arg: [float(i) for i in np.random.uniform(low=arg.std_low, high=arg.std_high, size=3)]
+    #arg.std_low, arg.std_high = 0.001, 0.1
+    #arg.get_W_std_init = lambda arg: [float(i) for i in np.random.uniform(low=arg.std_low, high=arg.std_high, size=3)]
+    arg.weights_initializer = arg.weights_initializer = tf.contrib.layers.xavier_initializer(dtype=tf.float32)
 
     #arg.act = tf.nn.relu
     #arg.act = tf.nn.elu
@@ -169,12 +165,12 @@ else:
     raise ValueError('Need to use a valid model, incorrect or unknown model %s give.'%arg.mdl)
 
 #steps
-arg.steps_low = 20000
+arg.steps_low = 20*2000
 arg.steps_high = arg.steps_low+1
 arg.get_steps = lambda arg: int( np.random.randint(low=arg.steps_low ,high=arg.steps_high) )
 
-arg.M_low = 500
-arg.M_high = 12000
+arg.M_low = 5
+arg.M_high = 10
 arg.get_batch_size = lambda arg: int(np.random.randint(low=arg.M_low , high=arg.M_high))
 arg.report_error_freq = 50
 

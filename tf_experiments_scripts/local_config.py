@@ -60,14 +60,17 @@ arg.task_folder_name = mtf.get_experiment_folder(arg.task_name) #om_f_4d_conv
 arg.N_frac = 2000
 print('arg.N_frac: ', arg.N_frac)
 #
-arg.experiment_name = 'task_Oct_tmp'  # experiment_name e.g. task_August_10_BT
-arg.experiment_root_dir = '../../'+arg.task_folder_name
-arg.job_name = 'TB4' # job name e.g BT_6_6_5_RMSProp_Test
+arg.experiment_name = 'task_Oct_10_BT4D_MGD_xavier_relu_N2000' # task_Oct_10_BT4D_MGD_xavier_relu_N2000 e.g. task_August_10_BT
+arg.experiment_root_dir = mtf.get_experiment_folder(task_name)
+arg.job_name = 'BTHL_4D_6_12_MGD_200' # job name e.g BTHL_4D_6_12_MGD_200
+#
+arg.experiment_name = 'task_Oct_10_NN_MGD_xavier_relu_N2000' # experiment_name e.g. task_Oct_10_NN_MGD_xavier_relu_N2000
+arg.experiment_root_dir = mtf.get_experiment_folder(task_name)
+arg.job_name = 'NN_4D_6_12_MGD_200' # job name e.g NN_4D_6_12_MGD_200
 #
 arg.mdl = 'standard_nn'
 #arg.mdl = 'hbf'
-#arg.mdl = 'binary_tree_4D_conv'
-arg.mdl = 'binary_tree_4D_conv_hidden_layer'
+#arg.mdl = 'binary_tree_4D_conv_hidden_layer'
 #arg.mdl = "binary_tree_4D_conv_hidden_layer_automatic"
 #arg.mdl = 'binary_tree_8D_conv_hidden_layer'
 if arg.mdl == 'standard_nn':
@@ -75,7 +78,11 @@ if arg.mdl == 'standard_nn':
     arg.init_type = 'xavier'
 
     arg.units = [31]
-    #arg.units = [110]
+    arg.units = [110]
+    arg.units = [237]
+    arg.units = [412]
+    #arg.units = [635]
+    arg.units = [906]
     #arg.units = [237]
 
     #arg.mu = 0.0
@@ -91,9 +98,9 @@ if arg.mdl == 'standard_nn':
     arg.b = 0.1
     arg.get_b_init = lambda arg: len(arg.dims)*[arg.b]
 
-    arg.act = tf.nn.relu
+    #arg.act = tf.nn.relu
     #arg.act = tf.nn.elu
-    #arg.act = tf.nn.softplus
+    arg.act = tf.nn.softplus
 elif arg.mdl == 'hbf':
     #arg.init_type = 'truncated_normal'
     #arg.init_type = 'data_init'
@@ -120,16 +127,8 @@ elif arg.mdl == 'hbf':
     arg.get_b_init = lambda arg: arg.S
 
     arg.act = tf.nn.exp
-elif arg.mdl == 'binary_tree_4D_conv':
-    pass
-    # arg.init_type = 'manual_truncated_normal'
-    # arg.nb_filters = 31
-    # #arg.nb_filters = 12
-    # #arg.nb_filters = 18
-    # arg.mu = 0.0
-    # arg.std = 1.0
 elif arg.mdl == 'binary_tree_4D_conv_hidden_layer':
-    arg.init_type = 'manual_truncated_normal'
+    #arg.init_type = 'manual_truncated_normal'
     arg.init_type = 'xavier'
     arg.nb_filters = 6 #F1
     #arg.nb_filters = 12 #F1
@@ -145,25 +144,25 @@ elif arg.mdl == 'binary_tree_4D_conv_hidden_layer':
     #arg.get_W_std_init = lambda arg: [float(i) for i in np.random.uniform(low=arg.std_low, high=arg.std_high, size=3)]
     arg.weights_initializer = arg.weights_initializer = tf.contrib.layers.xavier_initializer(dtype=tf.float32)
 
-    arg.act = tf.nn.relu
+    #arg.act = tf.nn.relu
     #arg.act = tf.nn.elu
-    #arg.act = tf.nn.softplus
-elif arg.mdl == "binary_tree_4D_conv_hidden_layer_automatic":
-    arg.L, arg.padding, arg.scope_name, arg.verbose = 2, 'VALID', 'BT_4D', False
-    #
-    arg.init_type = 'xavier'
-    arg.weights_initializer = tf.contrib.layers.xavier_initializer(dtype=tf.float32)
-    arg.biases_initializer = tf.constant_initializer(value=0.1, dtype=tf.float32)
-    #
-    F1 = 6
-    arg.F = [None, F1, 2*F1]
-    #
-    arg.normalizer_fn = None
-    #arg.normalizer_fn = tf.contrib.layers.batch_norm
-
-    arg.act = tf.nn.relu
-    #arg.act = tf.nn.elu
-    #arg.act = tf.nn.softplus
+    arg.act = tf.nn.softplus
+# elif arg.mdl == "binary_tree_4D_conv_hidden_layer_automatic":
+#     arg.L, arg.padding, arg.scope_name, arg.verbose = 2, 'VALID', 'BT_4D', False
+#     #
+#     arg.init_type = 'xavier'
+#     arg.weights_initializer = tf.contrib.layers.xavier_initializer(dtype=tf.float32)
+#     arg.biases_initializer = tf.constant_initializer(value=0.1, dtype=tf.float32)
+#     #
+#     F1 = 6
+#     arg.F = [None, F1, 2*F1]
+#     #
+#     arg.normalizer_fn = None
+#     #arg.normalizer_fn = tf.contrib.layers.batch_norm
+#
+#     arg.act = tf.nn.relu
+#     #arg.act = tf.nn.elu
+#     #arg.act = tf.nn.softplus
 elif arg.mdl == 'binary_tree_8D_conv_hidden_layer':
     arg.L, arg.padding, arg.scope_name, arg.verbose = 3, 'VALID', 'BT_8D', False
     #
@@ -206,7 +205,7 @@ arg.get_start_learning_rate = lambda arg: arg.starter_learning_rate
 ## decayed_learning_rate = learning_rate * decay_rate ^ (global_step / decay_steps)
 #arg.decay_rate_low, arg.decay_rate_high = 0.3, 0.99
 #arg.get_decay_rate = lambda arg: np.random.uniform(low=arg.decay_rate_low, high=arg.decay_rate_high)
-arg.decay_rate  = 0.9
+arg.decay_rate  = 0.95
 arg.get_decay_rate = lambda arg: arg.decay_rate
 
 #arg.decay_steps_low, arg.decay_steps_high = arg.report_error_freq, arg.M
@@ -216,7 +215,7 @@ arg.get_decay_rate = lambda arg: arg.decay_rate
 #     arg.decay_steps_low, arg.decay_steps_high = arg.report_error_freq, arg.M
 #     decay_steos = np.random.randint(low=arg.decay_steps_low, high=arg.decay_steps_high)
 #     return decay_steos
-arg.decay_steps = 3000
+arg.decay_steps = 2000
 arg.get_decay_steps = lambda arg: arg.decay_steps # when stair case, how often to shrink
 
 # If the argument staircase is True, then global_step / decay_steps is an integer division and the decayed earning rate follows a staircase function.
