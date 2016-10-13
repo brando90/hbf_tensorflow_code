@@ -179,7 +179,7 @@ def _get_results(dirpath, filename):
     if 'json' in filename: # if current run=filenmae is a json struct then it has the results
         with open(experiment_dirpath+'/'+filename, 'r') as data_file:
             results_current_run = json.load(data_file)
-    return results
+    return results_current_run
 
 def get_all_simulation_results(path_to_all_experiments_for_task,decider,verbose=True):
     '''
@@ -202,11 +202,13 @@ def get_all_simulation_results(path_to_all_experiments_for_task,decider,verbose=
             print('dirpath ' , dirpath)
             # get all results for all runs for current model/dirpath
             all_results_for_current_mdl = []
-            for filename in filenams: #for run in all_runs
-                results_for_current_run = _get_results(filename)
-                all_results_for_current_mdl.append(results_for_current_run)
+            for filename in filenames: #for run in all_runs
+                if 'json' in filename: # if current run=filenmae is a json struct then it has the results
+                    with open(dirpath+'/'+filename, 'r') as data_file:
+                        results_current_run = json.load(data_file)
+                    all_results_for_current_mdl.append(results_current_run)
             #
-            nb_units = _get_nb_units(best_data.results)
+            nb_units = _get_nb_units(all_results_for_current_mdl[0])
             # check if there are repeated runs/simulations results for this dirpath, simply remember all results for all experiments
             if nb_units in expts_best_results:
                 expts_best_results[nb_units] = expts_best_results[nb_units] + all_results_for_current_mdl
@@ -249,10 +251,10 @@ def get_mean_std(all_results, decider):
         means_test.append(test_mean)
         stds_test.append(test_std)
     #sort and pair up units with errors
-    sorted_units, sorted_decider_mean = sort_and_pair_units_with_errors(list_units=units,list_errors=decider_mean)
-    sorted_units, sorted_decider_std = sort_and_pair_units_with_errors(list_units=units,list_errors=decider_std)
-    sorted_units, sorted_test_mean = sort_and_pair_units_with_errors(list_units=units,list_errors=test_mean)
-    sorted_units, sorted_test_std = sort_and_pair_units_with_errors(list_units=units,list_errors=test_std)
+    sorted_units, sorted_decider_mean = sort_and_pair_units_with_errors(list_units=units,list_errors=means_decider)
+    sorted_units, sorted_decider_std = sort_and_pair_units_with_errors(list_units=units,list_errors=stds_decider)
+    sorted_units, sorted_test_mean = sort_and_pair_units_with_errors(list_units=units,list_errors=means_test)
+    sorted_units, sorted_test_std = sort_and_pair_units_with_errors(list_units=units,list_errors=stds_test)
     return sorted_units, sorted_decider_mean, sorted_decider_std, sorted_test_mean, sorted_test_std
 
 def _get_mean_std_form_runs(results_for_runs,decider):
@@ -269,7 +271,7 @@ def _get_mean_std_form_runs(results_for_runs,decider):
     #cv_errors_for_runs = []
     test_errors_for_runs = [] #
     for current_result in results_for_runs:
-        decider_error, train_error, cv_error, test_error = decider.get_errors_from(results_current_run)
+        decider_error, train_error, cv_error, test_error = decider.get_errors_from(current_result)
         #
         decider_errors_for_runs.append(decider_error)
         #train_errors_for_runs.append(train_error)
