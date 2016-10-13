@@ -21,7 +21,7 @@ def get_errors_based_on_train_error(results):
     '''
     # get error lists
     (train_errors, cv_errors, test_errors) = (results['train_errors'], results['cv_errors'], results['test_errors'])
-    min_train_index = np.argmin(train_errors)
+    min_train_index = np.nanargmin(train_errors) #Return the indices of the minimum values in the specified axis ignoring NaNs
     (train_error, cv_error, test_error) = train_errors[min_train_index], cv_errors[min_train_index], test_errors[min_train_index]
     return train_error, train_error, cv_error, test_error
 
@@ -33,7 +33,7 @@ def get_errors_based_on_validation_error(results):
     '''
     # get error lists
     (train_errors, cv_errors, test_errors) = (results['train_errors'], results['cv_errors'], results['test_errors'])
-    min_cv_index = np.argmin(cv_errors)
+    min_cv_index = np.nanargmin(cv_errors) #Return the indices of the minimum values in the specified axis ignoring NaNs
     (train_error, cv_error, test_error) = train_errors[min_cv_index], cv_errors[min_cv_index], test_errors[min_cv_index]
     return cv_error, train_error, cv_error, test_error
 
@@ -242,6 +242,7 @@ def get_mean_std(all_results, decider):
     for nb_units, results_for_runs in six.iteritems(all_results):
         # gets the mean,std over the runs
         decider_mean, decider_std, test_mean, test_std = _get_mean_std_form_runs(results_for_runs,decider)
+        print('decider_mean', decider_mean)
         # update
         units.append(nb_units)
         #
@@ -272,11 +273,15 @@ def _get_mean_std_form_runs(results_for_runs,decider):
     test_errors_for_runs = [] #
     for current_result in results_for_runs:
         decider_error, train_error, cv_error, test_error = decider.get_errors_from(current_result)
+        print('decider_error ', decider_error)
         #
+        # if np.isnan( decider_error ):
+        #     pdb.set_trace()
         decider_errors_for_runs.append(decider_error)
         #train_errors_for_runs.append(train_error)
         #cv_errors_for_runs.append(cv_error)
         test_errors_for_runs.append(test_error)
     decider_mean, decider_std = np.mean(decider_errors_for_runs), np.std(decider_errors_for_runs)
     test_mean, test_std = np.mean(test_errors_for_runs), np.std(test_errors_for_runs)
+    #pdb.set_trace()
     return decider_mean, decider_std, test_mean, test_std
