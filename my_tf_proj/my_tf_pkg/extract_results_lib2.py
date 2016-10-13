@@ -44,7 +44,7 @@ def get_most_recent_error(train_errors, cv_errors, test_errors):
 
 #
 
-def get_results_for_experiments(path_to_all_experiments_for_task,decider,verbose=True):
+def get_best_results_for_experiments(path_to_all_experiments_for_task,decider,verbose=True):
     '''
     Given a path to all the experiments for a specific task, goes through each individual folder for each experiment for each different
     model tested and extracts the lowest error according to the decider. For example, the if the decider is set to choose based on train
@@ -181,21 +181,16 @@ def _get_results(dirpath, filename):
             results_current_run = json.load(data_file)
     return results
 
-def get_means_stds(path_to_all_experiments_for_task,decider,verbose=True):
+def get_all_simulation_results(path_to_all_experiments_for_task,decider,verbose=True):
     '''
-    Given a path to all the experiments for a specific task, goes through each individual folder for each experiment for each different model
-    and returns ALL results for a specific model. So if a model has more than one dirpath, we return the results for *both*.
+    Given a path to all the experiments for a specific task, goes through each individual folder for each model
+    and returns ALL results a specific model.
 
-    path_to_all_experiments_for_task = path to ../../TASK/EXPT_NAME
+    If a model has more than one dirpath, we return the results for *both*.
+    Also, for a specific model we might have e.g. 200 runs. Each run has lots of iterations.
 
-    example:
-    path_to_all_experiments_for_task = ../../om_mnist/task_August_7_NN1_xavier_momentum
-
-    ../../om_mnist/expts_task_August_7_NN/expt_NN1_xavier/run_json_* lots of these
-                                          expt_NN2_xavier/run_json_*
-                                          expt_NN3_xavier/run_json_*
-
-    return {'nb_units' : {train_mean:train_mean, ... ,train_std:train_std, ... }}
+    returns { model: [best_over_run_i]^200_i } = { model: [ min runs_j ]^200_i }
+    where best_over_run_i = min over all the iterions
     '''
     expts_best_results = {} #maps units -> to corresponding best data (note: keys are numbers so it can't be a namespace)
     for (dirpath, dirnames, filenames) in os.walk(top=path_to_all_experiments_for_task,topdown=True):
@@ -205,29 +200,81 @@ def get_means_stds(path_to_all_experiments_for_task,decider,verbose=True):
         if (dirpath != path_to_all_experiments_for_task) and (not 'mdls' in dirpath): # if current dirpath is a valid experiment and not . (itself)
             #print('=> potential_runs_filenames: ', potential_runs_filenames)
             print('dirpath ' , dirpath)
-            best_data = _get_best_results_obj_from_current_experiment(experiment_dirpath=dirpath,list_runs_filenames=filenames,decider=decider)
+            # get all results for all runs for current model/dirpath
+            all_results_for_current_mdl = []
+            for filename in filenams: #for run in all_runs
+                results_for_current_run = _get_results(filename)
+                all_results_for_current_mdl.append(results_for_current_run)
             #
-            nb_units = best_data.results_best['arg_dict']['dims'][1] if not 'dims' in best_data.results_best else results_best['dims'][1]
+            nb_units = _get_nb_units(best_data.results)
             # check if there are repeated runs/simulations results for this dirpath, simply remember all results for all experiments
             if nb_units in expts_best_results:
-                expts_best_results[nb_units].append(best_data)
+                expts_best_results[nb_units] = expts_best_results[nb_units] + all_results_for_current_mdl
             else:
-                expts_best_results[nb_units] = [best_data]
+                expts_best_results[nb_units] = all_results_for_current_mdl
     return expts_best_results
 
-def get_nb_units(results):
+def _get_nb_units(results):
     '''
     gets the number of units for these results
     '''
     return results['arg_dict']['dims'][1] if not 'dims' in results else results['dims'][1]
 
-# def get_mean_std(results):
-#     '''
-#         Gets the mean error and std for current results
-#     '''
-#     # get error lists
-#     (train_errors, cv_errors, test_errors) = (results['train_errors'], results['cv_errors'], results['test_errors'])
-#     errors_stats_means = {'train_mean': np.mean(train_errors), 'cv_mean': np.mean(cv_errors), 'test_mean': np.mean(test_errors)}
-#     errors_stats_stds = {'train_std': np.var(train_errors), 'cv_std': np.var(cv_errors), 'test_std': np.var(test_errors)}
-#     error_stats = errors_stats_means.update(errors_stats_stds)
-#     return error_stats
+#
+
+def get_mean_std(all_results, decider):
+    '''
+        Gets the mean and std errors for results.
+
+        all_results = dict with all results. Each nb_units (key) maps to the results for all runs, usually a run corressponds
+        to a specific hyperparam setting or repeated run for SGD/initialization
+        e.g. {units:[results1,...,results200]}
+        decider = namespace holding the appropriate function handler/pointer named get_errors_from (e.g. get_errors_based_on_train_error).
+        So decider must be able to call decider.get_errors_from(run)
+    '''
+    units = []
+    means_decider = []
+    stds_decider = []
+    means_test = []
+    stds_test = []
+    for nb_units, results_for_runs in six.iteritems(all_results):
+        # gets the mean,std over the runs
+        decider_mean, decider_std, test_mean, test_std = _get_mean_std_form_runs(results_for_runs,decider)
+        # update
+        units.append(nb_units)
+        #
+        means_decider.append(decider_mean)
+        stds_decider.append(decider_std)
+        #
+        means_test.append(test_mean)
+        stds_test.append(test_std)
+    #sort and pair up units with errors
+    sorted_units, sorted_decider_mean = sort_and_pair_units_with_errors(list_units=units,list_errors=decider_mean)
+    sorted_units, sorted_decider_std = sort_and_pair_units_with_errors(list_units=units,list_errors=decider_std)
+    sorted_units, sorted_test_mean = sort_and_pair_units_with_errors(list_units=units,list_errors=test_mean)
+    sorted_units, sorted_test_std = sort_and_pair_units_with_errors(list_units=units,list_errors=test_std)
+    return sorted_units, sorted_decider_mean, sorted_decider_std, sorted_test_mean, sorted_test_std
+
+def _get_mean_std_form_runs(results_for_runs,decider):
+    '''
+    For a collect of runs (usually from HPs) return the average and std of the decider error and test error.
+    Usually decider error will be validation or train error (which we then also get the average test error)
+
+    results_for_runs = array with all results for runs (each run usually corresponds to a speicfic HP) for a specific model
+    decider = namespace holding the appropriate function handler/pointer named get_errors_from (e.g. get_errors_based_on_train_error).
+    So decider must be able to call decider.get_errors_from(run)
+    '''
+    decider_errors_for_runs = [] #
+    #train_errors_for_runs = []
+    #cv_errors_for_runs = []
+    test_errors_for_runs = [] #
+    for current_result in results_for_runs:
+        decider_error, train_error, cv_error, test_error = decider.get_errors_from(results_current_run)
+        #
+        decider_errors_for_runs.append(decider_error)
+        #train_errors_for_runs.append(train_error)
+        #cv_errors_for_runs.append(cv_error)
+        test_errors_for_runs.append(test_error)
+    decider_mean, decider_std = np.mean(decider_errors_for_runs), np.std(decider_errors_for_runs)
+    test_mean, test_std = np.mean(test_errors_for_runs), np.std(test_errors_for_runs)
+    return decider_mean, decider_std, test_mean, test_std
