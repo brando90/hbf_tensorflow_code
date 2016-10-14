@@ -264,6 +264,7 @@ def _get_mean_std_from_runs(results_for_runs,decider):
     Usually decider error will be validation or train error (which we then also get the average test error)
 
     results_for_runs = array with all results for runs (each run usually corresponds to a speicfic HP) for a specific model
+        e.g. [result1, ..., result200]
     decider = namespace holding the appropriate function handler/pointer named get_errors_from (e.g. get_errors_based_on_train_error).
     So decider must be able to call decider.get_errors_from(run)
     '''
@@ -290,7 +291,13 @@ def _get_mean_std_from_runs(results_for_runs,decider):
 
 def get_duration_of_experiments(all_results, duration_type='minutes'):
     '''
+    For a collection of runs (usually from HPs) return the average and std of the duration of the runs
+    i.e. how long it takes to complete one simulation/run
 
+    all_results = dict with all results. Each nb_units (key) maps to the results for all runs, usually a run corressponds
+    to a specific hyperparam setting or repeated run for SGD/initialization
+    e.g. {units:[results1,...,results200]}
+    duration_type = units for duration e.g. 'second', 'minutes', 'hours'
     '''
     units = []
     duration_means = []
@@ -306,6 +313,11 @@ def get_duration_of_experiments(all_results, duration_type='minutes'):
 
 def _get_duration_mean_std_from_runs(results_for_runs, duration_type):
     '''
+    For a collection of runs (usually from HPs) return the average and std duration.
+
+    results_for_runs = array with all results for runs (each run usually corresponds to a speicfic HP) for a specific model
+        e.g. [result1, ..., result200]
+    duration_type = units for duration e.g. 'second', 'minutes', 'hours'
     '''
     durations = []
     for current_result in results_for_runs:
@@ -315,5 +327,11 @@ def _get_duration_mean_std_from_runs(results_for_runs, duration_type):
     return duration_mean, duration_std
 
 def _get_durations(result, duration_type):
+    '''
+    Gets the duration for current result given.
+
+    results = the standard resultd dictionary mapping to info about run/simulation.
+    duration_type = units for duration e.g. 'second', 'minutes', 'hours'
+    '''
     duration = results[duration_type] #result['seconds'], result['minutes'], result['hours']
     return duration
