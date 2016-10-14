@@ -241,7 +241,7 @@ def get_mean_std(all_results, decider):
     stds_test = []
     for nb_units, results_for_runs in six.iteritems(all_results):
         # gets the mean,std over the runs
-        decider_mean, decider_std, test_mean, test_std = _get_mean_std_form_runs(results_for_runs,decider)
+        decider_mean, decider_std, test_mean, test_std = _get_mean_std_from_runs(results_for_runs,decider)
         print('decider_mean', decider_mean)
         # update
         units.append(nb_units)
@@ -258,9 +258,9 @@ def get_mean_std(all_results, decider):
     sorted_units, sorted_test_std = sort_and_pair_units_with_errors(list_units=units,list_errors=stds_test)
     return sorted_units, sorted_decider_mean, sorted_decider_std, sorted_test_mean, sorted_test_std
 
-def _get_mean_std_form_runs(results_for_runs,decider):
+def _get_mean_std_from_runs(results_for_runs,decider):
     '''
-    For a collect of runs (usually from HPs) return the average and std of the decider error and test error.
+    For a collection of runs (usually from HPs) return the average and std of the decider error and test error.
     Usually decider error will be validation or train error (which we then also get the average test error)
 
     results_for_runs = array with all results for runs (each run usually corresponds to a speicfic HP) for a specific model
@@ -285,3 +285,35 @@ def _get_mean_std_form_runs(results_for_runs,decider):
     test_mean, test_std = np.mean(test_errors_for_runs), np.std(test_errors_for_runs)
     #pdb.set_trace()
     return decider_mean, decider_std, test_mean, test_std
+
+#
+
+def get_duration_of_experiments(all_results, duration_type='minutes'):
+    '''
+
+    '''
+    units = []
+    duration_means = []
+    duration_stds = []
+    for nb_units, results_for_runs in six.iteritems(all_results):
+        duration_mean, duration_std = _get_duration_mean_std_from_runs(results_for_runs, duration_type)
+        duration_means.append(duration_mean)
+        duration_stds.append(duration_std)
+    #sort and pair up units with errors
+    sorted_units, sorted_duration_means = sort_and_pair_units_with_errors(list_units=units,list_errors=duration_means)
+    sorted_units, sorted_duration_stds = sort_and_pair_units_with_errors(list_units=units,list_errors=duration_stds)
+    return sorted_duration_means, sorted_duration_stds
+
+def _get_duration_mean_std_from_runs(results_for_runs, duration_type):
+    '''
+    '''
+    durations = []
+    for current_result in results_for_runs:
+        duration = _get_durations(current_result,duration_type)
+        durations.append(duration)
+    duration_mean, duration_std = np.mean(durations), np.std(durations)
+    return duration_mean, duration_std
+
+def _get_durations(result, duration_type):
+    duration = results[duration_type] #result['seconds'], result['minutes'], result['hours']
+    return duration
