@@ -94,6 +94,7 @@ def count_number_trainable_params(y):
     '''
     tot_nb_params = 0
     for trainable_variable in tf.trainable_variables():
+        #print('trainable_variable ', trainable_variable.__dict__)
         shape = trainable_variable.get_shape() # e.g [D,F] or [W,H,C]
         current_nb_params = get_nb_params_shape(shape)
         tot_nb_params = tot_nb_params + current_nb_params
@@ -299,8 +300,10 @@ def main_nn(arg):
         #l2_loss = (2.0/N_train)*tf.nn.l2_loss(y_-y)
         #l2_loss = tf.reduce_mean(tf.square(y_-y))
 
-    results['nb_params'] = count_number_trainable_params(y)
-    print( '---> nb_params ', results['nb_params'] )
+    nb_params = count_number_trainable_params(y)
+    results['nb_params'] = nb_params
+    print( '---> nb_params ', nb_params )
+
 
     ##
 
@@ -451,7 +454,7 @@ def main_nn(arg):
 
                     current_learning_rate = sess.run(fetches=learning_rate)
                     loss_msg = "=> Mdl*%s*-units%s, task: %s, step %d/%d, train err %g, cv err: %g test err %g"%(arg.mdl,arg.dims,arg.task_name,i,arg.steps,train_error,cv_error,test_error)
-                    mdl_info_msg = "Act: %s, Opt:%s, BN %s, BN_trainable: %s After%d/%d iteration,Init: %s, current_learning_rate %s, M %s, decay_rate %s, decay_steps %s" % (arg.act.__name__,arg.optimization_alg,arg.bn,arg.trainable_bn,i,arg.steps,arg.init_type,current_learning_rate,arg.M,arg.decay_rate,arg.decay_steps)
+                    mdl_info_msg = "Act: %s, Opt:%s, BN %s, BN_trainable: %s After%d/%d iteration,Init: %s, current_learning_rate %s, M %s, decay_rate %s, decay_steps %s, nb_params %s" % (arg.act.__name__,arg.optimization_alg,arg.bn,arg.trainable_bn,i,arg.steps,arg.init_type,current_learning_rate,arg.M,arg.decay_rate,arg.decay_steps,nb_params)
                     errors_to_beat = 'BEAT: hbf1_error: %s RBF error: %s PCA error: %s '%(hbf1_error, rbf_error,pca_error)
 
                     print_messages(loss_msg, mdl_info_msg, errors_to_beat)

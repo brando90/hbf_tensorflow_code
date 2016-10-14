@@ -42,6 +42,7 @@ task_name = 'task_f_4D_conv'
 # task_name = 'task_f_8D_conv'
 # task_name = 'task_f_8D_conv_test'
 task_name = 'task_f_4D_conv_2nd'
+task_name = 'task_f_4D_conv_2nd_noise_3_0_25std'
 # task_name = 'task_f_4D_conv_changing'
 # task_name = 'task_f_4D_conv_3rd'
 # task_name = 'task_f_4D_conv_4th'
@@ -66,7 +67,7 @@ arg.job_name = 'BTHL_4D_6_12_MGD_200' # job name e.g BTHL_4D_6_12_MGD_200
 #
 arg.experiment_name = 'task_Oct_10_NN_MGD_xavier_relu_N2000' # experiment_name e.g. task_Oct_10_NN_MGD_xavier_relu_N2000
 arg.experiment_root_dir = mtf.get_experiment_folder(task_name)
-arg.job_name = 'NN_4D_6_12_MGD_200' # job name e.g NN_4D_6_12_MGD_200
+arg.job_name = 'NN_4D_31_MGD_200' # job name e.g NN_4D_31_MGD_200
 #
 arg.mdl = 'standard_nn'
 #arg.mdl = 'hbf'
@@ -78,11 +79,11 @@ if arg.mdl == 'standard_nn':
     arg.init_type = 'xavier'
 
     arg.units = [31]
-    arg.units = [110]
-    arg.units = [237]
-    arg.units = [412]
+    #arg.units = [110]
+    #arg.units = [237]
+    #arg.units = [412]
     #arg.units = [635]
-    arg.units = [906]
+    #arg.units = [906]
     #arg.units = [237]
 
     #arg.mu = 0.0
@@ -98,9 +99,9 @@ if arg.mdl == 'standard_nn':
     arg.b = 0.1
     arg.get_b_init = lambda arg: len(arg.dims)*[arg.b]
 
-    #arg.act = tf.nn.relu
+    arg.act = tf.nn.relu
     #arg.act = tf.nn.elu
-    arg.act = tf.nn.softplus
+    #arg.act = tf.nn.softplus
 elif arg.mdl == 'hbf':
     #arg.init_type = 'truncated_normal'
     #arg.init_type = 'data_init'
@@ -144,25 +145,25 @@ elif arg.mdl == 'binary_tree_4D_conv_hidden_layer':
     #arg.get_W_std_init = lambda arg: [float(i) for i in np.random.uniform(low=arg.std_low, high=arg.std_high, size=3)]
     arg.weights_initializer = arg.weights_initializer = tf.contrib.layers.xavier_initializer(dtype=tf.float32)
 
-    #arg.act = tf.nn.relu
+    arg.act = tf.nn.relu
     #arg.act = tf.nn.elu
-    arg.act = tf.nn.softplus
-# elif arg.mdl == "binary_tree_4D_conv_hidden_layer_automatic":
-#     arg.L, arg.padding, arg.scope_name, arg.verbose = 2, 'VALID', 'BT_4D', False
-#     #
-#     arg.init_type = 'xavier'
-#     arg.weights_initializer = tf.contrib.layers.xavier_initializer(dtype=tf.float32)
-#     arg.biases_initializer = tf.constant_initializer(value=0.1, dtype=tf.float32)
-#     #
-#     F1 = 6
-#     arg.F = [None, F1, 2*F1]
-#     #
-#     arg.normalizer_fn = None
-#     #arg.normalizer_fn = tf.contrib.layers.batch_norm
-#
-#     arg.act = tf.nn.relu
-#     #arg.act = tf.nn.elu
-#     #arg.act = tf.nn.softplus
+    #arg.act = tf.nn.softplus
+elif arg.mdl == "binary_tree_4D_conv_hidden_layer_automatic":
+    arg.L, arg.padding, arg.scope_name, arg.verbose = 2, 'VALID', 'BT_4D', False
+    #
+    arg.init_type = 'xavier'
+    arg.weights_initializer = tf.contrib.layers.xavier_initializer(dtype=tf.float32)
+    arg.biases_initializer = tf.constant_initializer(value=0.1, dtype=tf.float32)
+    #
+    F1 = 6
+    arg.F = [None, F1, 2*F1]
+    #
+    #arg.normalizer_fn = None
+    arg.normalizer_fn = tf.contrib.layers.batch_norm
+
+    arg.act = tf.nn.relu
+    #arg.act = tf.nn.elu
+    #arg.act = tf.nn.softplus
 elif arg.mdl == 'binary_tree_8D_conv_hidden_layer':
     arg.L, arg.padding, arg.scope_name, arg.verbose = 3, 'VALID', 'BT_8D', False
     #
@@ -181,18 +182,17 @@ elif arg.mdl == 'binary_tree_8D_conv_hidden_layer':
     arg.act = tf.nn.softplus
 else:
     raise ValueError('Need to use a valid model, incorrect or unknown model %s give.'%arg.mdl)
-
 #steps
 #arg.steps_low = 100
 #arg.steps_high = 101
 #arg.get_steps = lambda arg: int( np.random.randint(low=arg.steps_low ,high=arg.steps_high) )
-arg.steps = 5*2000
+arg.steps = 40*2000
 arg.get_steps = lambda arg: int( arg.steps )
 
 #arg.M_low = 51
 #arg.M_high = 52
 #arg.get_batch_size = lambda arg: int(np.random.randint(low=arg.M_low , high=arg.M_high))
-arg.M = 1
+arg.M = 1500
 arg.get_batch_size = lambda arg: arg.M #M
 arg.report_error_freq = 50
 
@@ -226,7 +226,7 @@ optimization_alg = 'GD'
 #optimization_alg = 'Momentum'
 #optimization_alg = 'Adadelta'
 #optimization_alg = 'Adagrad'
-#optimization_alg = 'Adam'
+arg.optimization_alg = 'Adam'
 #optimization_alg = 'RMSProp'
 arg.optimization_alg = optimization_alg
 
