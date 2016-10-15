@@ -44,7 +44,7 @@ task_name = 'task_f_4D_conv'
 # task_name = 'task_f_8D_conv_test'
 # task_name = 'task_f_4D_conv_changing'
 task_name = 'task_f_4D_conv_2nd'
-task_name = 'task_f_4D_conv_2nd_noise_3_0_25std'
+#task_name = 'task_f_4D_conv_2nd_noise_3_0_25std'
 # task_name = 'task_f_4D_conv_3rd'
 # task_name = 'task_f_4D_conv_4th'
 # task_name = 'task_f_4D_conv_5th'
@@ -59,14 +59,14 @@ arg.task_name = task_name
 print('====> TASK_NAME', arg.task_name)
 arg.task_folder_name = mtf.get_experiment_folder(arg.task_name) #om_f_4d_conv
 #
-arg.N_frac = 2000
+arg.N_frac = 60000
 print('arg.N_frac: ', arg.N_frac)
 #
-arg.experiment_name = 'task_Oct_13_BT4D_MGD_xavier_relu_N2000' # task_Oct_10_BT4D_MGD_xavier_relu_N2000 e.g. task_August_10_BT
-arg.experiment_root_dir = mtf.get_experiment_folder(task_name)
-arg.job_name = 'BTHL_4D_6_12_MGD_200' # job name e.g BTHL_4D_6_12_MGD_200
+#arg.experiment_name = 'task_Oct_15_BT4D_Adam_xavier_relu_N60000' # task_Oct_10_BT4D_MGD_xavier_relu_N2000 e.g. task_August_10_BT
+#arg.experiment_root_dir = mtf.get_experiment_folder(task_name)
+#arg.job_name = 'BTHL_4D_6_12_MGD_200' # job name e.g BTHL_4D_6_12_MGD_200
 
-arg.experiment_name = 'task_Oct_13_NN_MGD_xavier_relu_N2000' # experiment_name e.g. task_Oct_10_NN_MGD_xavier_relu_N2000
+arg.experiment_name = 'task_Oct_15_NN_Adam_xavier_relu_N60000' # experiment_name e.g. task_Oct_10_NN_MGD_xavier_relu_N2000
 arg.experiment_root_dir = mtf.get_experiment_folder(task_name)
 arg.job_name = 'NN_4D_31_MGD_200' # job name e.g NN_4D_31_MGD_200
 #
@@ -167,16 +167,16 @@ else:
     raise ValueError('Need to use a valid model, incorrect or unknown model %s give.'%arg.mdl)
 
 #steps
-arg.steps_low = 60*2000
+arg.steps_low = int(1.33334*60000)
 arg.steps_high = arg.steps_low+1
 arg.get_steps = lambda arg: int( np.random.randint(low=arg.steps_low ,high=arg.steps_high) )
 
-arg.M_low = 100
-arg.M_high = 1000
+arg.M_low = 500
+arg.M_high = 12000
 arg.get_batch_size = lambda arg: int(np.random.randint(low=arg.M_low , high=arg.M_high))
 arg.report_error_freq = 50
 
-arg.low_log_const_learning_rate, arg.high_log_const_learning_rate = -0.5, -6
+arg.low_log_const_learning_rate, arg.high_log_const_learning_rate = -0.5, -4
 arg.get_log_learning_rate =  lambda arg: np.random.uniform(low=arg.low_log_const_learning_rate, high=arg.high_log_const_learning_rate)
 arg.get_start_learning_rate = lambda arg: 10**arg.log_learning_rate
 ## decayed_learning_rate = learning_rate * decay_rate ^ (global_step / decay_steps)
@@ -188,7 +188,7 @@ arg.get_decay_rate = lambda arg: np.random.uniform(low=arg.decay_rate_low, high=
 #arg.get_decay_steps = lambda arg: np.random.randint(low=arg.decay_steps_low, high=arg.decay_steps_high)
 def get_decay_steps(arg):
     #arg.decay_steps_low, arg.decay_steps_high = arg.report_error_freq, arg.M
-    arg.decay_steps_low, arg.decay_steps_high = 1000, 10000
+    arg.decay_steps_low, arg.decay_steps_high = 1000, 15000
     decay_steos = np.random.randint(low=arg.decay_steps_low, high=arg.decay_steps_high)
     return decay_steos
 arg.get_decay_steps = get_decay_steps # when stair case, how often to shrink
@@ -200,7 +200,7 @@ optimization_alg = 'GD'
 #optimization_alg = 'Momentum'
 # optimization_alg = 'Adadelta'
 # optimization_alg = 'Adagrad'
-#optimization_alg = 'Adam'
+optimization_alg = 'Adam'
 #optimization_alg = 'RMSProp'
 arg.optimization_alg = optimization_alg
 
