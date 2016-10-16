@@ -42,7 +42,8 @@ task_name = 'task_f_4D_conv'
 # task_name = 'task_f_8D_conv'
 # task_name = 'task_f_8D_conv_test'
 task_name = 'task_f_4D_conv_2nd'
-task_name = 'task_f_4D_conv_2nd_noise_3_0_25std'
+#task_name = 'task_f_4D_conv_2nd_noise_3_0_25std'
+#task_name = 'task_f_4D_conv_2nd_noise_6_0_5std'
 # task_name = 'task_f_4D_conv_changing'
 # task_name = 'task_f_4D_conv_3rd'
 # task_name = 'task_f_4D_conv_4th'
@@ -72,7 +73,7 @@ arg.job_name = 'NN_4D_31_MGD_200' # job name e.g NN_4D_31_MGD_200
 arg.mdl = 'standard_nn'
 #arg.mdl = 'hbf'
 #arg.mdl = 'binary_tree_4D_conv_hidden_layer'
-#arg.mdl = "binary_tree_4D_conv_hidden_layer_automatic"
+arg.mdl = "binary_tree_4D_conv_hidden_layer_automatic"
 #arg.mdl = 'binary_tree_8D_conv_hidden_layer'
 if arg.mdl == 'standard_nn':
     arg.init_type = 'truncated_normal'
@@ -108,7 +109,7 @@ elif arg.mdl == 'hbf':
     arg.init_type = 'kern_init'
     arg.init_type = 'kpp_init'
 
-    arg.units = [40]
+    arg.units = [31]
     # arg.units = [6,6]
     # arg.units = [6,6,6]
 
@@ -186,13 +187,13 @@ else:
 #arg.steps_low = 100
 #arg.steps_high = 101
 #arg.get_steps = lambda arg: int( np.random.randint(low=arg.steps_low ,high=arg.steps_high) )
-arg.steps = 40*2000
+arg.steps = int(25*arg.N_frac)
 arg.get_steps = lambda arg: int( arg.steps )
 
 #arg.M_low = 51
 #arg.M_high = 52
 #arg.get_batch_size = lambda arg: int(np.random.randint(low=arg.M_low , high=arg.M_high))
-arg.M = 1500
+arg.M = 700
 arg.get_batch_size = lambda arg: arg.M #M
 arg.report_error_freq = 50
 
@@ -200,7 +201,7 @@ arg.report_error_freq = 50
 #arg.get_log_learning_rate =  lambda arg: np.random.uniform(low=arg.low_log_const_learning_rate, high=arg.high_log_const_learning_rate)
 #arg.get_start_learning_rate = lambda arg: 10**arg.log_learning_rate
 arg.get_log_learning_rate = lambda arg: None
-arg.starter_learning_rate = 0.0001
+arg.starter_learning_rate = 0.01
 arg.get_start_learning_rate = lambda arg: arg.starter_learning_rate
 ## decayed_learning_rate = learning_rate * decay_rate ^ (global_step / decay_steps)
 #arg.decay_rate_low, arg.decay_rate_high = 0.3, 0.99
@@ -226,7 +227,7 @@ optimization_alg = 'GD'
 #optimization_alg = 'Momentum'
 #optimization_alg = 'Adadelta'
 #optimization_alg = 'Adagrad'
-arg.optimization_alg = 'Adam'
+#arg.optimization_alg = 'Adam'
 #optimization_alg = 'RMSProp'
 arg.optimization_alg = optimization_alg
 

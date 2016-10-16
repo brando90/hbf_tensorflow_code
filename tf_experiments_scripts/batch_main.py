@@ -45,6 +45,7 @@ task_name = 'task_f_4D_conv'
 # task_name = 'task_f_4D_conv_changing'
 task_name = 'task_f_4D_conv_2nd'
 #task_name = 'task_f_4D_conv_2nd_noise_3_0_25std'
+#task_name = 'task_f_4D_conv_2nd_noise_6_0_5std'
 # task_name = 'task_f_4D_conv_3rd'
 # task_name = 'task_f_4D_conv_4th'
 # task_name = 'task_f_4D_conv_5th'
@@ -62,18 +63,18 @@ arg.task_folder_name = mtf.get_experiment_folder(arg.task_name) #om_f_4d_conv
 arg.N_frac = 60000
 print('arg.N_frac: ', arg.N_frac)
 #
-#arg.experiment_name = 'task_Oct_15_BT4D_Adam_xavier_relu_N60000' # task_Oct_10_BT4D_MGD_xavier_relu_N2000 e.g. task_August_10_BT
-#arg.experiment_root_dir = mtf.get_experiment_folder(task_name)
-#arg.job_name = 'BTHL_4D_6_12_MGD_200' # job name e.g BTHL_4D_6_12_MGD_200
-
-arg.experiment_name = 'task_Oct_15_NN_Adam_xavier_relu_N60000' # experiment_name e.g. task_Oct_10_NN_MGD_xavier_relu_N2000
+arg.experiment_name = 'task_Oct_16_BT4D_MGD_BN_xavier_relu_N60000' # task_Oct_10_BT4D_MGD_xavier_relu_N2000 e.g. task_August_10_BT
 arg.experiment_root_dir = mtf.get_experiment_folder(task_name)
-arg.job_name = 'NN_4D_31_MGD_200' # job name e.g NN_4D_31_MGD_200
+arg.job_name = 'BTHL_4D_6_MGD_200' # job name e.g BTHL_4D_6_12_MGD_200
+
+#arg.experiment_name = 'task_Oct_16_NN_MGD_xavier_relu_N60000' # experiment_name e.g. task_Oct_10_NN_MGD_xavier_relu_N2000
+#arg.experiment_root_dir = mtf.get_experiment_folder(task_name)
+#arg.job_name = 'NN_4D_31_MGD_200' # job name e.g NN_4D_31_MGD_200
 #
-arg.mdl = 'standard_nn'
+#arg.mdl = 'standard_nn'
 #arg.mdl = 'hbf'
 #arg.mdl = 'binary_tree_4D_conv_hidden_layer'
-#arg.mdl = "binary_tree_4D_conv_hidden_layer_automatic"
+arg.mdl = "binary_tree_4D_conv_hidden_layer_automatic"
 #arg.mdl = 'binary_tree_8D_conv_hidden_layer'
 if arg.mdl == 'standard_nn':
     arg.init_type = 'truncated_normal'
@@ -127,6 +128,22 @@ elif arg.mdl == 'hbf':
     # arg.train_S_type = 'single_S'
     #
     # arg.b_init = lambda: [525.32626263]
+elif arg.mdl == "binary_tree_4D_conv_hidden_layer_automatic":
+    arg.L, arg.padding, arg.scope_name, arg.verbose = 2, 'VALID', 'BT_4D', False
+    #
+    arg.init_type = 'xavier'
+    arg.weights_initializer = tf.contrib.layers.xavier_initializer(dtype=tf.float32)
+    arg.biases_initializer = tf.constant_initializer(value=0.1, dtype=tf.float32)
+    #
+    F1 = 6
+    arg.F = [None, F1, 2*F1]
+    #
+    arg.normalizer_fn = None
+    arg.normalizer_fn = tf.contrib.layers.batch_norm
+
+    arg.act = tf.nn.relu
+    #arg.act = tf.nn.elu
+    #arg.act = tf.nn.softplus
 elif arg.mdl == 'binary_tree_4D_conv_hidden_layer':
     #arg.init_type = 'manual_truncated_normal'
     arg.init_type = 'xavier'
@@ -200,7 +217,7 @@ optimization_alg = 'GD'
 #optimization_alg = 'Momentum'
 # optimization_alg = 'Adadelta'
 # optimization_alg = 'Adagrad'
-optimization_alg = 'Adam'
+#optimization_alg = 'Adam'
 #optimization_alg = 'RMSProp'
 arg.optimization_alg = optimization_alg
 

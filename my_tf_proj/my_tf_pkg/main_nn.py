@@ -16,6 +16,8 @@ import pickle
 import my_tf_pkg as mtf
 import time
 
+import namespaces as ns
+
 #from memory_profiler import memory_usage
 
 # tensorboard --logdir=/tmp/mdl_logs
