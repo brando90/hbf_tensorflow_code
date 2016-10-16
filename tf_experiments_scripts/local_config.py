@@ -160,6 +160,7 @@ elif arg.mdl == "binary_tree_4D_conv_hidden_layer_automatic":
     arg.F = [None, F1, 2*F1]
     #
     #arg.normalizer_fn = None
+    arg.trainable = True
     arg.normalizer_fn = tf.contrib.layers.batch_norm
 
     arg.act = tf.nn.relu
@@ -176,6 +177,7 @@ elif arg.mdl == 'binary_tree_8D_conv_hidden_layer':
     arg.F = [None, F1, 2*F1, 4*F1]
     #
     arg.normalizer_fn = None
+    arg.trainable = False
     #arg.normalizer_fn = tf.contrib.layers.batch_norm
 
     #arg.act = tf.nn.relu

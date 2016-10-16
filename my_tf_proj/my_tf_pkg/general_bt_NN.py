@@ -108,7 +108,7 @@ def get_activated_conv_layer(arg,x,l,filter_width,nb_filters,stride_width,scope)
         weights_initializer=arg.weights_initializer,
         biases_initializer=arg.biases_initializer,
         scope=scope,
-        trainable=True,
+        trainable=arg.trainable,
         reuse=False
     )
     #flatten layer
@@ -144,7 +144,7 @@ class TestNN_BT(unittest.TestCase):
         L = layers
         F = list of nb of filters [F^(1),F^(2),...]
         '''
-        arg = ns.Namespace(L=L,padding='VALID',scope_name=scope_name)
+        arg = ns.Namespace(L=L,trainable=True,padding='VALID',scope_name=scope_name)
         #weights_initializer = tf.contrib.layers.xavier_initializer(dtype=tf.float32)
         arg.weights_initializer = tf.constant_initializer(value=1.0, dtype=tf.float32)
         #biases_initializer = tf.constant_initializer(value=0.0, dtype=tf.float32)
@@ -214,57 +214,83 @@ class TestNN_BT(unittest.TestCase):
         correct = np.array_equal(bt_output, bt_hardcoded_output)
         self.assertTrue(correct)
 
-    def test_NN_BT8D(self,M=2,D=8,F=[None,3,5,7],L=3):
-        print('\n -------test'+str(D))
-        #
-        x = tf.placeholder(tf.float32, shape=[None,1,D,1], name='x-input') #[M, 1, D, 1]
-        # prepare args
-        arg = self.get_args(L=L,F=F,verbose=False,scope_name='BT'+str(D)+'D')
-        # get NN BT
-        bt_mdl = bt_mdl_conv(arg,x)
-        X_data = self.get_test_data(M,D)
-        with tf.Session() as sess:
-            sess.run( tf.initialize_all_variables() )
-            bt_output = sess.run(fetches=bt_mdl, feed_dict={x:X_data})
-
-        #bt_hardcoded = self.get_hard_coded_bt4D(x)
-        #with tf.Session() as sess:
-        #    sess.run( tf.initialize_all_variables() )
-        #    bt_hardcoded_output = sess.run(fetches=bt_hardcoded, feed_dict={x:X_data})
-
-        #print(bt_output)
-        #print(bt_output.shape)
-
-        #print(bt_hardcoded_output)
-        #print(bt_hardcoded_output.shape)
-        #correct = np.array_equal(bt_output, bt_hardcoded_output)
-        #self.assertTrue(correct)
-
-    def test_NN_BT16D(self,M=2,D=16,F=[None,3,5,7,9],L=4):
-        print('\n -------test'+str(D))
-        #
-        x = tf.placeholder(tf.float32, shape=[None,1,D,1], name='x-input') #[M, 1, D, 1]
-        # prepare args
-        arg = self.get_args(L=L,F=F,verbose=False,scope_name='BT'+str(D)+'D')
-        # get NN BT
-        bt_mdl = bt_mdl_conv(arg,x)
-        X_data = self.get_test_data(M,D)
-        with tf.Session() as sess:
-            sess.run( tf.initialize_all_variables() )
-            bt_output = sess.run(fetches=bt_mdl, feed_dict={x:X_data})
-
-        #bt_hardcoded = self.get_hard_coded_bt4D(x)
-        #with tf.Session() as sess:
-        #    sess.run( tf.initialize_all_variables() )
-        #    bt_hardcoded_output = sess.run(fetches=bt_hardcoded, feed_dict={x:X_data})
-
-        #print(bt_output)
-        #print(bt_output.shape)
-
-        #print(bt_hardcoded_output)
-        #print(bt_hardcoded_output.shape)
-        #correct = np.array_equal(bt_output, bt_hardcoded_output)
-        #self.assertTrue(correct)
+    # def test_NN_BT4D_single_batch(self,M=1,D=4,F=[None,3,5],L=2):
+    #     print('\n -------test'+str(D))
+    #     #
+    #     x = tf.placeholder(tf.float32, shape=[None,1,D,1], name='x-input') #[M, 1, D, 1]
+    #     # prepare args
+    #     arg = self.get_args(L=L,F=F,verbose=False,scope_name='BT_'+str(D)+'D')
+    #     # get NN BT
+    #     bt_mdl = bt_mdl_conv(arg,x)
+    #     X_data = self.get_test_data(M,D)
+    #     with tf.Session() as sess:
+    #         sess.run( tf.initialize_all_variables() )
+    #         bt_output = sess.run(fetches=bt_mdl, feed_dict={x:X_data})
+    #
+    #     bt_hardcoded = self.get_hard_coded_bt4D(x)
+    #     with tf.Session() as sess:
+    #         sess.run( tf.initialize_all_variables() )
+    #         bt_hardcoded_output = sess.run(fetches=bt_hardcoded, feed_dict={x:X_data})
+    #
+    #     #print(bt_output)
+    #     #print(bt_output.shape)
+    #
+    #     #print(bt_hardcoded_output)
+    #     #print(bt_hardcoded_output.shape)
+    #     correct = np.array_equal(bt_output, bt_hardcoded_output)
+    #     self.assertTrue(correct)
+    #
+    # def test_NN_BT8D(self,M=2,D=8,F=[None,3,5,7],L=3):
+    #     print('\n -------test'+str(D))
+    #     #
+    #     x = tf.placeholder(tf.float32, shape=[None,1,D,1], name='x-input') #[M, 1, D, 1]
+    #     # prepare args
+    #     arg = self.get_args(L=L,F=F,verbose=False,scope_name='BT'+str(D)+'D')
+    #     # get NN BT
+    #     bt_mdl = bt_mdl_conv(arg,x)
+    #     X_data = self.get_test_data(M,D)
+    #     with tf.Session() as sess:
+    #         sess.run( tf.initialize_all_variables() )
+    #         bt_output = sess.run(fetches=bt_mdl, feed_dict={x:X_data})
+    #
+    #     #bt_hardcoded = self.get_hard_coded_bt4D(x)
+    #     #with tf.Session() as sess:
+    #     #    sess.run( tf.initialize_all_variables() )
+    #     #    bt_hardcoded_output = sess.run(fetches=bt_hardcoded, feed_dict={x:X_data})
+    #
+    #     #print(bt_output)
+    #     #print(bt_output.shape)
+    #
+    #     #print(bt_hardcoded_output)
+    #     #print(bt_hardcoded_output.shape)
+    #     #correct = np.array_equal(bt_output, bt_hardcoded_output)
+    #     #self.assertTrue(correct)
+    #
+    # def test_NN_BT16D(self,M=2,D=16,F=[None,3,5,7,9],L=4):
+    #     print('\n -------test'+str(D))
+    #     #
+    #     x = tf.placeholder(tf.float32, shape=[None,1,D,1], name='x-input') #[M, 1, D, 1]
+    #     # prepare args
+    #     arg = self.get_args(L=L,F=F,verbose=False,scope_name='BT'+str(D)+'D')
+    #     # get NN BT
+    #     bt_mdl = bt_mdl_conv(arg,x)
+    #     X_data = self.get_test_data(M,D)
+    #     with tf.Session() as sess:
+    #         sess.run( tf.initialize_all_variables() )
+    #         bt_output = sess.run(fetches=bt_mdl, feed_dict={x:X_data})
+    #
+    #     #bt_hardcoded = self.get_hard_coded_bt4D(x)
+    #     #with tf.Session() as sess:
+    #     #    sess.run( tf.initialize_all_variables() )
+    #     #    bt_hardcoded_output = sess.run(fetches=bt_hardcoded, feed_dict={x:X_data})
+    #
+    #     #print(bt_output)
+    #     #print(bt_output.shape)
+    #
+    #     #print(bt_hardcoded_output)
+    #     #print(bt_hardcoded_output.shape)
+    #     #correct = np.array_equal(bt_output, bt_hardcoded_output)
+    #     #self.assertTrue(correct)
 
 if __name__ == '__main__':
     unittest.main()
