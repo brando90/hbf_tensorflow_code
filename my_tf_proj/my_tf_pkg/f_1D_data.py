@@ -130,6 +130,9 @@ def get_data(task_name):
         X_train, Y_train, X_cv, Y_cv, X_test, Y_test = get_data_from_file(file_name='./data/f_4D_conv_2nd.npz')
     elif task_name == 'task_f_4D_conv_2nd_noise_3_0_25std':
         X_train, Y_train, X_cv, Y_cv, X_test, Y_test = get_data_from_file(file_name='./data/f_4D_conv_2nd_noise_3_0_25std.npz')
+    elif task_name == 'task_f_4D_conv_2nd_noise_6_0_5std':
+        X_train, Y_train, X_cv, Y_cv, X_test, Y_test = get_data_from_file(file_name='./data/f_4D_conv_2nd_noise_3_0_25std.npz')
+
 
     elif task_name == 'task_f_4D_conv_changing':
         X_train, Y_train, X_cv, Y_cv, X_test, Y_test = get_data_from_file(file_name='./data/f_4D_conv_changing.npz')
