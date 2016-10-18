@@ -18,6 +18,16 @@ def f_4D_simple_ReLu_BT(A):
     return f
 #
 
+def f_4D_cos_x2_BT(A):
+    h11 = lambda A: np.cos(2*np.pi* (A[0]+A[1]) )
+    h12 = h11
+    h21 = lambda A: 2*(A[0] + A[1])**2 - 1
+    left, right = h11(A[0:2]), h12(A[2:4])
+    f = h21( [left,right] )
+    return f
+
+#
+
 def f_4D_non_conv(A):
     h11 = lambda A: (1.0/20)*(1.0*A[0] + 2.0*A[1])**2.0
     h12 = lambda A: (1.0/10)*(3.0*A[0] + 4.0*A[1])**4.0
