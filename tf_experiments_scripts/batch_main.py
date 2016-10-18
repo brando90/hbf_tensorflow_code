@@ -2,8 +2,8 @@
 #SBATCH --qos=cbmm
 #SBATCH --job-name=Python
 #SBATCH --array=1-200
-#SBATCH --mem=1000
-#SBATCH --time=0-2:20
+#SBATCH --mem=4000
+#SBATCH --time=0-18:20
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=rene_sax14@yahoo.com
 
@@ -46,6 +46,7 @@ task_name = 'task_f_4D_conv'
 task_name = 'task_f_4D_conv_2nd'
 #task_name = 'task_f_4D_conv_2nd_noise_3_0_25std'
 #task_name = 'task_f_4D_conv_2nd_noise_6_0_5std'
+task_name = 'task_f_4D_cos_x2_BT'
 # task_name = 'task_f_4D_conv_3rd'
 # task_name = 'task_f_4D_conv_4th'
 # task_name = 'task_f_4D_conv_5th'
@@ -63,7 +64,7 @@ arg.task_folder_name = mtf.get_experiment_folder(arg.task_name) #om_f_4d_conv
 arg.N_frac = 60000
 print('arg.N_frac: ', arg.N_frac)
 #
-arg.experiment_name = 'task_Oct_16_BT4D_MGD_BN_xavier_relu_N60000' # task_Oct_10_BT4D_MGD_xavier_relu_N2000 e.g. task_August_10_BT
+arg.experiment_name = 'tmp_task_Oct_16_BT4D_Adam_xavier_relu_N60000' # task_Oct_10_BT4D_MGD_xavier_relu_N2000 e.g. task_August_10_BT
 arg.experiment_root_dir = mtf.get_experiment_folder(task_name)
 arg.job_name = 'BTHL_4D_6_MGD_200' # job name e.g BTHL_4D_6_12_MGD_200
 
@@ -138,9 +139,9 @@ elif arg.mdl == "binary_tree_4D_conv_hidden_layer_automatic":
     F1 = 6
     arg.F = [None, F1, 2*F1]
     #
-    #arg.normalizer_fn = None
+    arg.normalizer_fn = None
     arg.trainable = True
-    arg.normalizer_fn = tf.contrib.layers.batch_norm
+    #arg.normalizer_fn = tf.contrib.layers.batch_norm
 
     arg.act = tf.nn.relu
     #arg.act = tf.nn.elu
@@ -190,7 +191,7 @@ arg.steps_high = arg.steps_low+1
 arg.get_steps = lambda arg: int( np.random.randint(low=arg.steps_low ,high=arg.steps_high) )
 
 arg.M_low = 500
-arg.M_high = 12000
+arg.M_high = 15000
 arg.get_batch_size = lambda arg: int(np.random.randint(low=arg.M_low , high=arg.M_high))
 arg.report_error_freq = 50
 
@@ -218,7 +219,7 @@ optimization_alg = 'GD'
 #optimization_alg = 'Momentum'
 # optimization_alg = 'Adadelta'
 # optimization_alg = 'Adagrad'
-#optimization_alg = 'Adam'
+optimization_alg = 'Adam'
 #optimization_alg = 'RMSProp'
 arg.optimization_alg = optimization_alg
 

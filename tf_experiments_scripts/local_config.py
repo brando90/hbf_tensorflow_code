@@ -44,6 +44,7 @@ task_name = 'task_f_4D_conv'
 task_name = 'task_f_4D_conv_2nd'
 #task_name = 'task_f_4D_conv_2nd_noise_3_0_25std'
 #task_name = 'task_f_4D_conv_2nd_noise_6_0_5std'
+task_name = 'task_f_4D_cos_x2_BT'
 # task_name = 'task_f_4D_conv_changing'
 # task_name = 'task_f_4D_conv_3rd'
 # task_name = 'task_f_4D_conv_4th'
@@ -62,7 +63,7 @@ arg.task_folder_name = mtf.get_experiment_folder(arg.task_name) #om_f_4d_conv
 arg.N_frac = 2000
 print('arg.N_frac: ', arg.N_frac)
 #
-arg.experiment_name = 'task_Oct_10_BT4D_MGD_xavier_relu_N2000' # task_Oct_10_BT4D_MGD_xavier_relu_N2000 e.g. task_August_10_BT
+arg.experiment_name = 'task_Oct_17_BT4D_MGD_xavier_relu_N2000' # task_Oct_10_BT4D_MGD_xavier_relu_N2000 e.g. task_August_10_BT
 arg.experiment_root_dir = mtf.get_experiment_folder(task_name)
 arg.job_name = 'BTHL_4D_6_12_MGD_200' # job name e.g BTHL_4D_6_12_MGD_200
 #
