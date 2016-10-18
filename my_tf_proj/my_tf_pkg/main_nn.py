@@ -124,8 +124,8 @@ def main_nn(arg):
     set_tensorboard(arg)
 
     ## Data sets and task
-    print( '----====> TASK NAME: %s' % arg.task_name )
-    (X_train, Y_train, X_cv, Y_cv, X_test, Y_test) = mtf.get_data(arg.task_name)
+    print( '----====> TASK NAME: %s' % arg.data_file_name )
+    (X_train, Y_train, X_cv, Y_cv, X_test, Y_test) = mtf.get_data(arg)
 
     N_frac = arg.N_frac
     X_train, Y_train, X_cv, Y_cv, X_test, Y_test = X_train[:N_frac,:], Y_train[:N_frac,:], X_cv[:N_frac,:], Y_cv[:N_frac,:], X_test[:N_frac,:], Y_test[:N_frac,:]
@@ -179,7 +179,7 @@ def main_nn(arg):
         pass
 
     ##############################
-    # if task_name == 'task_MNIST_flat_auto_encoder':
+    # if data_file_name == 'task_MNIST_flat_auto_encoder':
     #     PCA_errors = {12:24.8254684915, 48:9.60052317906, 96:4.72118325768}
     #     if len(units_list) == 1:
     #         k = units_list[0]
@@ -329,8 +329,8 @@ def main_nn(arg):
             opt = tf.train.RMSPropOptimizer(learning_rate=learning_rate, decay=arg.decay, momentum=arg.momentum, epsilon=1e-10, name='RMSProp')
 
     ## TODO
-    if arg.re_train == 're_train' and arg.task_name == 'hrushikesh':
-        print( 'task_name: ', task_name)
+    if arg.re_train == 're_train' and arg.data_file_name == 'hrushikesh':
+        print( 'data_file_name: ', data_file_name)
         print( 're_train: ', re_train)
         var_list = [v for v in tf.all_variables() if v.name == 'C:0']
         #train_step = opt.minimize(l2_loss, var_list=var_list)
@@ -344,7 +344,7 @@ def main_nn(arg):
     with tf.name_scope("l2_loss") as scope:
         ls_scalar_summary = tf.scalar_summary("l2_loss", l2_loss)
 
-    if arg.task_name == 'task_MNIST_flat_auto_encoder':
+    if arg.data_file_name == 'task_MNIST_flat_auto_encoder':
         with tf.name_scope('input_reshape'):
             x_image = tf.to_float(x, name='ToFloat')
             image_shaped_input_x = tf.reshape(x_image, [-1, 28, 28, 1])
@@ -455,7 +455,7 @@ def main_nn(arg):
                         test_error = sess.run(fetches=fetches_test, feed_dict=feed_dict_test)
 
                     current_learning_rate = sess.run(fetches=learning_rate)
-                    loss_msg = "=> Mdl*%s*-units%s, task: %s, step %d/%d, train err %g, cv err: %g test err %g"%(arg.mdl,arg.dims,arg.task_name,i,arg.steps,train_error,cv_error,test_error)
+                    loss_msg = "=> Mdl*%s*-units%s, task: %s, step %d/%d, train err %g, cv err: %g test err %g"%(arg.mdl,arg.dims,arg.data_file_name,i,arg.steps,train_error,cv_error,test_error)
                     mdl_info_msg = "Act: %s, Opt:%s, BN %s, BN_trainable: %s After%d/%d iteration,Init: %s, current_learning_rate %s, M %s, decay_rate %s, decay_steps %s, nb_params %s" % (arg.act.__name__,arg.optimization_alg,arg.bn,arg.trainable_bn,i,arg.steps,arg.init_type,current_learning_rate,arg.M,arg.decay_rate,arg.decay_steps,nb_params)
                     errors_to_beat = 'BEAT: hbf1_error: %s RBF error: %s PCA error: %s '%(hbf1_error, rbf_error,pca_error)
 

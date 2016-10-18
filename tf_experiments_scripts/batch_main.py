@@ -30,46 +30,30 @@ print(ns)
 ###
 arg = ns.Namespace()
 
-task_name = 'task_h_gabor_data_and_mesh'
-task_name = 'task_qianli_func'
-task_name = 'task_f_2D_task2'
-task_name = 'task_f_2D_task2_xsinglog1_x_depth2'
-task_name = 'task_f_2D_task2_xsinglog1_x_depth3'
-task_name = 'task_f2D_2x2_1_cosx1x2_depth2'
-task_name = 'task_f2D_2x2_1_cosx1_plus_x2_depth2'
-task_name = 'task_f_4D_conv'
-#task_name = 'task_f_4D_conv_1st'
-# task_name = 'task_f_8D_conv'
-# task_name = 'task_f_8D_conv'
-# task_name = 'task_f_8D_conv_test'
-# task_name = 'task_f_4D_conv_changing'
-task_name = 'task_f_4D_conv_2nd'
-#task_name = 'task_f_4D_conv_2nd_noise_3_0_25std'
-#task_name = 'task_f_4D_conv_2nd_noise_6_0_5std'
-task_name = 'task_f_4D_cos_x2_BT'
-# task_name = 'task_f_4D_conv_3rd'
-# task_name = 'task_f_4D_conv_4th'
-# task_name = 'task_f_4D_conv_5th'
-# task_name = 'task_f_4D_conv_6th'
-#task_name = 'task_f_4D_non_conv'
-#task_name = 'task_f_8D_non_conv'
-#task_name = 'task_f_4D_simple_ReLu_BT'
-#task_name = 'task_f_8D_conv_cos_poly1_poly1'
-#task_name = 'task_MNIST_flat'
-#task_name = 'task_MNIST_flat_auto_encoder'
-arg.task_name = task_name
-print('====> TASK_NAME', arg.task_name)
-arg.task_folder_name = mtf.get_experiment_folder(arg.task_name) #om_f_4d_conv
+arg.data_dirpath = './data/'
+##
+
+#arg.data_file_name = 'h_gabor_data_and_mesh'
+arg.data_file_name = 'f_1D_cos_no_noise_data' #task_qianli_func
+arg.data_file_name = 'f_4D_conv_2nd'
+#arg.data_file_name = 'f_4D_conv_2nd_noise_3_0_25std'
+#arg.data_file_name = 'f_4D_conv_2nd_noise_6_0_5std'
+arg.data_file_name = 'f_4D_cos_x2_BT'
+#arg.data_file_name = 'f_8D_conv_cos_poly1_poly1'
+#arg.data_file_name = 'f_4D_simple_ReLu_BT'
+#arg.data_file_name = 'MNIST_flat'
+#arg.data_file_name = 'MNIST_flat_auto_encoder'
+arg.task_folder_name = mtf.get_experiment_folder(arg.data_file_name) #om_f_4d_conv
 #
 arg.N_frac = 60000
 print('arg.N_frac: ', arg.N_frac)
 #
 arg.experiment_name = 'tmp_task_Oct_16_BT4D_Adam_xavier_relu_N60000' # task_Oct_10_BT4D_MGD_xavier_relu_N2000 e.g. task_August_10_BT
-arg.experiment_root_dir = mtf.get_experiment_folder(task_name)
+arg.experiment_root_dir = mtf.get_experiment_folder(arg.data_file_name)
 arg.job_name = 'BTHL_4D_6_MGD_200' # job name e.g BTHL_4D_6_12_MGD_200
 
 #arg.experiment_name = 'task_Oct_16_NN_MGD_xavier_relu_N60000' # experiment_name e.g. task_Oct_10_NN_MGD_xavier_relu_N2000
-#arg.experiment_root_dir = mtf.get_experiment_folder(task_name)
+#arg.experiment_root_dir = mtf.get_experiment_folder(arg.data_file_name)
 #arg.job_name = 'NN_4D_31_MGD_200' # job name e.g NN_4D_31_MGD_200
 #
 #arg.mdl = 'standard_nn'

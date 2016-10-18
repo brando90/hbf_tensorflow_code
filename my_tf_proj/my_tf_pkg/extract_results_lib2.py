@@ -74,9 +74,12 @@ def get_best_results_for_experiments(path_to_all_experiments_for_task,decider,ve
             best_data = _get_best_results_obj_from_current_experiment(experiment_dirpath=dirpath,list_runs_filenames=filenames,decider=decider)
             #
             #nb_units = best_data.results_best['dims'][1]
-            nb_units = best_data.results_best['arg_dict']['dims'][1] if not 'dims' in best_data.results_best else results_best['dims'][1]
+            #pdb.set_trace()
+            #print(best_data)
+            nb_units = best_data.results_best['arg_dict']['dims'][1] if not 'dims' in best_data.results_best else best_data.results_best['dims'][1]
             del best_data['results_best']
             # check if there are repeated runs/simulations results for this dirpath, choose the better of the two
+            print( nb_units )
             if nb_units in expts_best_results:
                 prev_data = expts_best_results[nb_units]
                 if best_data.best_decider_error < prev_data.best_decider_error:
@@ -304,12 +307,13 @@ def get_duration_of_experiments(all_results, duration_type='minutes'):
     duration_stds = []
     for nb_units, results_for_runs in six.iteritems(all_results):
         duration_mean, duration_std = _get_duration_mean_std_from_runs(results_for_runs, duration_type)
+        units.append(nb_units)
         duration_means.append(duration_mean)
         duration_stds.append(duration_std)
     #sort and pair up units with errors
     sorted_units, sorted_duration_means = sort_and_pair_units_with_errors(list_units=units,list_errors=duration_means)
     sorted_units, sorted_duration_stds = sort_and_pair_units_with_errors(list_units=units,list_errors=duration_stds)
-    return sorted_duration_means, sorted_duration_stds
+    return sorted_units, sorted_duration_means, sorted_duration_stds
 
 def _get_duration_mean_std_from_runs(results_for_runs, duration_type):
     '''
@@ -330,8 +334,8 @@ def _get_durations(result, duration_type):
     '''
     Gets the duration for current result given.
 
-    results = the standard resultd dictionary mapping to info about run/simulation.
+    result = the standard resultd dictionary mapping to info about run/simulation.
     duration_type = units for duration e.g. 'second', 'minutes', 'hours'
     '''
-    duration = results[duration_type] #result['seconds'], result['minutes'], result['hours']
+    duration = result[duration_type] #result['seconds'], result['minutes'], result['hours']
     return duration
