@@ -9,6 +9,18 @@ import pdb
 def ReLu(x):
     return max(0,x)
 
+def f_4D_simple_ReLu_BT_2_units_1st(A):
+    h11 = lambda A: ReLu( (1.0*A[0] + 3.0*A[1] - 0.25) ) # [0,4]
+    h12 = lambda A: ReLu( (1.0*A[0] - 1.0*A[1]) ) # [0,2]
+    h13 = h12
+    h14 = h12
+    #
+    h = [ h11(A[0:2]), h12(A[0:2]), h13(A[2:4]), h14(A[2:4]) ]
+    h21 = lambda A: ReLu( 2.5*A[0] - 2*A[1] + 1.5*A[2] - 1.0*A[3] )
+    h22 = lambda A: ReLu( -2.1*A[0] + 1.6*A[1] - 1.1*A[2] + 0.6*A[3] )
+    f = 1.1*h21(h) + 1.5*h22(h)
+    return f
+
 def f_4D_simple_ReLu_BT(A):
     h11 = lambda A: ReLu( (1.0*A[0] + 3.0*A[1]) ) # [0,4]
     h12 = h11
