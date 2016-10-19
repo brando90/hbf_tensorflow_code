@@ -9,7 +9,7 @@
 
 #from __future__ import print_function
 #tensorboard --logdir=/tmp/mdl_logs
-
+#
 
 import os
 import sys
@@ -39,6 +39,7 @@ arg.data_file_name = 'f_4D_conv_2nd'
 #arg.data_file_name = 'f_4D_conv_2nd_noise_3_0_25std'
 #arg.data_file_name = 'f_4D_conv_2nd_noise_6_0_5std'
 arg.data_file_name = 'f_4D_cos_x2_BT'
+arg.data_file_name = 'f_4D_simple_ReLu_BT_2_units_1st'
 #arg.data_file_name = 'f_8D_conv_cos_poly1_poly1'
 #arg.data_file_name = 'f_4D_simple_ReLu_BT'
 #arg.data_file_name = 'MNIST_flat'
@@ -50,11 +51,11 @@ print('arg.N_frac: ', arg.N_frac)
 #
 arg.experiment_name = 'tmp_task_Oct_16_BT4D_Adam_xavier_relu_N60000' # task_Oct_10_BT4D_MGD_xavier_relu_N2000 e.g. task_August_10_BT
 arg.experiment_root_dir = mtf.get_experiment_folder(arg.data_file_name)
-arg.job_name = 'BTHL_4D_6_MGD_200' # job name e.g BTHL_4D_6_12_MGD_200
+arg.job_name = 'BTHL_4D_6_Adam_200' # job name e.g BTHL_4D_6_12_MGD_200
 
 #arg.experiment_name = 'task_Oct_16_NN_MGD_xavier_relu_N60000' # experiment_name e.g. task_Oct_10_NN_MGD_xavier_relu_N2000
 #arg.experiment_root_dir = mtf.get_experiment_folder(arg.data_file_name)
-#arg.job_name = 'NN_4D_31_MGD_200' # job name e.g NN_4D_31_MGD_200
+#arg.job_name = 'NN_4D_31_Adam_200' # job name e.g NN_4D_31_MGD_200
 #
 #arg.mdl = 'standard_nn'
 #arg.mdl = 'hbf'

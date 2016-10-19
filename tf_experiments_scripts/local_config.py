@@ -9,6 +9,7 @@
 
 #from __future__ import print_function
 #tensorboard --logdir=/tmp/mdl_logs
+#
 
 import os
 import sys
@@ -38,6 +39,7 @@ arg.data_file_name = 'f_4D_conv_2nd'
 #arg.data_file_name = 'f_4D_conv_2nd_noise_3_0_25std'
 #arg.data_file_name = 'f_4D_conv_2nd_noise_6_0_5std'
 arg.data_file_name = 'f_4D_cos_x2_BT'
+arg.data_file_name = 'f_4D_simple_ReLu_BT_2_units_1st'
 #arg.data_file_name = 'f_8D_conv_cos_poly1_poly1'
 #arg.data_file_name = 'f_4D_simple_ReLu_BT'
 #arg.data_file_name = 'MNIST_flat'
