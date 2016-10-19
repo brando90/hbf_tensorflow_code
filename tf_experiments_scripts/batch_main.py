@@ -180,7 +180,7 @@ arg.M_high = 15000
 arg.get_batch_size = lambda arg: int(np.random.randint(low=arg.M_low , high=arg.M_high))
 arg.report_error_freq = 50
 
-arg.low_log_const_learning_rate, arg.high_log_const_learning_rate = -0.5, -4
+arg.low_log_const_learning_rate, arg.high_log_const_learning_rate = -0.5, -5
 arg.get_log_learning_rate =  lambda arg: np.random.uniform(low=arg.low_log_const_learning_rate, high=arg.high_log_const_learning_rate)
 arg.get_start_learning_rate = lambda arg: 10**arg.log_learning_rate
 ## decayed_learning_rate = learning_rate * decay_rate ^ (global_step / decay_steps)
