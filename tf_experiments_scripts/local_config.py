@@ -34,13 +34,16 @@ arg.data_dirpath = './data/'
 ##
 
 #arg.data_file_name = 'h_gabor_data_and_mesh'
-arg.data_file_name = 'f_1D_cos_no_noise_data' #task_qianli_func
-arg.data_file_name = 'f_4D_conv_2nd'
+#arg.data_file_name = 'f_1D_cos_no_noise_data' #task_qianli_func
+#arg.data_file_name = 'f_4D_conv_2nd'
 #arg.data_file_name = 'f_4D_conv_2nd_noise_3_0_25std'
 #arg.data_file_name = 'f_4D_conv_2nd_noise_6_0_5std'
-arg.data_file_name = 'f_4D_cos_x2_BT'
-arg.data_file_name = 'f_4D_simple_ReLu_BT_2_units_1st'
+#arg.data_file_name = 'f_4D_conv_2nd_noise_12_1std'
+#arg.data_file_name = 'f_4D_cos_x2_BT'
+#arg.data_file_name = 'f_4D_simple_ReLu_BT_2_units_1st'
 #arg.data_file_name = 'f_8D_conv_cos_poly1_poly1'
+arg.data_file_name = 'f_8D_single_relu'
+#arg.data_file_name = 'f_4D_cos_x2_BT'
 #arg.data_file_name = 'f_4D_simple_ReLu_BT'
 #arg.data_file_name = 'MNIST_flat'
 #arg.data_file_name = 'MNIST_flat_auto_encoder'
@@ -49,24 +52,24 @@ arg.task_folder_name = mtf.get_experiment_folder(arg.data_file_name) #om_f_4d_co
 arg.N_frac = 2000
 print('arg.N_frac: ', arg.N_frac)
 #
-arg.experiment_name = 'task_Oct_17_BT4D_MGD_xavier_relu_N2000' # task_Oct_10_BT4D_MGD_xavier_relu_N2000 e.g. task_August_10_BT
+arg.experiment_name = 'tmp_task_Oct_19_BT4D_MGD_xavier_relu_N2000' # task_Oct_10_BT4D_MGD_xavier_relu_N2000 e.g. task_August_10_BT
 arg.experiment_root_dir = mtf.get_experiment_folder(arg.data_file_name)
 arg.job_name = 'BTHL_4D_6_12_MGD_200' # job name e.g BTHL_4D_6_12_MGD_200
 #
-arg.experiment_name = 'task_Oct_10_NN_MGD_xavier_relu_N2000' # experiment_name e.g. task_Oct_10_NN_MGD_xavier_relu_N2000
+arg.experiment_name = 'tmp_task_Oct_10_NN_MGD_xavier_relu_N2000' # experiment_name e.g. task_Oct_10_NN_MGD_xavier_relu_N2000
 arg.experiment_root_dir = mtf.get_experiment_folder(arg.data_file_name)
 arg.job_name = 'NN_4D_31_MGD_200' # job name e.g NN_4D_31_MGD_200
 #
 arg.mdl = 'standard_nn'
 #arg.mdl = 'hbf'
 #arg.mdl = 'binary_tree_4D_conv_hidden_layer'
-arg.mdl = "binary_tree_4D_conv_hidden_layer_automatic"
-#arg.mdl = 'binary_tree_8D_conv_hidden_layer'
+#arg.mdl = "binary_tree_4D_conv_hidden_layer_automatic"
+arg.mdl = 'binary_tree_8D_conv_hidden_layer'
 if arg.mdl == 'standard_nn':
     arg.init_type = 'truncated_normal'
     arg.init_type = 'xavier'
 
-    arg.units = [31]
+    arg.units = [107]
     #arg.units = [110]
     #arg.units = [237]
     #arg.units = [412]
@@ -116,26 +119,6 @@ elif arg.mdl == 'hbf':
     arg.get_b_init = lambda arg: arg.S
 
     arg.act = tf.nn.exp
-elif arg.mdl == 'binary_tree_4D_conv_hidden_layer':
-    #arg.init_type = 'manual_truncated_normal'
-    arg.init_type = 'xavier'
-    arg.nb_filters = 6 #F1
-    #arg.nb_filters = 12 #F1
-    #arg.nb_filters = 18 #F1
-    arg.nb_final_hidden_units = 2*arg.nb_filters # F2
-    #arg.mu = [0.0,0.0,0.0]
-    #arg.std = [0.9,0.9,0.9]
-    #arg.mu = [None, None, 0.0]
-    #arg.std = [None, None, 0.1]
-    #arg.get_W_mu_init = lambda arg: arg.mu
-    #arg.get_W_std_init = lambda arg: arg.std
-    #arg.std_low, arg.std_high = 0.001, 0.1
-    #arg.get_W_std_init = lambda arg: [float(i) for i in np.random.uniform(low=arg.std_low, high=arg.std_high, size=3)]
-    arg.weights_initializer = arg.weights_initializer = tf.contrib.layers.xavier_initializer(dtype=tf.float32)
-
-    arg.act = tf.nn.relu
-    #arg.act = tf.nn.elu
-    #arg.act = tf.nn.softplus
 elif arg.mdl == "binary_tree_4D_conv_hidden_layer_automatic":
     arg.L, arg.padding, arg.scope_name, arg.verbose = 2, 'VALID', 'BT_4D', False
     #
@@ -160,16 +143,16 @@ elif arg.mdl == 'binary_tree_8D_conv_hidden_layer':
     arg.weights_initializer = tf.contrib.layers.xavier_initializer(dtype=tf.float32)
     arg.biases_initializer = tf.constant_initializer(value=0.1, dtype=tf.float32)
     #
-    F1 = 10
+    F1 = 7
     arg.F = [None, F1, 2*F1, 4*F1]
     #
     arg.normalizer_fn = None
-    arg.trainable = False
+    arg.trainable = True
     #arg.normalizer_fn = tf.contrib.layers.batch_norm
 
-    #arg.act = tf.nn.relu
+    arg.act = tf.nn.relu
     #arg.act = tf.nn.elu
-    arg.act = tf.nn.softplus
+    #arg.act = tf.nn.softplus
 else:
     raise ValueError('Need to use a valid model, incorrect or unknown model %s give.'%arg.mdl)
 #steps

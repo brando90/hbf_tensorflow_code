@@ -8,6 +8,9 @@ import pdb
 
 import my_tf_pkg as mtf
 
+def ReLu(x):
+    return max(0,x)
+
 def f_8D(A):
     h11 = lambda A: (1.0/20)*(1*A[0] + 2*A[1])**4
     h12 = lambda A: (1.0/2)*(3*A[0] + 4*A[1])**3
@@ -49,6 +52,16 @@ def f_8D_conv_cos_poly1_poly1():
     h1 = lambda A: (0.59)*np.cos( 1.5*np.pi*(A[0]+A[1])  )
     h2 = lambda A: 1.1*(A[0]+A[1]+1)**2 - 1
     h3 = lambda A: 1.1*(A[0]+A[1]+1)**2 - 1
+    h_list = [None, h1, h2, h3]
+    ##
+    D = 8
+    f8D = lambda x: mtf.f_bt(x,h_list=h_list,l=3,left=0,right=D)
+    return f8D
+
+def f_8D_single_relu():
+    h1 = lambda A: ReLu( (3.0*A[0] + 2.0*A[1] + 1.0) ) # [0,4]
+    h2 = lambda A: ReLu( (2.0*A[0] - 1.0*A[1] - 2.0) ) # [0,4]
+    h3 = lambda A: ReLu( (-0.5*A[0] + 0.75*A[1] - 2.0) ) # [0,4]
     h_list = [None, h1, h2, h3]
     ##
     D = 8

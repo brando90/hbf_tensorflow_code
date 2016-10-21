@@ -38,10 +38,11 @@ arg.data_dirpath = './data/'
 #arg.data_file_name = 'f_4D_conv_2nd'
 #arg.data_file_name = 'f_4D_conv_2nd_noise_3_0_25std'
 #arg.data_file_name = 'f_4D_conv_2nd_noise_6_0_5std'
-arg.data_file_name = 'f_4D_conv_2nd_noise_12_1std'
+#arg.data_file_name = 'f_4D_conv_2nd_noise_12_1std'
 #arg.data_file_name = 'f_4D_cos_x2_BT'
 #arg.data_file_name = 'f_4D_simple_ReLu_BT_2_units_1st'
 #arg.data_file_name = 'f_8D_conv_cos_poly1_poly1'
+arg.data_file_name = 'f_8D_single_relu'
 #arg.data_file_name = 'f_4D_simple_ReLu_BT'
 #arg.data_file_name = 'MNIST_flat'
 #arg.data_file_name = 'MNIST_flat_auto_encoder'
@@ -61,8 +62,8 @@ arg.job_name = 'BTHL_4D_6_Adam_200' # job name e.g BTHL_4D_6_12_MGD_200
 #arg.mdl = 'standard_nn'
 #arg.mdl = 'hbf'
 #arg.mdl = 'binary_tree_4D_conv_hidden_layer'
-arg.mdl = "binary_tree_4D_conv_hidden_layer_automatic"
-#arg.mdl = 'binary_tree_8D_conv_hidden_layer'
+#arg.mdl = "binary_tree_4D_conv_hidden_layer_automatic"
+arg.mdl = 'binary_tree_8D_conv_hidden_layer'
 if arg.mdl == 'standard_nn':
     arg.init_type = 'truncated_normal'
     arg.init_type = 'data_xavier_kern'
@@ -143,11 +144,12 @@ elif arg.mdl == 'binary_tree_8D_conv_hidden_layer':
     arg.F = [None, F1, 2*F1, 4*F1]
     #
     arg.normalizer_fn = None
+    arg.trainable = True
     #arg.normalizer_fn = tf.contrib.layers.batch_norm
 
-    #arg.act = tf.nn.relu
+    arg.act = tf.nn.relu
     #arg.act = tf.nn.elu
-    arg.act = tf.nn.softplus
+    #arg.act = tf.nn.softplus
 else:
     raise ValueError('Need to use a valid model, incorrect or unknown model %s give.'%arg.mdl)
 
