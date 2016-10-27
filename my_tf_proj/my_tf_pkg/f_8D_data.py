@@ -48,6 +48,16 @@ def f_8D_conv_test(A):
     return H31
 ##
 
+def f_8D_conv_quad_cubic_sqrt():
+    h1 = lambda A: 0.7*(1.0*A[0] + 2.0*A[1])**2
+    h2 = lambda A: 0.6*(1.1*A[0] + 1.9*A[1])**3
+    h3 = lambda A: 1.3*(1.2*A[0] + 1.3*A[1])**0.5
+    h_list = [None, h1, h2, h3]
+    ##
+    D = 8
+    f8D = lambda x: mtf.f_bt(x,h_list=h_list,l=3,left=0,right=D)
+    return f8D
+
 def f_8D_conv_cos_poly1_poly1():
     h1 = lambda A: (0.59)*np.cos( 1.5*np.pi*(A[0]+A[1])  )
     h2 = lambda A: 1.1*(A[0]+A[1]+1)**2 - 1
