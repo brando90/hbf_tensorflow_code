@@ -5,8 +5,24 @@ import tensorflow as tf
 from tensorflow.examples.tutorials.mnist import input_data
 mnist = input_data.read_data_sets("MNIST_data/", one_hot=True)
 
+
+def get_mdl_get_var(x):
+    # variables for parameters
+    W = tf.get_variable('W', [784, 10], tf.random_normal_initializer(mean=0.0,stddev=0.1))
+    b = tf.get_variable('b', [10], tf.constant_initializer(value=0.1))
+    Wx_b = tf.matmul(x, W)+b
+    y = tf.nn.softmax(Wx_b)
+    return y
+
+def get_mdl_get_var(x):
+    # variables for parameters
+    W = tf.get_variable(name='W', shape=[784, 10], initializer=tf.random_normal_initializer(mean=0.0,stddev=0.1))
+    b = tf.get_variable(name='b', shape=[10], initializer=tf.constant_initializer(value=0.1))
+    Wx_b = tf.matmul(x, W)+b
+    y = tf.nn.softmax(Wx_b)
+    return y
+
 def get_mdl(x):
-    # placeholder for data
     # variables for parameters
     W = tf.Variable(tf.truncated_normal([784, 10], mean=0.0, stddev=0.1))
     b = tf.Variable(tf.constant(0.1, shape=[10]))
@@ -17,9 +33,11 @@ def get_mdl(x):
 def main():
     #arg = ns.Namespace()
     nb_array_jobs = 2
-    for index in range(nb_array_jobs):
+    for i in range(nb_array_jobs):
         x = tf.placeholder(tf.float32, [None, 784])
-        y = get_mdl(x)
+        #y = get_mdl(x)
+        with tf.variable_scope('stid_'+str(i)):
+            y = get_mdl_get_var(x)
         y_ = tf.placeholder(tf.float32, [None, 10])
         #
         cross_entropy = tf.reduce_mean( -tf.reduce_sum(y_ * tf.log(y), reduction_indices=[1]) )
