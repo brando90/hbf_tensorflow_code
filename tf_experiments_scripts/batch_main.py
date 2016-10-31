@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+#SBATCH --qos=cbmm
 #SBATCH --job-name=Python
 #SBATCH --array=1-200
 #SBATCH --mem=4000

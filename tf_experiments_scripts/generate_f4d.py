@@ -8,9 +8,9 @@ import my_tf_pkg as mtf
 
 import pdb
 
-f = mtf.f_4D_simple_ReLu_BT_2_units_1st
-folder_loc = './data/f_4D_simple_ReLu_BT_2_units_1st.npz'
-X_train, Y_train, X_cv, Y_cv, X_test, Y_test = mtf.make_data_set_4D(f, folder_loc)
+f = mtf.f_4D_conv_1st
+file_name = 'f_4D_conv_1st.npz'
+X_train, Y_train, X_cv, Y_cv, X_test, Y_test = mtf.make_data_set_4D(f, file_name)
 
 print('max: ', np.max(Y_train))
 print('min: ', np.min(Y_train))

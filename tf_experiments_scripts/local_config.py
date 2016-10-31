@@ -41,8 +41,8 @@ arg.data_dirpath = './data/'
 #arg.data_file_name = 'f_4D_conv_2nd_noise_12_1std'
 #arg.data_file_name = 'f_4D_cos_x2_BT'
 #arg.data_file_name = 'f_4D_simple_ReLu_BT_2_units_1st'
-arg.data_file_name = 'f_8D_conv_cos_poly1_poly1'
-#arg.data_file_name = 'f_8D_single_relu'
+#arg.data_file_name = 'f_8D_conv_cos_poly1_poly1'
+arg.data_file_name = 'f_8D_single_relu'
 #arg.data_file_name = 'f_4D_cos_x2_BT'
 #arg.data_file_name = 'f_4D_simple_ReLu_BT'
 #arg.data_file_name = 'MNIST_flat'
@@ -159,13 +159,13 @@ else:
 #arg.steps_low = 100
 #arg.steps_high = 101
 #arg.get_steps = lambda arg: int( np.random.randint(low=arg.steps_low ,high=arg.steps_high) )
-arg.steps = int(1*arg.N_frac)
+arg.steps = int(25*arg.N_frac)
 arg.get_steps = lambda arg: int( arg.steps )
 
 #arg.M_low = 51
 #arg.M_high = 52
 #arg.get_batch_size = lambda arg: int(np.random.randint(low=arg.M_low , high=arg.M_high))
-arg.M = 2
+arg.M = 700
 arg.get_batch_size = lambda arg: arg.M #M
 arg.report_error_freq = 50
 

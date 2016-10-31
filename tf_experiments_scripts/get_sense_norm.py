@@ -17,10 +17,10 @@ print 'X_test.shape', X_test.shape
 
 pairwise_norm_squared = get_pairwise_norm_squared(X=X_train,Y=X_train)
 min_val, max_val, mean_val, std_val = float(np.amin(pairwise_norm_squared)), float(np.amax(pairwise_norm_squared)), float(np.mean(pairwise_norm_squared)), float(np.std(pairwise_norm_squared))
-print 'min norm X **2: ', np.amin(pairwise_norm_squared)
-print 'max norm X **2: ', np.amax(pairwise_norm_squared)
-print 'mean norm X **2: ', np.mean(pairwise_norm_squared)
-print 'std norm X **2: ', np.std(pairwise_norm_squared)
+print 'min', np.amin(pairwise_norm_squared)
+print 'max', np.amax(pairwise_norm_squared)
+print 'mean', np.mean(pairwise_norm_squared)
+print 'std', np.std(pairwise_norm_squared)
 
 # mtf.make_and_check_dir(path=tensorboard_data_dump_train)
 # with open('./get_sense_norm'+, 'w+') as f_json:
