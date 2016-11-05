@@ -8,6 +8,35 @@ import pdb
 
 import my_tf_pkg as mtf
 
+
+def get_shallow_params(A,nb_shallow_units):
+    N,D = A.shape
+    params_for_units = []
+    for i in range():
+        rand_index = numpy.random.randint(low=0,high=N)
+        x = A[rand_index,:] # 8D data array [1 x D]
+        while current_unit_val_x != 0 :
+            c = numpy.random.uniform(low=-2.0, high=2.0, size=1)
+            w = numpy.random.uniform(low=-2.0, high=2.0, size=(D,1))
+            b = numpy.random.uniform(low=-1.0, high=1.0, size=1)
+            current_unit_val_x = c*Relu(np.dot(x,w)+b)
+        params_for_units.append[](c,w,b)]
+    return params_for_units
+
+def get_f_shallow_net(params_for_units):
+    f8D = lambda x: _f_eval_shallow_net(x,params_for_units=params_for_units)
+    return f8D
+
+def _f_eval_shallow_net(A,params_for_units):
+    N,D = A.shape
+    # computes sum c|wx+b|_+
+    f = np.zeros((N,D)) # [N,D]
+    for c,w,b in params_for_units:
+        current_unit_val_x = c*Relu(np.dot(A,w)+b) # [N,D] x [D,1]
+        f += current_unit_val_x
+    return
+#
+
 def ReLu(x):
     return max(0,x)
 
