@@ -1,6 +1,7 @@
 import numpy as np
 import json
 from sklearn.cross_validation import train_test_split
+import unittest
 
 from tensorflow.examples.tutorials.mnist import input_data
 
@@ -8,33 +9,54 @@ import pdb
 
 import my_tf_pkg as mtf
 
+def get_shallow_params(A,nb_shallow_units,low_c=-2.0,high_c=2.0,low_w=-2.0,high_w=2.0,low_b=-1.0,high_b=1.0):
+    '''
+    Creates the parameters for a shallow synthetic function f(x) = \sum^(nb_shallow_units)_(i=1) c_i |Wx + b|_+
 
-def get_shallow_params(A,nb_shallow_units):
+    N - number of data examples
+    D - input dimensionality of the data
+    nb_shallow_units - number of (activation) units for the shallow network
+    '''
     N,D = A.shape
     params_for_units = []
-    for i in range():
-        rand_index = numpy.random.randint(low=0,high=N)
+    for i in range(nb_shallow_units):
+        rand_index = np.random.randint(low=0,high=N)
         x = A[rand_index,:] # 8D data array [1 x D]
+        current_unit_val_x = 1
+        #i = 0
         while current_unit_val_x != 0 :
-            c = numpy.random.uniform(low=-2.0, high=2.0, size=1)
-            w = numpy.random.uniform(low=-2.0, high=2.0, size=(D,1))
-            b = numpy.random.uniform(low=-1.0, high=1.0, size=1)
-            current_unit_val_x = c*Relu(np.dot(x,w)+b)
-        params_for_units.append[](c,w,b)]
+            #print(i)
+            #x = A[rand_index,:] # 8D data array [1 x D]
+            c = np.random.uniform(low=low_c, high=high_c, size=1)
+            w = np.random.uniform(low=low_w, high=high_w, size=(D,1))
+            b = np.random.uniform(low=low_b, high=high_b, size=1)
+            current_unit_val_x = c*ReLu(np.dot(x,w)+b)
+            #i=i+1
+        params_for_units.append( (c,w,b) )
     return params_for_units
 
 def get_f_shallow_net(params_for_units):
+    '''
+    Gets a function handler/pointer that evaluates the shallow network f(x) = \sum^(nb_shallow_units)_(i=1) c_i |Wx + b|_+
+    '''
     f8D = lambda x: _f_eval_shallow_net(x,params_for_units=params_for_units)
     return f8D
 
 def _f_eval_shallow_net(A,params_for_units):
-    N,D = A.shape
+    '''
+    Evaluates the actual shallow function f(x) = \sum^(nb_shallow_units)_(i=1) c_i |Wx + b|_+ given its parameters.
+
+    A - data matrix [N , D] to evaluate
+    params_for_units - parameters for each unit of the shallow network (i.e. [...,(c,w,b),...])
+    '''
     # computes sum c|wx+b|_+
-    f = np.zeros((N,D)) # [N,D]
-    for c,w,b in params_for_units:
-        current_unit_val_x = c*Relu(np.dot(A,w)+b) # [N,D] x [D,1]
+    c,w,b = params_for_units[0]
+    f = c*ReLu(np.dot(A,w)+b) # [N,D]
+    for i in range(1,len(params_for_units)):
+        c,w,b = params_for_units[i]
+        current_unit_val_x = c*ReLu(np.dot(A,w)+b) # [N,D] x [D,1] = [N,1]
         f += current_unit_val_x
-    return
+    return f
 #
 
 def ReLu(x):
@@ -134,3 +156,27 @@ def make_data_set_8D(f, file_name):
     X_train, Y_train, X_cv, Y_cv, X_test, Y_test = generate_data_8D(f)
     np.savez(file_name, X_train=X_train,Y_train=Y_train, X_cv=X_cv,Y_cv=Y_cv, X_test=X_test,Y_test=Y_test)
     return X_train, Y_train, X_cv, Y_cv, X_test, Y_test
+
+#########
+
+class Test_Shallow_Synthetic(unittest.TestCase):
+    #make sure methods start with word test
+    def test_shallow_network_8D(self, N=3, D=8, low_x=-1, high_x=1, nb_shallow_units=5):
+        '''
+        check that f(x) >= 0 since its positive linear combination of
+        '''
+        #X = np.arange(N*D).reshape((N,D))
+        print('running test')
+        #X = np.random.uniform(low=low_x, high=high_x, size=(N,D))
+        X = low_x + (high_x - low_x) * np.random.rand(100,D)
+        params_for_units = get_shallow_params(X,nb_shallow_units,low_c=0.0,high_c=5.0) # low_c is positive to make the unit test pass/make sense
+        f = get_f_shallow_net(params_for_units)
+        X_train, Y_train, X_cv, Y_cv, X_test, Y_test = generate_data_8D(f, N_train=N, N_cv=N, N_test=N, low_x=low_x, high_x=high_x)
+        correct = []
+        correct.append(np.all( Y_train >= 0))
+        correct.append(np.all( Y_cv >= 0))
+        correct.append(np.all( Y_test >= 0))
+        self.assertTrue(np.all(correct))
+
+if __name__ == '__main__':
+    unittest.main()
