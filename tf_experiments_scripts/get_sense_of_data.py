@@ -20,6 +20,9 @@ arg.data_file_name = 'f_8D_conv_cos_poly1_poly1_shuffled'
 arg.data_file_name = 'f_8D_conv_quad_cubic_sqrt_shuffled'
 X_train, Y_train, X_cv, Y_cv, X_test, Y_test = mtf.get_data(arg)
 
+print('\n-----> ', arg)
+print('\n')
+
 print(X_train)
 print(X_cv)
 print(X_test)
