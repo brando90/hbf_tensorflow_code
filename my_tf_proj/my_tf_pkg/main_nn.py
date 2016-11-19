@@ -121,10 +121,6 @@ def main_serial(arg):
         with tf.name_scope('stid_'+str(job_array_index)):
             arg.slurm_array_task_id = job_array_index
             main_nn(arg)
-
-##
-
-
 ##
 
 def main_nn(arg):
@@ -331,8 +327,6 @@ def main_nn(arg):
     nb_params = count_number_trainable_params(y)
     results['nb_params'] = nb_params
     print( '---> nb_params ', nb_params )
-
-
     ##
 
     with tf.name_scope("train") as scope:

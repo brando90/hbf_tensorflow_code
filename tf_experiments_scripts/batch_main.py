@@ -42,24 +42,23 @@ arg.data_dirpath = './data/'
 #arg.data_file_name = 'f_4D_cos_x2_BT'
 #arg.data_file_name = 'f_4D_simple_ReLu_BT_2_units_1st'
 #arg.data_file_name = 'f_8D_conv_cos_poly1_poly1'
-arg.data_file_name = 'f_8D_single_relu'
+#arg.data_file_name = 'f_8D_single_relu'
 arg.data_file_name = 'f_8D_conv_quad_cubic_sqrt_shuffled'
 #arg.data_file_name = 'f_4D_simple_ReLu_BT'
 #arg.data_file_name = 'MNIST_flat'
 #arg.data_file_name = 'MNIST_flat_auto_encoder'
 arg.task_folder_name = mtf.get_experiment_folder(arg.data_file_name) #om_f_4d_conv
 #
-arg.N_frac = 2000
+arg.N_frac = 60000
 print('arg.N_frac: ', arg.N_frac)
-arg.type_job = 'serial_gpu'
 #
-arg.experiment_name = 'tmp_task_Oct_19_BT4D_Adam_xavier_relu_N60000' # task_Oct_10_BT4D_MGD_xavier_relu_N2000 e.g. task_August_10_BT
+arg.experiment_name = 'tmp_task_Nov_19_BT4D_Adam_xavier_relu_N60000' # task_Oct_10_BT4D_MGD_xavier_relu_N2000 e.g. task_August_10_BT
 arg.experiment_root_dir = mtf.get_experiment_folder(arg.data_file_name)
-arg.job_name = 'BTHL_4D_6_Adam_200' # job name e.g BTHL_4D_6_12_MGD_200
+arg.job_name = 'BTsubgraph_8D_a1_Adam_200' # job name e.g BTHL_4D_6_12_MGD_200
 
-#arg.experiment_name = 'task_Oct_19_NN_MGD_xavier_relu_N60000' # experiment_name e.g. task_Oct_10_NN_MGD_xavier_relu_N2000
+#arg.experiment_name = 'task_Nov_19_NN_Adam_xavier_relu_N60000' # experiment_name e.g. task_Oct_10_NN_MGD_xavier_relu_N2000
 #arg.experiment_root_dir = mtf.get_experiment_folder(arg.data_file_name)
-#arg.job_name = 'NN_4D_31_Adam_200' # job name e.g NN_4D_31_MGD_200
+#arg.job_name = 'NN_8D_31_Adam_200' # job name e.g NN_4D_31_MGD_200
 #
 #arg.mdl = 'standard_nn'
 #arg.mdl = 'hbf'
