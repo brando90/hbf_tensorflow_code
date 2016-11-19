@@ -21,6 +21,7 @@ def debug_print(l, conv, conv_new, arg):
     print('-> l ', l)
     print('conv_old', conv_old)
     print('conv_new', conv_new)
+    print('-')
     print('arg.list_filter_widths', arg.list_filter_widths)
     print('arg.nb_filters', arg.nb_filters)
     print('arg.list_strides', arg.list_strides)
@@ -92,7 +93,8 @@ def get_activated_conv_layer_subgraph(arg,x,l,filter_width,nb_filters,stride_wid
         trainable=arg.trainable,
         reuse=False
     )
-    #print(conv)
+    if arg.verbose:
+        print('==> conv_raw', conv)
     #flatten layer
     conv = flatten_conv_layer(x=conv)
     #pdb.set_trace()
@@ -171,7 +173,7 @@ class TestNN_BT(unittest.TestCase):
         u3 = F3
         list_filter_widths=[None,2,4*u1,4*u2]
         s1 = 1
-        s2 = 1
+        s2 = 1*F1
         s3 = 1
         list_strides=[None,s1,s2,s3]
         #
