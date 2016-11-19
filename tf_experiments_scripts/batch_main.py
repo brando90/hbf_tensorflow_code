@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-#SBATCH --qos=cbmm
 #SBATCH --job-name=Python
 #SBATCH --array=1-200
 #SBATCH --mem=4000
@@ -52,6 +51,9 @@ arg.task_folder_name = mtf.get_experiment_folder(arg.data_file_name) #om_f_4d_co
 arg.N_frac = 60000
 print('arg.N_frac: ', arg.N_frac)
 #
+#arg.type_job = 'serial' #careful when this is on and GPU is NOT on
+#arg.type_job = 'slurm_array_parallel'
+
 arg.experiment_name = 'tmp_task_Nov_19_BT4D_Adam_xavier_relu_N60000' # task_Oct_10_BT4D_MGD_xavier_relu_N2000 e.g. task_August_10_BT
 arg.experiment_root_dir = mtf.get_experiment_folder(arg.data_file_name)
 arg.job_name = 'BTsubgraph_8D_a1_Adam_200' # job name e.g BTHL_4D_6_12_MGD_200
@@ -281,6 +283,11 @@ parser.add_argument("-pr", "--path_root", help="path_root: specifies the path ro
 #parser.add_argument("-hp", "--hyper_parameter", help="hyper_parameter: when searching for hp on needs to specify were to store the results of experiment or it will default.")
 
 cmd_args = parser.parse_args()
+print('cmd_args ', cmd_args)
+# (do if first if statment is true) if (return true when cmd_args is initialized to None) else (do this)
+cmd_args.type_job = cmd_args.type_job if cmd_args.type_job else arg.type_job
+print('--> arg.type_job ', cmd_args.type_job)
+# if the flag is initialized (not None) then use it, otherwise use the flag from environment veriable
 arg.slurm_jobid = cmd_args.SLURM_JOBID if cmd_args.SLURM_JOBID else os.environ['SLURM_JOBID']
 arg.slurm_array_task_id = cmd_args.SLURM_ARRAY_TASK_ID if cmd_args.SLURM_ARRAY_TASK_ID else os.environ['SLURM_ARRAY_TASK_ID']
 print('--> arg ', arg.slurm_jobid, arg.slurm_array_task_id)
