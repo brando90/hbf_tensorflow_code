@@ -12,6 +12,30 @@ from tensorflow.contrib.layers.python.layers import batch_norm as batch_norm
 
 import my_tf_pkg as mtf
 
+def count_number_trainable_params(y):
+    '''
+    Receives model y=mdl tf graph/thing/object and counts the number of trainable variables.
+    '''
+    tot_nb_params = 0
+    for trainable_variable in tf.trainable_variables():
+        #print('trainable_variable ', trainable_variable.__dict__)
+        shape = trainable_variable.get_shape() # e.g [D,F] or [W,H,C]
+        current_nb_params = get_nb_params_shape(shape)
+        tot_nb_params = tot_nb_params + current_nb_params
+    return tot_nb_params
+
+def get_nb_params_shape(shape):
+    '''
+    Computes the total number of params for a given shap.
+    Works for any number of shapes etc [D,F] or [W,H,C] computes D*F and W*H*C.
+    '''
+    nb_params = 1
+    for dim in shape:
+        nb_params = nb_params*int(dim)
+    return nb_params
+
+##
+
 def debug_print(l, conv, conv_new, arg):
     conv_old = conv # old conv before applying conv for the next layer
     filter_width = arg.list_filter_widths[l] # filter width for current layer
@@ -63,6 +87,8 @@ def bt_mdl_conv_subgraph(arg,x):
     fully_connected_filter_width = arg.list_filter_widths[l]
     C = get_final_weight(arg=arg,shape=[fully_connected_filter_width,1],name='C_'+str(len(arg.nb_filters)))
     mdl = tf.matmul(conv,C)
+    if arg.verbose:
+        debug_print(l,conv,mdl,arg)
     return mdl
 
 def get_activated_conv_layer_subgraph(arg,x,l,filter_width,nb_filters,stride_width,scope):
@@ -162,7 +188,7 @@ class TestNN_BT(unittest.TestCase):
 
     def test_NN_BT8D(self,M=3,D=8,L=3):
         print('\n-------test'+str(D))
-        a = 1
+        a = 2
         #F1 = 4*a
         F1 = 4*a
         F2 = 7*a
@@ -187,10 +213,14 @@ class TestNN_BT(unittest.TestCase):
             sess.run( tf.initialize_all_variables() )
             bt_output = sess.run(fetches=bt_mdl, feed_dict={x:X_data})
         #
+        print('Output of mdl on a data set that is M,D = %d, %d'%(M,D))
+        print('note the output should b M,1 = %d, %d'%(M,1))
+        print('bt_output')
         print(bt_output)
-        print(bt_output.shape)
+        print('bt_output.shape ', bt_output.shape)
         #correct = np.array_equal(bt_output, bt_hardcoded_output)
         #self.assertTrue(correct)
+        print('count_number_trainable_params ', count_number_trainable_params(bt_mdl))
         self.assertTrue(True)
 
 if __name__ == '__main__':

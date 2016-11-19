@@ -16,7 +16,9 @@ from my_tf_pkg.main_nn import *
 from my_tf_pkg.f_4D_BT_data import *
 from my_tf_pkg.general_bt_f import *
 from my_tf_pkg.general_bt_NN import *
+from my_tf_pkg.bt_nn_subgraph import *
 from my_tf_pkg.data_central_manager import *
+from my_tf_pkg.main_gpu import *
 #having the package name declared
 #from pkg_1.module2 import *
 

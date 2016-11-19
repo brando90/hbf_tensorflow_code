@@ -114,6 +114,19 @@ def get_nb_params_shape(shape):
 
 ##
 
+def main_serial(arg):
+    #do jobs
+    SLURM_ARRAY_TASK_IDS = list(range(int(arg.nb_array_jobs)))
+    for job_array_index in SLURM_ARRAY_TASK_IDS:
+        with tf.name_scope('stid_'+str(job_array_index)):
+            arg.slurm_array_task_id = job_array_index
+            main_nn(arg)
+
+##
+
+
+##
+
 def main_nn(arg):
     print('Running main')
     print('--==>', dict(arg) )
@@ -293,6 +306,19 @@ def main_nn(arg):
         with tf.name_scope("mdl"+arg.scope_name) as scope:
             mdl = mtf.bt_mdl_conv(arg,x)
         arg.dims = [D]+arg.F[1:]+[D_out]
+    elif arg.mdl == 'bt_subgraph':
+        print( arg.scope_name )
+        inits_S = None
+        pca_error, rbf_error = None, None
+        float_type = tf.float32
+        #
+        N_cv, N_test = X_cv.shape[0], X_test.shape[0]
+        X_train, X_cv, X_test = X_train.reshape(N_train,1,D,1), X_cv.reshape(N_cv,1,D,1), X_test.reshape(N_test,1,D,1)
+        x = tf.placeholder(tf.float32, shape=[None,1,D,1], name='x-input') #[M, 1, D, 1]
+        #
+        with tf.name_scope("mdl"+arg.scope_name) as scope:
+            mdl = mtf.bt_mdl_conv_subgraph(arg,x)
+        arg.dims = [D]+arg.nb_filters[1:]+[D_out]
 
     ## Output and Loss
     y = mdl

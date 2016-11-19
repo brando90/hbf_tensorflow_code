@@ -43,6 +43,7 @@ arg.data_dirpath = './data/'
 #arg.data_file_name = 'f_4D_simple_ReLu_BT_2_units_1st'
 #arg.data_file_name = 'f_8D_conv_cos_poly1_poly1'
 arg.data_file_name = 'f_8D_single_relu'
+arg.data_file_name = 'f_8D_conv_quad_cubic_sqrt_shuffled'
 #arg.data_file_name = 'f_4D_simple_ReLu_BT'
 #arg.data_file_name = 'MNIST_flat'
 #arg.data_file_name = 'MNIST_flat_auto_encoder'
@@ -50,6 +51,7 @@ arg.task_folder_name = mtf.get_experiment_folder(arg.data_file_name) #om_f_4d_co
 #
 arg.N_frac = 2000
 print('arg.N_frac: ', arg.N_frac)
+arg.type_job = 'serial_gpu'
 #
 arg.experiment_name = 'tmp_task_Oct_19_BT4D_Adam_xavier_relu_N60000' # task_Oct_10_BT4D_MGD_xavier_relu_N2000 e.g. task_August_10_BT
 arg.experiment_root_dir = mtf.get_experiment_folder(arg.data_file_name)
@@ -64,6 +66,7 @@ arg.job_name = 'BTHL_4D_6_Adam_200' # job name e.g BTHL_4D_6_12_MGD_200
 #arg.mdl = 'binary_tree_4D_conv_hidden_layer'
 #arg.mdl = "binary_tree_4D_conv_hidden_layer_automatic"
 arg.mdl = 'binary_tree_8D_conv_hidden_layer'
+arg.mdl = 'bt_subgraph'
 if arg.mdl == 'standard_nn':
     arg.init_type = 'truncated_normal'
     arg.init_type = 'data_xavier_kern'
@@ -142,6 +145,31 @@ elif arg.mdl == 'binary_tree_8D_conv_hidden_layer':
     #
     F1 = 10
     arg.F = [None, F1, 2*F1, 4*F1]
+    #
+    arg.normalizer_fn = None
+    arg.trainable = True
+    #arg.normalizer_fn = tf.contrib.layers.batch_norm
+
+    arg.act = tf.nn.relu
+    #arg.act = tf.nn.elu
+    #arg.act = tf.nn.softplus
+elif arg.mdl == 'bt_subgraph':
+    arg.L, arg.padding, arg.scope_name, arg.verbose = 3, 'VALID', 'BT_subgraph', False
+    #
+    arg.init_type = 'xavier'
+    arg.weights_initializer = tf.contrib.layers.xavier_initializer(dtype=tf.float32)
+    arg.biases_initializer = tf.constant_initializer(value=0.1, dtype=tf.float32)
+    #
+    a = 1
+    # set nb filters
+    F1, F2, F3 = 4*a, 7*a, 28*a
+    arg.nb_filters=[None,F1,F2,F3]
+    # set filter widths
+    u1, u2 = F1, F2
+    arg.list_filter_widths=[None,2,4*u1,4*u2]
+    # set strides
+    s1, s2, s3 = 1, 1*F1, 1
+    arg.list_strides=[None,s1,s2,s3]
     #
     arg.normalizer_fn = None
     arg.trainable = True
@@ -241,8 +269,9 @@ arg.get_path_root =  lambda arg: arg.path_root
 #
 parser = argparse.ArgumentParser()
 parser.add_argument("-d", "--debug", help="debug mode: loads the old (pickle) config file to run in debug mode", action='store_true')
+parser.add_argument("-tj", "--type_job", help="type_job for run")
 parser.add_argument("-sj", "--SLURM_JOBID", help="SLURM_JOBID for run")
-parser.add_argument("-stid", "--SLURM_ARRAY_TASK_ID", help="SLURM_ARRAY_TASK_ID for run")
+parser.add_argument("-stid", "--SLURM_ARRAY_TASK_ID", help="SLURM_ARRAY_TASK_ID for run.")
 parser.add_argument("-sca", "--save_config_args", help="save_config_args saves the current config file to a picke file ")
 
 parser.add_argument("-tb", "--tensorboard", dest='tensorboard', help="tensorboard mode: save tensorboard data", action='store_true')
@@ -286,8 +315,13 @@ arg.max_to_keep = 1
 arg.get_errors_from = mtf.get_errors_based_on_train_error
 #arg.get_errors_from = mtf.get_errors_based_on_validation_error
 
-#
+print('cmd_args ', cmd_args)
+#print('arg ', arg)
 if __name__ == '__main__':
     print('In __name__ == __main__')
-    #main_nn.main_old()
-    mtf.main_nn(arg)
+    if cmd_args.type_job == 'serial':
+        # jobs one job. No slurm array
+        mtf.main_serial(arg)
+    elif cmd_args.type_job == 'slurm_array_parallel':
+        # run one single job according to slurm array command
+        mtf.main_nn(arg)
