@@ -189,18 +189,27 @@ class TestNN_BT(unittest.TestCase):
     def test_NN_BT8D(self,M=3,D=8,L=3):
         print('\n-------test'+str(D))
         a = 2
+        # nb of filters per unit
         #F1 = 4*a
-        F1 = 4*a
-        F2 = 7*a
-        F3 = 28*a
+        # F1 = 4*a
+        # F2 = 7*a
+        # F3 = 28*a
+        #F1, F2, F3 = 4*a, 7*a, 28*a
+        F1, F2, F3 = a, 2*a, 6*a
         nb_filters=[None,F1,F2,F3]
+        # width of filters
         u1 = F1
         u2 = F2
         u3 = F3
-        list_filter_widths=[None,2,4*u1,4*u2]
-        s1 = 1
-        s2 = 1*F1
-        s3 = 1
+        #w1, w2, w3 = 2,4*u1,4*u2
+        w1, w2, w3 = 3,2*u1,3*u2
+        list_filter_widths=[None,w1,w2,w3]
+        # stride
+        # s1 = 1
+        # s2 = 1*F1
+        # s3 = 1
+        #s1, s2, s3 = 1, 1*F1, 1
+        s1, s2, s3 = 1, 2*F1, 1
         list_strides=[None,s1,s2,s3]
         #
         x = tf.placeholder(tf.float32, shape=[None,1,D,1], name='x-input') #[M, 1, D, 1]
