@@ -42,16 +42,18 @@ arg.data_dirpath = './data/'
 #arg.data_file_name = 'f_4D_simple_ReLu_BT_2_units_1st'
 #arg.data_file_name = 'f_8D_conv_cos_poly1_poly1'
 #arg.data_file_name = 'f_8D_single_relu'
-arg.data_file_name = 'f_8D_conv_quad_cubic_sqrt_shuffled'
+arg.data_file_name = 'f_8D_conv_quad_cubic_sqrt'
+#arg.data_file_name = 'f_8D_conv_quad_cubic_sqrt_shuffled'
 #arg.data_file_name = 'f_4D_simple_ReLu_BT'
 #arg.data_file_name = 'MNIST_flat'
 #arg.data_file_name = 'MNIST_flat_auto_encoder'
 arg.task_folder_name = mtf.get_experiment_folder(arg.data_file_name) #om_f_4d_conv
 #
-arg.N_frac = 60000
+arg.N_frac = 1000
 print('arg.N_frac: ', arg.N_frac)
 #
-#arg.type_job = 'serial' #careful when this is on and GPU is NOT on
+arg.nb_array_jobs = 2
+arg.type_job = 'serial' #careful when this is on and GPU is NOT on
 #arg.type_job = 'slurm_array_parallel'
 
 arg.experiment_name = 'tmp_task_Nov_19_BT4D_Adam_xavier_relu_N60000' # task_Oct_10_BT4D_MGD_xavier_relu_N2000 e.g. task_August_10_BT
@@ -163,13 +165,17 @@ elif arg.mdl == 'bt_subgraph':
     #
     a = 1
     # set nb filters
-    F1, F2, F3 = 4*a, 7*a, 28*a
+    #F1, F2, F3 = 4*a, 7*a, 28*a
+    F1, F2, F3 = a, 2*a, 6*a
     arg.nb_filters=[None,F1,F2,F3]
     # set filter widths
     u1, u2 = F1, F2
-    arg.list_filter_widths=[None,2,4*u1,4*u2]
+    #w1, w2, w3 = 2,4*u1,4*u2
+    w1, w2, w3 = 3,2*u1,3*u2
+    arg.list_filter_widths=[None,w1,w2,w3]
     # set strides
-    s1, s2, s3 = 1, 1*F1, 1
+    #s1, s2, s3 = 1, 1*F1, 1
+    s1, s2, s3 = 1, 2*F1, 1
     arg.list_strides=[None,s1,s2,s3]
     #
     arg.normalizer_fn = None
@@ -183,12 +189,13 @@ else:
     raise ValueError('Need to use a valid model, incorrect or unknown model %s give.'%arg.mdl)
 
 #steps
-arg.steps_low = int(1.33334*60000)
+#arg.steps_low = int(1.33334*60000)
+arg.steps_low = int(1*100)
 arg.steps_high = arg.steps_low+1
 arg.get_steps = lambda arg: int( np.random.randint(low=arg.steps_low ,high=arg.steps_high) )
 
-arg.M_low = 50
-arg.M_high = 1000
+arg.M_low = 2
+arg.M_high = 50
 arg.get_batch_size = lambda arg: int(np.random.randint(low=arg.M_low , high=arg.M_high))
 arg.report_error_freq = 50
 
@@ -289,7 +296,10 @@ cmd_args.type_job = cmd_args.type_job if cmd_args.type_job else arg.type_job
 print('--> arg.type_job ', cmd_args.type_job)
 # if the flag is initialized (not None) then use it, otherwise use the flag from environment veriable
 arg.slurm_jobid = cmd_args.SLURM_JOBID if cmd_args.SLURM_JOBID else os.environ['SLURM_JOBID']
-arg.slurm_array_task_id = cmd_args.SLURM_ARRAY_TASK_ID if cmd_args.SLURM_ARRAY_TASK_ID else os.environ['SLURM_ARRAY_TASK_ID']
+if arg.type_job == 'slurm_array_parallel':
+    arg.slurm_array_task_id = cmd_args.SLURM_ARRAY_TASK_ID if cmd_args.SLURM_ARRAY_TASK_ID else os.environ['SLURM_ARRAY_TASK_ID']
+else:
+    arg.slurm_array_task_id = arg.type_job
 print('--> arg ', arg.slurm_jobid, arg.slurm_array_task_id)
 if cmd_args.save_config_args:
     # flag to save current config files to pickle file
