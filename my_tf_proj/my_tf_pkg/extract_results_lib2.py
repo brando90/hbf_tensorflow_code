@@ -44,7 +44,29 @@ def get_most_recent_error(train_errors, cv_errors, test_errors):
 
 #
 
-def get_best_results_for_experiments(path_to_all_experiments_for_task,decider,verbose=True):
+def get_key_for_mdl_complexity(key,best_data):
+    '''
+    Return single key to be used as complexity measure of model.
+    Motivation: When plotting errors vs model complexity (to see how train/test errors change as model complexity changes) its useful to have different
+    model complexity measures. For example, we can have use the nb_units/dims,nb_params,vc_dim, etc.
+
+    key = type of key to be used as mdl_complexity_key. e.g. 'nb_units'/'dims','nb_params'.
+    best_data = the data structure that holds the actual data and key to be used as mdl_complexity_key.
+    e.g. best_data.results_best['arg_dict'][key][1] = 31 if the network has 31 units in the first layer
+    '''
+    if key == 'nb_units' or key == 'dims':
+        key = 'dims'
+        #nb_units = best_data.results_best['arg_dict']['dims'][1] if not 'dims' in best_data.results_best else best_data.results_best['dims'][1]
+        nb_units = best_data.results_best['arg_dict'][key][1] if not key in best_data.results_best else best_data.results_best[key][1]
+        mdl_complexity_key = nb_units
+    elif key == 'nb_params':
+        nb_params = best_data.results_best['nb_params']
+        mdl_complexity_key = nb_params
+    else:
+        raise ValueError('key %s not handled yet.',key)
+    return mdl_complexity_key
+
+def get_best_results_for_experiments(path_to_all_experiments_for_task,decider,verbose=True,mdl_complexity_criteria='nb_units'):
     '''
     Given a path to all the experiments for a specific task, goes through each individual folder for each experiment for each different
     model tested and extracts the lowest error according to the decider. For example, the if the decider is set to choose based on train
@@ -53,6 +75,9 @@ def get_best_results_for_experiments(path_to_all_experiments_for_task,decider,ve
     path_to_all_experiments_for_task = path to ../../TASK/EXPT_NAME
     decider = namespace holding the appropriate function handler/pointer named get_errors_from (e.g. get_errors_based_on_train_error).
     So decider must be able to call decider.get_errors_from(run)
+    mdl_complexity_criteria = the key or criteria to choose the mdl complexity.
+    Goal is to map {mdl_complexity_key:error}.
+    Example of mdl_complexity_criteria='nb_units' or 'nb_params'
 
     example:
     path_to_all_experiments_for_task = ../../om_mnist/task_August_7_NN1_xavier_momentum
@@ -61,7 +86,7 @@ def get_best_results_for_experiments(path_to_all_experiments_for_task,decider,ve
                                           expt_NN2_xavier/run_json_*
                                           expt_NN3_xavier/run_json_*
 
-    for each model/expt NNi select best hyper params based on decider.
+    for each model/expt NN select best hyper params based on decider.
     '''
     expts_best_results = {} #maps units -> to corresponding best data (note: keys are numbers so it can't be a namespace)
     for (dirpath, dirnames, filenames) in os.walk(top=path_to_all_experiments_for_task,topdown=True):
@@ -71,21 +96,24 @@ def get_best_results_for_experiments(path_to_all_experiments_for_task,decider,ve
         if (dirpath != path_to_all_experiments_for_task) and (not 'mdls' in dirpath): # if current dirpath is a valid experiment and not . (itself)
             #print('=> potential_runs_filenames: ', potential_runs_filenames)
             print('dirpath ' , dirpath)
+            # best_data contains all the data from experiments
             best_data = _get_best_results_obj_from_current_experiment(experiment_dirpath=dirpath,list_runs_filenames=filenames,decider=decider)
+
             #
-            #nb_units = best_data.results_best['dims'][1]
-            #pdb.set_trace()
-            #print(best_data)
-            nb_units = best_data.results_best['arg_dict']['dims'][1] if not 'dims' in best_data.results_best else best_data.results_best['dims'][1]
-            del best_data['results_best']
+            #nb_units = best_data.results_best['arg_dict']['dims'][1] if not 'dims' in best_data.results_best else best_data.results_best['dims'][1]
+            mdl_complexity_key = get_key_for_mdl_complexity(mdl_complexity_criteria,best_data)
+            del best_data['results_best'] # this line deletes the extra data not neccessary to be remembered.
+
             # check if there are repeated runs/simulations results for this dirpath, choose the better of the two
-            print( nb_units )
-            if nb_units in expts_best_results:
-                prev_data = expts_best_results[nb_units]
+            print('%s: '%(mdl_complexity_criteria), mdl_complexity_key )
+            if mdl_complexity_key in expts_best_results:
+                prev_data = expts_best_results[mdl_complexity_key]
                 if best_data.best_decider_error < prev_data.best_decider_error:
-                    expts_best_results[nb_units] = best_data
+                    expts_best_results[mdl_complexity_key] = best_data
+                    #expts_best_results[nb_params] = best_data
             else:
-                expts_best_results[nb_units] = best_data
+                expts_best_results[mdl_complexity_key] = best_data
+                #expts_best_results[nb_params] = best_data
     #print(expts_best_results)
     return expts_best_results
 
