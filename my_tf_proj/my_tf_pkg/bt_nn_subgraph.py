@@ -169,12 +169,17 @@ class TestNN_BT(unittest.TestCase):
         F = list of nb of filters [F^(1),F^(2),...]
         '''
         arg = ns.Namespace(L=L,trainable=True,padding='VALID',scope_name=scope_name)
+
+        ##
         #weights_initializer = tf.contrib.layers.xavier_initializer(dtype=tf.float32)
         arg.weights_initializer = tf.constant_initializer(value=1.0, dtype=tf.float32)
+
         #biases_initializer = tf.constant_initializer(value=0.0, dtype=tf.float32)
         arg.biases_initializer = tf.constant_initializer(value=0.1, dtype=tf.float32)
+
         arg.normalizer_fn = None
         #arg.normalizer_fn = tf.contrib.layers.batch_norm
+
         arg.F = F
         arg.act = tf.nn.relu
         arg.verbose = verbose
@@ -191,12 +196,14 @@ class TestNN_BT(unittest.TestCase):
         arg.nb_filters = nb_filters
         arg.list_filter_widths = list_filter_widths
         arg.list_strides = list_strides
+
+        ##
         #weights_initializer = tf.contrib.layers.xavier_initializer(dtype=tf.float32)
-
         arg.weights_initializer = tf.constant_initializer(value=1.0, dtype=tf.float32)
-        #biases_initializer = tf.constant_initializer(value=0.0, dtype=tf.float32)
 
+        #biases_initializer = tf.constant_initializer(value=0.0, dtype=tf.float32)
         arg.biases_initializer = tf.constant_initializer(value=0.1, dtype=tf.float32)
+
         arg.normalizer_fn = None
         #arg.normalizer_fn = tf.contrib.layers.batch_norm
 
@@ -205,7 +212,7 @@ class TestNN_BT(unittest.TestCase):
 
     def test_NN_BT8D(self,M=3,D=8,L=3):
         print('\n-------test'+str(D))
-        a = 17
+        a = 1
         # nb of filters per unit
         #F1 = 4*a
         # F1 = 4*a
@@ -294,6 +301,18 @@ class TestNN_BT(unittest.TestCase):
             sess.run( tf.initialize_all_variables() )
             bt_output = sess.run(fetches=bt_mdl, feed_dict={x:X_data})
         #
+        # should have same number of params
+        nb_params_bt = count_number_trainable_params(bt_mdl)
+        print('count_number_trainable_params ', count_number_trainable_params(bt_mdl))
+        nb_params_sg_bt = count_number_trainable_params(sg_bt_mdl)
+        print('count_number_trainable_params ', count_number_trainable_params(sg_bt_mdl))
+        correct = (nb_params_bt == nb_params_sg_bt)
+        self.assertTrue(correct)
+        # should output the same on the smae data set and same params
+        print('sg_bt_output')
+        print(sg_bt_output)
+        print('bt_output')
+        print(bt_output)
         correct = np.array_equal(bt_output, sg_bt_output)
         self.assertTrue(correct)
 
