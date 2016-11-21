@@ -163,6 +163,23 @@ class TestNN_BT(unittest.TestCase):
         X_data = X_data.reshape(M,1,D,1)
         return X_data
 
+    def get_args_standard_bt(self,L,F,verbose=False,scope_name='BT'):
+        '''
+        L = layers
+        F = list of nb of filters [F^(1),F^(2),...]
+        '''
+        arg = ns.Namespace(L=L,trainable=True,padding='VALID',scope_name=scope_name)
+        #weights_initializer = tf.contrib.layers.xavier_initializer(dtype=tf.float32)
+        arg.weights_initializer = tf.constant_initializer(value=1.0, dtype=tf.float32)
+        #biases_initializer = tf.constant_initializer(value=0.0, dtype=tf.float32)
+        arg.biases_initializer = tf.constant_initializer(value=0.1, dtype=tf.float32)
+        arg.normalizer_fn = None
+        #arg.normalizer_fn = tf.contrib.layers.batch_norm
+        arg.F = F
+        arg.act = tf.nn.relu
+        arg.verbose = verbose
+        return arg
+
     def get_args(self,L,nb_filters,list_filter_widths,list_strides,verbose=False,scope_name='BT'):
         '''
         L = layers
@@ -188,7 +205,7 @@ class TestNN_BT(unittest.TestCase):
 
     def test_NN_BT8D(self,M=3,D=8,L=3):
         print('\n-------test'+str(D))
-        a = 35
+        a = 17
         # nb of filters per unit
         #F1 = 4*a
         # F1 = 4*a
@@ -196,7 +213,8 @@ class TestNN_BT(unittest.TestCase):
         # F3 = 28*a
         #F1, F2, F3 = 4*a, 7*a, 28*a
         #F1, F2, F3 = a, 2*a, 6*a
-        F1, F2, F3 = 2*a, 3*a, 12*a
+        #F1, F2, F3 = 2*a, 3*a, 12*a
+        F1, F2, F3 = a, 2*a, 4*a
         nb_filters=[None,F1,F2,F3]
         # width of filters
         # u1 = F1
@@ -205,7 +223,8 @@ class TestNN_BT(unittest.TestCase):
         u1, u2, u3 = F1, F2, F3
         #w1, w2, w3 = 2,4*u1,4*u2
         #w1, w2, w3 = 3,2*u1,3*u2
-        w1, w2, w3 = 3,3*u1,4*u2
+        #w1, w2, w3 = 3,3*u1,4*u2
+        w1, w2, w3 = 2,2*u1,2*u2
         list_filter_widths=[None,w1,w2,w3]
         # stride
         # s1 = 1
@@ -213,7 +232,8 @@ class TestNN_BT(unittest.TestCase):
         # s3 = 1
         #s1, s2, s3 = 1, 1*F1, 1
         #s1, s2, s3 = 1, 2*F1, 1
-        s1, s2, s3 = 1, 1*F1, 1
+        #s1, s2, s3 = 1, 1*F1, 1
+        s1, s2, s3 = 2, 2*F1, 1
         list_strides=[None,s1,s2,s3]
         #
         x = tf.placeholder(tf.float32, shape=[None,1,D,1], name='x-input') #[M, 1, D, 1]
@@ -235,6 +255,47 @@ class TestNN_BT(unittest.TestCase):
         #self.assertTrue(correct)
         print('count_number_trainable_params ', count_number_trainable_params(bt_mdl))
         self.assertTrue(True)
+
+    def test_NN_BT8D_vs_BT8D_other_lib(self,M=3,D=8,L=3):
+        '''
+        Test aims to compare the old hard coded BT library with the subgraph one when
+        both are suppose to output the exact same model architecture. In this sense
+        to check if the code is correct the BT formed from the subgraph function
+        should match
+        '''
+        print('\n-------test'+str(D))
+        a = 3
+        # nb of filters per unit
+        F1, F2, F3 = a, 2*a, 4*a
+        nb_filters=[None,F1,F2,F3]
+        # width of filters
+        u1, u2, u3 = F1, F2, F3
+        w1, w2, w3 = 2,2*u1,2*u2
+        list_filter_widths=[None,w1,w2,w3]
+        # stride
+        s1, s2, s3 = 2, 2*F1, 1
+        list_strides=[None,s1,s2,s3]
+        #
+        x = tf.placeholder(tf.float32, shape=[None,1,D,1], name='x-input') #[M, 1, D, 1]
+        # prepare args
+        arg_sg = self.get_args(L=L,nb_filters=nb_filters,list_filter_widths=list_filter_widths,list_strides=list_strides, verbose=True,scope_name='SG_BT_'+str(D)+'D')
+        arg_bt = self.get_args_standard_bt(L=L,F=nb_filters,verbose=False,scope_name='Standard_BT_'+str(D)+'D')
+        # get NN BT
+        with tf.variable_scope('SG'):
+            sg_bt_mdl = bt_mdl_conv_subgraph(arg_sg,x)
+        with tf.variable_scope('BT'):
+            bt_mdl = mtf.bt_mdl_conv(arg_bt,x)
+        X_data = self.get_test_data(M,D)
+        with tf.Session() as sess:
+            sess.run( tf.initialize_all_variables() )
+            sg_bt_output = sess.run(fetches=sg_bt_mdl, feed_dict={x:X_data})
+
+        with tf.Session() as sess:
+            sess.run( tf.initialize_all_variables() )
+            bt_output = sess.run(fetches=bt_mdl, feed_dict={x:X_data})
+        #
+        correct = np.array_equal(bt_output, sg_bt_output)
+        self.assertTrue(correct)
 
 if __name__ == '__main__':
     unittest.main()
