@@ -12,16 +12,19 @@ from tensorflow.contrib.layers.python.layers import batch_norm as batch_norm
 
 import my_tf_pkg as mtf
 
-def count_number_trainable_params(y):
+def count_number_trainable_params(graph):
     '''
-    Receives model y=mdl tf graph/thing/object and counts the number of trainable variables.
+    Counts the number of trainable variables in the given graph.
+
+    graph = tensorflow graph with the parameters to count.
     '''
     tot_nb_params = 0
-    for trainable_variable in tf.trainable_variables():
-        #print('trainable_variable ', trainable_variable.__dict__)
-        shape = trainable_variable.get_shape() # e.g [D,F] or [W,H,C]
-        current_nb_params = get_nb_params_shape(shape)
-        tot_nb_params = tot_nb_params + current_nb_params
+    with graph.as_default():
+        for trainable_variable in tf.trainable_variables():
+            #print('trainable_variable ', trainable_variable.__dict__)
+            shape = trainable_variable.get_shape() # e.g [D,F] or [W,H,C]
+            current_nb_params = get_nb_params_shape(shape)
+            tot_nb_params = tot_nb_params + current_nb_params
     return tot_nb_params
 
 def get_nb_params_shape(shape):
@@ -163,13 +166,33 @@ class TestNN_BT(unittest.TestCase):
         X_data = X_data.reshape(M,1,D,1)
         return X_data
 
+    def check_variables(self,sg_bt_mdl, bt_mdl):
+        with tf.variable_scope('SG', reuse=True):
+            print(sg_bt_mdl)
+            pdb.set_trace()
+            xx = tf.get_variable('MatMul:0')
+        #
+        pdb.set_trace()
+        correct =False
+        return correct
+
+    def check_count_number_trainable_params(self,graph_sg_bt,graph_bt):
+        nb_params_sg_bt = count_number_trainable_params(graph_sg_bt)
+        print('count_number_trainable_params ', count_number_trainable_params(graph_sg_bt))
+        nb_params_bt = count_number_trainable_params(graph_bt)
+        print('count_number_trainable_params ', count_number_trainable_params(graph_bt))
+        correct = (nb_params_bt == nb_params_sg_bt)
+        return correct
+
     def get_args_standard_bt(self,L,F,verbose=False,scope_name='BT'):
         '''
         L = layers
         F = list of nb of filters [F^(1),F^(2),...]
         '''
-        arg = ns.Namespace(L=L,trainable=True,padding='VALID',scope_name=scope_name)
-
+        padding = 'VALID'
+        #padding = 'SAME'
+        arg = ns.Namespace(L=L,verbose=verbose,trainable=True,padding=padding,scope_name=scope_name)
+        arg.F = F
         ##
         #weights_initializer = tf.contrib.layers.xavier_initializer(dtype=tf.float32)
         arg.weights_initializer = tf.constant_initializer(value=1.0, dtype=tf.float32)
@@ -180,9 +203,7 @@ class TestNN_BT(unittest.TestCase):
         arg.normalizer_fn = None
         #arg.normalizer_fn = tf.contrib.layers.batch_norm
 
-        arg.F = F
         arg.act = tf.nn.relu
-        arg.verbose = verbose
         return arg
 
     def get_args(self,L,nb_filters,list_filter_widths,list_strides,verbose=False,scope_name='BT'):
@@ -260,7 +281,7 @@ class TestNN_BT(unittest.TestCase):
         print('bt_output.shape ', bt_output.shape)
         #correct = np.array_equal(bt_output, bt_hardcoded_output)
         #self.assertTrue(correct)
-        print('count_number_trainable_params ', count_number_trainable_params(bt_mdl))
+        print('count_number_trainable_params ', count_number_trainable_params(tf.get_default_graph()))
         self.assertTrue(True)
 
     def test_NN_BT8D_vs_BT8D_other_lib(self,M=3,D=8,L=3):
@@ -283,30 +304,33 @@ class TestNN_BT(unittest.TestCase):
         s1, s2, s3 = 2, 2*F1, 1
         list_strides=[None,s1,s2,s3]
         #
-        x = tf.placeholder(tf.float32, shape=[None,1,D,1], name='x-input') #[M, 1, D, 1]
         # prepare args
-        arg_sg = self.get_args(L=L,nb_filters=nb_filters,list_filter_widths=list_filter_widths,list_strides=list_strides, verbose=True,scope_name='SG_BT_'+str(D)+'D')
+        arg_sg_bt = self.get_args(L=L,nb_filters=nb_filters,list_filter_widths=list_filter_widths,list_strides=list_strides, verbose=True,scope_name='SG_BT_'+str(D)+'D')
         arg_bt = self.get_args_standard_bt(L=L,F=nb_filters,verbose=False,scope_name='Standard_BT_'+str(D)+'D')
         # get NN BT
-        with tf.variable_scope('SG'):
-            sg_bt_mdl = bt_mdl_conv_subgraph(arg_sg,x)
-        with tf.variable_scope('BT'):
-            bt_mdl = mtf.bt_mdl_conv(arg_bt,x)
+        graph_sg_bt = tf.Graph()
+        with graph_sg_bt.as_default():
+            x_sg_bt = tf.placeholder(tf.float32, shape=[None,1,D,1], name='x-input') #[M, 1, D, 1]
+            with tf.variable_scope('SG_BT'):
+                sg_bt_mdl = bt_mdl_conv_subgraph(arg_sg_bt,x_sg_bt)
+        graph_bt = tf.Graph()
+        with graph_bt.as_default():
+            x_bt = tf.placeholder(tf.float32, shape=[None,1,D,1], name='x-input') #[M, 1, D, 1]
+            with tf.variable_scope('BT'):
+                bt_mdl = mtf.bt_mdl_conv(arg_bt,x_bt)
         X_data = self.get_test_data(M,D)
-        with tf.Session() as sess:
-            sess.run( tf.initialize_all_variables() )
-            sg_bt_output = sess.run(fetches=sg_bt_mdl, feed_dict={x:X_data})
-
-        with tf.Session() as sess:
-            sess.run( tf.initialize_all_variables() )
-            bt_output = sess.run(fetches=bt_mdl, feed_dict={x:X_data})
         #
-        # should have same number of params
-        nb_params_bt = count_number_trainable_params(bt_mdl)
-        print('count_number_trainable_params ', count_number_trainable_params(bt_mdl))
-        nb_params_sg_bt = count_number_trainable_params(sg_bt_mdl)
-        print('count_number_trainable_params ', count_number_trainable_params(sg_bt_mdl))
-        correct = (nb_params_bt == nb_params_sg_bt)
+        with tf.Session(graph=graph_sg_bt) as sess:
+            sess.run( tf.initialize_all_variables() )
+            sg_bt_output = sess.run(fetches=sg_bt_mdl, feed_dict={x_sg_bt:X_data})
+        with tf.Session(graph=graph_bt) as sess:
+            sess.run( tf.initialize_all_variables() )
+            bt_output = sess.run(fetches=bt_mdl, feed_dict={x_bt:X_data})
+        #
+        #correct = self.check_variables(sg_bt_mdl, bt_mdl)
+        #self.assertTrue(correct)
+        #should have same number of params
+        correct = self.check_count_number_trainable_params(graph_sg_bt,graph_bt)
         self.assertTrue(correct)
         # should output the same on the smae data set and same params
         print('sg_bt_output')
