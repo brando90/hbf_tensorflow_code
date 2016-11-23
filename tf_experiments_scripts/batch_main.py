@@ -49,16 +49,16 @@ arg.data_file_name = 'f_8D_conv_quad_cubic_sqrt'
 #arg.data_file_name = 'MNIST_flat_auto_encoder'
 arg.task_folder_name = mtf.get_experiment_folder(arg.data_file_name) #om_f_4d_conv
 #
-arg.N_frac = 1000
+arg.N_frac = 60000
 print('arg.N_frac: ', arg.N_frac)
 #
-arg.nb_array_jobs = 2
-arg.type_job = 'serial' #careful when this is on and GPU is NOT on
-#arg.type_job = 'slurm_array_parallel'
+#arg.nb_array_jobs = 2
+#arg.type_job = 'serial' #careful when this is on and GPU is NOT on
+arg.type_job = 'slurm_array_parallel'
 
-arg.experiment_name = 'tmp_task_Nov_19_BT4D_Adam_xavier_relu_N60000' # task_Oct_10_BT4D_MGD_xavier_relu_N2000 e.g. task_August_10_BT
+arg.experiment_name = 'task_Nov_22_BTSG1_2_3_8D_Adam_xavier_relu_N60000' # task_Oct_10_BT4D_MGD_xavier_relu_N2000 e.g. task_August_10_BT
 arg.experiment_root_dir = mtf.get_experiment_folder(arg.data_file_name)
-arg.job_name = 'BTsubgraph_8D_a1_Adam_200' # job name e.g BTHL_4D_6_12_MGD_200
+arg.job_name = 'BTSG1_8D_a4_Adam_200' # job name e.g BTHL_4D_6_12_MGD_200
 
 #arg.experiment_name = 'task_Nov_19_NN_Adam_xavier_relu_N60000' # experiment_name e.g. task_Oct_10_NN_MGD_xavier_relu_N2000
 #arg.experiment_root_dir = mtf.get_experiment_folder(arg.data_file_name)
@@ -163,20 +163,30 @@ elif arg.mdl == 'bt_subgraph':
     arg.weights_initializer = tf.contrib.layers.xavier_initializer(dtype=tf.float32)
     arg.biases_initializer = tf.constant_initializer(value=0.1, dtype=tf.float32)
     #
-    a = 1
-    # set nb filters
-    #F1, F2, F3 = 4*a, 7*a, 28*a
-    F1, F2, F3 = a, 2*a, 6*a
-    arg.nb_filters=[None,F1,F2,F3]
-    # set filter widths
-    u1, u2 = F1, F2
-    #w1, w2, w3 = 2,4*u1,4*u2
-    w1, w2, w3 = 3,2*u1,3*u2
-    arg.list_filter_widths=[None,w1,w2,w3]
-    # set strides
+    a = 4
+    # nb of filters per unit
+    #F1, F2, F3 = a, 2*a, 4*a #BT
+    F1, F2, F3 = a, 2*a, 4*a
+    #F1, F2, F3 = a, 2*a, 6*a
+    #F1, F2, F3 = 2*a, 3*a, 12*a
+    nb_filters=[None,F1,F2,F3]
+    u1, u2, u3 = F1, F2, F3
+    # width of filters
+    #w1, w2, w3 = 2,2*u1,2*u2 #BT
+    w1, w2, w3 = 2,3*u1,2*u2
+    #w1, w2, w3 = 3,2*u1,3*u2
+    #w1, w2, w3 = 3,3*u1,4*u2
+    list_filter_widths=[None,w1,w2,w3]
+    # stride
+    #s1, s2, s3 = 2, 2*F1, 1 #BT
+    s1, s2, s3 = 2, 1*F1, 1
+    #s1, s2, s3 = 1, 2*F1, 1
     #s1, s2, s3 = 1, 1*F1, 1
-    s1, s2, s3 = 1, 2*F1, 1
-    arg.list_strides=[None,s1,s2,s3]
+    list_strides=[None,s1,s2,s3]
+    #
+    arg.nb_filters = nb_filters
+    arg.list_filter_widths = list_filter_widths
+    arg.list_strides = list_strides
     #
     arg.normalizer_fn = None
     arg.trainable = True
@@ -189,13 +199,13 @@ else:
     raise ValueError('Need to use a valid model, incorrect or unknown model %s give.'%arg.mdl)
 
 #steps
-#arg.steps_low = int(1.33334*60000)
-arg.steps_low = int(1*100)
+arg.steps_low = int(1.33334*60000)
+#arg.steps_low = int(1*100)
 arg.steps_high = arg.steps_low+1
 arg.get_steps = lambda arg: int( np.random.randint(low=arg.steps_low ,high=arg.steps_high) )
 
-arg.M_low = 2
-arg.M_high = 50
+arg.M_low = 100
+arg.M_high = 15000
 arg.get_batch_size = lambda arg: int(np.random.randint(low=arg.M_low , high=arg.M_high))
 arg.report_error_freq = 50
 
@@ -219,7 +229,7 @@ arg.get_decay_steps = get_decay_steps # when stair case, how often to shrink
 #arg.staircase = False
 arg.staircase = True
 
-optimization_alg = 'GD'
+#optimization_alg = 'GD'
 #optimization_alg = 'Momentum'
 # optimization_alg = 'Adadelta'
 # optimization_alg = 'Adagrad'
