@@ -46,17 +46,17 @@ def debug_print(l, conv, conv_new, arg):
     stride_width = arg.list_strides[l] # stride_width for current layer
     print('----')
     print('-> l ', l)
-    print('conv_old', conv_old)
-    print('conv_new', conv_new)
-    print('-')
-    print('arg.list_filter_widths', arg.list_filter_widths)
-    print('arg.nb_filters', arg.nb_filters)
-    print('arg.list_strides', arg.list_strides)
-    print('-')
-    print('filter_width',filter_width)
-    print('nb_filters',nb_filters)
-    print('stride_width',stride_width)
-    print('paddibg', arg.padding)
+    print('conv_old l = %d: '%(l-1), conv_old)
+    print('conv_new l = %d: '%(l), conv_new)
+    # print('-')
+    # print('arg.list_filter_widths', arg.list_filter_widths)
+    # print('arg.nb_filters', arg.nb_filters)
+    # print('arg.list_strides', arg.list_strides)
+    # print('-')
+    # print('filter_width',filter_width)
+    # print('nb_filters',nb_filters)
+    # print('stride_width',stride_width)
+    # print('paddibg', arg.padding)
     print('\n')
     #print('number of channels it should have',)
 
@@ -71,9 +71,11 @@ def bt_mdl_conv_subgraph(arg,x):
     conv = x
     l=0
     if arg.verbose:
+        print(arg)
         debug_print(l,None,conv,arg)
     # make each layer
-    for l in range(1,len(arg.nb_filters)-1):
+    for l in range(1,len(arg.nb_filters)):
+        print('>>loop index ', l)
         filter_width = arg.list_filter_widths[l] # filter width for current layer
         nb_filters = arg.nb_filters[l] # nb of filters for current layer
         stride_width = arg.list_strides[l] # stride_width for current layer
@@ -84,8 +86,6 @@ def bt_mdl_conv_subgraph(arg,x):
         conv = conv_new
     #pdb.set_trace()
     l=len(arg.nb_filters)-1
-    if arg.verbose:
-        debug_print(l,conv,None,arg)
     conv = tf.squeeze(conv)
     fully_connected_filter_width = arg.list_filter_widths[l]
     C = get_final_weight(arg=arg,shape=[fully_connected_filter_width,1],name='C_'+str(len(arg.nb_filters)))
@@ -122,8 +122,8 @@ def get_activated_conv_layer_subgraph(arg,x,l,filter_width,nb_filters,stride_wid
         trainable=arg.trainable,
         reuse=False
     )
-    if arg.verbose:
-        print('==> conv_raw', conv)
+    # if arg.verbose:
+    #     print('==> conv_raw', conv)
     #flatten layer
     conv = flatten_conv_layer(x=conv)
     #pdb.set_trace()
@@ -178,9 +178,9 @@ class TestNN_BT(unittest.TestCase):
 
     def check_count_number_trainable_params(self,graph_sg_bt,graph_bt):
         nb_params_sg_bt = count_number_trainable_params(graph_sg_bt)
-        print('count_number_trainable_params ', count_number_trainable_params(graph_sg_bt))
+        print('count_number_trainable_params (SG_BT) ', count_number_trainable_params(graph_sg_bt))
         nb_params_bt = count_number_trainable_params(graph_bt)
-        print('count_number_trainable_params ', count_number_trainable_params(graph_bt))
+        print('count_number_trainable_params (BT) ', count_number_trainable_params(graph_bt))
         correct = (nb_params_bt == nb_params_sg_bt)
         return correct
 
@@ -231,58 +231,58 @@ class TestNN_BT(unittest.TestCase):
         arg.act = tf.nn.relu
         return arg
 
-    def test_NN_BT8D(self,M=3,D=8,L=3):
-        print('\n-------test'+str(D))
-        a = 1
-        # nb of filters per unit
-        #F1 = 4*a
-        # F1 = 4*a
-        # F2 = 7*a
-        # F3 = 28*a
-        #F1, F2, F3 = 4*a, 7*a, 28*a
-        #F1, F2, F3 = a, 2*a, 6*a
-        #F1, F2, F3 = 2*a, 3*a, 12*a
-        F1, F2, F3 = a, 2*a, 4*a
-        nb_filters=[None,F1,F2,F3]
-        # width of filters
-        # u1 = F1
-        # u2 = F2
-        # u3 = F3
-        u1, u2, u3 = F1, F2, F3
-        #w1, w2, w3 = 2,4*u1,4*u2
-        #w1, w2, w3 = 3,2*u1,3*u2
-        #w1, w2, w3 = 3,3*u1,4*u2
-        w1, w2, w3 = 2,2*u1,2*u2
-        list_filter_widths=[None,w1,w2,w3]
-        # stride
-        # s1 = 1
-        # s2 = 1*F1
-        # s3 = 1
-        #s1, s2, s3 = 1, 1*F1, 1
-        #s1, s2, s3 = 1, 2*F1, 1
-        #s1, s2, s3 = 1, 1*F1, 1
-        s1, s2, s3 = 2, 2*F1, 1
-        list_strides=[None,s1,s2,s3]
-        #
-        x = tf.placeholder(tf.float32, shape=[None,1,D,1], name='x-input') #[M, 1, D, 1]
-        # prepare args
-        arg = self.get_args(L=L,nb_filters=nb_filters,list_filter_widths=list_filter_widths,list_strides=list_strides, verbose=True,scope_name='BT_'+str(D)+'D')
-        # get NN BT
-        bt_mdl = bt_mdl_conv_subgraph(arg,x)
-        X_data = self.get_test_data(M,D)
-        with tf.Session() as sess:
-            sess.run( tf.initialize_all_variables() )
-            bt_output = sess.run(fetches=bt_mdl, feed_dict={x:X_data})
-        #
-        print('Output of mdl on a data set that is M,D = %d, %d'%(M,D))
-        print('note the output should b M,1 = %d, %d'%(M,1))
-        print('bt_output')
-        print(bt_output)
-        print('bt_output.shape ', bt_output.shape)
-        #correct = np.array_equal(bt_output, bt_hardcoded_output)
-        #self.assertTrue(correct)
-        print('count_number_trainable_params ', count_number_trainable_params(tf.get_default_graph()))
-        self.assertTrue(True)
+    # def test_NN_BT8D(self,M=3,D=8,L=3):
+    #     print('\n-------test'+str(D))
+    #     a = 1
+    #     # nb of filters per unit
+    #     #F1 = 4*a
+    #     # F1 = 4*a
+    #     # F2 = 7*a
+    #     # F3 = 28*a
+    #     #F1, F2, F3 = 4*a, 7*a, 28*a
+    #     #F1, F2, F3 = a, 2*a, 6*a
+    #     #F1, F2, F3 = 2*a, 3*a, 12*a
+    #     F1, F2, F3 = a, 2*a, 4*a
+    #     nb_filters=[None,F1,F2,F3]
+    #     # width of filters
+    #     # u1 = F1
+    #     # u2 = F2
+    #     # u3 = F3
+    #     u1, u2, u3 = F1, F2, F3
+    #     #w1, w2, w3 = 2,4*u1,4*u2
+    #     #w1, w2, w3 = 3,2*u1,3*u2
+    #     #w1, w2, w3 = 3,3*u1,4*u2
+    #     w1, w2, w3 = 2,2*u1,2*u2
+    #     list_filter_widths=[None,w1,w2,w3]
+    #     # stride
+    #     # s1 = 1
+    #     # s2 = 1*F1
+    #     # s3 = 1
+    #     #s1, s2, s3 = 1, 1*F1, 1
+    #     #s1, s2, s3 = 1, 2*F1, 1
+    #     #s1, s2, s3 = 1, 1*F1, 1
+    #     s1, s2, s3 = 2, 2*F1, 1
+    #     list_strides=[None,s1,s2,s3]
+    #     #
+    #     x = tf.placeholder(tf.float32, shape=[None,1,D,1], name='x-input') #[M, 1, D, 1]
+    #     # prepare args
+    #     arg = self.get_args(L=L,nb_filters=nb_filters,list_filter_widths=list_filter_widths,list_strides=list_strides, verbose=True,scope_name='BT_'+str(D)+'D')
+    #     # get NN BT
+    #     bt_mdl = bt_mdl_conv_subgraph(arg,x)
+    #     X_data = self.get_test_data(M,D)
+    #     with tf.Session() as sess:
+    #         sess.run( tf.initialize_all_variables() )
+    #         bt_output = sess.run(fetches=bt_mdl, feed_dict={x:X_data})
+    #     #
+    #     print('Output of mdl on a data set that is M,D = %d, %d'%(M,D))
+    #     print('note the output should b M,1 = %d, %d'%(M,1))
+    #     print('bt_output')
+    #     print(bt_output)
+    #     print('bt_output.shape ', bt_output.shape)
+    #     #correct = np.array_equal(bt_output, bt_hardcoded_output)
+    #     #self.assertTrue(correct)
+    #     print('count_number_trainable_params ', count_number_trainable_params(tf.get_default_graph()))
+    #     self.assertTrue(True)
 
     def test_NN_BT8D_vs_BT8D_other_lib(self,M=3,D=8,L=3):
         '''
@@ -292,7 +292,7 @@ class TestNN_BT(unittest.TestCase):
         should match
         '''
         print('\n-------test'+str(D))
-        a = 3
+        a = 1
         # nb of filters per unit
         F1, F2, F3 = a, 2*a, 4*a
         nb_filters=[None,F1,F2,F3]
@@ -306,18 +306,22 @@ class TestNN_BT(unittest.TestCase):
         #
         # prepare args
         arg_sg_bt = self.get_args(L=L,nb_filters=nb_filters,list_filter_widths=list_filter_widths,list_strides=list_strides, verbose=True,scope_name='SG_BT_'+str(D)+'D')
-        arg_bt = self.get_args_standard_bt(L=L,F=nb_filters,verbose=False,scope_name='Standard_BT_'+str(D)+'D')
-        # get NN BT
-        graph_sg_bt = tf.Graph()
-        with graph_sg_bt.as_default():
-            x_sg_bt = tf.placeholder(tf.float32, shape=[None,1,D,1], name='x-input') #[M, 1, D, 1]
-            with tf.variable_scope('SG_BT'):
-                sg_bt_mdl = bt_mdl_conv_subgraph(arg_sg_bt,x_sg_bt)
+        arg_bt = self.get_args_standard_bt(L=L,F=nb_filters,verbose=True,scope_name='Standard_BT_'+str(D)+'D')
+        # get NN mdls
+        #pdb.set_trace()
+        print('------BT')
         graph_bt = tf.Graph()
         with graph_bt.as_default():
             x_bt = tf.placeholder(tf.float32, shape=[None,1,D,1], name='x-input') #[M, 1, D, 1]
             with tf.variable_scope('BT'):
                 bt_mdl = mtf.bt_mdl_conv(arg_bt,x_bt)
+        print('------SG')
+        graph_sg_bt = tf.Graph()
+        with graph_sg_bt.as_default():
+            x_sg_bt = tf.placeholder(tf.float32, shape=[None,1,D,1], name='x-input') #[M, 1, D, 1]
+            with tf.variable_scope('SG_BT'):
+                sg_bt_mdl = bt_mdl_conv_subgraph(arg_sg_bt,x_sg_bt)
+        #
         X_data = self.get_test_data(M,D)
         #
         with tf.Session(graph=graph_sg_bt) as sess:
@@ -331,7 +335,7 @@ class TestNN_BT(unittest.TestCase):
         #self.assertTrue(correct)
         #should have same number of params
         correct = self.check_count_number_trainable_params(graph_sg_bt,graph_bt)
-        self.assertTrue(correct)
+        #self.assertTrue(correct)
         # should output the same on the smae data set and same params
         print('sg_bt_output')
         print(sg_bt_output)
