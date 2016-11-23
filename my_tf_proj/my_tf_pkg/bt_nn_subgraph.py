@@ -292,7 +292,7 @@ class TestNN_BT(unittest.TestCase):
         should match
         '''
         print('\n-------test'+str(D))
-        a = 1
+        a = 3
         # nb of filters per unit
         F1, F2, F3 = a, 2*a, 4*a
         nb_filters=[None,F1,F2,F3]
@@ -309,18 +309,18 @@ class TestNN_BT(unittest.TestCase):
         arg_bt = self.get_args_standard_bt(L=L,F=nb_filters,verbose=True,scope_name='Standard_BT_'+str(D)+'D')
         # get NN mdls
         #pdb.set_trace()
-        print('------BT')
-        graph_bt = tf.Graph()
-        with graph_bt.as_default():
-            x_bt = tf.placeholder(tf.float32, shape=[None,1,D,1], name='x-input') #[M, 1, D, 1]
-            with tf.variable_scope('BT'):
-                bt_mdl = mtf.bt_mdl_conv(arg_bt,x_bt)
         print('------SG')
         graph_sg_bt = tf.Graph()
         with graph_sg_bt.as_default():
             x_sg_bt = tf.placeholder(tf.float32, shape=[None,1,D,1], name='x-input') #[M, 1, D, 1]
             with tf.variable_scope('SG_BT'):
                 sg_bt_mdl = bt_mdl_conv_subgraph(arg_sg_bt,x_sg_bt)
+                print('------BT')
+        graph_bt = tf.Graph()
+        with graph_bt.as_default():
+            x_bt = tf.placeholder(tf.float32, shape=[None,1,D,1], name='x-input') #[M, 1, D, 1]
+            with tf.variable_scope('BT'):
+                bt_mdl = mtf.bt_mdl_conv(arg_bt,x_bt)
         #
         X_data = self.get_test_data(M,D)
         #

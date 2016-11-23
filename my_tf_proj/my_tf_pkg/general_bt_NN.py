@@ -41,6 +41,26 @@ def get_recursive_bt(arg,x,D):
     bt = tf.matmul(A2,C)
     return bt
 
+def debug_print(l, conv, conv_new, arg):
+    conv_old = conv # old conv before applying conv for the next layer
+    #filter_width = arg.list_filter_widths[l] # filter width for current layer
+    #nb_filters = arg.nb_filters[l] # nb of filters for current layer
+    #stride_width = arg.list_strides[l] # stride_width for current layer
+    print('----')
+    print('-> l ', l)
+    print('conv_old l = %d: '%(l-1), conv_old)
+    print('conv_new l = %d: '%(l), conv_new)
+    # print('-')
+    # print('arg.list_filter_widths', arg.list_filter_widths)
+    # print('arg.nb_filters', arg.nb_filters)
+    # print('arg.list_strides', arg.list_strides)
+    # print('-')
+    # print('filter_width',filter_width)
+    # print('nb_filters',nb_filters)
+    # print('stride_width',stride_width)
+    # print('paddibg', arg.padding)
+    print('\n')
+
 def bt_mdl_conv(arg,x):
     '''
     Returns a BT NN.
@@ -54,34 +74,44 @@ def bt_mdl_conv(arg,x):
     stride_width = filter_width
     l=0
     if arg.verbose:
-        print('------------------------------------------------------------------')
-        print('--')
-        print('l ', l)
-        print('arg.F', arg.F)
-        print('nb_filters ', arg.F[l])
-        print('filter_width ', filter_width)
-        print('stride_width ', stride_width)
-        print(conv)
+        print(arg)
+        debug_print(l, None, conv, arg)
+        # print('------------------------------------------------------------------')
+        # print('--')
+        # print('l ', l)
+        # print('arg.F', arg.F)
+        # print('nb_filters ', arg.F[l])
+        # print('filter_width ', filter_width)
+        # print('stride_width ', stride_width)
+        # print(conv)
     # make each layer
     for l in range(1,len(arg.F)):
+        print('>>loop index ', l)
         nb_filters = arg.F[l] # nb of filters for current layer
-        if arg.verbose:
-            print('--')
-            print('l ', l)
-            print('arg.F', arg.F)
-            print('nb_filters ', arg.F[l])
-            print('filter_width ', filter_width)
-            print('stride_width ', stride_width)
+        # if arg.verbose:
+        #     debug_print(l, conv, conv_new, arg)
+            # print('--')
+            # print('l ', l)
+            # print('arg.F', arg.F)
+            # print('nb_filters ', arg.F[l])
+            # print('filter_width ', filter_width)
+            # print('stride_width ', stride_width)
         #pdb.set_trace()
-        conv = get_activated_conv_layer(arg=arg,x=conv,l=l,filter_width=filter_width,nb_filters=nb_filters,stride_width=stride_width,scope=arg.scope_name+str(l))
+        conv_new = get_activated_conv_layer(arg=arg,x=conv,l=l,filter_width=filter_width,nb_filters=nb_filters,stride_width=stride_width,scope=arg.scope_name+str(l))
         if arg.verbose:
-            print(conv)
+            debug_print(l, conv, conv_new, arg)
+        conv = conv_new
         # setup for next iteration
         filter_width = 2*nb_filters
         stride_width = filter_width
+    #pdb.set_trace()
+    l=len(arg.F)-1
     conv = tf.squeeze(conv)
-    C = get_final_weight(arg=arg,shape=[arg.F[len(arg.F)-1],1],name='C_'+str(len(arg.F)))
+    fully_connected_filter_width = arg.F[l]
+    C = get_final_weight(arg=arg,shape=[fully_connected_filter_width,1],name='C_'+str(len(arg.F)))
     mdl = tf.matmul(conv,C)
+    if arg.verbose:
+        debug_print(l,conv,mdl,arg)
     return mdl
 
 def get_activated_conv_layer(arg,x,l,filter_width,nb_filters,stride_width,scope):
@@ -157,8 +187,13 @@ class TestNN_BT(unittest.TestCase):
         return arg
 
     def get_test_data(self,M,D):
+        '''
+        gets a deterministic M x D batch of data
+
+        M = the batch size (or in this case size of data set)
+        D = the dimensionality of the data set
+        '''
         # do check
-        M = 2
         X_data = np.arange(D*M).reshape((M, D))
         #print('X_data ', X_data)
         X_data = X_data.reshape(M,1,D,1)
@@ -193,7 +228,7 @@ class TestNN_BT(unittest.TestCase):
         #
         x = tf.placeholder(tf.float32, shape=[None,1,D,1], name='x-input') #[M, 1, D, 1]
         # prepare args
-        arg = self.get_args(L=L,F=F,verbose=False,scope_name='BT_'+str(D)+'D')
+        arg = self.get_args(L=L,F=F,verbose=True,scope_name='BT_'+str(D)+'D')
         # get NN BT
         bt_mdl = bt_mdl_conv(arg,x)
         X_data = self.get_test_data(M,D)
