@@ -284,7 +284,7 @@ class TestNN_BT(unittest.TestCase):
     #     print('count_number_trainable_params ', count_number_trainable_params(tf.get_default_graph()))
     #     self.assertTrue(True)
 
-    def test_NN_BT8D_vs_BT8D_other_lib(self,M=3,D=8,L=3):
+    def test_NN_BT8D_vs_BT8D_other_lib(self,M=3,D=8,L=3,verbose=False):
         '''
         Test aims to compare the old hard coded BT library with the subgraph one when
         both are suppose to output the exact same model architecture. In this sense
@@ -292,7 +292,7 @@ class TestNN_BT(unittest.TestCase):
         should match
         '''
         print('\n-------test'+str(D))
-        a = 3
+        a = 4
         # nb of filters per unit
         F1, F2, F3 = a, 2*a, 4*a
         nb_filters=[None,F1,F2,F3]
@@ -305,8 +305,8 @@ class TestNN_BT(unittest.TestCase):
         list_strides=[None,s1,s2,s3]
         #
         # prepare args
-        arg_sg_bt = self.get_args(L=L,nb_filters=nb_filters,list_filter_widths=list_filter_widths,list_strides=list_strides, verbose=True,scope_name='SG_BT_'+str(D)+'D')
-        arg_bt = self.get_args_standard_bt(L=L,F=nb_filters,verbose=True,scope_name='Standard_BT_'+str(D)+'D')
+        arg_sg_bt = self.get_args(L=L,nb_filters=nb_filters,list_filter_widths=list_filter_widths,list_strides=list_strides, verbose=verbose,scope_name='SG_BT_'+str(D)+'D')
+        arg_bt = self.get_args_standard_bt(L=L,F=nb_filters,verbose=verbose,scope_name='Standard_BT_'+str(D)+'D')
         # get NN mdls
         #pdb.set_trace()
         print('------SG')
@@ -315,7 +315,7 @@ class TestNN_BT(unittest.TestCase):
             x_sg_bt = tf.placeholder(tf.float32, shape=[None,1,D,1], name='x-input') #[M, 1, D, 1]
             with tf.variable_scope('SG_BT'):
                 sg_bt_mdl = bt_mdl_conv_subgraph(arg_sg_bt,x_sg_bt)
-                print('------BT')
+        print('------BT')
         graph_bt = tf.Graph()
         with graph_bt.as_default():
             x_bt = tf.placeholder(tf.float32, shape=[None,1,D,1], name='x-input') #[M, 1, D, 1]
@@ -330,12 +330,9 @@ class TestNN_BT(unittest.TestCase):
         with tf.Session(graph=graph_bt) as sess:
             sess.run( tf.initialize_all_variables() )
             bt_output = sess.run(fetches=bt_mdl, feed_dict={x_bt:X_data})
-        #
-        #correct = self.check_variables(sg_bt_mdl, bt_mdl)
-        #self.assertTrue(correct)
         #should have same number of params
         correct = self.check_count_number_trainable_params(graph_sg_bt,graph_bt)
-        #self.assertTrue(correct)
+        self.assertTrue(correct)
         # should output the same on the smae data set and same params
         print('sg_bt_output')
         print(sg_bt_output)
@@ -343,6 +340,57 @@ class TestNN_BT(unittest.TestCase):
         print(bt_output)
         correct = np.array_equal(bt_output, sg_bt_output)
         self.assertTrue(correct)
+
+    def test_NN_param_counter(self,M=3,D=8,L=3):
+        '''
+        Test aims to compare the old hard coded BT library with the subgraph one when
+        both are suppose to output the exact same model architecture. In this sense
+        to check if the code is correct the BT formed from the subgraph function
+        should match
+        '''
+        print('\n-------test'+str(D))
+        a = 1
+        # nb of filters per unit
+        #F1, F2, F3 = a, 2*a, 4*a #BT
+        F1, F2, F3 = a, 2*a, 4*a
+        #F1, F2, F3 = a, 2*a, 6*a
+        #F1, F2, F3 = 2*a, 3*a, 12*a
+        nb_filters=[None,F1,F2,F3]
+        u1, u2, u3 = F1, F2, F3
+        # width of filters
+        #w1, w2, w3 = 2,2*u1,2*u2 #BT
+        w1, w2, w3 = 2,3*u1,2*u2
+        #w1, w2, w3 = 3,2*u1,3*u2
+        #w1, w2, w3 = 3,3*u1,4*u2
+        list_filter_widths=[None,w1,w2,w3]
+        # stride
+        #s1, s2, s3 = 2, 2*F1, 1 #BT
+        s1, s2, s3 = 2, 1*F1, 1
+        #s1, s2, s3 = 1, 2*F1, 1
+        #s1, s2, s3 = 1, 1*F1, 1
+        list_strides=[None,s1,s2,s3]
+        #
+        # prepare args
+        arg_sg_bt = self.get_args(L=L,nb_filters=nb_filters,list_filter_widths=list_filter_widths,list_strides=list_strides, verbose=True,scope_name='SG_BT_'+str(D)+'D')
+        arg_bt = self.get_args_standard_bt(L=L,F=nb_filters,verbose=True,scope_name='Standard_BT_'+str(D)+'D')
+        # get NN mdls
+        print('------SG')
+        graph_sg_bt = tf.Graph()
+        with graph_sg_bt.as_default():
+            x_sg_bt = tf.placeholder(tf.float32, shape=[None,1,D,1], name='x-input') #[M, 1, D, 1]
+            with tf.variable_scope('SG_BT'):
+                sg_bt_mdl = bt_mdl_conv_subgraph(arg_sg_bt,x_sg_bt)
+        #
+        X_data = self.get_test_data(M,D)
+        #
+        with tf.Session(graph=graph_sg_bt) as sess:
+            sess.run( tf.initialize_all_variables() )
+            sg_bt_output = sess.run(fetches=sg_bt_mdl, feed_dict={x_sg_bt:X_data})
+        #
+        correct = self.check_count_number_trainable_params(graph_sg_bt,graph_bt)
+        # should output the same on the same data set and same params
+        print('sg_bt_output')
+        print(sg_bt_output)
 
 if __name__ == '__main__':
     unittest.main()
