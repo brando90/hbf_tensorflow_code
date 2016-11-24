@@ -56,9 +56,13 @@ print('arg.N_frac: ', arg.N_frac)
 #arg.type_job = 'serial' #careful when this is on and GPU is NOT on
 arg.type_job = 'slurm_array_parallel'
 
-arg.experiment_name = 'task_Nov_22_BTSG1_2_3_8D_Adam_xavier_relu_N60000' # task_Oct_10_BT4D_MGD_xavier_relu_N2000 e.g. task_August_10_BT
+#arg.experiment_name = 'task_Nov_22_BTSG1_2_3_8D_Adam_xavier_relu_N60000' # task_Oct_10_BT4D_MGD_xavier_relu_N2000 e.g. task_August_10_BT
+arg.experiment_name = 'task_Nov_22_BTSG2_3_2_8D_Adam_xavier_relu_N60000'
+#arg.experiment_name = 'task_Nov_22_BTSG3_3_3_8D_Adam_xavier_relu_N60000'
 arg.experiment_root_dir = mtf.get_experiment_folder(arg.data_file_name)
-arg.job_name = 'BTSG1_8D_a4_Adam_200' # job name e.g BTHL_4D_6_12_MGD_200
+#arg.job_name = 'BTSG1_8D_a19_Adam_200' # job name e.g BTHL_4D_6_12_MGD_200
+arg.job_name = 'BTSG2_8D_a3_Adam_200'
+#arg.job_name = 'BTSG3_8D_a2_Adam_200'
 
 #arg.experiment_name = 'task_Nov_19_NN_Adam_xavier_relu_N60000' # experiment_name e.g. task_Oct_10_NN_MGD_xavier_relu_N2000
 #arg.experiment_root_dir = mtf.get_experiment_folder(arg.data_file_name)
@@ -68,7 +72,7 @@ arg.job_name = 'BTSG1_8D_a4_Adam_200' # job name e.g BTHL_4D_6_12_MGD_200
 #arg.mdl = 'hbf'
 #arg.mdl = 'binary_tree_4D_conv_hidden_layer'
 #arg.mdl = "binary_tree_4D_conv_hidden_layer_automatic"
-arg.mdl = 'binary_tree_8D_conv_hidden_layer'
+#arg.mdl = 'binary_tree_8D_conv_hidden_layer'
 arg.mdl = 'bt_subgraph'
 if arg.mdl == 'standard_nn':
     arg.init_type = 'truncated_normal'
@@ -146,7 +150,7 @@ elif arg.mdl == 'binary_tree_8D_conv_hidden_layer':
     arg.weights_initializer = tf.contrib.layers.xavier_initializer(dtype=tf.float32)
     arg.biases_initializer = tf.constant_initializer(value=0.1, dtype=tf.float32)
     #
-    F1 = 10
+    F1 = 14
     arg.F = [None, F1, 2*F1, 4*F1]
     #
     arg.normalizer_fn = None
@@ -163,24 +167,24 @@ elif arg.mdl == 'bt_subgraph':
     arg.weights_initializer = tf.contrib.layers.xavier_initializer(dtype=tf.float32)
     arg.biases_initializer = tf.constant_initializer(value=0.1, dtype=tf.float32)
     #
-    a = 4
+    a = 3
     # nb of filters per unit
     #F1, F2, F3 = a, 2*a, 4*a #BT
-    F1, F2, F3 = a, 2*a, 4*a
-    #F1, F2, F3 = a, 2*a, 6*a
+    #F1, F2, F3 = a, 2*a, 4*a
+    F1, F2, F3 = a, 2*a, 6*a
     #F1, F2, F3 = 2*a, 3*a, 12*a
     nb_filters=[None,F1,F2,F3]
     u1, u2, u3 = F1, F2, F3
     # width of filters
     #w1, w2, w3 = 2,2*u1,2*u2 #BT
-    w1, w2, w3 = 2,3*u1,2*u2
-    #w1, w2, w3 = 3,2*u1,3*u2
+    #w1, w2, w3 = 2,3*u1,2*u2
+    w1, w2, w3 = 3,2*u1,3*u2
     #w1, w2, w3 = 3,3*u1,4*u2
     list_filter_widths=[None,w1,w2,w3]
     # stride
     #s1, s2, s3 = 2, 2*F1, 1 #BT
-    s1, s2, s3 = 2, 1*F1, 1
-    #s1, s2, s3 = 1, 2*F1, 1
+    #s1, s2, s3 = 2, 1*F1, 1
+    s1, s2, s3 = 1, 2*F1, 1
     #s1, s2, s3 = 1, 1*F1, 1
     list_strides=[None,s1,s2,s3]
     #
