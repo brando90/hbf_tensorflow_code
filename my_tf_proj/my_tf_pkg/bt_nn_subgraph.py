@@ -349,13 +349,14 @@ class TestNN_BT(unittest.TestCase):
         should match
         '''
         print('\nCOUNT PARAMS')
-        a = 1
+        a = 6
         # nb of filters per unit
         #F1, F2, F3 = a, 2*a, 4*a #BT
         #F1, F2, F3 = a, 2*a, 4*a
         #F1, F2, F3 = a, 2*a, 6*a
         #F1, F2, F3 = 2*a, 3*a, 12*a
-        F1, F2, F3 = 4*a, 5*a, 20*a
+        #F1, F2, F3 = 4*a, 5*a, 20*a
+        F1, F2, F3 = 3*a, 5*a, 15*a
         nb_filters=[None,F1,F2,F3]
         u1, u2, u3 = F1, F2, F3
         # width of filters
@@ -364,11 +365,13 @@ class TestNN_BT(unittest.TestCase):
         #w1, w2, w3 = 3,2*u1,3*u2
         #w1, w2, w3 = 3,3*u1,4*u2
         w1, w2, w3 = 4,2*u1,4*u2
+        w1, w2, w3 = 4,3*u1,3*u2
         list_filter_widths=[None,w1,w2,w3]
         # stride
         #s1, s2, s3 = 2, 2*F1, 1 #BT
         #s1, s2, s3 = 2, 1*F1, 1
         #s1, s2, s3 = 1, 2*F1, 1
+        #s1, s2, s3 = 1, 1*F1, 1
         #s1, s2, s3 = 1, 1*F1, 1
         s1, s2, s3 = 1, 1*F1, 1
         list_strides=[None,s1,s2,s3]
