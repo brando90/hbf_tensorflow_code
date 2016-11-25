@@ -4,6 +4,20 @@ import numpy as np
 import matplotlib.pyplot as plt
 import pdb
 
+import namespaces as ns
+
+import unittest
+
+def shuffle_at_scales(scale,everything):
+    '''
+    shuffle images at scale
+    '''
+
+
+    return
+
+#
+
 def read_single_image(arg,image_file):
     """
     CAREFUL! - this method uses a file as input instead of the path - so the
@@ -41,17 +55,38 @@ def read_all_images(path_to_data):
         # on the input file, and this way numpy determines
         # the size on its own.
 
-        images = np.reshape(everything, (-1, 3, 96, 96)) # (N, chan, D, D)
+        images = np.reshape(everything, (-1, 3, 96, 96)) # (N, C, D, D) = (?,depth, height, width)
+        print('images.shape ', images)
 
         # Now transpose the images into a standard image format
         # readable by, for example, matplotlib.imshow
         # You might want to comment this line or reverse the shuffle
         # if you will use a learning algorithm like CNN, since they like
         # their channels separated.
-        images = np.transpose(images, (0, 3, 2, 1)) # (N, chan, D, D)
+        images = np.transpose(images, (0, 3, 2, 1)) # (N, C, w, h)
+        print('images.shape ', images)
         return images
 
 #
+
+def transpose_from_standard_to_cnn_format(images):
+    '''
+    Tranpose from [depth, height, width] to [height, width, depth].
+    [C,w,h] -> [w,h,C]
+    '''
+    # (N, C, w, h) -> (N, w, h, C)
+    images = np.transpose(images, (0, 3, 2, 1)) # (N, C, w, h)
+    return images
+
+def transpose_from_cnn_to_standard_format():
+    '''
+    Tranpose from [height, width, depth] to [depth, width, height].
+    [w,h,C] -> [C,w,h]
+    '''
+    # (N, w, h, C) -> (N, C, w, h)
+    images = np.transpose(images, (0, 3, 2, 1)) # (N, C, w, h)
+    return images
+
 
 def plot_image(image):
     """
@@ -116,3 +151,34 @@ def params_from_stl10():
     DATA_PATH = './data/stl10_binary/train_X.bin'
     # path to the binary train file with labels
     LABEL_PATH = './data/stl10_binary/train_y.bin'
+
+class TestShuffle_images(unittest.TestCase):
+    def get_arg(self):
+        '''
+        gets size of images, paths etc. in a namespace arg.
+        '''
+        # image shape
+        HEIGHT, WIDTH, DEPTH = 96, 96, 3
+        # size of a single image in bytes
+        IMG_SIZE = HEIGHT * WIDTH * DEPTH
+        # path to the directory with the data
+        path_root_dir = '../../tf_tutorials/stl10'
+        DATA_DIR = '%s/data'%path_root_dir
+        # path to the binary train file with image data
+        DATA_PATH = '%s/data/stl10_binary/train_X.bin'%path_root_dir
+        # path to the binary train file with labels
+        LABEL_PATH = '%s/data/stl10_binary/train_y.bin'%path_root_dir
+        # load to namespace
+        arg = ns.Namespace(DATA_DIR=DATA_DIR,DATA_PATH=DATA_PATH,LABEL_PATH=LABEL_PATH)
+        arg.HEIGHT, arg.WIDTH, arg.DEPTH = HEIGHT, WIDTH, DEPTH
+        arg.IMG_SIZE = IMG_SIZE
+        return arg
+
+    def test_shuffle_scale1(self,scale=1):
+        print('test shuffle')
+        arg = self.get_arg()
+        images = read_all_images(arg.DATA_PATH)
+        plot_a_single_image(100,images)
+
+if __name__ == '__main__':
+    unittest.main()
