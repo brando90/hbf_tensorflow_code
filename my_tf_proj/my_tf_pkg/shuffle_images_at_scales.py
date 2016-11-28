@@ -24,16 +24,28 @@ def shuffle_at_scales(scales,images):
 def scramble(images,recursion,scales):
     '''
     '''
-    nb_images, width, heigh, channel = images.shape
-    do_scramble = scales[recursion]
-    im1 = scramble(images[:,0:width/2,0:heigh/2,:],recursion,scales)
-    im2 = scramble(images[:,width/2:,heigh/2,:],recursion,scales)
-    im3 = scramble(images,recursion,scales)
-    im4 = scramble(images,recursion,scales)
-    image_frac = [im1,im2,im3,im4]
-    if do_scramble:
-        image = scramble(image_frac)
-    return
+    if recursion+1 > len(scales):
+        #don't recurse
+        return images
+    else:
+        nb_images, width, heigth, channel = images.shape
+        im1 = images[:,0:width/2,0:heigth/2,:]
+        im2 = images[:,width/2:,0:heigth/2,:]
+        im3 = images[:,0:width/2:,heigth/2:,:]
+        im4 = images[:,width/2:,heigth/2:,:]
+        img_fracs = [im1,im2,im3,im4]
+        do_scramble = scales[recursion]
+        if do_scramble:
+            image_frac = np.random.permutation(image_frac)
+        for i in range(img_fracs):
+            img_frac = image_frac[i]
+            scramble = scramble(images,recursion,scales)
+
+    images[:,0:width/2,0:heigth/2,:] = img_fracs[0]
+    images[:,width/2:,0:heigth/2,:] = img_fracs[1]
+    images[:,0:width/2:,heigth/2:,:] = img_fracs[2]
+    images[:,width/2:,heigth/2:,:] = img_fracs[3]
+    return images
 
 #
 
