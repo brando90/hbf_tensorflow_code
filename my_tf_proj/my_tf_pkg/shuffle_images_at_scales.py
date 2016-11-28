@@ -8,12 +8,31 @@ import namespaces as ns
 
 import unittest
 
-def shuffle_at_scales(scale,everything):
+def shuffle_at_scales(scales,images):
     '''
     shuffle images at scale
+    scales = array indicating which scales to shuffle e.g. [None,1,0] only shu
+    images
     '''
+    recursions = len(scales) - 1
+    if len(scales) == 0:
+        return images
+    # recursions >= 1
+    images = scramble(images,recursion,scales)
+    return images
 
-
+def scramble(images,recursion,scales):
+    '''
+    '''
+    nb_images, width, heigh, channel = images.shape
+    do_scramble = scales[recursion]
+    im1 = scramble(images[:,0:width/2,0:heigh/2,:],recursion,scales)
+    im2 = scramble(images[:,width/2:,heigh/2,:],recursion,scales)
+    im3 = scramble(images,recursion,scales)
+    im4 = scramble(images,recursion,scales)
+    image_frac = [im1,im2,im3,im4]
+    if do_scramble:
+        image = scramble(image_frac)
     return
 
 #
@@ -41,7 +60,7 @@ def read_single_image(arg,image_file):
 def read_all_images(path_to_data):
     """
     :param path_to_data: the file containing the binary images from the STL-10 dataset
-    :return: an array containing all the images
+    :return: an array containing all the images [?,N,W,H,C]
     """
     with open(path_to_data, 'rb') as f:
         # read whole file in uint8 chunks
@@ -55,7 +74,7 @@ def read_all_images(path_to_data):
         # on the input file, and this way numpy determines
         # the size on its own.
 
-        images = np.reshape(everything, (-1, 3, 96, 96)) # (N, C, D, D)
+        images = np.reshape(everything, (-1, 3, 96, 96)) # (N, C, D, D) = (N, C, H, W)
         print('images.shape from raw array', images.shape)
 
         # Now transpose the images into a standard image format
@@ -63,8 +82,9 @@ def read_all_images(path_to_data):
         # You might want to comment this line or reverse the shuffle
         # if you will use a learning algorithm like CNN, since they like
         # their channels separated.
-        images = np.transpose(images, (0, 3, 2, 1))
-        #images = np.transpose(images, (0, 2, 3, 1))
+        images = np.transpose(images, (0, 3, 2, 1)) # gives (N, W, H, C)
+        #gives flipped image
+        ##images = np.transpose(images, (0, 2, 3, 1)) # gives (N, H, W, C)
         print('images.shape after transposition', images.shape)
         return images
 
