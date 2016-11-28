@@ -55,16 +55,17 @@ def read_all_images(path_to_data):
         # on the input file, and this way numpy determines
         # the size on its own.
 
-        images = np.reshape(everything, (-1, 3, 96, 96)) # (N, C, D, D) = (?,depth, height, width)
-        print('images.shape ', images)
+        images = np.reshape(everything, (-1, 3, 96, 96)) # (N, C, D, D)
+        print('images.shape from raw array', images.shape)
 
         # Now transpose the images into a standard image format
         # readable by, for example, matplotlib.imshow
         # You might want to comment this line or reverse the shuffle
         # if you will use a learning algorithm like CNN, since they like
         # their channels separated.
-        images = np.transpose(images, (0, 3, 2, 1)) # (N, C, w, h)
-        print('images.shape ', images)
+        images = np.transpose(images, (0, 3, 2, 1))
+        #images = np.transpose(images, (0, 2, 3, 1))
+        print('images.shape after transposition', images.shape)
         return images
 
 #
@@ -93,7 +94,7 @@ def plot_image(image):
     :param image: the image to be plotted in a 3-D matrix format
     :return: None
     """
-    plt.imshow(image)
+    plt.imshow(image) # X : array_like, shape (n, m) or (n, m, 3) or (n, m, 4)
     plt.show()
 
 #
@@ -175,10 +176,10 @@ class TestShuffle_images(unittest.TestCase):
         return arg
 
     def test_shuffle_scale1(self,scale=1):
-        print('test shuffle')
+        print('run unit test - shuffle')
         arg = self.get_arg()
         images = read_all_images(arg.DATA_PATH)
-        plot_a_single_image(100,images)
+        plot_a_single_image(0,images)
 
 if __name__ == '__main__':
     unittest.main()
