@@ -14,10 +14,9 @@ def shuffle_at_scales(scales,images):
     scales = array indicating which scales to shuffle e.g. [None,1,0] only shu
     images
     '''
-    recursions = len(scales) - 1
-    if len(scales) == 0:
+    if len(scales) - 1 == 0:
         return images
-    # recursions >= 1
+    recursion = 1
     images = scramble(images,recursion,scales)
     return images
 
@@ -36,11 +35,9 @@ def scramble(images,recursion,scales):
         img_fracs = [im1,im2,im3,im4]
         do_scramble = scales[recursion]
         if do_scramble:
-            image_frac = np.random.permutation(image_frac)
-        for i in range(img_fracs):
-            img_frac = image_frac[i]
-            scramble = scramble(images,recursion,scales)
-
+            img_fracs = np.random.permutation(img_fracs)
+        for i, img_frac in enumerate(img_fracs):
+            img_fracs[i] = scramble(img_frac,recursion+1,scales)
     images[:,0:width/2,0:heigth/2,:] = img_fracs[0]
     images[:,width/2:,0:heigth/2,:] = img_fracs[1]
     images[:,0:width/2:,heigth/2:,:] = img_fracs[2]
@@ -207,10 +204,18 @@ class TestShuffle_images(unittest.TestCase):
         arg.IMG_SIZE = IMG_SIZE
         return arg
 
+    def display_image(self,scale=1):
+        print('run unit test - shuffle')
+        arg = self.get_arg()
+        images = read_all_images(arg.DATA_PATH)
+        plot_a_single_image(0,images)
+
     def test_shuffle_scale1(self,scale=1):
         print('run unit test - shuffle')
         arg = self.get_arg()
         images = read_all_images(arg.DATA_PATH)
+        scales = [None, 1]
+        images = shuffle_at_scales(scales,images)
         plot_a_single_image(0,images)
 
 if __name__ == '__main__':
