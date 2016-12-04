@@ -35,6 +35,29 @@ def f_bt(x, h_list, l, left, right):
 
 ##
 
+def get_function_each_layer_relu():
+    '''
+    gives you an array of functions/handlers for evaluating nodes in a BT network.
+    '''
+
+    return
+
+def get_single_node_f():
+    '''
+
+    '''
+    f8D = lambda x: _f_eval_shallow_net(x,params_for_units=params_for_units)
+    return f8D
+
+def _f_bt_eval_node():
+    '''
+    evaluate a single node in a binary tree. i.e. compute h_l(x,y) for some
+    h_l(.,.) parametrixed
+    '''
+    return
+
+##
+
 class TestF_BT(unittest.TestCase):
     #make sure methods start with word test
 
