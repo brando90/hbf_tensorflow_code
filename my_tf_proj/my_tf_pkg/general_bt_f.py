@@ -1,8 +1,10 @@
 import numpy as np
 import unittest
 
-import my_tf_pkg.f_4D_BT_data
-import my_tf_pkg.f_8D_data
+import pdb
+
+import my_tf_pkg.f_4D_data as f_4D_data
+import my_tf_pkg.f_8D_data as f_8D_data
 
 def get_labels_bt(X,f):
     N = X.shape[0] # N x D = N x 4
@@ -37,24 +39,35 @@ def f_bt(x, h_list, l, left, right):
 
 def get_list_of_functions_per_layer_ppt(L):
     '''
-    get a list of synthetic functions according to ppc = poly, poly, trig.
+    get a list of synthetic functions according to ppt = poly, poly, trig.
 
     for example, for L = 4:
         h_list = [None, poly1, poly2, cos1, poly3]
     '''
     h_list = [None]
     for l in range(1,L+1):
-        if l % 3 = 0:
+        if l % 3 == 0:
             #trig
             a = np.random.uniform(low=0.01, high=2.0, size=None)
-            trig = lambda x: a*np.cos( freq ( x[0] + x[1] ) )
+            freq = np.random.uniform(low=0.9, high=1.7, size=None)
+            trig = lambda x: a*np.cos( freq*np.pi*( x[0] + x[1] ) )
             h_list.append(trig)
         else:
             #poly
-            degree = np.random.randint(2, high=4, size=None, dtype='l')
-            coeff = np.random.uniform(low=0.01, high=3.0, size=degree)
-            poly = lambda x: numpy.polyval(coeff, x[0]+x[1])
-    return
+            degree = np.random.randint(2, high=5, size=None)
+            coeff = np.random.uniform(low=0.01, high=3.0, size=2)
+            poly = lambda x: coeff[0]*x[0]+coeff[1]*x[1]
+            h_list.append(poly)
+    return h_list
+
+def get_poly():
+    '''
+    check if this is a good idea to put at each node
+    '''
+    degree = np.random.randint(2, high=4, size=None, dtype='l')
+    coeff = np.random.uniform(low=0.01, high=3.0, size=degree)
+    poly = lambda x: numpy.polyval(coeff, x[0]+x[1])
+    return poly
 
 ##
 
@@ -90,7 +103,7 @@ class TestF_BT(unittest.TestCase):
         h_list = [None, h1, h2]
         ##
         f_general = lambda x: f_bt(x,h_list=h_list,l=2,left=0,right=D)
-        f_hard_coded = f_4D_BT_data.f_4D_conv_2nd
+        f_hard_coded = f_4D_data.f_4D_conv_2nd
         #f_general([1,2,3,4])
         ## compare the functions
         X_train = low_x + (high_x - low_x) * np.random.rand(N_train,D)
@@ -106,7 +119,7 @@ class TestF_BT(unittest.TestCase):
         h_list = [None, h1, h2, h3]
         ##
         f_general = lambda x: f_bt(x,h_list=h_list,l=3,left=0,right=D)
-        f_hard_coded = f_8D_data.f_8D_test
+        f_hard_coded = f_8D_data.f_8D_conv_test
         #f_general([1,2,3,4,5,6,7,8])
         ## compare the functions
         X_train = low_x + (high_x - low_x) * np.random.rand(N_train,D)
@@ -114,6 +127,17 @@ class TestF_BT(unittest.TestCase):
         Y_train_hard_coded  = get_labels_bt(X_train, f_hard_coded)
         correct = np.array_equal(Y_train_general, Y_train_hard_coded)
         self.assertTrue(correct)
+
+    def test_BT256D(self, logD=8, N_train=100, low_x=-1, high_x=1):
+        D = 2**logD
+        h_list = get_list_of_functions_per_layer_ppt(L=logD)
+        ##
+        f_general = lambda x: f_bt(x,h_list=h_list,l=logD,left=0,right=D)
+        ## compare the functions
+        X_train = low_x + (high_x - low_x) * np.random.rand(N_train,D)
+        Y_train_general = get_labels_bt(X_train, f_general)
+        correct = Y_train_general
+        self.assertIsNotNone(correct)
 
 if __name__ == '__main__':
     unittest.main()
