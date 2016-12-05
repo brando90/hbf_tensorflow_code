@@ -35,6 +35,29 @@ def f_bt(x, h_list, l, left, right):
 
 ##
 
+def get_list_of_functions_per_layer_ppt(L):
+    '''
+    get a list of synthetic functions according to ppc = poly, poly, trig.
+
+    for example, for L = 4:
+        h_list = [None, poly1, poly2, cos1, poly3]
+    '''
+    h_list = [None]
+    for l in range(1,L+1):
+        if l % 3 = 0:
+            #trig
+            a = np.random.uniform(low=0.01, high=2.0, size=None)
+            trig = lambda x: a*np.cos( freq ( x[0] + x[1] ) )
+            h_list.append(trig)
+        else:
+            #poly
+            degree = np.random.randint(2, high=4, size=None, dtype='l')
+            coeff = np.random.uniform(low=0.01, high=3.0, size=degree)
+            poly = lambda x: numpy.polyval(coeff, x[0]+x[1])
+    return
+
+##
+
 def get_function_each_layer_relu():
     '''
     gives you an array of functions/handlers for evaluating nodes in a BT network.
@@ -49,7 +72,7 @@ def get_single_node_f():
     f8D = lambda x: _f_eval_shallow_net(x,params_for_units=params_for_units)
     return f8D
 
-def _f_bt_eval_node():
+def _f_btclear_eval_node():
     '''
     evaluate a single node in a binary tree. i.e. compute h_l(x,y) for some
     h_l(.,.) parametrixed
