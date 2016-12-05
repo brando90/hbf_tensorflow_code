@@ -9,6 +9,18 @@ import pdb
 
 import my_tf_pkg as mtf
 
+def get_shallow_synthetic_func(D,nb_shallow_units,low_c=-2.0,high_c=2.0,low_w=-2.0,high_w=2.0,low_b=-1.0,high_b=1.0):
+    '''
+    Gets a shallow net function to generate data set.
+
+    f(x) = \sum^(nb_shallow_units)_(i=1) c_i |Wx + b|_+
+    '''
+    N=3 #doesn't matter, let it be any value
+    X = np.random.uniform(low=low_c, high=high_c, size=(N,D))
+    params_for_units = get_shallow_params(X,nb_shallow_units)
+    f = get_f_shallow_net(params_for_units)
+    return f
+
 def get_shallow_params(A,nb_shallow_units,low_c=-2.0,high_c=2.0,low_w=-2.0,high_w=2.0,low_b=-1.0,high_b=1.0):
     '''
     Creates the parameters for a shallow synthetic function f(x) = \sum^(nb_shallow_units)_(i=1) c_i |Wx + b|_+

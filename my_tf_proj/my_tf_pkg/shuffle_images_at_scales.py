@@ -208,7 +208,7 @@ class TestShuffle_images(unittest.TestCase):
         print('run unit test - shuffle')
         arg = self.get_arg()
         images = read_all_images(arg.DATA_PATH)
-        plot_a_single_image(0,images)
+        plot_a_single_image(3,images)
 
     def test_shuffle_scale1(self,scale=1):
         print('run unit test - shuffle')
@@ -216,7 +216,7 @@ class TestShuffle_images(unittest.TestCase):
         images = read_all_images(arg.DATA_PATH)
         scales = [None, 1]
         images = shuffle_at_scales(scales,images)
-        plot_a_single_image(0,images)
+        plot_a_single_image(3,images)
 
     def test_shuffle_scale2(self,scale=1):
         print('run unit test - shuffle')
@@ -224,7 +224,7 @@ class TestShuffle_images(unittest.TestCase):
         images = read_all_images(arg.DATA_PATH)
         scales = [None, 0, 1]
         images = shuffle_at_scales(scales,images)
-        plot_a_single_image(0,images)
+        plot_a_single_image(3,images)
 
     def test_shuffle_scale3(self,scale=1):
         print('run unit test - shuffle')
@@ -232,7 +232,7 @@ class TestShuffle_images(unittest.TestCase):
         images = read_all_images(arg.DATA_PATH)
         scales = [None, 0, 0, 1]
         images = shuffle_at_scales(scales,images)
-        plot_a_single_image(0,images)
+        plot_a_single_image(3,images)
 
     def test_shuffle_scale4(self,scale=1):
         print('run unit test - shuffle')
@@ -240,7 +240,7 @@ class TestShuffle_images(unittest.TestCase):
         images = read_all_images(arg.DATA_PATH)
         scales = [None, 0, 0, 0, 1]
         images = shuffle_at_scales(scales,images)
-        plot_a_single_image(0,images)
+        plot_a_single_image(3,images)
 
     def test_shuffle_scale5(self,scale=1):
         print('run unit test - shuffle')
@@ -248,7 +248,7 @@ class TestShuffle_images(unittest.TestCase):
         images = read_all_images(arg.DATA_PATH)
         scales = [None, 0, 0, 0, 0, 1]
         images = shuffle_at_scales(scales,images)
-        plot_a_single_image(0,images)
+        plot_a_single_image(3,images)
 
 if __name__ == '__main__':
     unittest.main()

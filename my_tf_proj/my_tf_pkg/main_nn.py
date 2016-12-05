@@ -118,7 +118,10 @@ def main_serial(arg):
     #do jobs
     SLURM_ARRAY_TASK_IDS = list(range(int(arg.nb_array_jobs)))
     for job_array_index in SLURM_ARRAY_TASK_IDS:
-        with tf.name_scope('stid_'+str(job_array_index)):
+        scope_name = 'stid_'+str(job_array_index)
+        #with tf.name_scope(scope_name):
+        with tf.variable_scope(scope_name):
+            #pdb.set_trace()
             arg.slurm_array_task_id = job_array_index
             main_nn(arg)
 ##

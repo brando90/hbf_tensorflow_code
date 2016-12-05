@@ -56,6 +56,7 @@ def get_key_for_mdl_complexity(key,best_data):
     '''
     if key == 'nb_units' or key == 'dims':
         key = 'dims'
+        #pdb.set_trace()
         #nb_units = best_data.results_best['arg_dict']['dims'][1] if not 'dims' in best_data.results_best else best_data.results_best['dims'][1]
         nb_units = best_data.results_best['arg_dict'][key][1] if not key in best_data.results_best else best_data.results_best[key][1]
         mdl_complexity_key = nb_units

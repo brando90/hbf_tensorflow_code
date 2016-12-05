@@ -43,7 +43,7 @@ def get_initilizations_standard_NN(init_type,dims,mu,std,b_init,X_train,Y_train,
         for l in range(1,nb_hidden_layers):
             #inits_W.append( tf.truncated_normal(shape=[dims[l-1],dims[l]], mean=mu[l], stddev=std[l], dtype=tf.float64) )
             inits_W.append( tf.truncated_normal(shape=[dims[l-1],dims[l]], mean=mu[l], stddev=std[l], dtype=tf.float64) )
-            inits_b.append( tf.constant( b_init[l], shape=[ dims[l] ], dtype=tf.float64 ) ) 
+            inits_b.append( tf.constant( b_init[l], shape=[ dims[l] ], dtype=tf.float64 ) )
         l=len(dims)-1
         #print( [dims[l-1],dims[l]])
         inits_C=[ tf.truncated_normal(shape=[dims[l-1],dims[l]],  mean=mu[l], stddev=std[l], dtype=tf.float64) ]
@@ -59,6 +59,7 @@ def get_initilizations_standard_NN(init_type,dims,mu,std,b_init,X_train,Y_train,
             inits_b.append( tf.constant( b_init[l], shape=[dims[l]], dtype=tf.float64 ) )
         l=len(dims)-1
         #print( 'dims inits_C: ',[dims[l-1],dims[l]] )
+        print('l ', l)
         print( '+++> std mu for inits_C: ',[mu[l],std[l]] )
         inits_C=[ tf.truncated_normal(shape=[dims[l-1],dims[l]], mean=mu[l], stddev=std[l], dtype=tf.float64) ]
     else:
