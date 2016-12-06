@@ -251,11 +251,10 @@ class TestNN_BT(unittest.TestCase):
         self.assertTrue(correct)
 
     def test_NN_BT256D(self,M=2,logD=8,F=[None,3,5]):
-        F = 3
-        #F = [None] + []
         L = logD
         D = 2**L
-        X_train, Y_train, X_cv, Y_cv, X_test, Y_test = g_bt_f._generate_data_general_D(f,D,params=None,N_train=M, N_cv=M, N_test=M, low_x=-1, high_x=1)
+        F1 = 3
+        F = [None] + [ F1**l for l in range(1,L+1) ]
         print('\n -------test'+str(D))
         #
         x = tf.placeholder(tf.float32, shape=[None,1,D,1], name='x-input') #[M, 1, D, 1]
@@ -263,6 +262,10 @@ class TestNN_BT(unittest.TestCase):
         arg = self.get_args(L=L,F=F,verbose=True,scope_name='BT_'+str(D)+'D')
         # get NN BT
         bt_mdl = bt_mdl_conv(arg,x)
+        #
+        h_list, params = g_bt_f.get_list_of_functions_per_layer_ppt(L=logD)
+        f = lambda x: g_bt_f.f_bt(x,h_list=h_list,l=logD,left=0,right=D)
+        X_train, Y_train, X_cv, Y_cv, X_test, Y_test = g_bt_f._generate_data_general_D(f,D,params=None,N_train=M, N_cv=M, N_test=M, low_x=-1, high_x=1)
         X_data = X_train
         #
         tf_graph = tf.Graph()
@@ -271,6 +274,7 @@ class TestNN_BT(unittest.TestCase):
             bt_output = sess.run(fetches=bt_mdl, feed_dict={x:X_data})
 
         tot_nb_params = count_number_trainable_params(tf_graph)
+        print('tot_nb_params ', tot_nb_params)
         correct = Y_train_general
         self.assertIsNotNone(correct)
 
