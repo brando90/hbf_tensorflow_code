@@ -227,55 +227,55 @@ class TestNN_BT(unittest.TestCase):
         X_data = X_data.reshape(M,1,D,1)
         return X_data
 
-    # def get_hard_coded_bt4D(self,x):
-    #     arg = ns.Namespace()
-    #     #arg.init_type = 'xavier'
-    #     arg.init_type = 'manual'
-    #     arg.weights_initializer = tf.constant_initializer(value=1.0, dtype=tf.float32)
-    #     arg.nb_filters = 3 #F1
-    #     arg.nb_final_hidden_units = 5 # F2
-    #     #arg.mu = [0.0,0.0,0.0]
-    #     #arg.std = [0.9,0.9,0.9]
-    #     #arg.mu = [None, None, 0.0]
-    #     #arg.std = [None, None, 0.1]
-    #     #arg.get_W_mu_init = lambda arg: arg.mu
-    #     #arg.get_W_std_init = lambda arg: arg.std
-    #     #arg.std_low, arg.std_high = 0.001, 0.1
-    #     #arg.get_W_std_init = lambda arg: [float(i) for i in np.random.uniform(low=arg.std_low, high=arg.std_high, size=3)]
-    #     arg.act = tf.nn.relu
-    #     #arg.act = tf.nn.elu
-    #     #arg.act = tf.nn.softplus
-    #     #
-    #     arg.stride_convd1, arg.filter_size = 2, 2 #fixed for Binary Tree BT
-    #     #arg.mean, arg.stddev = arg.get_W_mu_init(arg), arg.get_W_std_init(arg)
-    #     mdl = mtf.build_binary_tree_4D_hidden_layer(x,arg,phase_train=None)
-    #     return mdl
+    def get_hard_coded_bt4D(self,x):
+        arg = ns.Namespace()
+        #arg.init_type = 'xavier'
+        arg.init_type = 'manual'
+        arg.weights_initializer = tf.constant_initializer(value=1.0, dtype=tf.float32)
+        arg.nb_filters = 3 #F1
+        arg.nb_final_hidden_units = 5 # F2
+        #arg.mu = [0.0,0.0,0.0]
+        #arg.std = [0.9,0.9,0.9]
+        #arg.mu = [None, None, 0.0]
+        #arg.std = [None, None, 0.1]
+        #arg.get_W_mu_init = lambda arg: arg.mu
+        #arg.get_W_std_init = lambda arg: arg.std
+        #arg.std_low, arg.std_high = 0.001, 0.1
+        #arg.get_W_std_init = lambda arg: [float(i) for i in np.random.uniform(low=arg.std_low, high=arg.std_high, size=3)]
+        arg.act = tf.nn.relu
+        #arg.act = tf.nn.elu
+        #arg.act = tf.nn.softplus
+        #
+        arg.stride_convd1, arg.filter_size = 2, 2 #fixed for Binary Tree BT
+        #arg.mean, arg.stddev = arg.get_W_mu_init(arg), arg.get_W_std_init(arg)
+        mdl = mtf.build_binary_tree_4D_hidden_layer(x,arg,phase_train=None)
+        return mdl
 
-    # def test_NN_BT4D(self,M=2,D=4,F=[None,3,5],L=2):
-    #     print('\n -------test'+str(D))
-    #     #
-    #     x = tf.placeholder(tf.float32, shape=[None,1,D,1], name='x-input') #[M, 1, D, 1]
-    #     # prepare args
-    #     arg = self.get_args(L=L,F=F,verbose=True,scope_name='BT_'+str(D)+'D')
-    #     # get NN BT
-    #     bt_mdl = bt_mdl_conv(arg,x)
-    #     X_data = self.get_test_data(M,D)
-    #     with tf.Session() as sess:
-    #         sess.run( tf.initialize_all_variables() )
-    #         bt_output = sess.run(fetches=bt_mdl, feed_dict={x:X_data})
-    #
-    #     bt_hardcoded = self.get_hard_coded_bt4D(x)
-    #     with tf.Session() as sess:
-    #         sess.run( tf.initialize_all_variables() )
-    #         bt_hardcoded_output = sess.run(fetches=bt_hardcoded, feed_dict={x:X_data})
-    #
-    #     #print(bt_output)
-    #     #print(bt_output.shape)
-    #
-    #     #print(bt_hardcoded_output)
-    #     #print(bt_hardcoded_output.shape)
-    #     correct = np.array_equal(bt_output, bt_hardcoded_output)
-    #     self.assertTrue(correct)
+    def test_NN_BT4D(self,M=2,D=4,F=[None,3,5],L=2):
+        print('\n -------test'+str(D))
+        #
+        x = tf.placeholder(tf.float32, shape=[None,1,D,1], name='x-input') #[M, 1, D, 1]
+        # prepare args
+        arg = self.get_args(L=L,F=F,verbose=True,scope_name='BT_'+str(D)+'D')
+        # get NN BT
+        bt_mdl = bt_mdl_conv(arg,x)
+        X_data = self.get_test_data(M,D)
+        with tf.Session() as sess:
+            sess.run( tf.initialize_all_variables() )
+            bt_output = sess.run(fetches=bt_mdl, feed_dict={x:X_data})
+
+        bt_hardcoded = self.get_hard_coded_bt4D(x)
+        with tf.Session() as sess:
+            sess.run( tf.initialize_all_variables() )
+            bt_hardcoded_output = sess.run(fetches=bt_hardcoded, feed_dict={x:X_data})
+
+        #print(bt_output)
+        #print(bt_output.shape)
+
+        #print(bt_hardcoded_output)
+        #print(bt_hardcoded_output.shape)
+        correct = np.array_equal(bt_output, bt_hardcoded_output)
+        self.assertTrue(correct)
 
     def get_data_largeD(self,logD,D,M):
         h_list, params = g_bt_f.get_list_of_functions_per_layer_ppt(L=logD)

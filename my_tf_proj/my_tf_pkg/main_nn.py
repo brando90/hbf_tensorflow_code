@@ -305,6 +305,19 @@ def main_nn(arg):
         with tf.name_scope("mdl"+arg.scope_name) as scope:
             mdl = mtf.bt_mdl_conv(arg,x)
         arg.dims = [D]+arg.F[1:]+[D_out]
+    elif arg.mdl == 'binary_tree_256D_conv_hidden_layer':
+        print( arg.scope_name )
+        inits_S = None
+        pca_error, rbf_error = None, None
+        float_type = tf.float32
+        #
+        N_cv, N_test = X_cv.shape[0], X_test.shape[0]
+        X_train, X_cv, X_test = X_train.reshape(N_train,1,D,1), X_cv.reshape(N_cv,1,D,1), X_test.reshape(N_test,1,D,1)
+        x = tf.placeholder(tf.float32, shape=[None,1,D,1], name='x-input') #[M, 1, D, 1]
+        #
+        with tf.name_scope("mdl"+arg.scope_name) as scope:
+            mdl = mtf.bt_mdl_conv(arg,x)
+        arg.dims = [D]+arg.F[1:]+[D_out]
     elif arg.mdl == 'bt_subgraph':
         print( arg.scope_name )
         inits_S = None

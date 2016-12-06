@@ -42,7 +42,9 @@ arg.data_dirpath = './data/'
 #arg.data_file_name = 'f_4D_simple_ReLu_BT_2_units_1st'
 #arg.data_file_name = 'f_8D_conv_cos_poly1_poly1'
 #arg.data_file_name = 'f_8D_single_relu'
-arg.data_file_name = 'f_8D_conv_quad_cubic_sqrt'
+#arg.data_file_name = 'f_8D_conv_quad_cubic_sqrt'
+#arg.data_file_name = 'f_8D_conv_quad_cubic_sqrt'
+arg.data_file_name = 'f_256D_L8_ppt_1'
 #arg.data_file_name = 'f_8D_conv_quad_cubic_sqrt_shuffled'
 #arg.data_file_name = 'f_4D_simple_ReLu_BT'
 #arg.data_file_name = 'MNIST_flat'
@@ -59,29 +61,33 @@ arg.type_job = 'slurm_array_parallel'
 #arg.experiment_name = 'task_Nov_22_BTSG1_2_3_8D_Adam_xavier_relu_N60000' # task_Oct_10_BT4D_MGD_xavier_relu_N2000 e.g. task_August_10_BT
 #arg.experiment_name = 'task_Nov_22_BTSG2_3_2_8D_Adam_xavier_relu_N60000'
 #arg.experiment_name = 'task_Nov_22_BTSG3_3_3_8D_Adam_xavier_relu_N60000'
-arg.experiment_name = 'tmp_task_Nov_22_BTSG4_4_2_8D_Adam_xavier_relu_N60000'
+#arg.experiment_name = 'tmp_task_Nov_22_BTSG4_4_2_8D_Adam_xavier_relu_N60000'
+arg.experiment_name = 'tmp_task_Dec_6_BT_256D_Adam_xavier_relu_N60000'
 arg.experiment_root_dir = mtf.get_experiment_folder(arg.data_file_name)
 #arg.job_name = 'BTSG1_8D_a19_Adam_200' # job name e.g BTHL_4D_6_12_MGD_200
 #arg.job_name = 'BTSG2_8D_a3_Adam_200'
 #arg.job_name = 'BTSG3_8D_a2_Adam_200'
-arg.job_name = 'BTSG4_8D_a1_Adam_200'
+#arg.job_name = 'BTSG4_8D_a1_Adam_200'
+arg.job_name = 'BT_256D_params_Adam_200'
 
 #arg.experiment_name = 'task_Nov_19_NN_Adam_xavier_relu_N60000' # experiment_name e.g. task_Oct_10_NN_MGD_xavier_relu_N2000
 #arg.experiment_root_dir = mtf.get_experiment_folder(arg.data_file_name)
 #arg.job_name = 'NN_8D_31_Adam_200' # job name e.g NN_4D_31_MGD_200
 #
-#arg.mdl = 'standard_nn'
+arg.mdl = 'standard_nn'
 #arg.mdl = 'hbf'
 #arg.mdl = 'binary_tree_4D_conv_hidden_layer'
 #arg.mdl = "binary_tree_4D_conv_hidden_layer_automatic"
 #arg.mdl = 'binary_tree_8D_conv_hidden_layer'
-arg.mdl = 'bt_subgraph'
+arg.mdl = 'binary_tree_256D_conv_hidden_layer'
+#arg.mdl = 'bt_subgraph'
 if arg.mdl == 'standard_nn':
     arg.init_type = 'truncated_normal'
     arg.init_type = 'data_xavier_kern'
     arg.init_type = 'xavier'
 
-    arg.units = [31]
+    K = 5
+    arg.units = [K]
     #arg.units = [110]
     #arg.units = [237]
     #arg.units = [412]
@@ -92,9 +98,12 @@ if arg.mdl == 'standard_nn':
     #arg.std = 0.5
 
     arg.get_W_mu_init = lambda arg: [None, None, 0]
+    #arg.get_W_mu_init = lambda arg: [None, None, None, None, None, 0]
     #arg.get_W_std_init = lambda arg: [None, None, 0.1]
     arg.std_low, arg.std_high = 0.001, 3.0
     arg.get_W_std_init = lambda arg: [None, None, float(np.random.uniform(low=arg.std_low, high=arg.std_high, size=1)) ]
+    #arg.get_W_std_init = lambda arg: [None, None, None, None, None, float(np.random.uniform(low=arg.std_low, high=arg.std_high, size=1)) ]
+
     #arg.get_W_mu_init = lambda arg: len(arg.dims)*[arg.mu]
     #arg.get_W_std_init = lambda arg: len(arg.dims)*[arg.std]
 
@@ -152,8 +161,27 @@ elif arg.mdl == 'binary_tree_8D_conv_hidden_layer':
     arg.weights_initializer = tf.contrib.layers.xavier_initializer(dtype=tf.float32)
     arg.biases_initializer = tf.constant_initializer(value=0.1, dtype=tf.float32)
     #
-    F1 = 14
+    F1 = 2
     arg.F = [None, F1, 2*F1, 4*F1]
+    #
+    arg.normalizer_fn = None
+    arg.trainable = True
+    #arg.normalizer_fn = tf.contrib.layers.batch_norm
+
+    arg.act = tf.nn.relu
+    #arg.act = tf.nn.elu
+    #arg.act = tf.nn.softplus
+elif arg.mdl == 'binary_tree_256D_conv_hidden_layer':
+    logD = 8
+    L = logD
+    arg.L, arg.padding, arg.scope_name, arg.verbose = L, 'VALID', 'BT_8D', False
+    #
+    arg.init_type = 'xavier'
+    arg.weights_initializer = tf.contrib.layers.xavier_initializer(dtype=tf.float32)
+    arg.biases_initializer = tf.constant_initializer(value=0.1, dtype=tf.float32)
+    #
+    F1 = 1
+    arg.F = [None] + [ F1*(2**l) for l in range(1,L+1) ]
     #
     arg.normalizer_fn = None
     arg.trainable = True
@@ -213,9 +241,15 @@ arg.steps_low = int(1.33334*60000)
 arg.steps_high = arg.steps_low+1
 arg.get_steps = lambda arg: int( np.random.randint(low=arg.steps_low ,high=arg.steps_high) )
 
-arg.M_low = 100
-arg.M_high = 15000
-arg.get_batch_size = lambda arg: int(np.random.randint(low=arg.M_low , high=arg.M_high))
+# arg.M_low = 100
+# arg.M_high = 15000
+# arg.get_batch_size = lambda arg: int(np.random.randint(low=arg.M_low , high=arg.M_high))
+arg.potential_batch_sizes = [16,32,64,128,256,512]
+def get_power2_batch_size(arg):
+    i = np.random.randint( low=0, high=len(arg.potential_batch_sizes) )
+    batch_size = arg.potential_batch_sizes[i]
+    return batch_size
+arg.get_batch_size = get_power2_batch_size
 arg.report_error_freq = 50
 
 arg.low_log_const_learning_rate, arg.high_log_const_learning_rate = -0.5, -5
