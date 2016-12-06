@@ -11,6 +11,7 @@ import tensorflow as tf
 from tensorflow.contrib.layers.python.layers import batch_norm as batch_norm
 
 import my_tf_pkg as mtf
+import my_tf_pkg.general_bt_f as g_bt_f
 
 def bt_mdl(arg,x,W,l,left,right):
     '''
@@ -248,6 +249,30 @@ class TestNN_BT(unittest.TestCase):
         #print(bt_hardcoded_output.shape)
         correct = np.array_equal(bt_output, bt_hardcoded_output)
         self.assertTrue(correct)
+
+    def test_NN_BT256D(self,M=2,logD=8,F=[None,3,5]):
+        F = 3
+        #F = [None] + []
+        L = logD
+        D = 2**L
+        X_train, Y_train, X_cv, Y_cv, X_test, Y_test = g_bt_f._generate_data_general_D(f,D,params=None,N_train=M, N_cv=M, N_test=M, low_x=-1, high_x=1)
+        print('\n -------test'+str(D))
+        #
+        x = tf.placeholder(tf.float32, shape=[None,1,D,1], name='x-input') #[M, 1, D, 1]
+        # prepare args
+        arg = self.get_args(L=L,F=F,verbose=True,scope_name='BT_'+str(D)+'D')
+        # get NN BT
+        bt_mdl = bt_mdl_conv(arg,x)
+        X_data = X_train
+        #
+        tf_graph = tf.Graph()
+        with tf.Session(graph=tf_graph) as sess:
+            sess.run( tf.initialize_all_variables() )
+            bt_output = sess.run(fetches=bt_mdl, feed_dict={x:X_data})
+
+        tot_nb_params = count_number_trainable_params(tf_graph)
+        correct = Y_train_general
+        self.assertIsNotNone(correct)
 
     # def test_NN_BT4D_single_batch(self,M=1,D=4,F=[None,3,5],L=2):
     #     print('\n -------test'+str(D))
