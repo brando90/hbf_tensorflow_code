@@ -13,6 +13,33 @@ from tensorflow.contrib.layers.python.layers import batch_norm as batch_norm
 import my_tf_pkg as mtf
 import my_tf_pkg.general_bt_f as g_bt_f
 
+def count_number_trainable_params(graph):
+    '''
+    Counts the number of trainable variables in the given graph.
+
+    graph = tensorflow graph with the parameters to count.
+    '''
+    tot_nb_params = 0
+    with graph.as_default():
+        for trainable_variable in tf.trainable_variables():
+            #print('trainable_variable ', trainable_variable.__dict__)
+            shape = trainable_variable.get_shape() # e.g [D,F] or [W,H,C]
+            current_nb_params = get_nb_params_shape(shape)
+            tot_nb_params = tot_nb_params + current_nb_params
+    return tot_nb_params
+
+def get_nb_params_shape(shape):
+    '''
+    Computes the total number of params for a given shap.
+    Works for any number of shapes etc [D,F] or [W,H,C] computes D*F and W*H*C.
+    '''
+    nb_params = 1
+    for dim in shape:
+        nb_params = nb_params*int(dim)
+    return nb_params
+
+#
+
 def bt_mdl(arg,x,W,l,left,right):
     '''
     Returns a BT NN.
@@ -200,82 +227,86 @@ class TestNN_BT(unittest.TestCase):
         X_data = X_data.reshape(M,1,D,1)
         return X_data
 
-    def get_hard_coded_bt4D(self,x):
-        arg = ns.Namespace()
-        #arg.init_type = 'xavier'
-        arg.init_type = 'manual'
-        arg.weights_initializer = tf.constant_initializer(value=1.0, dtype=tf.float32)
-        arg.nb_filters = 3 #F1
-        arg.nb_final_hidden_units = 5 # F2
-        #arg.mu = [0.0,0.0,0.0]
-        #arg.std = [0.9,0.9,0.9]
-        #arg.mu = [None, None, 0.0]
-        #arg.std = [None, None, 0.1]
-        #arg.get_W_mu_init = lambda arg: arg.mu
-        #arg.get_W_std_init = lambda arg: arg.std
-        #arg.std_low, arg.std_high = 0.001, 0.1
-        #arg.get_W_std_init = lambda arg: [float(i) for i in np.random.uniform(low=arg.std_low, high=arg.std_high, size=3)]
-        arg.act = tf.nn.relu
-        #arg.act = tf.nn.elu
-        #arg.act = tf.nn.softplus
-        #
-        arg.stride_convd1, arg.filter_size = 2, 2 #fixed for Binary Tree BT
-        #arg.mean, arg.stddev = arg.get_W_mu_init(arg), arg.get_W_std_init(arg)
-        mdl = mtf.build_binary_tree_4D_hidden_layer(x,arg,phase_train=None)
-        return mdl
+    # def get_hard_coded_bt4D(self,x):
+    #     arg = ns.Namespace()
+    #     #arg.init_type = 'xavier'
+    #     arg.init_type = 'manual'
+    #     arg.weights_initializer = tf.constant_initializer(value=1.0, dtype=tf.float32)
+    #     arg.nb_filters = 3 #F1
+    #     arg.nb_final_hidden_units = 5 # F2
+    #     #arg.mu = [0.0,0.0,0.0]
+    #     #arg.std = [0.9,0.9,0.9]
+    #     #arg.mu = [None, None, 0.0]
+    #     #arg.std = [None, None, 0.1]
+    #     #arg.get_W_mu_init = lambda arg: arg.mu
+    #     #arg.get_W_std_init = lambda arg: arg.std
+    #     #arg.std_low, arg.std_high = 0.001, 0.1
+    #     #arg.get_W_std_init = lambda arg: [float(i) for i in np.random.uniform(low=arg.std_low, high=arg.std_high, size=3)]
+    #     arg.act = tf.nn.relu
+    #     #arg.act = tf.nn.elu
+    #     #arg.act = tf.nn.softplus
+    #     #
+    #     arg.stride_convd1, arg.filter_size = 2, 2 #fixed for Binary Tree BT
+    #     #arg.mean, arg.stddev = arg.get_W_mu_init(arg), arg.get_W_std_init(arg)
+    #     mdl = mtf.build_binary_tree_4D_hidden_layer(x,arg,phase_train=None)
+    #     return mdl
 
-    def test_NN_BT4D(self,M=2,D=4,F=[None,3,5],L=2):
-        print('\n -------test'+str(D))
-        #
-        x = tf.placeholder(tf.float32, shape=[None,1,D,1], name='x-input') #[M, 1, D, 1]
-        # prepare args
-        arg = self.get_args(L=L,F=F,verbose=True,scope_name='BT_'+str(D)+'D')
-        # get NN BT
-        bt_mdl = bt_mdl_conv(arg,x)
-        X_data = self.get_test_data(M,D)
-        with tf.Session() as sess:
-            sess.run( tf.initialize_all_variables() )
-            bt_output = sess.run(fetches=bt_mdl, feed_dict={x:X_data})
+    # def test_NN_BT4D(self,M=2,D=4,F=[None,3,5],L=2):
+    #     print('\n -------test'+str(D))
+    #     #
+    #     x = tf.placeholder(tf.float32, shape=[None,1,D,1], name='x-input') #[M, 1, D, 1]
+    #     # prepare args
+    #     arg = self.get_args(L=L,F=F,verbose=True,scope_name='BT_'+str(D)+'D')
+    #     # get NN BT
+    #     bt_mdl = bt_mdl_conv(arg,x)
+    #     X_data = self.get_test_data(M,D)
+    #     with tf.Session() as sess:
+    #         sess.run( tf.initialize_all_variables() )
+    #         bt_output = sess.run(fetches=bt_mdl, feed_dict={x:X_data})
+    #
+    #     bt_hardcoded = self.get_hard_coded_bt4D(x)
+    #     with tf.Session() as sess:
+    #         sess.run( tf.initialize_all_variables() )
+    #         bt_hardcoded_output = sess.run(fetches=bt_hardcoded, feed_dict={x:X_data})
+    #
+    #     #print(bt_output)
+    #     #print(bt_output.shape)
+    #
+    #     #print(bt_hardcoded_output)
+    #     #print(bt_hardcoded_output.shape)
+    #     correct = np.array_equal(bt_output, bt_hardcoded_output)
+    #     self.assertTrue(correct)
 
-        bt_hardcoded = self.get_hard_coded_bt4D(x)
-        with tf.Session() as sess:
-            sess.run( tf.initialize_all_variables() )
-            bt_hardcoded_output = sess.run(fetches=bt_hardcoded, feed_dict={x:X_data})
-
-        #print(bt_output)
-        #print(bt_output.shape)
-
-        #print(bt_hardcoded_output)
-        #print(bt_hardcoded_output.shape)
-        correct = np.array_equal(bt_output, bt_hardcoded_output)
-        self.assertTrue(correct)
-
-    def test_NN_BT256D(self,M=2,logD=8,F=[None,3,5]):
-        L = logD
-        D = 2**L
-        F1 = 3
-        F = [None] + [ F1**l for l in range(1,L+1) ]
-        print('\n -------test'+str(D))
-        #
-        x = tf.placeholder(tf.float32, shape=[None,1,D,1], name='x-input') #[M, 1, D, 1]
-        # prepare args
-        arg = self.get_args(L=L,F=F,verbose=True,scope_name='BT_'+str(D)+'D')
-        # get NN BT
-        bt_mdl = bt_mdl_conv(arg,x)
-        #
+    def get_data_largeD(self,logD,D,M):
         h_list, params = g_bt_f.get_list_of_functions_per_layer_ppt(L=logD)
         f = lambda x: g_bt_f.f_bt(x,h_list=h_list,l=logD,left=0,right=D)
-        X_train, Y_train, X_cv, Y_cv, X_test, Y_test = g_bt_f._generate_data_general_D(f,D,params=None,N_train=M, N_cv=M, N_test=M, low_x=-1, high_x=1)
+        X_train, Y_train, X_cv, Y_cv, X_test, Y_test = g_bt_f._generate_data_general_D(f,D,N_train=M, N_cv=M, N_test=M, low_x=-1, high_x=1)
         X_data = X_train
+        X_data = X_data.reshape(M,1,D,1)
+        return X_data
+
+
+    def test_NN_BT256D(self,M=3,logD=8):
+        L = logD
+        D = 2**L
+        F1 = 1
+        F = [None] + [ F1*(2**l) for l in range(1,L+1) ]
+        print('\n -------test'+str(D))
+        # prepare args to make BT NN
+        arg = self.get_args(L=L,F=F,verbose=True,scope_name='BT_'+str(D)+'D')
+        # get data set
+        X_data = self.get_data_largeD(logD,D,M)
         #
         tf_graph = tf.Graph()
         with tf.Session(graph=tf_graph) as sess:
+            x = tf.placeholder(tf.float32, shape=[None,1,D,1], name='x-input') #[M, 1, D, 1]
+            # get NN BT
+            bt_mdl = bt_mdl_conv(arg,x)
             sess.run( tf.initialize_all_variables() )
             bt_output = sess.run(fetches=bt_mdl, feed_dict={x:X_data})
-
         tot_nb_params = count_number_trainable_params(tf_graph)
         print('tot_nb_params ', tot_nb_params)
-        correct = Y_train_general
+        correct = bt_output
         self.assertIsNotNone(correct)
 
     # def test_NN_BT4D_single_batch(self,M=1,D=4,F=[None,3,5],L=2):
