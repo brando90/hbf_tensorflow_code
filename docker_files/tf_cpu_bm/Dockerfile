@@ -4,10 +4,14 @@ FROM gcr.io/tensorflow/tensorflow
 FROM python
 FROM ubuntu
 
-#
-#RUN pip install numpy
-#RUN pip install keras
-#RUN pip install namespaces
-#RUN pip install pdb
-#RUN pip install ../../my_tf_proj/
-#RUN pip install /Users/brandomiranda/Documents/MIT/MEng/hbf_tensorflow_code/my_tf_proj
+# mounts my tensorflow lib/proj from host to the container
+VOLUME ../../my_tf_proj ~/my_tf_proj
+
+# have the dependecies for my tensorflow library
+RUN pip install numpy
+RUN pip install keras
+RUN pip install namespaces
+RUN pip install pdb
+
+# install my library (only when the a container is spun)
+CMD python ~/my_tf_proj
