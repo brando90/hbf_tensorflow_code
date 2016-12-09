@@ -2,10 +2,6 @@ FROM ubuntu
 
 #
 RUN apt-get update
-
-#
-apt-get install vim
-
 RUN apt-get install -qy python3
 RUN apt-get install -qy python3-pip
 RUN pip3 install --upgrade pip
