@@ -11,7 +11,7 @@ FROM ubuntu
 
 #
 RUN apt-get update
-RUN apt-get install vim
+RUN apt-get install -y vim
 
 #
 RUN apt-get install -qy python3
@@ -28,4 +28,4 @@ RUN pip3 install pdb
 
 # install my library (only when the a container is spun)
 # bash script that configures running container
-ENTRYPOINT ["sh", "container_setup.py"]
+#ENTRYPOINT ["sh", "/hbf_tensorflow_code/docker_files/tf_cpu/container_setup.sh"]
