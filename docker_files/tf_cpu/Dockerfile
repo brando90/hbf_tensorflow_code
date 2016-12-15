@@ -25,7 +25,8 @@ RUN pip3 install numpy
 RUN pip3 install keras
 RUN pip3 install namespaces
 RUN pip3 install pdb
+RUN pip3 install -U scikit-learn
 
 # install my library (only when the a container is spun)
 # bash script that configures running container
-#ENTRYPOINT ["sh", "/hbf_tensorflow_code/docker_files/tf_cpu/container_setup.sh"]
+ENTRYPOINT ["sh", "/hbf_tensorflow_code/docker_files/tf_cpu/container_setup.sh"]
