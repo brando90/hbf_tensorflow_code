@@ -521,8 +521,8 @@ def main_nn(arg):
     results['best_train'], results['best_cv'], results['best_test'] = best_train, best_cv, best_test
     print('End of main')
 
-    git_hash = subprocess.check_output(['git', 'rev-parse', 'HEAD'])
-    results['git_hash'] = str(git_hash)
+    #git_hash = subprocess.check_output(['git', 'rev-parse', 'HEAD'])
+    #results['git_hash'] = str(git_hash)
     #results['tf_rand_seed'] = tf_rand_seed
     #
     seconds = (time.time() - start_time)
@@ -540,6 +540,7 @@ def main_nn(arg):
     arg_dict = dict(arg)
     arg_dict = get_remove_functions_from_dict(arg_dict)
     results['arg_dict'] = arg_dict
+    pdb.set_trace()
     with open(path+json_file, 'w+') as f_json:
         print('Writing Json')
         print('path+json_file', path+json_file)
