@@ -16,13 +16,8 @@ RUN apt-get install -qy python3-pip
 RUN pip3 install --upgrade pip
 RUN pip install --upgrade pip
 
-# Ubuntu/Linux 64-bit, CPU only, Python 3.4
-#RUN pip3 install --upgrade https://storage.googleapis.com/tensorflow/linux/cpu/tensorflow-0.12.0rc1-cp34-cp34m-linux_x86_64.whl
-# Ubuntu/Linux 64-bit, CPU only, Python 3.5
-#RUN pip3 install --upgrade https://storage.googleapis.com/tensorflow/linux/cpu/tensorflow-0.12.0rc1-cp35-cp35m-linux_x86_64.whl
-
-# 3.5 r10
-RUN pip3 install --upgrade https://storage.googleapis.com/tensorflow/linux/cpu/tensorflow-0.10.0-cp35-cp35m-linux_x86_64.whl
+# py 3.5 r10 gpu ubuntu
+RUN pip3 install --upgrade https://storage.googleapis.com/tensorflow/linux/gpu/tensorflow-0.10.0-cp35-cp35m-linux_x86_64.whl
 
 #Install some stuff my lib needs
 RUN pip3 install numpy
