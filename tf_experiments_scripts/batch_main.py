@@ -29,7 +29,11 @@ print(ns)
 ###
 arg = ns.Namespace()
 
-arg.data_dirpath = './data/'
+#arg.data_dirpath = './data/'
+arg.data_dirpath = '/home_simulation_research/hbf_tensorflow_code/tf_experiments_scripts/data/'
+
+prefix_path = '../../%s/%s'
+prefix_path = '/home_simulation_research/simulation_results_scripts/%s/%s'
 ##
 
 #arg.data_file_name = 'h_gabor_data_and_mesh'
@@ -54,15 +58,16 @@ arg.task_folder_name = mtf.get_experiment_folder(arg.data_file_name) #om_f_4d_co
 arg.N_frac = 60000
 print('arg.N_frac: ', arg.N_frac)
 #
-#arg.nb_array_jobs = 2
-#arg.type_job = 'serial' #careful when this is on and GPU is NOT on
-arg.type_job = 'slurm_array_parallel'
+arg.nb_array_jobs = 2
+arg.type_job = 'serial' #careful when this is on and GPU is NOT on
+#arg.type_job = 'slurm_array_parallel'
 
 #arg.experiment_name = 'task_Nov_22_BTSG1_2_3_8D_Adam_xavier_relu_N60000' # task_Oct_10_BT4D_MGD_xavier_relu_N2000 e.g. task_August_10_BT
 #arg.experiment_name = 'task_Nov_22_BTSG2_3_2_8D_Adam_xavier_relu_N60000'
 #arg.experiment_name = 'task_Nov_22_BTSG3_3_3_8D_Adam_xavier_relu_N60000'
 #arg.experiment_name = 'tmp_task_Nov_22_BTSG4_4_2_8D_Adam_xavier_relu_N60000'
 arg.experiment_name = 'tmp_task_Dec_6_BT_256D_Adam_xavier_relu_N60000'
+arg.experiment_name = 'TMP2'
 arg.experiment_root_dir = mtf.get_experiment_folder(arg.data_file_name)
 #arg.job_name = 'BTSG1_8D_a19_Adam_200' # job name e.g BTHL_4D_6_12_MGD_200
 #arg.job_name = 'BTSG2_8D_a3_Adam_200'
@@ -79,14 +84,14 @@ arg.mdl = 'standard_nn'
 #arg.mdl = 'binary_tree_4D_conv_hidden_layer'
 #arg.mdl = "binary_tree_4D_conv_hidden_layer_automatic"
 #arg.mdl = 'binary_tree_8D_conv_hidden_layer'
-arg.mdl = 'binary_tree_256D_conv_hidden_layer'
+#arg.mdl = 'binary_tree_256D_conv_hidden_layer'
 #arg.mdl = 'bt_subgraph'
 if arg.mdl == 'standard_nn':
     arg.init_type = 'truncated_normal'
     arg.init_type = 'data_xavier_kern'
     arg.init_type = 'xavier'
 
-    K = 5
+    K = 2
     arg.units = [K]
     #arg.units = [110]
     #arg.units = [237]
@@ -236,21 +241,21 @@ else:
     raise ValueError('Need to use a valid model, incorrect or unknown model %s give.'%arg.mdl)
 
 #steps
-arg.steps_low = int(1.33334*60000)
-#arg.steps_low = int(1*100)
+#arg.steps_low = int(1.33334*60000)
+arg.steps_low = int(1*20)
 arg.steps_high = arg.steps_low+1
 arg.get_steps = lambda arg: int( np.random.randint(low=arg.steps_low ,high=arg.steps_high) )
 
-# arg.M_low = 100
-# arg.M_high = 15000
-# arg.get_batch_size = lambda arg: int(np.random.randint(low=arg.M_low , high=arg.M_high))
-arg.potential_batch_sizes = [16,32,64,128,256,512]
-def get_power2_batch_size(arg):
-    i = np.random.randint( low=0, high=len(arg.potential_batch_sizes) )
-    batch_size = arg.potential_batch_sizes[i]
-    return batch_size
-arg.get_batch_size = get_power2_batch_size
-arg.report_error_freq = 50
+arg.M_low = 2
+arg.M_high = 3
+arg.get_batch_size = lambda arg: int(np.random.randint(low=arg.M_low , high=arg.M_high))
+# arg.potential_batch_sizes = [16,32,64,128,256,512]
+# def get_power2_batch_size(arg):
+#     i = np.random.randint( low=0, high=len(arg.potential_batch_sizes) )
+#     batch_size = arg.potential_batch_sizes[i]
+#     return batch_size
+#arg.get_batch_size = get_power2_batch_size
+arg.report_error_freq = 5
 
 arg.low_log_const_learning_rate, arg.high_log_const_learning_rate = -0.5, -5
 arg.get_log_learning_rate =  lambda arg: np.random.uniform(low=arg.low_log_const_learning_rate, high=arg.high_log_const_learning_rate)
@@ -325,7 +330,7 @@ arg.save_config_args = False
 # arg.slurm_jobid = os.environ['SLURM_JOBID']
 # arg.slurm_array_task_id = os.environ['SLURM_ARRAY_TASK_ID']
 #
-arg.path_root = '../../%s/%s'%(arg.experiment_root_dir,arg.experiment_name)
+arg.path_root = prefix_path%(arg.experiment_root_dir,arg.experiment_name)
 arg.get_path_root =  lambda arg: arg.path_root
 #
 parser = argparse.ArgumentParser()
@@ -361,11 +366,12 @@ if cmd_args.save_config_args:
 if cmd_args.debug:
     #arg.debug = cmd_args.debug
     # load old pickle config
-    pickled_arg_dict = pickle.load( open( "pickle-slurm-%s_%s.p"%(int(arg.slurm_jobid)+int(arg.slurm_array_task_id),arg.slurm_array_task_id), "rb" ) )
-    print( pickled_arg_dict )
-    # values merged with the second dict's values overwriting those from the first.
-    arg_dict = {**dict(arg), **pickled_arg_dict}
-    arg = ns.Namespace(arg_dict)
+    # pickled_arg_dict = pickle.load( open( "pickle-slurm-%s_%s.p"%(int(arg.slurm_jobid)+int(arg.slurm_array_task_id),arg.slurm_array_task_id), "rb" ) )
+    # print( pickled_arg_dict )
+    # # values merged with the second dict's values overwriting those from the first.
+    # arg_dict = {**dict(arg), **pickled_arg_dict}
+    # arg = ns.Namespace(arg_dict)
+    print('EMPTY IF STATEMENT') #TODO fix line above that gives syntax error
 if cmd_args.path_root:
     arg.path_root = cmd_args.path_root
     arg.get_path_root =  lambda arg: arg.path_root
