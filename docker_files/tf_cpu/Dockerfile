@@ -1,31 +1,23 @@
+## This Dockerimage is meant to only yest if tensorflow can be imported when
+## logged in to python3 terminal
+
 # This means you derive your docker image from the tensorflow docker image
 # FROM gcr.io/tensorflow/tensorflow:latest-devel-gpu
-FROM gcr.io/tensorflow/tensorflow
 FROM ubuntu
+FROM gcr.io/tensorflow/tensorflow
 
-#RUN mkdir /my_tf_proj/
-# to mount my_tf library, use -v flag since,
-# The host directory for a volume cannot be specified from a Dockerfile, in order to preserve portability
-# (the host directory may not be available on all systems). When this form of the -v
-# argument is used any files in the image under the directory are not copied into the volume.
-
-#
+# note this is needed to be able to install pip3
 RUN apt-get update
-RUN apt-get install -y vim
 
-#
-RUN apt-get install -qy python3
+##RUN apt-get install -qy python3
 RUN apt-get install -qy python3-pip
 RUN pip3 install --upgrade pip
+RUN pip install --upgrade pip
 
-#RUN apt-get install -y python python-dev python-distribute python-pip
-
-# have the dependecies for my tensorflow library
-RUN pip3 install numpy
-RUN pip3 install keras
-RUN pip3 install namespaces
-RUN pip3 install pdb
-RUN pip3 install -U scikit-learn
+# Ubuntu/Linux 64-bit, CPU only, Python 3.4
+#RUN pip3 install --upgrade https://storage.googleapis.com/tensorflow/linux/cpu/tensorflow-0.12.0rc1-cp34-cp34m-linux_x86_64.whl
+# Ubuntu/Linux 64-bit, CPU only, Python 3.5
+RUN pip3 install --upgrade https://storage.googleapis.com/tensorflow/linux/cpu/tensorflow-0.12.0rc1-cp35-cp35m-linux_x86_64.whl
 
 # install my library (only when the a container is spun)
 # bash script that configures running container
