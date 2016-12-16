@@ -15,9 +15,9 @@ RUN pip3 install --upgrade pip
 RUN pip install --upgrade pip
 
 # Ubuntu/Linux 64-bit, CPU only, Python 3.4
-#RUN pip3 install --upgrade https://storage.googleapis.com/tensorflow/linux/cpu/tensorflow-0.12.0rc1-cp34-cp34m-linux_x86_64.whl
+RUN pip3 install --upgrade https://storage.googleapis.com/tensorflow/linux/cpu/tensorflow-0.12.0rc1-cp34-cp34m-linux_x86_64.whl
 # Ubuntu/Linux 64-bit, CPU only, Python 3.5
-RUN pip3 install --upgrade https://storage.googleapis.com/tensorflow/linux/cpu/tensorflow-0.12.0rc1-cp35-cp35m-linux_x86_64.whl
+#RUN pip3 install --upgrade https://storage.googleapis.com/tensorflow/linux/cpu/tensorflow-0.12.0rc1-cp35-cp35m-linux_x86_64.whl
 
 # install my library (only when the a container is spun)
 # bash script that configures running container
