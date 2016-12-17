@@ -2,7 +2,14 @@ import sys
 
 from subprocess import call
 
-def make_prefix(pwd_array):
+def _make_prefix(pwd_array):
+    '''
+    Given pwd_array concatenates all the elements of the array and  puts a / between them.
+
+    e.g.
+    input = [ "home_simulation_research", "hbf_tensorflow_code", "docker_files", "vim_img"]
+    output = "/home_simulation_research/hbf_tensorflow_code/docker_files/vim_img/"
+    '''
     #print(pwd_array)
     string = ''
     for path_part in pwd_array:
@@ -13,15 +20,18 @@ def make_prefix(pwd_array):
 
 def get_prefix_for_docker_env(pwd):
     '''
+    Returns the prefix string relative to my  docker filesystem.
 
-    e.g. returns something like /home_simulation_research/hbf_tensorflow_code/docker_files/vim_img/
+    e.g.
+    input = '/Users/brandomiranda/home_simulation_research/hbf_tensorflow_code/docker_files/vim_img'
+    output = /home_simulation_research/hbf_tensorflow_code/docker_files/vim_img/
     '''
     pwd_split = pwd.split('/')
     for i in range( len(pwd_split) ):
         path_part = pwd_split[i]
         #print(path_part)
         if path_part == 'home_simulation_research':
-            pwd_split_str = make_prefix(pwd_split[i:])
+            pwd_split_str = _make_prefix(pwd_split[i:])
             break
     return pwd_split_str
 
