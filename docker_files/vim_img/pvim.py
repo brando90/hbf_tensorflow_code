@@ -46,17 +46,16 @@ def get_prefix_for_docker_env(pwd):
             return pwd_split_str
     raise ValueError('SHOULD NEVER BE HERE. Probably gave a path with no home_simulation_research directory.')
 
-def print_path_to_file_to_vim():
+def print_path_plus_filename(pwd,filename):
     if len(sys.argv) < 3:
         raise ValueError('Need to provide a file to vim')
-    pwd, filename = sys.argv[1], sys.argv[2]
     pwd_split_str = get_prefix_for_docker_env(pwd)
-    print(pwd_split_str+filename)
-####
-####
+    return pwd_split_str+filename
 
-#print('/home_simulation_research/hbf_tensorflow_code/docker_files/vim_img/pvim.py')
+####
+####
 
 if __name__ == '__main__':
-    path_plus_file_name = print_path_to_file_to_vim() #
-    print(path_plus_file_name)
+    pwd, filename = sys.argv[1], sys.argv[2]
+    path_plus_filename = print_path_to_file_to_vim(pwd,filename)
+    print(path_plus_filename)
