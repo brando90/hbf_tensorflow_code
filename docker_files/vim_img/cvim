@@ -1,5 +1,8 @@
 #!/bin/sh
 
 pwd=$(pwd)
-path_file=$(python pvim.py $pwd $1)
-docker run -it --rm -v ~/dot_files:/root -v ~/home_simulation_research:/home_simulation_research vim_img vim $path_file
+# get python cmd, path and filename to edit in vim
+# note: it just runs my version of vim with python to work in dgx1
+python_cmd_to_path_file=$(python pvim.py $pwd $1)
+# run python vim (pvim) with docker
+docker run -it --rm -v ~/dot_files:/root -v ~/home_simulation_research:/home_simulation_research vim_img vim $python_cmd_to_path_file
