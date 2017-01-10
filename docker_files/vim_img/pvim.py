@@ -47,8 +47,6 @@ def get_prefix_for_docker_env(pwd):
     raise ValueError('SHOULD NEVER BE HERE. Probably gave a path with no home_simulation_research directory.')
 
 def print_path_plus_filename(pwd,filename):
-    if len(sys.argv) < 3:
-        raise ValueError('Need to provide a file to vim')
     pwd_split_str = get_prefix_for_docker_env(pwd)
     return pwd_split_str+filename
 
@@ -57,5 +55,7 @@ def print_path_plus_filename(pwd,filename):
 
 if __name__ == '__main__':
     pwd, filename = sys.argv[1], sys.argv[2]
-    path_plus_filename = print_path_to_file_to_vim(pwd,filename)
+    if len(sys.argv) < 3:
+        raise ValueError('Need to provide a file to vim.')
+    path_plus_filename = print_path_plus_filename(pwd,filename)
     print(path_plus_filename)
