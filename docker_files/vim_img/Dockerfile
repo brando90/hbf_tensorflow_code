@@ -6,5 +6,3 @@ RUN apt-get install -y vim
 RUN apt-get install -qy python3-pip
 RUN pip3 install --upgrade pip
 RUN pip install --upgrade pip
-
-#ENTRYPOINT ["sh", "/home_simulation_research/hbf_tensorflow_code/docker_files/vimd/container_setup.sh"]
