@@ -1,4 +1,4 @@
-## This Dockerimage is meant to only yest if tensorflow can be imported when
+## This Dockerimage is meant to only test if tensorflow can be imported when
 ## logged in to python3 terminal
 
 # This means you derive your docker image from the tensorflow docker image
@@ -31,4 +31,4 @@ RUN pip3 install pdb
 ENTRYPOINT ["sh", "/home_simulation_research/hbf_tensorflow_code/docker_files/tf_cpu/container_setup.sh"]
 
 # enviromnet
-#ENV OMP_NUM_THREADS=2
+ENV OMP_NUM_THREADS=2
