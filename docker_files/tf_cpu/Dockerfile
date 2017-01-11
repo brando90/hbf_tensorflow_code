@@ -21,7 +21,7 @@ RUN pip install --upgrade pip
 # Ubuntu/Linux 64-bit, CPU only, Python 3.5
 #RUN pip3 install --upgrade https://storage.googleapis.com/tensorflow/linux/cpu/tensorflow-0.12.0rc1-cp35-cp35m-linux_x86_64.whl
 
-# 3.5 r10
+# 3.5 r10 CPU
 RUN pip3 install --upgrade https://storage.googleapis.com/tensorflow/linux/cpu/tensorflow-0.10.0-cp35-cp35m-linux_x86_64.whl
 
 #Install some stuff my lib needs
@@ -32,8 +32,8 @@ RUN pip3 install scipy
 RUN pip3 install pdb
 
 # install my library (only when the a container is spun)
-# bash script that configures running container
+# bash script that configures the running container
 ENTRYPOINT ["sh", "/home_simulation_research/hbf_tensorflow_code/docker_files/tf_cpu/container_setup.sh"]
 
 # enviromnet
-#ENV OMP_NUM_THREADS=2
+ENV OMP_NUM_THREADS=2
