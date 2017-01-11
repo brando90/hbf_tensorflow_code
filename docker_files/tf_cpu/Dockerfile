@@ -1,4 +1,4 @@
-## This Dockerimage is meant to only yest if tensorflow can be imported when
+## This Dockerimage is meant to only test if tensorflow can be imported when
 ## logged in to python3 terminal
 
 # This means you derive your docker image from the tensorflow docker image
