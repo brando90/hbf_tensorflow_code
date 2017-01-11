@@ -540,7 +540,7 @@ def main_nn(arg):
     arg_dict = dict(arg)
     arg_dict = get_remove_functions_from_dict(arg_dict)
     results['arg_dict'] = arg_dict
-    pdb.set_trace()
+    #pdb.set_trace()
     with open(path+json_file, 'w+') as f_json:
         print('Writing Json')
         print('path+json_file', path+json_file)

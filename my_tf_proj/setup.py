@@ -8,7 +8,8 @@ setup(
     author='Brando Miranda',
     author_email='brando90@mit.edu',
     license='MIT',
-    packages=['my_tf_pkg'],
+    packages=['my_tf_pkg','cifar10'],
     #install_requires=['numpy','keras','namespaces','pdb','scikit-learn','scipy','virtualenv']
-    install_requires=['numpy','keras','namespaces','pdb','virtualenv']
+    #install_requires=['numpy','keras','namespaces','pdb']
+    install_requires=['numpy','namespaces','pdb','scikit-learn','scipy']
 )
