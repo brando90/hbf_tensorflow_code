@@ -29,10 +29,12 @@ print(ns)
 ###
 arg = ns.Namespace()
 
+# to run locally
 #arg.data_dirpath = './data/'
-arg.data_dirpath = '/home_simulation_research/hbf_tensorflow_code/tf_experiments_scripts/data/'
+#prefix_path = '../../%s/%s'
 
-prefix_path = '../../%s/%s'
+# to run in docker
+arg.data_dirpath = '/home_simulation_research/hbf_tensorflow_code/tf_experiments_scripts/data/'
 prefix_path = '/home_simulation_research/simulation_results_scripts/%s/%s'
 ##
 
@@ -58,7 +60,7 @@ arg.task_folder_name = mtf.get_experiment_folder(arg.data_file_name) #om_f_4d_co
 arg.N_frac = 60000
 print('arg.N_frac: ', arg.N_frac)
 #
-arg.nb_array_jobs = 2
+arg.nb_array_jobs = 5
 arg.type_job = 'serial' #careful when this is on and GPU is NOT on
 #arg.type_job = 'slurm_array_parallel'
 
@@ -67,7 +69,7 @@ arg.type_job = 'serial' #careful when this is on and GPU is NOT on
 #arg.experiment_name = 'task_Nov_22_BTSG3_3_3_8D_Adam_xavier_relu_N60000'
 #arg.experiment_name = 'tmp_task_Nov_22_BTSG4_4_2_8D_Adam_xavier_relu_N60000'
 arg.experiment_name = 'tmp_task_Dec_6_BT_256D_Adam_xavier_relu_N60000'
-arg.experiment_name = 'TMP2'
+arg.experiment_name = 'TMP_TMP'
 arg.experiment_root_dir = mtf.get_experiment_folder(arg.data_file_name)
 #arg.job_name = 'BTSG1_8D_a19_Adam_200' # job name e.g BTHL_4D_6_12_MGD_200
 #arg.job_name = 'BTSG2_8D_a3_Adam_200'
