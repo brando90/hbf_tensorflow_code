@@ -1,3 +1,4 @@
+FROM ubuntu:16.04
 # py 3.5 r10 gpu ubuntu
 RUN pip3 install --upgrade https://storage.googleapis.com/tensorflow/linux/gpu/tensorflow-0.10.0-cp35-cp35m-linux_x86_64.whl
 
