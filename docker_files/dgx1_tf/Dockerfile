@@ -1,5 +1,8 @@
+#FROM ubuntu:16.04
+FROM gcr.io/tensorflow/tensorflow:latest-py3
 # This means you derive your docker image from the tensorflow docker image
-FROM gcr.io/tensorflow/tensorflow:latest-devel-gpu
+# uses ubuntu 14.04
+#FROM gcr.io/tensorflow/tensorflow:latest-devel-gpu
 
 # you can use apt-get to install the libraries that you need
 RUN apt-get update && apt-get install -y build-essential git libjpeg-dev
