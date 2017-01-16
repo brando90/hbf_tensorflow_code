@@ -11,13 +11,13 @@ RUN apt-get install -y vim
 #RUN pip install --upgrade pip3
 #RUN apt-get install -qy python3-pip
 #RUN apt-get install -qy python3-pip --fix-missing
-RUN apt-get install -qy python3-pip
-RUN pip3 install --upgrade pip
-RUN pip install --upgrade pip
+#RUN apt-get install -qy python3-pip
+#RUN pip3 install --upgrade pip
+#RUN pip install --upgrade pip
 
 # maybe python utilities
-RUN pip install numpy scipy h5py
+#RUN pip install numpy scipy h5py
 
 # you can install keras or tflearn
-RUN pip install git+https://github.com/tflearn/tflearn.git
-RUN pip install keras
+#RUN pip install git+https://github.com/tflearn/tflearn.git
+#RUN pip install keras
