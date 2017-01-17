@@ -1,18 +1,14 @@
 # This means you derive your docker image from the tensorflow docker image
-# FROM gcr.io/tensorflow/tensorflow:latest-devel-gpu
 FROM gcr.io/tensorflow/tensorflow:latest-devel-gpu-py3
 
-# you can use apt-get to install the libraries that you need
-RUN apt-get update && apt-get install -y build-essential git libjpeg-dev
 # note this is needed to be able to install pip3
-RUN apt-get update
-RUN apt-get install -y build-essential git
+RUN apt-get update && apt-get install -y build-essential git libjpeg-dev
 RUN apt-get install -y vim
 
 ##RUN apt-get install -qy python3
-RUN apt-get install -qy python3-pip
-RUN pip3 install --upgrade pip
-RUN pip install --upgrade pip
+#RUN apt-get install -qy python3-pip
+#RUN pip3 install --upgrade pip
+#RUN pip install --upgrade pip
 
 #Install some stuff my lib needs
 RUN pip3 install numpy
@@ -22,7 +18,7 @@ RUN pip3 install scipy
 RUN pip3 install pdb
 
 # install my library (only when the a container is spun)
-# bash script that configures running container
+# bash script that configures the running container
 ENTRYPOINT ["sh", "/home_simulation_research/hbf_tensorflow_code/docker_files/tf_cpu/container_setup.sh"]
 
 # enviromnet
