@@ -2,6 +2,8 @@
 # FROM gcr.io/tensorflow/tensorflow:latest-devel-gpu
 FROM gcr.io/tensorflow/tensorflow:latest-devel-gpu-py3
 
+# you can use apt-get to install the libraries that you need
+RUN apt-get update && apt-get install -y build-essential git libjpeg-dev
 # note this is needed to be able to install pip3
 RUN apt-get update
 RUN apt-get install -y build-essential git

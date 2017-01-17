@@ -6,18 +6,12 @@ from sklearn.metrics.pairwise import euclidean_distances
 import tensorflow as tf
 from tensorflow.contrib.layers.python.layers import batch_norm as batch_norm
 
+import pdb
+
 def hello_world():
     print( "Hello World!" )
 
-## builders for Networks
-
-# def build_HBF(x, dims, inits, phase_train=None, trainable=True):
-#     (_,inits_W,inits_S) = inits
-#     layer = x
-#     nb_hidden_layers = len(dims)-1
-#     for l in range(1,nb_hidden_layers): # from 1 to L-1
-#         layer = get_HBF_layer(l=str(l),x=layer,init=(inits_W[l],inits_S[l]),dims=(dims[l-1],dims[l]),phase_train=phase_train)
-#     return layer
+## builders for Networks (NN)
 
 def build_standard_NN(arg, x, dims, inits, phase_train=None, trainable_bn=True):
     (_,inits_W,inits_b) = inits
@@ -27,137 +21,7 @@ def build_standard_NN(arg, x, dims, inits, phase_train=None, trainable_bn=True):
         layer = get_NN_layer(arg, l=str(l), x=layer, init=(inits_W[l],inits_b[l]), dims=(dims[l-1], dims[l]), phase_train=phase_train, trainable_bn=trainable_bn)
     return layer
 
-## build layers blocks NN
-
-def build_HBF2(x, dims, inits, phase_train=None, trainable_bn=True,trainable_S=True):
-    (_,inits_W,inits_S) = inits
-    layer = x
-    nb_hidden_layers = len(dims)-1
-    for l in range(1,nb_hidden_layers): # from 1 to L-1
-        #print nb_hidden_layers
-        #print len(inits_W)
-        layer = get_HBF_layer2(l=str(l),x=layer,init=(inits_W[l],inits_S[l]),dims=(dims[l-1],dims[l]),phase_train=phase_train, trainable_bn=trainable_bn,trainable_S=trainable_S)
-        #layer = get_HBF_layer3(l=str(l),x=layer,init=(inits_W[l],inits_S[l]),dims=(dims[l-1],dims[l]),phase_train=phase_train, trainable_bn=trainable_bn,trainable_S=trainable_S)
-    return layer
-
-def get_HBF_layer2(l, x, dims, init, phase_train=None, layer_name='HBFLayer', trainable_bn=True, trainable_S=True):
-    (init_W,init_S) = init
-    with tf.name_scope(layer_name+l):
-        with tf.name_scope('templates'+l):
-            #W = tf.get_variable(name='W'+l, dtype=tf.float64, initializer=init_W, regularizer=None, trainable=True)
-            W = get_W(init_W, l, dims)
-        with tf.name_scope('rbf_stddev'+l):
-            print( '--> init_S: ', init_S)
-            print('--> trainable_S: ', trainable_S)
-            S = tf.get_variable(name='S'+l, dtype=tf.float64, initializer=init_S, regularizer=None, trainable=trainable_S)
-            beta = tf.pow(tf.div( tf.constant(1.0,dtype=tf.float64),S), 2)
-        with tf.name_scope('Z'+l):
-            WW =  tf.reduce_sum(W*W, reduction_indices=0, keep_dims=True) # (1 x D^(l)) = sum( (D^(l-1) x D^(l)), 0 )
-            XX =  tf.reduce_sum(x*x, reduction_indices=1, keep_dims=True) # (M x 1) = sum( (M x D^(l-1)), 1 )
-            # -|| x - w ||^2 = -(-2<x,w> + ||x||^2 + ||w||^2) = 2<x,w> - (||x||^2 + ||w||^2)
-            Delta_tilde = 2.0*tf.matmul(x,W) - tf.add(WW, XX) # (M x D^(l)) - (M x D^(l)) = (M x D^(l-1)) * (D^(l-1) x D^(l)) - (M x D^(l))
-            Z = beta * ( Delta_tilde ) # (M x D^(l))
-        # if phase_train is not None:
-        #     Z = add_batch_norm_layer(l, Z , phase_train, trainable_bn=trainable_bn)
-        #     Z = tf.abs(Z)
-            #A = tf.exp(-Z) # (M x D^(l))
-        with tf.name_scope('A'+l):
-            A = tf.exp(Z) # (M x D^(l))
-        # if phase_train is not None:
-        #     A = add_batch_norm_layer(l, A , phase_train, trainable_bn=trainable_bn)
-            #z = add_batch_norm_layer(l, z, phase_train, trainable_bn=trainable_bn)
-    var_prefix = 'vars_'+layer_name+l
-    put_summaries(var=W,prefix_name=var_prefix+W.name,suffix_text=W.name)
-    put_summaries(var=S,prefix_name=var_prefix+S.name,suffix_text=S.name)
-    act_stats = 'acts_'+layer_name+l
-    put_summaries(Z,prefix_name=act_stats+'Z'+l,suffix_text='Z'+l)
-    put_summaries(A,prefix_name=act_stats+'A'+l,suffix_text='A'+l)
-    put_summaries(Delta_tilde,prefix_name=act_stats+'Delta_tilde'+l,suffix_text='Delta_tilde'+l)
-    put_summaries(beta,prefix_name=act_stats+'beta'+l,suffix_text='beta'+l)
-    return A
-
-def get_HBF_layer3(l, x, dims, init, phase_train=None, layer_name='HBFLayer', trainable_bn=True, trainable_S=True):
-    (init_W,init_S) = init
-    with tf.name_scope(layer_name+l):
-        with tf.name_scope('templates'+l):
-            #W = tf.get_variable(name='W'+l, dtype=tf.float64, initializer=init_W, regularizer=None, trainable=True)
-            W = get_W(init_W, l, dims)
-        with tf.name_scope('rbf_stddev'+l):
-            print( '--> init_S: ', init_S)
-            print( '--> trainable_S: ', trainable_S)
-            S = tf.get_variable(name='S'+l, dtype=tf.float64, initializer=init_S, regularizer=None, trainable=trainable_S)
-            beta = tf.pow(tf.div( tf.constant(1.0,dtype=tf.float64),S), 2)
-        with tf.name_scope('Z'+l):
-            WW =  tf.reduce_sum(W*W, reduction_indices=0, keep_dims=True) # (1 x D^(l)) = sum( (D^(l-1) x D^(l)), 0 )
-            XX =  tf.reduce_sum(x*x, reduction_indices=1, keep_dims=True) # (M x 1) = sum( (M x D^(l-1)), 1 )
-            # -|| x - w ||^2 = -(-2<x,w> + ||x||^2 + ||w||^2) = 2<x,w> - (||x||^2 + ||w||^2)
-            Delta_tilde = 2.0*tf.matmul(x,W) - tf.add(WW, XX) # (M x D^(l)) - (M x D^(l)) = (M x D^(l-1)) * (D^(l-1) x D^(l)) - (M x D^(l))
-
-            #Delta_tilde = tf.Print(Delta_tilde,[Delta_tilde], message="my Delta_tilde-values:",first_n=10)
-
-            Z = beta * ( Delta_tilde ) # (M x D^(l))
-            #Z = tf.Print(Z,[Z], message="Z:",first_n=10)
-        if phase_train is not None:
-            Z = add_batch_norm_layer(l, Z , phase_train, trainable_bn=trainable_bn)
-            #Z = tf.Print(Z,[Z], message="Z:",first_n=10)
-        with tf.name_scope('A'+l):
-            Y = tf.square(Z)
-            #Y = tf.Print(Y,[Y], message="Z:",first_n=10)
-            #
-            init_a = tf.constant(2.0,dtype=tf.float64)
-            a = tf.get_variable(name='a'+l, dtype=tf.float64, initializer=init_a, regularizer=None, trainable=True)
-            precision = tf.pow(tf.div( tf.constant(1.0,dtype=tf.float64),a), 2)
-            precision = 1.0
-            #
-            A = tf.exp(-precision*Y) # (M x D^(l))
-    var_prefix = 'vars_'+layer_name+l
-    put_summaries(var=W,prefix_name=var_prefix+W.name,suffix_text=W.name)
-    put_summaries(var=S,prefix_name=var_prefix+S.name,suffix_text=S.name)
-    act_stats = 'acts_'+layer_name+l
-    put_summaries(Z,prefix_name=act_stats+'Z'+l,suffix_text='Z'+l)
-    put_summaries(Y,prefix_name=act_stats+'Y'+l,suffix_text='Y'+l)
-    put_summaries(A,prefix_name=act_stats+'A'+l,suffix_text='A'+l)
-    put_summaries(Delta_tilde,prefix_name=act_stats+'Delta_tilde'+l,suffix_text='Delta_tilde'+l)
-    put_summaries(beta,prefix_name=act_stats+'beta'+l,suffix_text='beta'+l)
-    return A
-
-def put_summaries(var, prefix_name, suffix_text = ''):
-    """Attach a lot of summaries to a Tensor."""
-    prefix_title = prefix_name+'/'
-    with tf.name_scope('summaries'):
-        mean = tf.reduce_mean(var)
-        tf.scalar_summary(prefix_title+'mean'+suffix_text, mean)
-        with tf.name_scope('stddev'):
-            stddev = tf.sqrt(tf.reduce_sum(tf.square(var - mean)))
-        tf.scalar_summary(prefix_title+'stddev'+suffix_text, stddev)
-        tf.scalar_summary(prefix_title+'max'+suffix_text, tf.reduce_max(var))
-        tf.scalar_summary(prefix_title+'min'+suffix_text, tf.reduce_min(var))
-        tf.histogram_summary(prefix_name, var)
-
-# def put_summaries_absolute_val(var, prefix_name, suffix_text = ''):
-#     """Attach a lot of summaries to a Tensor to check is absolute value"""
-#     prefix_title = prefix_name+'/'
-#     with tf.name_scope('summaries'):
-#         mean = tf.reduce_mean(var)
-#         tf.scalar_summary(prefix_title+'mean'+suffix_text, mean)
-#         with tf.name_scope('stddev'):
-#             stddev = tf.sqrt(tf.reduce_sum(tf.square(var - mean)))
-#         tf.scalar_summary(prefix_title+'stddev'+suffix_text, stddev)
-#         tf.scalar_summary(prefix_title+'max'+suffix_text, tf.reduce_max(var))
-#         tf.scalar_summary(prefix_title+'min'+suffix_text, tf.reduce_min(var))
-#         tf.histogram_summary(prefix_name, var)
-
-def variable_summaries(var, name):
-    """Attach a lot of summaries to a Tensor."""
-    with tf.name_scope('summaries'):
-        mean = tf.reduce_mean(var)
-        tf.scalar_summary('mean/' + name, mean)
-    with tf.name_scope('stddev'):
-        stddev = tf.sqrt(tf.reduce_sum(tf.square(var - mean)))
-    tf.scalar_summary('sttdev/' + name, stddev)
-    tf.scalar_summary('max/' + name, tf.reduce_max(var))
-    tf.scalar_summary('min/' + name, tf.reduce_min(var))
-    tf.histogram_summary(name, var)
+## building blocks for NN
 
 def get_NN_layer(arg, l, x, dims, init, phase_train=None, scope="NNLayer", trainable_bn=True):
     (init_W,init_b) = init
@@ -186,117 +50,6 @@ def get_NN_layer(arg, l, x, dims, init, phase_train=None, scope="NNLayer", train
         #put_summaries(Delta_tilde,prefix_name=act_stats+'Delta_tilde'+l,suffix_text='Delta_tilde'+l)
         #put_summaries(beta,prefix_name=act_stats+'beta'+l,suffix_text='beta'+l)
     return A
-
-## 4D BT
-
-def build_binary_tree_4D_hidden_layer(x,arg,phase_train=None):
-    ## 1st hidden conv layer
-    Z1 = get_binary_branch(x,arg,l=0,name='Conv_Layer') # N x D_conv_flat = N x (filter_size*nb_filters)
-    if phase_train is not None:
-        Z1 = add_batch_norm_layer(l='BN1',x=flat_conv,phase_train=phase_train,trainable_bn=arg.trainable_bn)
-    A1 = arg.act( Z1 ) # N x D_conv_flat = N x (filter_size*nb_filters)
-    ## 2nd hidden layer
-    b2 = tf.Variable(tf.constant(0.1, shape=[arg.nb_final_hidden_units]))
-    W2 = get_W_BT4D(arg,l=1,name='hidden_layer',dtype=tf.float32)
-    Z2 = tf.matmul(A1,W2) + b2
-    if phase_train is not None:
-        Z2 = add_batch_norm_layer(l='BN2',x=Z2,phase_train=phase_train,trainable_bn=trainable_bn)
-    A2 = arg.act( Z2 )
-    # 3rd fully connected layer
-    #init_C = tf.truncated_normal(shape=[arg.nb_final_hidden_units,1], mean=arg.mean[2], stddev=arg.stddev[2], dtype=tf.float32, seed=None, name=None)
-    #C = tf.get_variable(name='W'+'Out_Layer',dtype=tf.float32,initializer=init_C,regularizer=None,trainable=True)
-    C = get_W(init_W=arg.weights_initializer,l='Out_Layer',dims=[arg.nb_final_hidden_units,1],dtype=tf.float32)
-    f = tf.matmul(A2,C)
-    return f
-
-def get_binary_branch(x,arg,l,name=None):
-    '''
-        stride_convd1 # controls the stride for 1D convolution
-    '''
-    # filter shape is "[filter_height, filter_width, in_channels, out_channels]"
-    W_filters = get_W_conv2d(arg,l,name) # [1,arg.filter_size,1,arg.nb_filters]
-    b = tf.Variable( tf.constant(0.1, shape=[arg.nb_filters]) )
-    # 1D conv˚
-    conv = tf.nn.conv2d(input=x, filter=W_filters, strides=[1, 1, arg.stride_convd1, 1], padding="SAME", name="conv")
-    flat_conv = tf.reshape(conv + b, [-1,arg.filter_size*arg.nb_filters])
-    return flat_conv
-
-# def build_binary_tree(x,filter_size,nb_filters,mean,stddev,stride_convd1=2,phase_train=None,trainable_bn=True):
-#     ## conv layer
-#     l = 'Conv_Layer'
-#     flat_conv = get_binary_branch(l,x,filter_size,nb_filters,mean=mean,stddev=stddev,stride_convd1=stride_convd1) # N x D_conv_flat = N x (filter_size*nb_filters)
-#
-#     if phase_train is not None:
-#         l = 'BN'
-#         flat_conv = add_batch_norm_layer(l, flat_conv, phase_train, trainable_bn=trainable_bn)
-#
-#     ## fully connected layer
-#     init_W = tf.truncated_normal(shape=[filter_size*nb_filters,1], mean=mean, stddev=stddev, dtype=tf.float32, seed=None, name=None)
-#     print( '-->-->-->-->-->-->-->-->-->-->-->init_C: ', init_W)
-#     l = 'Out_Layer'
-#     C = tf.get_variable(name='W'+l, dtype=tf.float32, initializer=init_W, regularizer=None, trainable=True)
-#     mdl = tf.matmul(flat_conv,C)
-#     return mdl
-
-##
-
-def build_binary_tree_8D(x,nb_filters1,nb_filters2,mean1=0.0,stddev1=0.1,mean2=0.0,stddev2=0.01,mean3=0.0,stddev3=0.1,stride_conv1=2):
-    # filter shape is "[filter_height, filter_width, in_channels, out_channels]"
-    filter_size1 = 2
-    # W
-    l='conv1'
-    init_W = tf.truncated_normal(shape=[1,filter_size1,1,nb_filters1], mean=mean1, stddev=stddev1, dtype=tf.float32, seed=None, name=None)
-    W_filters = tf.get_variable(name='W'+l, dtype=tf.float32, initializer=init_W, regularizer=None, trainable=True)
-    #bias
-    b1 = tf.Variable( tf.constant(0.1, shape=[nb_filters1]) )
-    # BT1
-    x1 = tf.slice(x, begin=[0,0,0,0],size=[-1,-1,4,-1], name=None)
-    x2 = tf.slice(x, begin=[0,0,4,0],size=[-1,-1,4,-1], name=None)
-    Y_11 = get_binary_subtree(l='Y11',x=x1,W_filters=W_filters,b=b1,nb_filters=nb_filters1,stride_convd1=stride_conv1) # M, 2 x nb_filters1
-    Y_12 = get_binary_subtree(l='Y12',x=x2,W_filters=W_filters,b=b1,nb_filters=nb_filters1,stride_convd1=stride_conv1) # M, 2 x nb_filters1
-    Y_1 = tf.concat(1, [Y_11, Y_12]) # M, 4 x nb_filters
-    Y_1 = tf.reshape(Y_1, [-1,1,(2*filter_size1)*nb_filters1,1]) # [N, 1, D1, 1] = [N, 1, 2d1, 1]
-    # filter shape is "[filter_height, filter_width, in_channels, out_channels]"
-    d1 = filter_size1*nb_filters1
-    stride_conv2 = d1
-    filter_size2 = d1
-    # W_tilde
-    l='conv2'
-    init_W_tilde = tf.truncated_normal(shape=[1,filter_size2,1,nb_filters2], mean=mean2, stddev=stddev2, dtype=tf.float32, seed=None, name=None)
-    W_filters_tilde = tf.get_variable(name='W'+l, dtype=tf.float32, initializer=init_W_tilde, regularizer=None, trainable=True)
-    # biases
-    b2 = tf.Variable( tf.constant(0.1, shape=[nb_filters2]) )
-    # BT2
-    Y_21 = get_binary_subtree(l='Y21',x=Y_1,W_filters=W_filters_tilde,b=b2,nb_filters=nb_filters2,stride_convd1=stride_conv2) # M, 2 x nb_filters2
-    d_out = 2*nb_filters2
-    Y_2 = tf.reshape(Y_21, [-1,d_out])
-    # Out
-    l = 'Out_Layer'
-    init_C = tf.truncated_normal(shape=[d_out,1], mean=mean3, stddev=stddev3, dtype=tf.float32, seed=None, name=None)
-    C = tf.get_variable(name='W'+l, dtype=tf.float32, initializer=init_C, regularizer=None, trainable=True)
-    mdl = tf.matmul(Y_2,C)
-    return mdl
-
-def get_binary_subtree(l,x,W_filters,b,nb_filters,stride_convd1=2):
-    '''
-        x = (M, 1, D, 1)
-        b = [nb_filters]
-        W_filters = (1,filter_size,1,nb_filters)  == "[filter_height, filter_width, in_channels, out_channels]"
-        filter shape is "[filter_height, filter_width, in_channels, out_channels]"
-        stride_convd1 # controls the stride for 1D convolution
-    '''
-    # 1D conv
-    # M, 1, 2, nb_filters
-    conv = tf.nn.conv2d(input=x, filter=W_filters, strides=[1, 1, stride_convd1, 1], padding="VALID", name="conv")
-    # get activations
-    A = tf.nn.relu( conv + b ) # M, 1, 2, nb_filters
-    A_flat = tf.reshape(A, [-1,2*nb_filters]) # M , filter_size*nb_filters
-    return A_flat
-
-#
-
-def build_binary_tree_16D(x,nb_filters1,nb_filters2,mean,stddev,stride_convd1=2):
-    pass
 
 ##
 
@@ -330,7 +83,9 @@ def get_W_BT4D(arg,l,name,dtype=tf.float32):
     return W
 
 def get_W(init_W,l,dims,dtype=tf.float64):
-    if isinstance(init_W, tf.python.framework.ops.Tensor):
+    #pdb.set_trace()
+    #if isinstance(init_W, tf.python.framework.ops.Tensor):
+    if isinstance(init_W, tf.Tensor):
         W = tf.get_variable(name='W'+l, dtype=dtype, initializer=init_W, regularizer=None, trainable=True)
     else:
         (dim_input,dim_out) = dims
@@ -399,15 +154,6 @@ def build_summed_NN(x, dims, inits, phase_train=None):
         layer = get_summation_layer(str(l),layer,inits_C[l])
     return layer
 
-def build_summed_HBF(x, dims, inits, phase_train=None):
-    (inits_C,inits_W,inits_S) = inits
-    layer = x
-    nb_hidden_layers = len(dims)-1
-    for l in range(1,nb_hidden_layers): # from 1 to L-1
-        layer = get_HBF_layer(l=str(l),x=layer,init=(inits_W[l],inits_S[l]),dims=(dims[l-1],dims[l]),phase_train=phase_train)
-        layer = get_summation_layer(str(l),layer,inits_C[l])
-    return layer
-
 def get_summation_layer(l, x, init, layer_name="SumLayer"):
     with tf.name_scope(layer_name+l):
         #print init
@@ -468,3 +214,148 @@ def standard_batch_norm(l, x, n_out, phase_train, scope='BN'):
 #         A = act(Z, 'activation')
 #         tf.histogram_summary(layer_name + '/activations', A)
 #         return A
+
+## harcoded BT NN
+
+def build_binary_tree_4D_hidden_layer(x,arg,phase_train=None):
+    ## 1st hidden conv layer
+    Z1 = get_binary_branch(x,arg,l=0,name='Conv_Layer') # N x D_conv_flat = N x (filter_size*nb_filters)
+    if phase_train is not None:
+        Z1 = add_batch_norm_layer(l='BN1',x=flat_conv,phase_train=phase_train,trainable_bn=arg.trainable_bn)
+    A1 = arg.act( Z1 ) # N x D_conv_flat = N x (filter_size*nb_filters)
+    ## 2nd hidden layer
+    b2 = tf.Variable(tf.constant(0.1, shape=[arg.nb_final_hidden_units]))
+    W2 = get_W_BT4D(arg,l=1,name='hidden_layer',dtype=tf.float32)
+    Z2 = tf.matmul(A1,W2) + b2
+    if phase_train is not None:
+        Z2 = add_batch_norm_layer(l='BN2',x=Z2,phase_train=phase_train,trainable_bn=trainable_bn)
+    A2 = arg.act( Z2 )
+    # 3rd fully connected layer
+    #init_C = tf.truncated_normal(shape=[arg.nb_final_hidden_units,1], mean=arg.mean[2], stddev=arg.stddev[2], dtype=tf.float32, seed=None, name=None)
+    #C = tf.get_variable(name='W'+'Out_Layer',dtype=tf.float32,initializer=init_C,regularizer=None,trainable=True)
+    C = get_W(init_W=arg.weights_initializer,l='Out_Layer',dims=[arg.nb_final_hidden_units,1],dtype=tf.float32)
+    f = tf.matmul(A2,C)
+    return f
+
+def get_binary_branch(x,arg,l,name=None):
+    '''
+        stride_convd1 # controls the stride for 1D convolution
+    '''
+    # filter shape is "[filter_height, filter_width, in_channels, out_channels]"
+    W_filters = get_W_conv2d(arg,l,name) # [1,arg.filter_size,1,arg.nb_filters]
+    b = tf.Variable( tf.constant(0.1, shape=[arg.nb_filters]) )
+    # 1D conv˚
+    conv = tf.nn.conv2d(input=x, filter=W_filters, strides=[1, 1, arg.stride_convd1, 1], padding="SAME", name="conv")
+    flat_conv = tf.reshape(conv + b, [-1,arg.filter_size*arg.nb_filters])
+    return flat_conv
+
+# def build_binary_tree(x,filter_size,nb_filters,mean,stddev,stride_convd1=2,phase_train=None,trainable_bn=True):
+#     ## conv layer
+#     l = 'Conv_Layer'
+#     flat_conv = get_binary_branch(l,x,filter_size,nb_filters,mean=mean,stddev=stddev,stride_convd1=stride_convd1) # N x D_conv_flat = N x (filter_size*nb_filters)
+#
+#     if phase_train is not None:
+#         l = 'BN'
+#         flat_conv = add_batch_norm_layer(l, flat_conv, phase_train, trainable_bn=trainable_bn)
+#
+#     ## fully connected layer
+#     init_W = tf.truncated_normal(shape=[filter_size*nb_filters,1], mean=mean, stddev=stddev, dtype=tf.float32, seed=None, name=None)
+#     print( '-->-->-->-->-->-->-->-->-->-->-->init_C: ', init_W)
+#     l = 'Out_Layer'
+#     C = tf.get_variable(name='W'+l, dtype=tf.float32, initializer=init_W, regularizer=None, trainable=True)
+#     mdl = tf.matmul(flat_conv,C)
+#     return mdl
+
+def build_binary_tree_8D(x,nb_filters1,nb_filters2,mean1=0.0,stddev1=0.1,mean2=0.0,stddev2=0.01,mean3=0.0,stddev3=0.1,stride_conv1=2):
+    # filter shape is "[filter_height, filter_width, in_channels, out_channels]"
+    filter_size1 = 2
+    # W
+    l='conv1'
+    init_W = tf.truncated_normal(shape=[1,filter_size1,1,nb_filters1], mean=mean1, stddev=stddev1, dtype=tf.float32, seed=None, name=None)
+    W_filters = tf.get_variable(name='W'+l, dtype=tf.float32, initializer=init_W, regularizer=None, trainable=True)
+    #bias
+    b1 = tf.Variable( tf.constant(0.1, shape=[nb_filters1]) )
+    # BT1
+    x1 = tf.slice(x, begin=[0,0,0,0],size=[-1,-1,4,-1], name=None)
+    x2 = tf.slice(x, begin=[0,0,4,0],size=[-1,-1,4,-1], name=None)
+    Y_11 = get_binary_subtree(l='Y11',x=x1,W_filters=W_filters,b=b1,nb_filters=nb_filters1,stride_convd1=stride_conv1) # M, 2 x nb_filters1
+    Y_12 = get_binary_subtree(l='Y12',x=x2,W_filters=W_filters,b=b1,nb_filters=nb_filters1,stride_convd1=stride_conv1) # M, 2 x nb_filters1
+    Y_1 = tf.concat(1, [Y_11, Y_12]) # M, 4 x nb_filters
+    Y_1 = tf.reshape(Y_1, [-1,1,(2*filter_size1)*nb_filters1,1]) # [N, 1, D1, 1] = [N, 1, 2d1, 1]
+    # filter shape is "[filter_height, filter_width, in_channels, out_channels]"
+    d1 = filter_size1*nb_filters1
+    stride_conv2 = d1
+    filter_size2 = d1
+    # W_tilde
+    l='conv2'
+    init_W_tilde = tf.truncated_normal(shape=[1,filter_size2,1,nb_filters2], mean=mean2, stddev=stddev2, dtype=tf.float32, seed=None, name=None)
+    W_filters_tilde = tf.get_variable(name='W'+l, dtype=tf.float32, initializer=init_W_tilde, regularizer=None, trainable=True)
+    # biases
+    b2 = tf.Variable( tf.constant(0.1, shape=[nb_filters2]) )
+    # BT2
+    Y_21 = get_binary_subtree(l='Y21',x=Y_1,W_filters=W_filters_tilde,b=b2,nb_filters=nb_filters2,stride_convd1=stride_conv2) # M, 2 x nb_filters2
+    d_out = 2*nb_filters2
+    Y_2 = tf.reshape(Y_21, [-1,d_out])
+    # Out
+    l = 'Out_Layer'
+    init_C = tf.truncated_normal(shape=[d_out,1], mean=mean3, stddev=stddev3, dtype=tf.float32, seed=None, name=None)
+    C = tf.get_variable(name='W'+l, dtype=tf.float32, initializer=init_C, regularizer=None, trainable=True)
+    mdl = tf.matmul(Y_2,C)
+    return mdl
+
+def get_binary_subtree(l,x,W_filters,b,nb_filters,stride_convd1=2):
+    '''
+        x = (M, 1, D, 1)
+        b = [nb_filters]
+        W_filters = (1,filter_size,1,nb_filters)  == "[filter_height, filter_width, in_channels, out_channels]"
+        filter shape is "[filter_height, filter_width, in_channels, out_channels]"
+        stride_convd1 # controls the stride for 1D convolution
+    '''
+    # 1D conv
+    # M, 1, 2, nb_filters
+    conv = tf.nn.conv2d(input=x, filter=W_filters, strides=[1, 1, stride_convd1, 1], padding="VALID", name="conv")
+    # get activations
+    A = tf.nn.relu( conv + b ) # M, 1, 2, nb_filters
+    A_flat = tf.reshape(A, [-1,2*nb_filters]) # M , filter_size*nb_filters
+    return A_flat
+
+## Common
+
+def put_summaries(var, prefix_name, suffix_text = ''):
+    """Attach a lot of summaries to a Tensor."""
+    prefix_title = prefix_name+'/'
+    with tf.name_scope('summaries'):
+        mean = tf.reduce_mean(var)
+        #tf.scalar_summary(prefix_title+'mean'+suffix_text, mean)
+        tf.summary.scalar(prefix_title+'mean'+suffix_text, mean)
+        with tf.name_scope('stddev'):
+            stddev = tf.sqrt(tf.reduce_sum(tf.square(var - mean)))
+        tf.summary.scalar(prefix_title+'stddev'+suffix_text, stddev)
+        tf.summary.scalar(prefix_title+'max'+suffix_text, tf.reduce_max(var))
+        tf.summary.scalar(prefix_title+'min'+suffix_text, tf.reduce_min(var))
+        tf.summary.histogram(prefix_name, var)
+
+# def put_summaries_absolute_val(var, prefix_name, suffix_text = ''):
+#     """Attach a lot of summaries to a Tensor to check is absolute value"""
+#     prefix_title = prefix_name+'/'
+#     with tf.name_scope('summaries'):
+#         mean = tf.reduce_mean(var)
+#         tf.scalar_summary(prefix_title+'mean'+suffix_text, mean)
+#         with tf.name_scope('stddev'):
+#             stddev = tf.sqrt(tf.reduce_sum(tf.square(var - mean)))
+#         tf.scalar_summary(prefix_title+'stddev'+suffix_text, stddev)
+#         tf.scalar_summary(prefix_title+'max'+suffix_text, tf.reduce_max(var))
+#         tf.scalar_summary(prefix_title+'min'+suffix_text, tf.reduce_min(var))
+#         tf.histogram_summary(prefix_name, var)
+
+def variable_summaries(var, name):
+    """Attach a lot of summaries to a Tensor."""
+    with tf.name_scope('summaries'):
+        mean = tf.reduce_mean(var)
+        tf.summary.scalar('mean/' + name, mean)
+    with tf.name_scope('stddev'):
+        stddev = tf.sqrt(tf.reduce_sum(tf.square(var - mean)))
+    tf.summary.scalar('sttdev/' + name, stddev)
+    tf.summary.scalar('max/' + name, tf.reduce_max(var))
+    tf.summary.scalar('min/' + name, tf.reduce_min(var))
+    tf.summary.histogram(name, var)

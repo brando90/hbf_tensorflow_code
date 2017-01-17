@@ -60,7 +60,7 @@ arg.task_folder_name = mtf.get_experiment_folder(arg.data_file_name) #om_f_4d_co
 arg.N_frac = 60000
 print('arg.N_frac: ', arg.N_frac)
 #
-arg.nb_array_jobs = 5
+arg.nb_array_jobs = 1
 arg.type_job = 'serial' #careful when this is on and GPU is NOT on
 #arg.type_job = 'slurm_array_parallel'
 

@@ -375,10 +375,10 @@ def main_nn(arg):
 
     ##
     with tf.name_scope('learning_rate'):
-        learning_rate_scalar_summary = tf.scalar_summary("learning_rate", learning_rate)
+        learning_rate_scalar_summary = tf.summary.scalar("learning_rate", learning_rate)
 
     with tf.name_scope("l2_loss") as scope:
-        ls_scalar_summary = tf.scalar_summary("l2_loss", l2_loss)
+        ls_scalar_summary = tf.summary.scalar("l2_loss", l2_loss)
 
     if arg.data_file_name == 'task_MNIST_flat_auto_encoder':
         with tf.name_scope('input_reshape'):
@@ -394,7 +394,7 @@ def main_nn(arg):
             tf.image_summary('reconstruct', image_shaped_input_y, 10)
 
     def register_all_variables_and_grads(y):
-        all_vars = tf.all_variables()
+        all_vars = tf.global_variables()
         grad_vars = opt.compute_gradients(y,all_vars) #[ (gradient,variable) ]
         for (dldw,v) in grad_vars:
             if dldw != None:
@@ -402,7 +402,7 @@ def main_nn(arg):
                 suffix_text = 'dJd'+v.name
                 #mtf.put_summaries(var=tf.sqrt( tf.reduce_sum(tf.square(dldw)) ),prefix_name=prefix_name,suffix_text=suffix_text)
                 mtf.put_summaries(var=tf.abs(dldw),prefix_name=prefix_name,suffix_text='_abs_'+suffix_text)
-                tf.histogram_summary('hist'+prefix_name, dldw)
+                tf.summary.histogram('hist'+prefix_name, dldw)
 
 
     register_all_variables_and_grads(y)
@@ -471,7 +471,7 @@ def main_nn(arg):
                 fetches_cv = l2_loss
                 fetches_test = l2_loss
 
-            sess.run( tf.initialize_all_variables() )
+            sess.run( tf.global_variables_initializer() )
             for i in range(arg.steps):
                 ## Create fake data for y = W.x + b where W = 2, b = 0
                 #(batch_xs, batch_ys) = get_batch_feed(X_train, Y_train, M, phase_train)

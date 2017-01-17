@@ -17,10 +17,12 @@ def get_data(arg):
     '''
     Hanldes getting a data set.
     '''
-    if not 'MNIST' in arg.data_file_name:
-        X_train, Y_train, X_cv, Y_cv, X_test, Y_test = get_data_from_file(dirpath=arg.data_dirpath,file_name=arg.data_file_name)
+    if 'MNIST' in arg.data_file_name:
+        X_train, Y_train, X_cv, Y_cv, X_test, Y_tes = handle_mnist(arg) #TODO
+    elif 'CIFAR' in arg.data_file_name:
+        X_train, Y_train, X_cv, Y_cv, X_test, Y_test = handle_cifar(arg) #TODO
     else:
-        X_train, Y_train, X_cv, Y_cv, X_test, Y_tes = handle_mnist_data_set(arg)
+        X_train, Y_train, X_cv, Y_cv, X_test, Y_test = get_data_from_file(dirpath=arg.data_dirpath,file_name=arg.data_file_name)
     return X_train, Y_train, X_cv, Y_cv, X_test, Y_test
 
 def get_data_from_file(dirpath,file_name):
@@ -42,6 +44,10 @@ def get_data_from_file(dirpath,file_name):
     X_test = npzfile['X_test']
     Y_test = npzfile['Y_test']
     return (X_train, Y_train, X_cv, Y_cv, X_test, Y_test)
+
+def get_cifar():
+    # TODO
+    return None
 
 #
 
@@ -110,7 +116,7 @@ def generate_data_from_krls():
 
 #
 
-def handle_mnist_data(arg):
+def handle_mnist(arg):
     # TODO
     if task_name == 'task_MNIST_flat':
         mnist = input_data.read_data_sets("MNIST_data/", one_hot=True)
