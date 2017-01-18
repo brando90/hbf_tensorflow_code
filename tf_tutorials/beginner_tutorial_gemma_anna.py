@@ -12,6 +12,7 @@ b = tf.Variable(tf.constant(0.1, shape=[10]))
 #Wx_b = tf.matmul(x, W) + b
 mdl = x
 for i in range(5):
+
     mdl = tf.nn.relu( tf.matmul(mdl, W) + b )
 y = tf.nn.softmax(Wx_b) # model
 ### training

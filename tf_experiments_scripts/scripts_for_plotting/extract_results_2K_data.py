@@ -167,4 +167,5 @@ def display_oct_relu_with_noise():
 #     plt.show()
 
 if __name__ == '__main__':
+    print('main 2K')
     display_oct_relu_with_noise()

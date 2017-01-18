@@ -37,7 +37,7 @@ def main():
         x = tf.placeholder(tf.float32, [None, 784])
         #y = get_mdl(x)
         with tf.variable_scope('stid_'+str(i)):
-            y = get_mdl_get_var(x)
+            vy = get_mdl_get_var(x)
         y_ = tf.placeholder(tf.float32, [None, 10])
         #
         cross_entropy = tf.reduce_mean( -tf.reduce_sum(y_ * tf.log(y), reduction_indices=[1]) )
@@ -48,8 +48,10 @@ def main():
             sess.run(tf.initialize_all_variables())
             # we'll run the training step 1000 times
             for i in range(100):
-              batch_xs, batch_ys = mnist.train.next_batch(50)
-              sess.run(fetches=train_step, feed_dict={x: batch_xs, y_: batch_ys})
+                if i%25 == 0:
+                    train_error = sess.run(fetches=accuracy, feed_dict=feed_dict_train)
+                batch_xs, batch_ys = mnist.train.next_batch(50)
+                sess.run(fetches=train_step, feed_dict={x: batch_xs, y_: batch_ys})
             # list of booleans indicating correct predictions
             correct_prediction = tf.equal(tf.argmax(y,1), tf.argmax(y_,1))
             #prints accuracy of model

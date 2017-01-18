@@ -8,9 +8,15 @@ import my_tf_pkg as mtf
 
 import pdb
 
-f = mtf.f_8D_conv_test
-file_name = 'f_8D_conv_test.npz'
-X_train, Y_train, X_cv, Y_cv, X_test, Y_test = mtf.make_data_set_8D(f, file_name)
+logD = 8
+D = 2**logD
+f,h_list,params = mtf.get_ppt_function(L=logD)
+file_name = './data/f_test.npz'
+N = 15
+N_train=N, N_cv=N, N_test=N
+print('file_name ', file_name)
+data = mtf.generate_and_save_data_set_general_D(file_name,f,D,params=params,N_train=N_train,N_cv=N_cv,N_test=N_test,low_x=-1,high_x=1)
+X_train, Y_train, X_cv, Y_cv, X_test, Y_test = data
 
 print('max: ', np.max(Y_train))
 print('min: ', np.min(Y_train))

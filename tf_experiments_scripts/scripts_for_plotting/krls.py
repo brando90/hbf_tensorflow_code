@@ -61,10 +61,10 @@ def plot_errors(nb_centers,rbf_errors,xlabel='number of units',y_label='squared 
     plt.plot(nb_centers, rbf_errors, colour+'o')
     #plt.title("Erors vs centers")
 
-def plot_values(x_values,y_values,xlabel='number of units',y_label='squared error (l2 loss)',label='Errors',markersize=3,colour='b'):
+def plot_values(x_values,y_values,xlabel='number of units',y_label='squared error (l2 loss)',label='Errors',markersize=3,colour='b',linestyle='-'):
     plt.xlabel(xlabel)
     plt.ylabel(y_label)
-    plt.plot(x_values, y_values, colour, label=label, markersize=3)
+    plt.plot(x_values, y_values, label=label, markersize=3,linestyle=linestyle)
     plt.plot(x_values, y_values, colour+'o')
     #plt.title("Erors vs centers")
 
@@ -72,7 +72,7 @@ def plot_errors_and_bars(nb_centers,rbf_errors,rbf_error_std,xlabel='Errors',y_l
     plt.xlabel(xlabel)
     plt.ylabel(y_label)
     plt.plot(nb_centers, rbf_errors, colour, label=label, markersize=3)
-    plt.plot(nb_centers, rbf_errors, colour+'o')
+    #plt.plot(nb_centers, rbf_errors, colour+'o')
     plt.errorbar(nb_centers, rbf_errors, yerr=rbf_error_std)
     #plt.title("Erors vs units")
 

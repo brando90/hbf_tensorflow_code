@@ -1,5 +1,9 @@
 import tensorflow as tf
 
+#might need to add cuda and cdnn (in polestar)
+#module add cudnn/5
+#module add cuda/7.5
+
 #To find out which devices your operations and tensors are assigned to, create the session with log_device_placement configuration option set to True.
 
 # Creates a graph.

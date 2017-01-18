@@ -18,14 +18,19 @@ arg.data_dirpath = './data/'
 #arg.data_file_name = 'f_4D_conv_2nd'
 arg.data_file_name = 'f_8D_conv_cos_poly1_poly1_shuffled'
 arg.data_file_name = 'f_8D_conv_quad_cubic_sqrt_shuffled'
+arg.data_file_name = 'f_8D_shallow_synthetic_units_5'
 X_train, Y_train, X_cv, Y_cv, X_test, Y_test = mtf.get_data(arg)
 
-print('\n-----> ', arg)
+print('\ng-----> ', arg)
 print('\n')
 
 print(X_train)
 print(X_cv)
 print(X_test)
+
+print(X_train.shape)
+print(X_cv.shape)
+print(X_test.shape)
 
 print('max: ', np.max(Y_train))
 print('min: ', np.min(Y_train))
