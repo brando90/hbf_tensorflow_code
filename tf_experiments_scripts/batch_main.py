@@ -29,13 +29,18 @@ print(ns)
 ###
 arg = ns.Namespace()
 
-# to run locally
-#arg.data_dirpath = './data/'
-#prefix_path = '../../%s/%s'
+#
+arg.nb_array_jobs = 1
+arg.type_job = 'serial' #careful when this is on and GPU is NOT on
+#arg.type_job = 'slurm_array_parallel'
+
+# to run locally: python batch_main.py -sj sj
+arg.data_dirpath = './data/'
+prefix_path = '../../%s/%s'
 
 # to run in docker
-arg.data_dirpath = '/home_simulation_research/hbf_tensorflow_code/tf_experiments_scripts/data/'
-prefix_path = '/home_simulation_research/simulation_results_scripts/%s/%s'
+#arg.data_dirpath = '/home_simulation_research/hbf_tensorflow_code/tf_experiments_scripts/data/'
+#prefix_path = '/home_simulation_research/simulation_results_scripts/%s/%s'
 ##
 
 #arg.data_file_name = 'h_gabor_data_and_mesh'
@@ -59,10 +64,6 @@ arg.task_folder_name = mtf.get_experiment_folder(arg.data_file_name) #om_f_4d_co
 #
 arg.N_frac = 60000
 print('arg.N_frac: ', arg.N_frac)
-#
-arg.nb_array_jobs = 1
-arg.type_job = 'serial' #careful when this is on and GPU is NOT on
-#arg.type_job = 'slurm_array_parallel'
 
 #arg.experiment_name = 'task_Nov_22_BTSG1_2_3_8D_Adam_xavier_relu_N60000' # task_Oct_10_BT4D_MGD_xavier_relu_N2000 e.g. task_August_10_BT
 #arg.experiment_name = 'task_Nov_22_BTSG2_3_2_8D_Adam_xavier_relu_N60000'
@@ -243,21 +244,21 @@ else:
     raise ValueError('Need to use a valid model, incorrect or unknown model %s give.'%arg.mdl)
 
 #steps
-#arg.steps_low = int(1.33334*60000)
-arg.steps_low = int(1*20)
+arg.steps_low = int(1.33334*60000)
+#arg.steps_low = int(1*20)
 arg.steps_high = arg.steps_low+1
 arg.get_steps = lambda arg: int( np.random.randint(low=arg.steps_low ,high=arg.steps_high) )
 
-arg.M_low = 2
-arg.M_high = 3
-arg.get_batch_size = lambda arg: int(np.random.randint(low=arg.M_low , high=arg.M_high))
-# arg.potential_batch_sizes = [16,32,64,128,256,512]
-# def get_power2_batch_size(arg):
-#     i = np.random.randint( low=0, high=len(arg.potential_batch_sizes) )
-#     batch_size = arg.potential_batch_sizes[i]
-#     return batch_size
-#arg.get_batch_size = get_power2_batch_size
-arg.report_error_freq = 5
+# arg.M_low = 2
+# arg.M_high = 3
+# arg.get_batch_size = lambda arg: int(np.random.randint(low=arg.M_low , high=arg.M_high))
+arg.potential_batch_sizes = [16,32,64,128,256,512,1024]
+def get_power2_batch_size(arg):
+    i = np.random.randint( low=0, high=len(arg.potential_batch_sizes) )
+    batch_size = arg.potential_batch_sizes[i]
+    return batch_size
+arg.get_batch_size = get_power2_batch_size
+arg.report_error_freq = 50
 
 arg.low_log_const_learning_rate, arg.high_log_const_learning_rate = -0.5, -5
 arg.get_log_learning_rate =  lambda arg: np.random.uniform(low=arg.low_log_const_learning_rate, high=arg.high_log_const_learning_rate)

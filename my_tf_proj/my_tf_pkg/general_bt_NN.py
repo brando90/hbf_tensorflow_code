@@ -251,7 +251,7 @@ class TestNN_BT(unittest.TestCase):
         mdl = mtf.build_binary_tree_4D_hidden_layer(x,arg,phase_train=None)
         return mdl
 
-    def test_NN_BT4D(self,M=2,D=4,F=[None,3,5],L=2):
+    def _test_NN_BT4D(self,M=2,D=4,F=[None,3,5],L=2):
         print('\n -------test'+str(D))
         #
         x = tf.placeholder(tf.float32, shape=[None,1,D,1], name='x-input') #[M, 1, D, 1]
@@ -285,27 +285,83 @@ class TestNN_BT(unittest.TestCase):
         X_data = X_data.reshape(M,1,D,1)
         return X_data
 
+    def get_shallow_arg(self,nb_units):
+        arg = ns.Namespace()
+        arg.init_type = 'xavier'
+
+        K = nb_units
+        arg.units = [K]
+        arg.get_W_mu_init = lambda arg: [None, None, 0]
+        arg.std_low, arg.std_high = 0.001, 3.0
+        arg.get_W_std_init = lambda arg: [None, None, float(np.random.uniform(low=arg.std_low, high=arg.std_high, size=1)) ]
+
+        arg.b = 0.1
+        arg.get_b_init = lambda arg: len(arg.dims)*[arg.b]
+
+        arg.act = tf.nn.relu
+        return arg
+
+    def get_shallow(self,arg,x):
+        D = arg.D
+        D_out = arg.D_out
+        X_train, Y_train = None, None
+        phase_train = None
+        arg.trainable_bn = None
+        #
+        arg.dims = [D]+arg.units+[D_out]
+        arg.mu_init_list = arg.get_W_mu_init(arg)
+        arg.std_init_list = arg.get_W_std_init(arg)
+
+        arg.b_init = arg.get_b_init(arg)
+        float_type = tf.float64
+        x = tf.placeholder(float_type, shape=[None, D], name='x-input') # M x D
+
+        nb_layers = len(arg.dims)-1
+        nb_hidden_layers = nb_layers-1
+        (inits_C,inits_W,inits_b) = mtf.get_initilizations_standard_NN(init_type=arg.init_type,dims=arg.dims,mu=arg.mu_init_list,std=arg.std_init_list,b_init=arg.b_init, X_train=X_train, Y_train=Y_train)
+        with tf.name_scope("standardNN") as scope:
+            mdl = mtf.build_standard_NN(arg, x,arg.dims,(None,inits_W,inits_b),phase_train,arg.trainable_bn)
+            mdl = mtf.get_summation_layer(l=str(nb_layers),x=mdl,init=inits_C[0])
+        inits_S = inits_b
+        return mdl
 
     def test_NN_BT256D(self,M=3,logD=8):
         L = logD
         D = 2**L
-        F1 = 1
+        F1 = 1 # <--- EDIT
+        nb_units = 330 # <-- EDIT
         F = [None] + [ F1*(2**l) for l in range(1,L+1) ]
+        print('F ', F)
         print('\n -------test'+str(D))
-        # prepare args to make BT NN
-        arg = self.get_args(L=L,F=F,verbose=True,scope_name='BT_'+str(D)+'D')
         # get data set
         X_data = self.get_data_largeD(logD,D,M)
-        #
-        tf_graph = tf.Graph()
-        with tf.Session(graph=tf_graph) as sess:
+        # prepare args to make BT NN
+        arg = self.get_args(L=L,F=F,verbose=True,scope_name='BT_'+str(D)+'D')
+        tf_graph_high_D = tf.Graph()
+        with tf.Session(graph=tf_graph_high_D) as sess:
             x = tf.placeholder(tf.float32, shape=[None,1,D,1], name='x-input') #[M, 1, D, 1]
             # get NN BT
             bt_mdl = bt_mdl_conv(arg,x)
-            sess.run( tf.initialize_all_variables() )
+            sess.run( tf.global_variables_initializer() )
             bt_output = sess.run(fetches=bt_mdl, feed_dict={x:X_data})
-        tot_nb_params = count_number_trainable_params(tf_graph)
-        print('tot_nb_params ', tot_nb_params)
+        tot_nb_params_BT = count_number_trainable_params(tf_graph_high_D)
+        # prepare args to make shallow NN
+        arg = self.get_shallow_arg(nb_units)
+        arg.D, arg.D_out = D, 1
+        tf_graph_shallow = tf.Graph()
+        with tf.Session(graph=tf_graph_shallow) as sess:
+            x = tf.placeholder(tf.float32, shape=[None,D], name='x-input') #[M, 1, D, 1]
+            # get NN shallow
+            shallow = self.get_shallow(arg,x)
+            sess.run( tf.global_variables_initializer() )
+            #shallow_output = sess.run(fetches=shallow, feed_dict={x:X_data})
+        tot_nb_params_NN = count_number_trainable_params(tf_graph_shallow)
+        #
+        print('==================== \nnb_units: ', nb_units)
+        print('>>>> tot_nb_params_NN: ', tot_nb_params_NN)
+        print('==================== \nF1: ', F1)
+        print('>>>> tot_nb_params_BT: ', tot_nb_params_BT)
+        #
         correct = bt_output
         self.assertIsNotNone(correct)
 
