@@ -1,10 +1,11 @@
 #!/usr/bin/env python
 #SBATCH --job-name=Python
-#SBATCH --array=1-200
+#SBATCH --array=1-50
 #SBATCH --mem=4000
-#SBATCH --time=0-18:20
+#SBATCH --time=3-18:20
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=rene_sax14@yahoo.com
+#SBATCH --gres=gpu:1
 
 #from __future__ import print_function
 #tensorboard --logdir=/tmp/mdl_logs
@@ -30,13 +31,13 @@ print(ns)
 arg = ns.Namespace()
 
 #
-arg.nb_array_jobs = 1
-arg.type_job = 'serial' #careful when this is on and GPU is NOT on
-#arg.type_job = 'slurm_array_parallel'
+#arg.nb_array_jobs = 1
+#arg.type_job = 'serial' #careful when this is on and GPU is NOT on
+arg.type_job = 'slurm_array_parallel'
 
 # to run locally: python batch_main.py -sj sj
 arg.data_dirpath = './data/'
-prefix_path = '../../%s/%s'
+prefix_path = '../../simulation_results_scripts/%s/%s'
 
 # to run in docker
 #arg.data_dirpath = '/home_simulation_research/hbf_tensorflow_code/tf_experiments_scripts/data/'
@@ -69,18 +70,20 @@ print('arg.N_frac: ', arg.N_frac)
 #arg.experiment_name = 'task_Nov_22_BTSG2_3_2_8D_Adam_xavier_relu_N60000'
 #arg.experiment_name = 'task_Nov_22_BTSG3_3_3_8D_Adam_xavier_relu_N60000'
 #arg.experiment_name = 'tmp_task_Nov_22_BTSG4_4_2_8D_Adam_xavier_relu_N60000'
-arg.experiment_name = 'tmp_task_Dec_6_BT_256D_Adam_xavier_relu_N60000'
-arg.experiment_name = 'TMP_TMP'
+arg.experiment_name = 'task_Jan_19_BT_256D_Adam_xavier_relu_N60000'
+#arg.experiment_name = 'TMP_TMP'
 arg.experiment_root_dir = mtf.get_experiment_folder(arg.data_file_name)
 #arg.job_name = 'BTSG1_8D_a19_Adam_200' # job name e.g BTHL_4D_6_12_MGD_200
 #arg.job_name = 'BTSG2_8D_a3_Adam_200'
 #arg.job_name = 'BTSG3_8D_a2_Adam_200'
 #arg.job_name = 'BTSG4_8D_a1_Adam_200'
-arg.job_name = 'BT_256D_params_Adam_200'
+arg.job_name = 'BT_256D_units4_params1395780_Adam_200'
 
 #arg.experiment_name = 'task_Nov_19_NN_Adam_xavier_relu_N60000' # experiment_name e.g. task_Oct_10_NN_MGD_xavier_relu_N2000
+arg.experiment_name = 'task_Jan_19_NN_256D_Adam_xavier_relu_N60000'
 #arg.experiment_root_dir = mtf.get_experiment_folder(arg.data_file_name)
 #arg.job_name = 'NN_8D_31_Adam_200' # job name e.g NN_4D_31_MGD_200
+arg.job_name = 'NN_256D_units5410_params1395780_Adam_200'
 #
 arg.mdl = 'standard_nn'
 #arg.mdl = 'hbf'
@@ -94,7 +97,7 @@ if arg.mdl == 'standard_nn':
     arg.init_type = 'data_xavier_kern'
     arg.init_type = 'xavier'
 
-    K = 2
+    K = 5410
     arg.units = [K]
     #arg.units = [110]
     #arg.units = [237]
@@ -188,7 +191,7 @@ elif arg.mdl == 'binary_tree_256D_conv_hidden_layer':
     arg.weights_initializer = tf.contrib.layers.xavier_initializer(dtype=tf.float32)
     arg.biases_initializer = tf.constant_initializer(value=0.1, dtype=tf.float32)
     #
-    F1 = 1
+    F1 = 4
     arg.F = [None] + [ F1*(2**l) for l in range(1,L+1) ]
     #
     arg.normalizer_fn = None
@@ -244,8 +247,8 @@ else:
     raise ValueError('Need to use a valid model, incorrect or unknown model %s give.'%arg.mdl)
 
 #steps
-arg.steps_low = int(1.33334*60000)
-#arg.steps_low = int(1*20)
+arg.steps_low = int(2*60000)
+#arg.steps_low = int(1*50)
 arg.steps_high = arg.steps_low+1
 arg.get_steps = lambda arg: int( np.random.randint(low=arg.steps_low ,high=arg.steps_high) )
 
@@ -260,7 +263,7 @@ def get_power2_batch_size(arg):
 arg.get_batch_size = get_power2_batch_size
 arg.report_error_freq = 50
 
-arg.low_log_const_learning_rate, arg.high_log_const_learning_rate = -0.5, -5
+arg.low_log_const_learning_rate, arg.high_log_const_learning_rate = -0.5, -4
 arg.get_log_learning_rate =  lambda arg: np.random.uniform(low=arg.low_log_const_learning_rate, high=arg.high_log_const_learning_rate)
 arg.get_start_learning_rate = lambda arg: 10**arg.log_learning_rate
 ## decayed_learning_rate = learning_rate * decay_rate ^ (global_step / decay_steps)

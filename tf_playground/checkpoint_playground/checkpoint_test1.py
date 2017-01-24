@@ -9,8 +9,8 @@ mnist = input_data.read_data_sets("tmp_MNIST_data/", one_hot=True)
 x = tf.placeholder(tf.float32, [None, 784])
 y_ = tf.placeholder(tf.float32, [None, 10])
 # get model
-W = tf.Variable(tf.truncated_normal([784, 10], mean=0.0, stddev=0.1))
-b = tf.Variable(tf.constant(0.1, shape=[10]))
+W = tf.Variable(tf.truncated_normal([784, 10], mean=0.0, stddev=0.1),name='w')
+b = tf.Variable(tf.constant(0.1, shape=[10]),name='b')
 y = tf.nn.softmax(tf.matmul(x, W) + b)
 # loss and accuracy
 cross_entropy = tf.reduce_mean(-tf.reduce_sum(y_ * tf.log(y), reduction_indices=[1]))
@@ -20,7 +20,6 @@ accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 train_step = tf.train.GradientDescentOptimizer(0.5).minimize(cross_entropy)
 #
 saver = tf.train.Saver()
-#saver = tf.train.Saver({'W':W})
 # train and evalaute
 with tf.Session() as sess:
     sess.run(tf.global_variables_initializer())
