@@ -16,7 +16,9 @@ y = tf.nn.softmax(tf.matmul(x, W) + b)
 saver = tf.train.Saver()
 with tf.Session() as sess:
     # get model
-    saver.restore(sess=sess, save_path='./tmp/my-model')
+    #saver.restore(sess=sess, save_path='./tmp/my-model')
+    #saver.restore(sess=sess,save_path='./tmp/mdl_ckpt')
+    saver.restore(sess=sess, save_path='./tmp_all_ckpt/experiment_task_test1/job_mdl_nn10/hp_stid_3/mdl_ckpt')
     # loss and accuracy
     correct_prediction = tf.equal(tf.argmax(y,1), tf.argmax(y_,1)) # list of booleans indicating correct predictions
     accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))

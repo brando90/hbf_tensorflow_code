@@ -156,9 +156,9 @@ def run_hyperparam_search(arg):
     SLURM_ARRAY_TASK_IDS = list(range(int(arg.start_stid),int(arg.end_stid+1)))
     for job_array_index in SLURM_ARRAY_TASK_IDS:
         scope_name = 'stid_'+str(job_array_index)
-        with tf.variable_scope(scope_name):
-            arg.slurm_array_task_id = job_array_index
-            train(arg)
+        #with tf.variable_scope(scope_name):
+        arg.slurm_array_task_id = job_array_index
+        train(arg)
 #
 
 def get_mdl(x):
@@ -169,35 +169,40 @@ def get_mdl(x):
     return y
 
 def train(arg):
-    # placeholder for data
-    x = tf.placeholder(tf.float32, [None, 784])
-    y_ = tf.placeholder(tf.float32, [None, 10])
-    #
-    y = get_mdl(x)
-    # loss and accuracy
-    cross_entropy = tf.reduce_mean(-tf.reduce_sum(y_ * tf.log(y), reduction_indices=[1]))
-    correct_prediction = tf.equal(tf.argmax(y,1), tf.argmax(y_,1)) # list of booleans indicating correct predictions
-    accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
-    # optimizer
-    train_step = tf.train.GradientDescentOptimizer(0.5).minimize(cross_entropy)
-    #
-    saver = tf.train.Saver()
-    # train and evalaute
-    with tf.Session() as sess:
+    graph = tf.Graph()
+    with tf.Session(graph=graph) as sess:
+        # placeholder for data
+        x = tf.placeholder(tf.float32, [None, 784])
+        y_ = tf.placeholder(tf.float32, [None, 10])
+        #
+        y = get_mdl(x)
+        # loss and accuracy
+        cross_entropy = tf.reduce_mean(-tf.reduce_sum(y_ * tf.log(y), reduction_indices=[1]))
+        correct_prediction = tf.equal(tf.argmax(y,1), tf.argmax(y_,1)) # list of booleans indicating correct predictions
+        accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
+        # optimizer
+        train_step = tf.train.GradientDescentOptimizer(0.5).minimize(cross_entropy)
+        #
+        saver = tf.train.Saver()
         # if (there is a restore ckpt mdl restore it) else (create a structure to save ckpt files)
         if arg.restore:
             saver.restore(sess=sess, save_path=arg.save_path_to_ckpt2restore) # e.g. saver.restore(sess=sess, save_path='./tmp/my-model')
         else:
             make_and_check_dir(path=arg.get_hp_ckpt_structure(arg)) # creates ./all_ckpts/exp_task_name/mdl_nn10/hp_stid_N
             sess.run(tf.global_variables_initializer())
+        # train
+        #pdb.set_trace()
         for i in range(1001):
             batch_xs, batch_ys = mnist.train.next_batch(100)
+            #pdb.set_trace()
             sess.run(fetches=train_step, feed_dict={x: batch_xs, y_: batch_ys})
+            #pdb.set_trace()
             # check_point mdl
             if i % 200 == 0:
-                # Append the step number to the checkpoint name:
-                saver.save(sess=sess,save_path=arg.get_save_path(arg))
+               # Append the step number to the checkpoint name:
+               saver.save(sess=sess,save_path=arg.get_save_path(arg))
         # evaluate
+        #pdb.set_trace()
         print(sess.run(fetches=accuracy, feed_dict={x: mnist.test.images, y_: mnist.test.labels}))
 
 #

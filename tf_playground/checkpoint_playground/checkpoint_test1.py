@@ -30,6 +30,6 @@ with tf.Session() as sess:
         if i % 100 == 0:
             # Append the step number to the checkpoint name:
             #saver.save(sess=sess,save_path='./tmp/my-model',global_step=i)
-            saver.save(sess=sess,save_path='./tmp/my-model')
+            saver.save(sess=sess,save_path='./tmp/mdl_ckpt')
     # evaluate
     print(sess.run(fetches=accuracy, feed_dict={x: mnist.test.images, y_: mnist.test.labels}))
