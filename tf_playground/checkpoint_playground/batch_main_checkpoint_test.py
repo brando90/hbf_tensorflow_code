@@ -1,14 +1,14 @@
+import os
+
+import namespaces as ns
+import pdb
+
+import numpy as np
 import tensorflow as tf
 # download and install the MNIST data automatically
 from tensorflow.examples.tutorials.mnist import input_data
 mnist = input_data.read_data_sets("tmp_MNIST_data/", one_hot=True)
 
-import namespaces as ns
-import pdb
-
-#from my_tf_pkg import
-
-import np
 
 def make_and_check_dir(path):
     '''
@@ -103,20 +103,9 @@ def has_hp_iteration_ckpt(stid):
 
 #
 
-def get_args_for_experiment():
-    arg = ns.Namespace()
-    #
-    arg.root_cktps_folder = 'tmp_all_ckpt'
-    arg.experiment_name = 'task_test1'
-    arg.job_name = 'mdl_nn10'
-    arg.prefix_ckpt = 'mdl_ckpt' # checkpoint prefix
-    arg.save_path = './%s/%s/%s/%s'%(arg.root_cktps_folder, arg.experiment_name, arg.job_name, arg.prefix_ckpt) # ./all_ckpts/exp_task_name/mdl_nn10/hp_stid_N/ckptK
-    return arg
-
 def main_ckpt(arg):
     '''
     '''
-    arg = get_args_for_experiment()
     # if (there is a ckpt structure for this experiment and job continue training) otherwise (start from scratch and run job for experiment)
     if ckpts_exist_for_job_mdl(arg.root_cktps_folder+'/'+arg.experiment_name+'/'+arg.job_name): # if any of the dirs don't exist then start from scratch
         # continue training, since there is a ckpt for this experiment
@@ -145,7 +134,7 @@ def main_ckpt(arg):
         arg.start_stid = 1
         arg.end_stid = arg.nb_array_jobs # TODO
         arg.save_path_to_ckpt2restore = None
-        mtf.make_and_check_dir(path=arg.root_cktps_folder+'/'+arg.experiment_name+'/'+arg.job_name) #first create and make the ckpt directory
+        make_and_check_dir(path=arg.root_cktps_folder+'/'+arg.experiment_name+'/'+arg.job_name) #first create and make the ckpt directory
     run_hyperparam_search(arg)
 
 ##
@@ -161,7 +150,7 @@ def run_hyperparam_search(arg):
 
 #
 
-def get_mdl():
+def get_mdl(x):
     # get model
     W = tf.Variable(tf.truncated_normal([784, 10], mean=0.0, stddev=0.1),name='w')
     b = tf.Variable(tf.constant(0.1, shape=[10]),name='b')
@@ -173,7 +162,7 @@ def train(arg):
     x = tf.placeholder(tf.float32, [None, 784])
     y_ = tf.placeholder(tf.float32, [None, 10])
     #
-    y = get_mdl()
+    y = get_mdl(x)
     # loss and accuracy
     cross_entropy = tf.reduce_mean(-tf.reduce_sum(y_ * tf.log(y), reduction_indices=[1]))
     correct_prediction = tf.equal(tf.argmax(y,1), tf.argmax(y_,1)) # list of booleans indicating correct predictions
@@ -184,10 +173,11 @@ def train(arg):
     saver = tf.train.Saver()
     # train and evalaute
     with tf.Session() as sess:
+        # if (there is a restore ckpt mdl restore it) else (create a structure to save ckpt files)
         if arg.save_path_to_ckpt2restore != None:
-            #saver.restore(sess=sess, save_path='./tmp/my-model')
-            saver.restore(sess=sess, save_path=arg.save_path_to_ckpt2restore)
+            saver.restore(sess=sess, save_path=arg.save_path_to_ckpt2restore) # e.g. saver.restore(sess=sess, save_path='./tmp/my-model')
         else:
+            make_and_check_dir(path=arg.get_save_path(arg))
             sess.run(tf.global_variables_initializer())
         for i in range(1001):
             batch_xs, batch_ys = mnist.train.next_batch(100)
@@ -195,6 +185,25 @@ def train(arg):
             # check_point mdl
             if i % 200 == 0:
                 # Append the step number to the checkpoint name:
-                saver.save(sess=sess,save_path=save_path,global_step=i)
+                saver.save(sess=sess,save_path=arg.get_save_path(arg),global_step=i)
         # evaluate
         print(sess.run(fetches=accuracy, feed_dict={x: mnist.test.images, y_: mnist.test.labels}))
+
+#
+
+def get_args_for_experiment():
+    arg = ns.Namespace()
+    #
+    arg.nb_array_jobs = 5
+    #
+    arg.root_cktps_folder = 'tmp_all_ckpt'
+    arg.experiment_name = 'task_test1'
+    arg.job_name = 'mdl_nn10'
+    arg.prefix_ckpt = 'mdl_ckpt' # checkpoint prefix
+    #arg.save_path = './%s/%s/%s/%s'%(arg.root_cktps_folder, arg.experiment_name, arg.job_name, arg.prefix_ckpt) # ./all_ckpts/exp_task_name/mdl_nn10/hp_stid_N/ckptK
+    arg.get_save_path = lambda arg: './%s/%s/%s/%s/%s'%(arg.root_cktps_folder, arg.experiment_name, 'hp_stid_'+str(arg.slurm_array_task_id), arg.job_name, arg.prefix_ckpt)
+    return arg
+
+if __name__ == '__main__':
+    arg = get_args_for_experiment()
+    main_ckpt(arg)
