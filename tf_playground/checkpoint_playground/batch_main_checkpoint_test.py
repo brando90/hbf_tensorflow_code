@@ -44,6 +44,20 @@ def get_largest(hp_dirnames):
         # since the hp_dirnames are in formapt hp_stid_N, try to extract the number
         largest_stid = np.max([ int(hp_dirname[2]) for hp_dirname in hp_dirnames ])
         return largest_stid
+
+def get_latest_and_only_save_path_to_ckpt(largest_stid):
+    # get the path where all the ckpts reside
+    path_to_folder_with_ckpts = './%s/%s/%s/np_stid_%s'%(arg.root_cktps_folder, arg.experiment_name, arg.job_name, str(largest_stid))
+    # now get the most recent (and only chekpoint) checkpoint
+    save_path_to_ckpt = path_to_folder_with_ckpts+'/'+arg.prefix_ckpt
+    return save_path_to_ckpt
+
+def get_latest_save_path_to_ckpt(largest_stid):
+    # get the path where all the ckpts reside
+    #path_to_folder_with_ckpts = './%s/%s/%s/np_stid_%s'%(arg.root_cktps_folder, arg.experiment_name, arg.job_name, str(largest_stid))
+    # now get the most recent (and only chekpoint) checkpoint
+    #save_path_to_ckpt =
+    return get_latest_and_only_save_path_to_ckpt(largest_stid)
 #
 
 def get_args_for_experiment():
@@ -52,8 +66,8 @@ def get_args_for_experiment():
     arg.root_cktps_folder = './tmp_all_ckpt'
     arg.experiment_name = 'task_test1'
     arg.job_name = 'mdl_nn10'
-    arg.checkpoint_prefix = 'mdl_ckpt'
-    arg.save_path = './%s/%s/%s/%s'%(arg.root_cktps_folder, arg.experiment_name, arg.job_name, arg.checkpoint_prefix) # ./all_ckpts/exp_task_name/mdl_nn10/hp_stid_N/ckptK
+    arg.prefix_ckpt = 'mdl_ckpt' # checkpoint prefix
+    arg.save_path = './%s/%s/%s/%s'%(arg.root_cktps_folder, arg.experiment_name, arg.job_name, arg.prefix_ckpt) # ./all_ckpts/exp_task_name/mdl_nn10/hp_stid_N/ckptK
     return arg
 
 def main_ckpt(arg):
@@ -64,17 +78,21 @@ def main_ckpt(arg):
     if ckpts_exist_for_job_mdl(arg.root_cktps_folder+'/'+arg.experiment_name+'/'+arg.job_name): #/all_ckpts/exp_task_name
         # continue training, since there is a ckpt for this experiment
         path_to_folder_with_hps_jobs = './%s/%s/%s/'%(arg.root_cktps_folder, arg.experiment_name, arg.job_name)
-        stid = get_hp_largest_stid(path_to_folder_with_hps_jobs) # it can be -1
+        largest_stid = get_hp_largest_stid(path_to_folder_with_hps_jobs) # it can be -1
         if no_hp_exists(stid): # (stid == -1) means need to start hp from scratch
-            # start straining hp from scratch
+            # start training hp from scratch
             arg.start_stid = 1
-            arg.nb_array_jobs = arg.nb_array_jobs
+            arg.end_stid = arg.nb_array_jobs
+            save_path_to_ckpt2restore = None
         else:
             # continue from most recent iteration of that hp
-            arg.start_stid = stid
-            save_path_to_restored_mdl = get_path_mdl_to_restore() # /task_exp_name/mdl_nn10/hp_stid_N/ckptK
+            arg.start_stid = largest_stid
+            save_path_to_ckpt2restore = get_latest_save_path_to_ckpt(largest_stid) # /task_exp_name/mdl_nn10/hp_stid_N/ckptK
     else:
         #start from scratch, since there wasn't a ckpt for this experiment
+        arg.start_stid = 1
+        arg.end_stid = arg.nb_array_jobs
+        save_path_to_ckpt2restore = None
 
 ##
 

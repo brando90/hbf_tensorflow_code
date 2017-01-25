@@ -27,8 +27,9 @@ with tf.Session() as sess:
         batch_xs, batch_ys = mnist.train.next_batch(100)
         sess.run(fetches=train_step, feed_dict={x: batch_xs, y_: batch_ys})
         # check_point mdl
-        if i % 200 == 0:
+        if i % 100 == 0:
             # Append the step number to the checkpoint name:
-            saver.save(sess=sess,save_path='./tmp/my-model',global_step=i)
+            #saver.save(sess=sess,save_path='./tmp/my-model',global_step=i)
+            saver.save(sess=sess,save_path='./tmp/my-model')
     # evaluate
     print(sess.run(fetches=accuracy, feed_dict={x: mnist.test.images, y_: mnist.test.labels}))
