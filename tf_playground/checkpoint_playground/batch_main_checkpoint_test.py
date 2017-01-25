@@ -8,15 +8,6 @@ import pdb
 
 import np
 
-def run_hyperparam_search(arg):
-    #do jobs
-    SLURM_ARRAY_TASK_IDS = list(range(int(arg.nb_array_jobs)))
-    for job_array_index in SLURM_ARRAY_TASK_IDS:
-        scope_name = 'stid_'+str(job_array_index)
-        with tf.variable_scope(scope_name):
-            arg.slurm_array_task_id = job_array_index
-            main_nn(arg)
-
 def ckpts_exist_for_job_mdl(path_to_task_exp):
     '''
     checks if the current job has had any checkpoints saved.
@@ -82,20 +73,33 @@ def main_ckpt(arg):
         if no_hp_exists(stid): # (stid == -1) means need to start hp from scratch
             # start training hp from scratch
             arg.start_stid = 1
-            arg.end_stid = arg.nb_array_jobs
+            #arg.end_stid = arg.nb_array_jobs
             save_path_to_ckpt2restore = None
         else:
             # continue from most recent iteration of that hp
             arg.start_stid = largest_stid
-            save_path_to_ckpt2restore = get_latest_save_path_to_ckpt(largest_stid) # /task_exp_name/mdl_nn10/hp_stid_N/ckptK
+            arg.end_stid = arg.nb_array_jobs
+            arg.save_path_to_ckpt2restore = get_latest_save_path_to_ckpt(largest_stid) # /task_exp_name/mdl_nn10/hp_stid_N/ckptK
     else:
         #start from scratch, since there wasn't a ckpt for this experiment
         arg.start_stid = 1
         arg.end_stid = arg.nb_array_jobs
-        save_path_to_ckpt2restore = None
+        arg.save_path_to_ckpt2restore = None
+    #run_hyperparam_search
+    run_hyperparam_search(arg)
 
 ##
 
+def run_hyperparam_search(arg):
+    #do jobs
+    SLURM_ARRAY_TASK_IDS = list(range(int(arg.start_stid),int(arg.nb_array_jobs)))
+    for job_array_index in SLURM_ARRAY_TASK_IDS:
+        scope_name = 'stid_'+str(job_array_index)
+        with tf.variable_scope(scope_name):
+            arg.slurm_array_task_id = job_array_index
+            train(arg)
+
+#
 def get_mdl():
     # get model
     W = tf.Variable(tf.truncated_normal([784, 10], mean=0.0, stddev=0.1),name='w')
@@ -103,7 +107,9 @@ def get_mdl():
     y = tf.nn.softmax(tf.matmul(x, W) + b)
     return y
 
-def main_nn(arg):
+def train(arg):
+    #first create and make the ckpt directory
+    mtf.make_and_check_dir(path=path) # TODO
     # placeholder for data
     x = tf.placeholder(tf.float32, [None, 784])
     y_ = tf.placeholder(tf.float32, [None, 10])
