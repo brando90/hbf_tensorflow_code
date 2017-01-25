@@ -123,7 +123,11 @@ def train(arg):
     saver = tf.train.Saver()
     # train and evalaute
     with tf.Session() as sess:
-        sess.run(tf.global_variables_initializer())
+        if arg.save_path_to_ckpt2restore != None:
+            #saver.restore(sess=sess, save_path='./tmp/my-model')
+            saver.restore(sess=sess, save_path=arg.save_path_to_ckpt2restore)
+        else:
+            sess.run(tf.global_variables_initializer())
         for i in range(1001):
             batch_xs, batch_ys = mnist.train.next_batch(100)
             sess.run(fetches=train_step, feed_dict={x: batch_xs, y_: batch_ys})
