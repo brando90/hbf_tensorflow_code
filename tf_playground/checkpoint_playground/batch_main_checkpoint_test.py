@@ -86,7 +86,7 @@ def no_hp_exists(stid):
 
 def get_latest_and_only_save_path_to_ckpt(largest_stid):
     # get the path where all the ckpts reside
-    path_to_folder_with_ckpts = './%s/%s/%s/np_stid_%s'%(arg.root_cktps_folder, arg.experiment_name, arg.job_name, str(largest_stid))
+    path_to_folder_with_ckpts = './%s/%s/%s/%s'%(arg.root_cktps_folder, arg.experiment_name, arg.job_name, 'hp_stid_'+str(largest_stid))
     # now get the most recent (and only chekpoint) checkpoint
     save_path_to_ckpt = path_to_folder_with_ckpts+'/'+arg.prefix_ckpt
     return save_path_to_ckpt
@@ -97,13 +97,15 @@ def get_latest_save_path_to_ckpt(largest_stid):
 
 #
 
-def has_hp_iteration_ckpt(stid):
+def does_hp_have_tf_ckpt(path_to_hp):
+    '''
+    check if the current hp with stid has some iteration ckpt tensorflow file.
+    '''
     # For each directory in the tree rooted at directory top (including top itself), it yields a 3-tuple (dirpath, dirnames, filenames).
-    for (dirpath, dirnames, filenames) in os.walk(top=path_to_folder_with_hps_jobs,topdown=True):
-        if dirpath == 'hp_stid_'+stid: # only processes (dirpath == ho_stid_stid) else: (nothing)
-            # filenames = [mdl_ckpt] or [...,mdl_ckpt-N,...]
-            nb_tf_ckpts = len(filenames)
-            return nb_tf_ckpts > 0
+    for (dirpath, dirnames, filenames) in os.walk(top=path_to_hp,topdown=True):
+        # filenames = [mdl_ckpt] or [...,mdl_ckpt-N,...]
+        nb_tf_ckpts = len(filenames)
+        return nb_tf_ckpts > 0
     # it shouldn't really get here, but if it does it probably means we should start this hp from scratch
     return False
 
@@ -125,17 +127,20 @@ def main_ckpt(arg):
             arg.restore = False
             # note we didn't create a hp_dir cuz the loop that deals with specific hp's does it at some point (in train)
         else:
+            path_to_hp = './%s/%s/%s/%s'%(arg.root_cktps_folder, arg.experiment_name, arg.job_name, 'hp_stid_'+str(largest_stid))
             # if (a ckpt iteration exists continue from it) otherwise (start hp iteration from scratch)
-            if has_hp_iteration_ckpt(largest_stid):
-                #start from this specific hp from scratch
+            if does_hp_have_tf_ckpt(path_to_hp): # is there a tf ckpt for this hp?
+                # start from this specific hp ckpt
+                print('here')
                 arg.start_stid = largest_stid
                 arg.end_stid = arg.nb_array_jobs
+                arg.restore = True
                 arg.save_path_to_ckpt2restore = get_latest_save_path_to_ckpt(largest_stid) # /task_exp_name/mdl_nn10/hp_stid_N/ckptK
             else:
-                # else continue from the most recent iteration ckpt
+                # train hp from the first iteration
                 arg.start_stid = largest_stid
                 arg.end_stid = arg.nb_array_jobs
-                arg.save_path_to_ckpt2restore = get_latest_save_path_to_ckpt(largest_stid) # /task_exp_name/mdl_nn10/hp_stid_N/ckptK
+                arg.restore = False
     else:
         #start from scratch, since there wasn't a ckpt structure for this experiment
         arg.start_stid = 1
@@ -154,7 +159,6 @@ def run_hyperparam_search(arg):
         with tf.variable_scope(scope_name):
             arg.slurm_array_task_id = job_array_index
             train(arg)
-
 #
 
 def get_mdl(x):
@@ -184,7 +188,7 @@ def train(arg):
         if arg.restore:
             saver.restore(sess=sess, save_path=arg.save_path_to_ckpt2restore) # e.g. saver.restore(sess=sess, save_path='./tmp/my-model')
         else:
-            make_and_check_dir(path=arg.get_ckpt_structure(arg)) # creates ./all_ckpts/exp_task_name/mdl_nn10/hp_stid_N
+            make_and_check_dir(path=arg.get_hp_ckpt_structure(arg)) # creates ./all_ckpts/exp_task_name/mdl_nn10/hp_stid_N
             sess.run(tf.global_variables_initializer())
         for i in range(1001):
             batch_xs, batch_ys = mnist.train.next_batch(100)
@@ -209,7 +213,7 @@ def get_args_for_experiment():
     arg.prefix_ckpt = 'mdl_ckpt' # checkpoint prefix
     #arg.save_path = './%s/%s/%s/%s'%(arg.root_cktps_folder, arg.experiment_name, arg.job_name, arg.prefix_ckpt) # ./all_ckpts/exp_task_name/mdl_nn10/hp_stid_N/ckptK
     arg.get_save_path = lambda arg: './%s/%s/%s/%s/%s'%(arg.root_cktps_folder, arg.experiment_name, arg.job_name, 'hp_stid_'+str(arg.slurm_array_task_id), arg.prefix_ckpt)
-    arg.get_ckpt_structure = lambda arg: './%s/%s/%s/%s'%(arg.root_cktps_folder, arg.experiment_name, arg.job_name, 'hp_stid_'+str(arg.slurm_array_task_id))
+    arg.get_hp_ckpt_structure = lambda arg: './%s/%s/%s/%s'%(arg.root_cktps_folder, arg.experiment_name, arg.job_name, 'hp_stid_'+str(arg.slurm_array_task_id))
     return arg
 
 if __name__ == '__main__':
