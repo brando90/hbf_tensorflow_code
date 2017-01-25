@@ -55,21 +55,27 @@ def ckpts_exist_for_job_mdl(path_to_task_exp):
 #
 
 def get_hp_largest_stid(path_to_folder_with_hps_jobs):
-    # For each directory in the tree rooted at directory top (including top itself), it yields a 3-tuple (dirpath, dirnames, filenames).
+    #pdb.set_trace()
+    #For each directory in the tree rooted at directory top (including top itself), it yields a 3-tuple (dirpath, dirnames, filenames).
     for (dirpath, dirnames, filenames) in os.walk(top=path_to_folder_with_hps_jobs,topdown=True):
-        if dirpath == arg.job_name: # only processes (dirpath == mdl_nn10) else: (nothing)
-            # dirnames = [...,hp_stid_N,...] or []
-            largest_stid = get_largest(hp_dirnames=dirnames)
-            return largest_stid
-    # if it gets here it means there where no hp's that have been ran. So start from scratch
+        # dirnames = [...,hp_stid_N,...] or []
+        largest_stid = get_largest(hp_dirnames=dirnames)
+        return largest_stid
+    # if it gets here it means something bad happened and it starting all the hp's from the first one
     return -1
+
+def get_hp_largest_stid2():
+    # assuming the dir ./all_ckpts/expt_task_name/mdl_NN10/ is not empty and only has directories with hp_stid_N.
+    dirnames = os.listdir() #dirnames = [...,hp_stid_N,...] or []
+    largest_stid = get_largest(dirnames)
+    return largest_stid
 
 def get_largest(hp_dirnames):
     if len(hp_dirnames) == 0:
         return -1
     else:
         # since the hp_dirnames are in format hp_stid_N, try to extract the number and get largest
-        largest_stid = np.max([ int(hp_dirname[2]) for hp_dirname in hp_dirnames ])
+        largest_stid = np.max([ int(hp_dirname.split('_')[2]) for hp_dirname in hp_dirnames ])
         return largest_stid
 
 def no_hp_exists(stid):
@@ -111,12 +117,13 @@ def main_ckpt(arg):
         # continue training, since there is a ckpt for this experiment
         path_to_folder_with_hps_jobs = './%s/%s/%s/'%(arg.root_cktps_folder, arg.experiment_name, arg.job_name)
         largest_stid = get_hp_largest_stid(path_to_folder_with_hps_jobs) # it can be -1
+        print('largest_stid: ', largest_stid)
         if no_hp_exists(largest_stid): # (stid == -1) means there were no hp that were previously ran
             # start training hp from scratch
             arg.start_stid = 1
-            arg.end_stid = arg.nb_array_jobs # TODO
-            arg.save_path_to_ckpt2restore = None
-            # mtf.make_and_check_dir(path=path) # technically this should not be needed.
+            arg.end_stid = arg.nb_array_jobs
+            arg.restore = False
+            # note we didn't create a hp_dir cuz the loop that deals with specific hp's does it at some point (in train)
         else:
             # if (a ckpt iteration exists continue from it) otherwise (start hp iteration from scratch)
             if has_hp_iteration_ckpt(largest_stid):
@@ -132,8 +139,8 @@ def main_ckpt(arg):
     else:
         #start from scratch, since there wasn't a ckpt structure for this experiment
         arg.start_stid = 1
-        arg.end_stid = arg.nb_array_jobs # TODO
-        arg.save_path_to_ckpt2restore = None
+        arg.end_stid = arg.nb_array_jobs
+        arg.restore = False
         make_and_check_dir(path=arg.root_cktps_folder+'/'+arg.experiment_name+'/'+arg.job_name) #first create and make the ckpt directory
     run_hyperparam_search(arg)
 
@@ -141,7 +148,7 @@ def main_ckpt(arg):
 
 def run_hyperparam_search(arg):
     #do hyper_params
-    SLURM_ARRAY_TASK_IDS = list(range(int(arg.start_stid),int(arg.end_stid)))
+    SLURM_ARRAY_TASK_IDS = list(range(int(arg.start_stid),int(arg.end_stid+1)))
     for job_array_index in SLURM_ARRAY_TASK_IDS:
         scope_name = 'stid_'+str(job_array_index)
         with tf.variable_scope(scope_name):
@@ -174,10 +181,10 @@ def train(arg):
     # train and evalaute
     with tf.Session() as sess:
         # if (there is a restore ckpt mdl restore it) else (create a structure to save ckpt files)
-        if arg.save_path_to_ckpt2restore != None:
+        if arg.restore:
             saver.restore(sess=sess, save_path=arg.save_path_to_ckpt2restore) # e.g. saver.restore(sess=sess, save_path='./tmp/my-model')
         else:
-            make_and_check_dir(path=arg.get_save_path(arg))
+            make_and_check_dir(path=arg.get_ckpt_structure(arg)) # creates ./all_ckpts/exp_task_name/mdl_nn10/hp_stid_N
             sess.run(tf.global_variables_initializer())
         for i in range(1001):
             batch_xs, batch_ys = mnist.train.next_batch(100)
@@ -185,7 +192,7 @@ def train(arg):
             # check_point mdl
             if i % 200 == 0:
                 # Append the step number to the checkpoint name:
-                saver.save(sess=sess,save_path=arg.get_save_path(arg),global_step=i)
+                saver.save(sess=sess,save_path=arg.get_save_path(arg))
         # evaluate
         print(sess.run(fetches=accuracy, feed_dict={x: mnist.test.images, y_: mnist.test.labels}))
 
@@ -194,14 +201,15 @@ def train(arg):
 def get_args_for_experiment():
     arg = ns.Namespace()
     #
-    arg.nb_array_jobs = 5
+    arg.nb_array_jobs = 3
     #
     arg.root_cktps_folder = 'tmp_all_ckpt'
-    arg.experiment_name = 'task_test1'
-    arg.job_name = 'mdl_nn10'
+    arg.experiment_name = 'experiment_task_test1'
+    arg.job_name = 'job_mdl_nn10'
     arg.prefix_ckpt = 'mdl_ckpt' # checkpoint prefix
     #arg.save_path = './%s/%s/%s/%s'%(arg.root_cktps_folder, arg.experiment_name, arg.job_name, arg.prefix_ckpt) # ./all_ckpts/exp_task_name/mdl_nn10/hp_stid_N/ckptK
-    arg.get_save_path = lambda arg: './%s/%s/%s/%s/%s'%(arg.root_cktps_folder, arg.experiment_name, 'hp_stid_'+str(arg.slurm_array_task_id), arg.job_name, arg.prefix_ckpt)
+    arg.get_save_path = lambda arg: './%s/%s/%s/%s/%s'%(arg.root_cktps_folder, arg.experiment_name, arg.job_name, 'hp_stid_'+str(arg.slurm_array_task_id), arg.prefix_ckpt)
+    arg.get_ckpt_structure = lambda arg: './%s/%s/%s/%s'%(arg.root_cktps_folder, arg.experiment_name, arg.job_name, 'hp_stid_'+str(arg.slurm_array_task_id))
     return arg
 
 if __name__ == '__main__':
