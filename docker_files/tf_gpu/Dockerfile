@@ -16,6 +16,7 @@ RUN pip3 install namespaces
 RUN pip3 install scikit-learn
 RUN pip3 install scipy
 RUN pip3 install pdb
+RUN pip3 install keras
 
 # install my library (only when the a container is spun)
 # bash script that configures the running container
