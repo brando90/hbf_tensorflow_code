@@ -27,6 +27,8 @@ with graph.as_default():
     accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
     # step for optimizer
     step = tf.Variable(0, name='step')
+    # nb_iterations = tf.Variable(2001, name='nb_iterations')
+    # batch_size = tf.Variable(100, name='batch_size')
     # save everything that was saved in the session
     saver = tf.train.Saver()
 
