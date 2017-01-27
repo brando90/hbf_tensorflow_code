@@ -17,8 +17,8 @@ units tests to write.
 - check if ./tmp_all_ckpts/exp_task_name/mdl_nn10/hp_stid_N/mdl_ckpt non exist,
   if no mdl_ckpt (for this hp) then start training this hp_N from the first iteration (WORKS)
 - check from what iteration to start ./tmp_all_ckpts/exp_task_name/mdl_nn10/hp_stid_N/mdl_ckpt
-  mdl_ckpt, then continue training forom this iteration (for current hp). (TODO)
+  mdl_ckpt, then continue training forom this iteration (for current hp). (WORKS)
 
- - load any checkpoint from the ckpt directory structure (TODO)
+ - load any checkpoint from the ckpt directory structure (WORKS)
 
 '''
