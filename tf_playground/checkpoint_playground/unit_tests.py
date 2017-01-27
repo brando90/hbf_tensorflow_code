@@ -19,4 +19,6 @@ units tests to write.
 - check from what iteration to start ./tmp_all_ckpts/exp_task_name/mdl_nn10/hp_stid_N/mdl_ckpt
   mdl_ckpt, then continue training forom this iteration (for current hp). (TODO)
 
+ - load any checkpoint from the ckpt directory structure (TODO)
+
 '''
