@@ -33,10 +33,10 @@ with graph.as_default():
     saver = tf.train.Saver()
 
 with tf.Session(graph=graph) as sess:
-    saver.restore(sess=sess,save_path='./tmp/mdl_ckpt')
+    #saver.restore(sess=sess,save_path='./tmp/mdl_ckpt')
+    saver.restore(sess=sess, save_path='./tmp_all_ckpt/experiment_task_test1/job_mdl_nn10/hp_stid_1/mdl_ckpt')
     print('restored model trained up to, STEP: ', step.eval())
-    print('resotred model, ACCURACY:', sess.run(fetches=accuracy, feed_dict={x: mnist.test.images, y_: mnist.test.labels}))
-    #saver.restore(sess=sess, save_path='./tmp_all_ckpt/experiment_task_test1/job_mdl_nn10/hp_stid_2/mdl_ckpt')
+    print('restored model, ACCURACY:', sess.run(fetches=accuracy, feed_dict={x: mnist.test.images, y_: mnist.test.labels}))
     # evaluate
     start_iteration = step.eval() # last iteration trained is the first iteration for this model
     for i in range(start_iteration,nb_iterations.eval()):
@@ -46,8 +46,8 @@ with tf.Session(graph=graph) as sess:
         if i % 100 == 0:
             step_assign = step.assign(i)
             sess.run(step_assign)
-            print('step: ',i)
-            print(sess.run(fetches=accuracy, feed_dict={x: mnist.test.images, y_: mnist.test.labels}))
+            print('step: ', i)
+            print('accuracy: ', sess.run(fetches=accuracy, feed_dict={x: mnist.test.images, y_: mnist.test.labels}))
             # Append the step number to the checkpoint name:
             #saver.save(sess=sess,save_path='./tmp/my-model',global_step=i)
             saver.save(sess=sess,save_path='./tmp/mdl_ckpt')

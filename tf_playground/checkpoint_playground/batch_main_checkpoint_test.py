@@ -156,9 +156,11 @@ def run_hyperparam_search(arg):
     SLURM_ARRAY_TASK_IDS = list(range(int(arg.start_stid),int(arg.end_stid+1)))
     for job_array_index in SLURM_ARRAY_TASK_IDS:
         scope_name = 'stid_'+str(job_array_index)
+        print('--> stid: ',job_array_index)
         #with tf.variable_scope(scope_name):
         arg.slurm_array_task_id = job_array_index
-        train(arg)
+        # trains the current hp
+        execute_hp_array_task(arg)
 #
 
 def get_mdl(x):
@@ -168,13 +170,12 @@ def get_mdl(x):
     y = tf.nn.softmax(tf.matmul(x, W) + b)
     return y
 
-def train(arg):
+def execute_hp_array_task(arg):
+    #build graph
     graph = tf.Graph()
-    with tf.Session(graph=graph) as sess:
-        # placeholder for data
+    with graph.as_default():
         x = tf.placeholder(tf.float32, [None, 784])
         y_ = tf.placeholder(tf.float32, [None, 10])
-        #
         y = get_mdl(x)
         # loss and accuracy
         cross_entropy = tf.reduce_mean(-tf.reduce_sum(y_ * tf.log(y), reduction_indices=[1]))
@@ -182,27 +183,38 @@ def train(arg):
         accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
         # optimizer
         train_step = tf.train.GradientDescentOptimizer(0.5).minimize(cross_entropy)
-        #
+        # step for optimizer
+        step = tf.Variable(0, name='step')
+        nb_iterations = tf.Variable(2001, name='nb_iterations')
+        batch_size = tf.Variable(100, name='batch_size')
+        #step_assign = step.assign(i) #why is it ok to define it alter and not here?
+        # save everything that was saved in the session
         saver = tf.train.Saver()
+
+    with tf.Session(graph=graph) as sess:
         # if (there is a restore ckpt mdl restore it) else (create a structure to save ckpt files)
         if arg.restore:
             saver.restore(sess=sess, save_path=arg.save_path_to_ckpt2restore) # e.g. saver.restore(sess=sess, save_path='./tmp/my-model')
+            print('restored model trained up to, STEP: ', step.eval())
+            print('restored model, ACCURACY:', sess.run(fetches=accuracy, feed_dict={x: mnist.test.images, y_: mnist.test.labels}))
+            arg.restore = False # after the model has been restored, we continue normal until all hp's are finished
         else:
             make_and_check_dir(path=arg.get_hp_ckpt_structure(arg)) # creates ./all_ckpts/exp_task_name/mdl_nn10/hp_stid_N
             sess.run(tf.global_variables_initializer())
         # train
-        #pdb.set_trace()
-        for i in range(1001):
-            batch_xs, batch_ys = mnist.train.next_batch(100)
-            #pdb.set_trace()
+        start_iteration = step.eval() # last iteration trained is the first iteration for this model
+        for i in range(start_iteration,nb_iterations.eval()):
+            batch_xs, batch_ys = mnist.train.next_batch(batch_size.eval())
             sess.run(fetches=train_step, feed_dict={x: batch_xs, y_: batch_ys})
-            #pdb.set_trace()
             # check_point mdl
-            if i % 200 == 0:
-               # Append the step number to the checkpoint name:
-               saver.save(sess=sess,save_path=arg.get_save_path(arg))
+            if i % 100 == 0:
+                step_assign = step.assign(i)
+                sess.run(step_assign)
+                print('step: ', i)
+                print('accuracy: ', sess.run(fetches=accuracy, feed_dict={x: mnist.test.images, y_: mnist.test.labels}))
+                # Append the step number to the checkpoint name:
+                saver.save(sess=sess,save_path=arg.get_save_path(arg))
         # evaluate
-        #pdb.set_trace()
         print(sess.run(fetches=accuracy, feed_dict={x: mnist.test.images, y_: mnist.test.labels}))
 
 #
