@@ -1,0 +1,221 @@
+import tensorflow as tf
+
+from sklearn import preprocessing
+import numpy as np
+
+import shutil
+import subprocess
+import json
+import sys
+import datetime
+import os
+import pdb
+import ast
+import pickle
+
+import my_tf_pkg as mtf
+import time
+
+import namespaces as ns
+
+def preprocess_data(arg, X_train, Y_train, X_cv, Y_cv, X_test, Y_test):
+    if arg.type_preprocess_data =='re_shape_X_to_(N,1,D,1)':
+        X_train, X_cv, X_test = X_train.reshape(arg.N_train,1,arg.D,1), X_cv.reshape(arg.N_cv,1,arg.D,1), X_test.reshape(arg.N_test,1,arg.D,1)
+    else:
+        raise ValueError('This type of preprocessing has not bee implemented ',+arg.type_preprocess_data)
+    return X_train, Y_train, X_cv, Y_cv, X_test, Y_test
+#
+
+def get_mdl(arg,x):
+    ## Make Model
+    if arg.mdl == 'debug_mdl':
+        W = tf.Variable(tf.truncated_normal([784, 10], mean=0.0, stddev=0.1),name='w')
+        b = tf.Variable(tf.constant(0.1, shape=[10]),name='b')
+        y = tf.nn.softmax(tf.matmul(x, W) + b)
+    elif arg.mdl == 'standard_nn':
+        #
+        arg.mu_init_list = arg.get_W_mu_init(arg)
+        arg.std_init_list = arg.get_W_std_init(arg)
+        arg.b_init = arg.get_b_init(arg)
+
+        nb_layers = len(arg.dims)-1
+        nb_hidden_layers = nb_layers-1
+        inits_C,inits_W,inits_b = mtf.get_initilizations_standard_NN(init_type=arg.init_type,dims=arg.dims,mu=arg.mu_init_list,std=arg.std_init_list,b_init=arg.b_init, X_train=X_train, Y_train=Y_train)
+        with tf.name_scope("standardNN") as scope:
+            y = mtf.build_standard_NN(arg, x,arg.dims,(None,inits_W,inits_b),arg.phase_train,arg.trainable_bn)
+            y = mtf.get_summation_layer(l=str(nb_layers),x=y,init=inits_C[0])
+    elif arg.mdl == 'hbf':
+        raise ValueError('HBF not implemented yet.')
+        # arg.dims = [D]+arg.units+[D_out]
+        # trainable_S = True if (arg.trainable_S=='train_S') else False
+        # arg.b_init = arg.get_b_init(arg)
+        # arg.S_init = arg.b_init
+        # float_type = tf.float64
+        # #arg.mu , arg.std = arg.get_W_mu_init(arg), arg.get_W_std_init(arg)
+        # x = tf.placeholder(float_type, shape=[None, D], name='x-input') # M x D
+        # (inits_C,inits_W,inits_S,rbf_error) = mtf.get_initilizations_HBF(init_type=arg.init_type,dims=arg.dims,mu=arg.mu,std=arg.std,b_init=arg.b_init,S_init=arg.S_init, X_train=X_train, Y_train=Y_train, train_S_type=arg.train_S_type)
+        # #print(inits_W)
+        # nb_layers = len(arg.dims)-1
+        # nb_hidden_layers = nb_layers-1
+        # with tf.name_scope("HBF") as scope:
+        #     mdl = mtf.build_HBF2(x,arg.dims,(inits_C,inits_W,inits_S),phase_train,arg.trainable_bn,trainable_S)
+        #     mdl = mtf.get_summation_layer(l=str(nb_layers),x=mdl,init=inits_C[0])
+    elif arg.mdl == 'bt_subgraph' or 'binary_tree' in arg.mdl:
+        # note: x is shape [None,1,D,1]
+        with tf.name_scope("mdl"+arg.scope_name) as scope:
+            y = mtf.bt_mdl_conv_subgraph(arg,x)
+        arg.dims = [D]+arg.nb_filters[1:]+[D_out]
+    return y
+
+##
+
+def get_optimizer(arg):
+    ### set up optimizer from args
+    arg.steps = arg.get_steps(arg)
+    arg.batch_size = arg.get_batch_size(arg)
+    arg.log_learning_rate = arg.get_log_learning_rate(arg)
+    arg.starter_learning_rate = arg.get_start_learning_rate(arg)
+    # decayed_learning_rate = learning_rate * decay_rate ^ (global_step / decay_steps)
+    arg.decay_rate = arg.get_decay_rate(arg)
+    arg.decay_steps = arg.get_decay_steps(arg)
+    if arg.optimization_alg == 'GD':
+        pass
+    elif arg.optimization_alg =='Momentum':
+        arg.use_nesterov = arg.get_use_nesterov()
+        arg.momentum = arg.get_momentum(arg)
+        print('arg.use_nesterov', arg.use_nesterov)
+        print('arg.momentum', arg.momentum)
+    elif arg.optimization_alg == 'Adadelta':
+        arg.rho = arg.get_rho(arg)
+        print('arg.rho', arg.rho)
+    elif arg.optimization_alg == 'Adagrad':
+        #only has learning rate
+        pass
+    elif arg.optimization_alg == 'Adam':
+        arg.beta1 = arg.get_beta1(arg)
+        arg.beta2 = arg.get_beta2(arg)
+        print('arg.beta1', arg.beta1)
+        print('arg.beta2', arg.beta2)
+    elif arg.optimization_alg == 'RMSProp':
+        arg.decay = arg.get_decay(arg)
+        arg.momentum = arg.get_momentum(arg)
+        print('arg.decay', arg.decay)
+        print('arg.momentum', arg.momentum)
+    else:
+        raise ValueError('Invalid optimizer. Make sure you are using an optimizer that exists.')
+    with tf.name_scope("train") as scope:
+        # If the argument staircase is True, then global_step / decay_steps is an integer division and the decayed earning rate follows a staircase function.
+        # decayed_learning_rate = learning_rate * decay_rate ^ (global_step / decay_steps)
+        global_step = tf.Variable(0, trainable=False)
+        learning_rate = tf.train.exponential_decay(learning_rate=arg.starter_learning_rate, global_step=global_step,decay_steps=arg.decay_steps, decay_rate=arg.decay_rate, staircase=arg.staircase)
+        # Passing global_step to minimize() will increment it at each step.
+        if arg.optimization_alg == 'GD':
+            opt = tf.train.GradientDescentOptimizer(learning_rate)
+        elif arg.optimization_alg == 'Momentum':
+            opt = tf.train.MomentumOptimizer(learning_rate=learning_rate,momentum=arg.momentum,use_nesterov=arg.use_nesterov)
+        elif arg.optimization_alg == 'Adadelta':
+            opt = tf.train.AdadeltaOptimizer(learning_rate=learning_rate, rho=arg.rho, epsilon=1e-08, use_locking=False, name='Adadelta')
+        elif arg.optimization_alg == 'Adam':
+            opt = tf.train.AdamOptimizer(learning_rate=learning_rate, beta1=arg.beta1, beta2=arg.beta2, epsilon=1e-08, name='Adam')
+        elif arg.optimization_alg == 'Adagrad':
+            opt = tf.train.AdagradOptimizer(learning_rate)
+        elif arg.optimization_alg == 'RMSProp':
+            opt = tf.train.RMSPropOptimizer(learning_rate=learning_rate, decay=arg.decay, momentum=arg.momentum, epsilon=1e-10, name='RMSProp')
+    train_step = opt
+    return train_step
+
+##
+
+def main_hp_serial(arg):
+    #do jobs
+    SLURM_ARRAY_TASK_IDS = list(range(int(arg.nb_array_jobs)))
+    for job_array_index in SLURM_ARRAY_TASK_IDS:
+        scope_name = 'stid_'+str(job_array_index)
+        #with tf.name_scope(scope_name):
+        with tf.variable_scope(scope_name):
+            #pdb.set_trace()
+            arg.slurm_array_task_id = job_array_index
+            main_nn(arg)
+##
+
+def get_batch_feed(X, Y, batch_size):
+    mini_batch_indices = np.random.randint(batch_size,size=batch_size)
+    return X[mini_batch_indices,:], Yminibatch[mini_batch_indices,:]
+
+def get_accuracy_loss(arg,x,y,y_):
+    '''
+    Note: when the task is regression accuracy = loss but for classification
+    loss = cross_entropy,svm_loss, surrogate_loss, etc and accuracy = 1 - {0-1 loss}.
+    '''
+    if arg.classificaton:
+        cross_entropy = tf.reduce_mean(-tf.reduce_sum(y_ * tf.log(y), reduction_indices=[1]))
+        correct_prediction = tf.equal(tf.argmax(y,1), tf.argmax(y_,1)) # list of booleans indicating correct predictions
+        #
+        accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
+        loss = cross_entropy
+    else:
+        l2_loss = tf.reduce_sum( tf.reduce_mean(tf.square(y_-y), 0) )
+        #
+        accuracy = tf.reduce_mean(tf.cast(l2_loss, tf.float32))
+        loss = cross_entropy
+    return accuracy, loss
+
+def main_hp(arg):
+    '''
+    executes the current hp (hyper param) slurm array task. Usually means that
+    it has to either continue training a model that wasn't finished training
+    or start one from scratch.
+    '''
+    results = {'train_errors':[], 'cv_errors':[],'test_errors':[]}
+    ## get data set
+    (X_train, Y_train, X_cv, Y_cv, X_test, Y_test) = mtf.get_data(arg,arg.N_frac)
+    print( '(N_train,D) = (%d,%d) \n (N_test,D_out) = (%d,%d) ', % (arg.N_train,arg.D), (arg.N_test,arg.D_out) )
+    ## if (preprocess_data, then preprocess) else (do nothing to the data)
+    if arg.type_preprocess_data:
+        X_train, Y_train, X_cv, Y_cv, X_test, Y_test = preprocess_data(X_train, Y_train, X_cv, Y_cv, X_test, Y_test)
+    #### build graph
+    graph = tf.Graph()
+    with graph.as_default():
+        ### get mdl
+        x = tf.placeholder(arg.float_type, arg.get_x_shape(arg), name='x-input')
+        y_ = tf.placeholder(arg.float_type, get_y_shape(arg))
+        phase_train = tf.placeholder(tf.bool, name='phase_train') # phase_train = tf.placeholder(tf.bool, name='phase_train') if arg.bn else  None
+        y = get_mdl(arg,x)
+        ###
+        accuracy, loss = get_accuracy_loss(arg,x,y,y_)
+        ### get optimizer variables
+        train_step = get_optimizer(arg)
+        train_step = opt.minimize(loss, global_step=global_step)
+        # step for optimizer (useful for ckpts)
+        step, nb_iterations = tf.Variable(0, name='step'), tf.Variable(arg.get_steps(arg), name='nb_iterations')
+        batch_size = tf.Variable(arg.get_batch_size(arg), name='batch_size')
+        # save everything that was saved in the session
+        saver = tf.train.Saver()
+    #### run session
+    with tf.Session(graph=graph) as sess:
+        # if (there is a restore ckpt mdl restore it) else (create a structure to save ckpt files)
+        if arg.restore:
+            saver.restore(sess=sess, save_path=arg.save_path_to_ckpt2restore) # e.g. saver.restore(sess=sess, save_path='./tmp/my-model')
+            print('restored model trained up to, STEP: ', step.eval())
+            print('restored model, ACCURACY:', sess.run(fetches=accuracy, feed_dict={x: X_test, y_: Y_test}))
+            arg.restore = False # after the model has been restored, we continue normal until all hp's are finished
+        else:
+            make_and_check_dir(path=arg.get_hp_ckpt_structure(arg)) # creates ./all_ckpts/exp_task_name/mdl_nn10/hp_stid_N
+            sess.run(tf.global_variables_initializer())
+        # train
+        start_iteration = step.eval() # last iteration trained is the first iteration for this model
+        for i in range(start_iteration,nb_iterations.eval()):
+            #batch_xs, batch_ys = mnist.train.next_batch(batch_size.eval())
+            batch_xs, batch_ys = get_batch_feed(X, Y, batch_size)
+            sess.run(fetches=train_step, feed_dict={x: batch_xs, y_: batch_ys})
+            # check_point mdl
+            if i % arg.report_error_freq == 0:
+                sess.run(step.assign(i))
+                #
+                train_error = sess.run(fetches=accuracy, feed_dict={x: X_train, y_: Y_train})
+                cv_error = sess.run(fetches=accuracy, feed_dict={x: X_cv, y_: Y_cv})
+                test_error = sess.run(fetches=accuracy, feed_dict={x: X_test, y_: Y_test})
+                # Append the step number to the checkpoint name:
+                saver.save(sess=sess,save_path=arg.get_save_path(arg))
+        # evaluate
+        print(sess.run(fetches=accuracy, feed_dict={x: mnist.test.images, y_: mnist.test.labels}))
