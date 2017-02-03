@@ -15,9 +15,34 @@ import pickle
 import csv
 
 import my_tf_pkg as mtf
+from my_tf_pkg import main_large_hp_checkpointer as large_checkpointer
 import time
 
 import namespaces as ns
+
+def is_jsonable(x):
+    '''
+    checks if x is json dumpable
+    '''
+    try:
+        json.dumps(x) # Serialize obj to a JSON formatted str using this conversion table.
+        return True
+    except:
+        return False
+
+def get_remove_functions_from_dict(arg_dict):
+    '''
+        Removes functions from dictionary and returns modified dictionary
+    '''
+    keys_to_delete = []
+    for key,value in arg_dict.items():
+        if hasattr(value, '__call__') or not is_jsonable(value):
+            keys_to_delete.append(key)
+    for key in keys_to_delete:
+        del arg_dict[key]
+    return arg_dict
+
+#
 
 def preprocess_data(arg, X_train, Y_train, X_cv, Y_cv, X_test, Y_test):
     if arg.type_preprocess_data =='re_shape_X_to_(N,1,D,1)':
@@ -121,7 +146,7 @@ def get_optimizer(arg):
         # If the argument staircase is True, then global_step / decay_steps is an integer division and the decayed earning rate follows a staircase function.
         # decayed_learning_rate = learning_rate * decay_rate ^ (global_step / decay_steps)
         arg.global_step = tf.Variable(0, trainable=False)
-        learning_rate = tf.train.exponential_decay(learning_rate=arg.starter_learning_rate, global_step=global_step,decay_steps=arg.decay_steps, decay_rate=arg.decay_rate, staircase=arg.staircase)
+        learning_rate = tf.train.exponential_decay(learning_rate=arg.starter_learning_rate, global_step=arg.global_step,decay_steps=arg.decay_steps, decay_rate=arg.decay_rate, staircase=arg.staircase)
         # Passing global_step to minimize() will increment it at each step.
         if arg.optimization_alg == 'GD':
             opt = tf.train.GradientDescentOptimizer(learning_rate)
@@ -154,7 +179,7 @@ def main_hp_serial(arg):
 
 def get_batch_feed(X, Y, batch_size):
     mini_batch_indices = np.random.randint(batch_size,size=batch_size)
-    return X[mini_batch_indices,:], Yminibatch[mini_batch_indices,:]
+    return X[mini_batch_indices,:], Y[mini_batch_indices,:]
 
 def get_accuracy_loss(arg,x,y,y_):
     '''
@@ -186,16 +211,17 @@ def main_hp(arg):
     current_job_mdl_folder = '/job_mdl_folder_%s/'%arg.job_name
     arg.path_to_hp = arg.get_path_root(arg)+current_job_mdl_folder
     arg.path_to_ckpt = arg.get_path_root_ckpts(arg)+current_job_mdl_folder
+    hp_folder_for_ckpt = 'hp_stid_'+str(arg.slurm_array_task_id)+'/'
     ### get folder structure for experiment
     mtf.make_and_check_dir(path=arg.get_path_root(arg)+current_job_mdl_folder)
-    mtf.make_and_check_dir(path=arg.get_path_root(arg)+current_job_mdl_folder)
+    mtf.make_and_check_dir(path=arg.get_path_root_ckpts(arg)+current_job_mdl_folder)
     #
     #errors_pretty = '/errors_file_%s_slurm_sj%s.txt'%(arg.date,arg.slurm_array_task_id)
     arg.json_hp_filename = '/json_hp_stid%s'%(arg.slurm_array_task_id)
     arg.csv_errors_filename = '/csv_errors_slurm_array_id%s'%(arg.slurm_array_task_id)
     ## get data set
     (X_train, Y_train, X_cv, Y_cv, X_test, Y_test) = mtf.get_data(arg,arg.N_frac)
-    print( '(N_train,D) = (%d,%d) \n (N_test,D_out) = (%d,%d) ', % (arg.N_train,arg.D), (arg.N_test,arg.D_out) )
+    print( '(N_train,D) = (%d,%d) \n (N_test,D_out) = (%d,%d) ' % (arg.N_train,arg.D, arg.N_test,arg.D_out) )
     ## if (preprocess_data, then preprocess) else (do nothing to the data)
     if arg.type_preprocess_data:
         X_train, Y_train, X_cv, Y_cv, X_test, Y_test = preprocess_data(X_train, Y_train, X_cv, Y_cv, X_test, Y_test)
@@ -204,7 +230,7 @@ def main_hp(arg):
     with graph.as_default():
         ### get mdl
         x = tf.placeholder(arg.float_type, arg.get_x_shape(arg), name='x-input')
-        y_ = tf.placeholder(arg.float_type, get_y_shape(arg))
+        y_ = tf.placeholder(arg.float_type, arg.get_y_shape(arg))
         phase_train = tf.placeholder(tf.bool, name='phase_train') # phase_train = tf.placeholder(tf.bool, name='phase_train') if arg.bn else  None
         y = get_mdl(arg,x)
         ### get loss and accuracy
@@ -219,9 +245,9 @@ def main_hp(arg):
         saver = tf.train.Saver()
     #### run session
     with tf.Session(graph=graph) as sess:
-        with open(arg.path_to_hp+csv_errors_filename,mode,'a') as errors_csv_f:
+        with open(arg.path_to_hp+arg.csv_errors_filename,mode='a') as errors_csv_f: # a option: Opens a file for appending. The file pointer is at the end of the file if the file exists. That is, the file is in the append mode. If the file does not exist, it creates a new file for writing.
             #writer = csv.Writer(errors_csv_f)
-            writer = csv.DictWriter(f_errors)
+            writer = csv.DictWriter(errors_csv_f,['train_error', 'cv_error', 'test_error'])
             # if (there is a restore ckpt mdl restore it) else (create a structure to save ckpt files)
             if arg.restore:
                 arg = restore_hps(arg)
@@ -231,10 +257,10 @@ def main_hp(arg):
                 arg.restore = False # after the model has been restored, we continue normal until all hp's are finished
             else: # NOT Restore
                 # not restored, so its a virgin run from scratch for this hp
-                writer.writeheader(['train_error', 'cv_error', 'test_error'])
+                writer.writeheader()
                 #
                 save_hps(arg) # save current hyper params
-                make_and_check_dir(path=arg.get_hp_ckpt_structure(arg)) # creates ./all_ckpts/exp_task_name/mdl_nn10/hp_stid_N
+                mtf.make_and_check_dir(path=arg.path_to_ckpt+hp_folder_for_ckpt) # creates ./all_ckpts/exp_task_name/mdl_nn10/hp_stid_N
             sess.run(tf.global_variables_initializer())
             # train
             start_iteration = step.eval() # last iteration trained is the first iteration for this model
@@ -250,11 +276,11 @@ def main_hp(arg):
                     cv_error = sess.run(fetches=accuracy, feed_dict={x: X_cv, y_: Y_cv, phase_train: False})
                     test_error = sess.run(fetches=accuracy, feed_dict={x: X_test, y_: Y_test, phase_train: False})
                     # save checkpoint
-                    saver.save(sess=sess,save_path=arg.get_save_path(arg))
+                    saver.save(sess=sess,save_path=arg.path_to_ckpt+hp_folder_for_ckpt+arg.prefix_ckpt)
                     # write files
                     writer.writerow({'train_error':train_error,'cv_error':cv_error,'test_error':test_error})
             # evaluate
-            print(sess.run(fetches=accuracy, feed_dict={x: mnist.test.images, y_: mnist.test.labels}))
+            print('Final Test Acc/error: ', sess.run(fetches=accuracy, feed_dict={x: X_test, y_: Y_test}))
 
 #
 
@@ -277,11 +303,15 @@ def restore_hps(arg):
 def save_hps(arg):
     '''
     '''
-    # make path and file to hps
-    make_and_check_dir(arg.path_to_hp+arg.)
-    # get arguments to this hp run
-    arg_dict = dict( get_remove_functions_from_dict(arg) )
     # TODO: what does json dump do if the file already exists? we want it to just overwrite it
-    with open(arg.path+arg.json_hp_filename, 'w+') as f:
+    with open(arg.path_to_hp+arg.json_hp_filename, 'w+') as f:
+        # get arguments to this hp run
+        arg_dict = dict( get_remove_functions_from_dict(arg) )
+        #
         hps = {'arg_dict':arg_dict}
         json.dump(hps,f,indent=2, separators=(',', ': '))
+
+##
+
+def main_large_hp_ckpt(arg):
+    large_checkpointer.main_large_hp_ckpt(arg)
