@@ -218,9 +218,10 @@ def main_hp(arg):
         # save everything that was saved in the session
         saver = tf.train.Saver()
     #### run session
-    with open(arg.path_to_hp+csv_errors_filename) as errors_csv_f, open(arg.path_to_hp+json_hp_filename) as hp_json_f:
-        arg.errors_csv_f, arg.hp_json_f = errors_csv_f, hp_json_f
-        with tf.Session(graph=graph) as sess:
+    with tf.Session(graph=graph) as sess:
+        with open(arg.path_to_hp+csv_errors_filename,mode,'a') as errors_csv_f:
+            #writer = csv.Writer(errors_csv_f)
+            writer = csv.DictWriter(f_errors)
             # if (there is a restore ckpt mdl restore it) else (create a structure to save ckpt files)
             if arg.restore:
                 arg = restore_hps(arg)
@@ -228,10 +229,13 @@ def main_hp(arg):
                 print('restored model trained up to, STEP: ', step.eval())
                 print('restored model, ACCURACY:', sess.run(fetches=accuracy, feed_dict={x: X_test, y_: Y_test, phase_train: False}))
                 arg.restore = False # after the model has been restored, we continue normal until all hp's are finished
-            else:
+            else: # NOT Restore
+                # not restored, so its a virgin run from scratch for this hp
+                writer.writeheader(['train_error', 'cv_error', 'test_error'])
+                #
                 save_hps(arg) # save current hyper params
                 make_and_check_dir(path=arg.get_hp_ckpt_structure(arg)) # creates ./all_ckpts/exp_task_name/mdl_nn10/hp_stid_N
-                sess.run(tf.global_variables_initializer())
+            sess.run(tf.global_variables_initializer())
             # train
             start_iteration = step.eval() # last iteration trained is the first iteration for this model
             for i in range(start_iteration,nb_iterations.eval()):
@@ -248,7 +252,7 @@ def main_hp(arg):
                     # save checkpoint
                     saver.save(sess=sess,save_path=arg.get_save_path(arg))
                     # write files
-                    #errors_csv_file
+                    writer.writerow({'train_error':train_error,'cv_error':cv_error,'test_error':test_error})
             # evaluate
             print(sess.run(fetches=accuracy, feed_dict={x: mnist.test.images, y_: mnist.test.labels}))
 
