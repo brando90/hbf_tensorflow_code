@@ -219,7 +219,7 @@ def main_hp(arg):
         saver = tf.train.Saver()
     #### run session
     with open(arg.path_to_hp+csv_errors_filename) as errors_csv_f, open(arg.path_to_hp+json_hp_filename) as hp_json_f:
-        arg.hp_json_f, arg.errors_csv_f = hp_json_f, errors_csv_f
+        arg.errors_csv_f, arg.hp_json_f = errors_csv_f, hp_json_f
         with tf.Session(graph=graph) as sess:
             # if (there is a restore ckpt mdl restore it) else (create a structure to save ckpt files)
             if arg.restore:
@@ -248,7 +248,7 @@ def main_hp(arg):
                     # save checkpoint
                     saver.save(sess=sess,save_path=arg.get_save_path(arg))
                     # write files
-                    errors_csv_file
+                    #errors_csv_file
             # evaluate
             print(sess.run(fetches=accuracy, feed_dict={x: mnist.test.images, y_: mnist.test.labels}))
 
@@ -277,6 +277,7 @@ def save_hps(arg):
     make_and_check_dir(arg.path_to_hp+arg.)
     # get arguments to this hp run
     arg_dict = dict( get_remove_functions_from_dict(arg) )
+    # TODO: what does json dump do if the file already exists? we want it to just overwrite it
     with open(arg.path+arg.json_hp_filename, 'w+') as f:
         hps = {'arg_dict':arg_dict}
         json.dump(hps,f,indent=2, separators=(',', ': '))
