@@ -5,37 +5,47 @@ from sklearn.cross_validation import train_test_split
 import os
 
 from tensorflow.examples.tutorials.mnist import input_data
+#mnist = input_data.read_data_sets("tmp_MNIST_data/", one_hot=True)
 
 import pdb
 
-def get_experiment_folder(data_file_name):
+def get_experiment_folder(data_filename):
     #print( task_name.split('task_') )
     #task_prefix, task = task_name.split('task_')
-    return 'om_'+data_file_name
+    return 'om_'+data_filename
 
-def get_data(arg):
+def get_data(arg,N_frac=60000):
     '''
-    Hanldes getting a data set.
+    Hanldes getting a data set. Also gets the number of data points specified.
+
+    If not stated gets the first 60000 data points.
     '''
-    if 'MNIST' in arg.data_file_name:
-        X_train, Y_train, X_cv, Y_cv, X_test, Y_tes = handle_mnist(arg) #TODO
-    elif 'CIFAR' in arg.data_file_name:
+    if 'MNIST' in arg.data_filename:
+        mnist = input_data.read_data_sets(arg.data_dirpath+arg.data_filename,one_hot=True)
+        X_train, Y_train, X_cv, Y_cv, X_test, Y_test = mnist.train.images,mnist.train.labels, mnist.validation.images,mnist.validation.labels, mnist.test.images,mnist.test.labels
+    elif 'CIFAR' in arg.data_filename:
         X_train, Y_train, X_cv, Y_cv, X_test, Y_test = handle_cifar(arg) #TODO
     else:
-        X_train, Y_train, X_cv, Y_cv, X_test, Y_test = get_data_from_file(dirpath=arg.data_dirpath,file_name=arg.data_file_name)
+        X_train, Y_train, X_cv, Y_cv, X_test, Y_test = get_data_from_file(dirpath=arg.data_dirpath,filename=arg.data_filename)
+    # get the number/fraction of the data set that we are going to actully use
+    X_train, Y_train, X_cv, Y_cv, X_test, Y_test = X_train[:N_frac,:], Y_train[:N_frac,:], X_cv[:N_frac,:], Y_cv[:N_frac,:], X_test[:N_frac,:], Y_test[:N_frac,:]
+    # set the data lengths
+    arg.N_train, arg.D = X_train.shape
+    arg.N_cv = X_cv.shape[0]
+    arg.N_test, arg.D_out = Y_test.shape
     return X_train, Y_train, X_cv, Y_cv, X_test, Y_test
 
-def get_data_from_file(dirpath,file_name):
+def get_data_from_file(dirpath,filename):
     '''
-    Gets data from file_name at dirpath. Essentially calls load(dirpath+file_name)
+    Gets data from filename at dirpath. Essentially calls load(dirpath+filename)
 
     dirpath = path (e.g ./data/)
-    file_name = file name (e.g. f_4D_simple_ReLu_BT )
+    filename = file name (e.g. f_4D_simple_ReLu_BT )
 
-    e.g. load(dirpath+file_name) = load("./data/f_4D_simple_ReLu_BT" )
+    e.g. load(dirpath+filename) = load("./data/f_4D_simple_ReLu_BT" )
     '''
     print( os.listdir('.') )
-    npzfile = np.load(dirpath+file_name+'.npz')
+    npzfile = np.load(dirpath+filename+'.npz')
     # get data
     X_train = npzfile['X_train']
     Y_train = npzfile['Y_train']
@@ -81,25 +91,6 @@ def generate_data(D=1, N_train=60000, N_cv=60000, N_test=60000, low_x_var=-2*np.
     Y_test = get_labels(X_test, np.zeros( (N_test,D) ), f)
     return (X_train, Y_train, X_cv, Y_cv, X_test, Y_test)
 
-def generate_data(N_train_var=60000, N_cv_var=60000, N_test_var=60000, low_x_var=-2*np.pi, high_x_var=2*np.pi):
-    f = f1D_task1()
-    #
-    low_x = low_x_var
-    high_x = high_x_var
-    # train
-    N_train = N_train_var
-    X_train = low_x + (high_x - low_x) * np.random.rand(N_train,1)
-    Y_train = get_labels(X_train, np.zeros( (N_train,1) ) , f)
-    # CV
-    N_cv = N_cv_var
-    X_cv = low_x + (high_x - low_x) * np.random.rand(N_cv,1)
-    Y_cv = get_labels(X_cv, np.zeros( (N_cv,1) ), f)
-    # test
-    N_test = N_test_var
-    X_test = low_x + (high_x - low_x) * np.random.rand(N_test,1)
-    Y_test = get_labels(X_test, np.zeros( (N_test,1) ), f)
-    return (X_train, Y_train, X_cv, Y_cv, X_test, Y_test)
-
 def generate_data_from_krls():
     N = 60000
     low_x =-2*np.pi
@@ -115,19 +106,6 @@ def generate_data_from_krls():
     return (X_train, Y_train, X_cv, Y_cv, X_test, Y_test)
 
 #
-
-def handle_mnist(arg):
-    # TODO
-    if task_name == 'task_MNIST_flat':
-        mnist = input_data.read_data_sets("MNIST_data/", one_hot=True)
-        X_train, Y_train = mnist.train.images, mnist.train.labels
-        X_cv, Y_cv = mnist.validation.images, mnist.validation.labels
-        X_test, Y_test = mnist.test.images, mnist.test.labels
-    elif task_name == 'task_MNIST_flat_auto_encoder':
-        mnist = input_data.read_data_sets("MNIST_data/", one_hot=True)
-        X_train, Y_train = mnist.train.images.astype('float64'), np.copy(mnist.train.images.astype('float64'))
-        X_cv, Y_cv = mnist.validation.images.astype('float64'), np.copy(mnist.validation.images.astype('float64'))
-        X_test, Y_test = mnist.test.images.astype('float64'), np.copy(mnist.test.images.astype('float64'))
 
 def get_data_hrushikesh_exp(task_name):
     if task_name == 'task_hrushikesh':

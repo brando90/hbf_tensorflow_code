@@ -65,30 +65,25 @@ def set_tensorboard(arg):
 def set_experiment_folders(arg):
     '''
         Way to do experiment:
-        - goes to location arg.experiment_root_dir usually = ../../TASK_DATA_NAME
+        - goes to location arg.experiment_root_dir usually = ../../simulation_results_scripts/TASK_DATA_NAME
         - goes to arg.experiment_name usually indicates which experiment we want to run.
-        for example if want to test 10 centers we do NN_10 as the folder name to hold the different runs
+
+        E.g. if want to test 10 centers we do NN_10 as the folder name to hold the different runs
         - then for each hp it saves it in ../../TASK_DATA_NAME/NN_10/hp_name
         with hp_name being some file name for those hyper_params
     '''
-    ## directory structure for collecting data for experiments
-    #path_root = '%s/%s'%(arg.experiment_root_dir,arg.experiment_name)
-    path_root = arg.get_path_root(arg)
-    print('path_root: ', path_root)
-    #
     arg.date = datetime.date.today().strftime("%B %d").replace (" ", "_")
-    current_experiment_folder = '/%s_j%s'%(arg.date,arg.job_name)
-    path = path_root+current_experiment_folder
+    #current_experiment_folder = '/%s_j%s'%(arg.date,arg.job_name)
+    current_job_mdl_folder = '/job_name_mdl_%s'%arg.job_name
+    full_path_to_experiment = arg.get_path_root(arg)+current_job_mdl_folder # ../../simulation_results_scripts/task/job_mdl/
     #
     errors_pretty = '/errors_file_%s_slurm_sj%s.txt'%(arg.date,arg.slurm_array_task_id)
-    #
     mdl_dir ='/mdls_%s_slurm_sj%s'%(arg.date,arg.slurm_array_task_id)
-    #
     json_file = '/json_%s_slurm_array_id%s_jobid_%s'%(arg.date, arg.slurm_array_task_id, arg.slurm_jobid)
     # try to make directory, if it exists do NOP
-    mtf.make_and_check_dir(path=path)
-    mtf.make_and_check_dir(path=path+mdl_dir)
-    return path, errors_pretty, mdl_dir, json_file
+    mtf.make_and_check_dir(path=full_path_to_experiment)
+    mtf.make_and_check_dir(path=full_path_to_experiment+mdl_dir)
+    return full_path_to_experiment, errors_pretty, mdl_dir, json_file
 
 def count_number_trainable_params(y):
     '''
@@ -511,7 +506,7 @@ def main_nn(arg):
                         print('nan_found')
                         break
                     if arg.mdl_save:
-                        save_path = saver.save(sess, path+mdl_dir+'/model.ckpt',global_step=i)
+                        save_path = saver.save(sess=sess, save_path=path+mdl_dir+'/model.ckpt',global_step=i)
                 if arg.use_tensorboard:
                     sess.run(fetches=[merged,train_step], feed_dict=feed_dict_batch) #sess.run(train_step, feed_dict={x: batch_xs, y_: batch_ys})
                 else:

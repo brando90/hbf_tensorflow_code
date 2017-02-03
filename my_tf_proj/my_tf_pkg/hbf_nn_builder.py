@@ -13,17 +13,17 @@ def hello_world():
 
 ## builders for Networks (NN)
 
-def build_standard_NN(arg, x, dims, inits, phase_train=None, trainable_bn=True):
+def build_standard_NN(arg, x, dims, inits):
     (_,inits_W,inits_b) = inits
     layer = x
     nb_hidden_layers = len(dims)-1
     for l in range(1,nb_hidden_layers): # from 1 to L-1
-        layer = get_NN_layer(arg, l=str(l), x=layer, init=(inits_W[l],inits_b[l]), dims=(dims[l-1], dims[l]), phase_train=phase_train, trainable_bn=trainable_bn)
+        layer = get_NN_layer(arg, l=str(l), x=layer, init=(inits_W[l],inits_b[l]), dims=(dims[l-1], dims[l]), phase_train=arg.phase_train, trainable_bn=arg.trainable_bn)
     return layer
 
 ## building blocks for NN
 
-def get_NN_layer(arg, l, x, dims, init, phase_train=None, scope="NNLayer", trainable_bn=True):
+def get_NN_layer(arg, l, x, dims, init, scope="NNLayer"):
     (init_W,init_b) = init
     with tf.name_scope(scope+l):
         #print( 'init_W ', init_W )
@@ -31,9 +31,9 @@ def get_NN_layer(arg, l, x, dims, init, phase_train=None, scope="NNLayer", train
         b = tf.get_variable(name='b'+l, dtype=tf.float64, initializer=init_b, regularizer=None, trainable=True)
         with tf.name_scope('Z'+l):
             Z = tf.matmul(x,W) + b
-            if phase_train is not None:
+            if arg.bn:
                 #z = standard_batch_norm(l, z, 1, phase_train)
-                Z = add_batch_norm_layer(l, Z, phase_train, trainable_bn=trainable_bn)
+                Z = add_batch_norm_layer(l, Z, arg.phase_train, trainable_bn=arg.trainable_bn)
         with tf.name_scope('A'+l):
             #A = tf.nn.relu(Z) # (M x D1) = (M x D) * (D x D1)
             A = arg.act(Z)

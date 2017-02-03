@@ -13,6 +13,7 @@ import pdb
 import ast
 import pickle
 import csv
+import copy
 
 import my_tf_pkg as mtf
 from my_tf_pkg import main_large_hp_checkpointer as large_checkpointer
@@ -34,6 +35,8 @@ def get_remove_functions_from_dict(arg_dict):
     '''
         Removes functions from dictionary and returns modified dictionary
     '''
+    #arg_dict = copy.deepcopy(arg_dict)
+    arg_dict = copy.copy(dict(arg_dict))
     keys_to_delete = []
     for key,value in arg_dict.items():
         if hasattr(value, '__call__') or not is_jsonable(value):
@@ -211,7 +214,7 @@ def main_hp(arg):
     current_job_mdl_folder = '/job_mdl_folder_%s/'%arg.job_name
     arg.path_to_hp = arg.get_path_root(arg)+current_job_mdl_folder
     arg.path_to_ckpt = arg.get_path_root_ckpts(arg)+current_job_mdl_folder
-    hp_folder_for_ckpt = 'hp_stid_'+str(arg.slurm_array_task_id)+'/'
+    arg.hp_folder_for_ckpt = 'hp_stid_'+str(arg.slurm_array_task_id)+'/'
     ### get folder structure for experiment
     mtf.make_and_check_dir(path=arg.get_path_root(arg)+current_job_mdl_folder)
     mtf.make_and_check_dir(path=arg.get_path_root_ckpts(arg)+current_job_mdl_folder)
@@ -260,7 +263,7 @@ def main_hp(arg):
                 writer.writeheader()
                 #
                 save_hps(arg) # save current hyper params
-                mtf.make_and_check_dir(path=arg.path_to_ckpt+hp_folder_for_ckpt) # creates ./all_ckpts/exp_task_name/mdl_nn10/hp_stid_N
+                mtf.make_and_check_dir(path=arg.path_to_ckpt+arg.hp_folder_for_ckpt) # creates ./all_ckpts/exp_task_name/mdl_nn10/hp_stid_N
             sess.run(tf.global_variables_initializer())
             # train
             start_iteration = step.eval() # last iteration trained is the first iteration for this model
@@ -275,8 +278,9 @@ def main_hp(arg):
                     train_error = sess.run(fetches=accuracy, feed_dict={x: X_train, y_: Y_train, phase_train: False})
                     cv_error = sess.run(fetches=accuracy, feed_dict={x: X_cv, y_: Y_cv, phase_train: False})
                     test_error = sess.run(fetches=accuracy, feed_dict={x: X_test, y_: Y_test, phase_train: False})
+                    print('step %d, train error: %d',(i,train_error))
                     # save checkpoint
-                    saver.save(sess=sess,save_path=arg.path_to_ckpt+hp_folder_for_ckpt+arg.prefix_ckpt)
+                    saver.save(sess=sess,save_path=arg.path_to_ckpt+arg.hp_folder_for_ckpt+arg.prefix_ckpt)
                     # write files
                     writer.writerow({'train_error':train_error,'cv_error':cv_error,'test_error':test_error})
             # evaluate

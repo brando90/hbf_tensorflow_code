@@ -10,7 +10,7 @@ import numpy as np
 import tensorflow as tf
 # download and install the MNIST data automatically
 from tensorflow.examples.tutorials.mnist import input_data
-mnist = input_data.read_data_sets("tmp_MNIST_data/", one_hot=True)
+#mnist = input_data.read_data_sets("tmp_MNIST_data/", one_hot=True)
 
 def get_remove_functions_from_dict(arg_dict):
     '''
@@ -131,17 +131,15 @@ def no_hp_exists(stid):
 
 #
 
-def get_latest_and_only_save_path_to_ckpt(largest_stid):
+def get_latest_and_only_save_path_to_ckpt(arg, largest_stid):
     '''
     gets the path to ckpts
     '''
-    # get the path where all the ckpts reside
-    path_to_folder_with_ckpts = './%s/%s/%s/%s'%(arg.root_cktps_folder, arg.experiment_name, arg.job_name, 'hp_stid_'+str(largest_stid))
-    # now get the most recent (and only chekpoint) checkpoint
-    save_path_to_ckpt = path_to_folder_with_ckpts+'/'+arg.prefix_ckpt
+    #save_path_to_ckpt = arg.path_to_ckpt+arg.hp_folder_for_ckpt+arg.prefix_ckpt
+    save_path_to_ckpt = arg.path_to_ckpt+'hp_stid_'+str(arg.slurm_array_task_id)+arg.prefix_ckpt
     return save_path_to_ckpt
 
-def get_latest_save_path_to_ckpt(largest_stid):
+def get_latest_save_path_to_ckpt(arg, largest_stid):
     '''
     this was made with the idea that the ckpt files would be appended with
     maybe a counter or something to start ckpts from the most recent ckpt but
@@ -149,7 +147,7 @@ def get_latest_save_path_to_ckpt(largest_stid):
     and the ckpt itself keeps track of the iteration of trainin to continue from.
     '''
     # TODO extend to have more than one ckpt
-    return get_latest_and_only_save_path_to_ckpt(largest_stid)
+    return get_latest_and_only_save_path_to_ckpt(arg, largest_stid)
 
 #
 
@@ -206,7 +204,8 @@ def main_large_hp_ckpt(arg):
                 arg.start_stid = largest_stid
                 arg.end_stid = arg.nb_array_jobs
                 arg.restore = True
-                arg.save_path_to_ckpt2restore = get_latest_save_path_to_ckpt(largest_stid) # /task_exp_name/mdl_nn10/hp_stid_N/ckptK
+                arg.save_path_to_ckpt2restore = get_latest_save_path_to_ckpt(arg,largest_stid) # /task_exp_name/mdl_nn10/hp_stid_N/ckptK
+                print('1 --> arg.save_path_to_ckpt2restore', arg.save_path_to_ckpt2restore)
             else:
                 # train hp from the first iteration
                 arg.start_stid = largest_stid
