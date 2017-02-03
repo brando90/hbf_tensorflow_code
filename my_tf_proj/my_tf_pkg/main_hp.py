@@ -12,6 +12,7 @@ import os
 import pdb
 import ast
 import pickle
+import csv
 
 import my_tf_pkg as mtf
 import time
@@ -21,6 +22,20 @@ import namespaces as ns
 def preprocess_data(arg, X_train, Y_train, X_cv, Y_cv, X_test, Y_test):
     if arg.type_preprocess_data =='re_shape_X_to_(N,1,D,1)':
         X_train, X_cv, X_test = X_train.reshape(arg.N_train,1,arg.D,1), X_cv.reshape(arg.N_cv,1,arg.D,1), X_test.reshape(arg.N_test,1,arg.D,1)
+    elif arg.type_preprocess_data == 'flat_autoencoder':
+        # TODO fix and see if its still neccessary
+        if arg.data_file_name == 'task_MNIST_flat_auto_encoder':
+            with tf.name_scope('input_reshape'):
+                x_image = tf.to_float(x, name='ToFloat')
+                image_shaped_input_x = tf.reshape(x_image, [-1, 28, 28, 1])
+                # tf.image_summary(tag, tensor, max_images=3, collections=None, name=None)
+                tf.image_summary('input', image_shaped_input_x, 10)
+
+            with tf.name_scope('reconstruct'):
+                y_image = tf.to_float(y, name='ToFloat')
+                image_shaped_input_y = tf.reshape(x_image, [-1, 28, 28, 1])
+                # tf.image_summary(tag, tensor, max_images=3, collections=None, name=None)
+                tf.image_summary('reconstruct', image_shaped_input_y, 10)
     else:
         raise ValueError('This type of preprocessing has not bee implemented ',+arg.type_preprocess_data)
     return X_train, Y_train, X_cv, Y_cv, X_test, Y_test
@@ -68,7 +83,6 @@ def get_mdl(arg,x):
     return y
 
 ##
-
 def get_optimizer(arg):
     ### set up optimizer from args
     arg.steps = arg.get_steps(arg)
@@ -106,7 +120,7 @@ def get_optimizer(arg):
     with tf.name_scope("train") as scope:
         # If the argument staircase is True, then global_step / decay_steps is an integer division and the decayed earning rate follows a staircase function.
         # decayed_learning_rate = learning_rate * decay_rate ^ (global_step / decay_steps)
-        global_step = tf.Variable(0, trainable=False)
+        arg.global_step = tf.Variable(0, trainable=False)
         learning_rate = tf.train.exponential_decay(learning_rate=arg.starter_learning_rate, global_step=global_step,decay_steps=arg.decay_steps, decay_rate=arg.decay_rate, staircase=arg.staircase)
         # Passing global_step to minimize() will increment it at each step.
         if arg.optimization_alg == 'GD':
@@ -147,26 +161,38 @@ def get_accuracy_loss(arg,x,y,y_):
     Note: when the task is regression accuracy = loss but for classification
     loss = cross_entropy,svm_loss, surrogate_loss, etc and accuracy = 1 - {0-1 loss}.
     '''
-    if arg.classificaton:
-        cross_entropy = tf.reduce_mean(-tf.reduce_sum(y_ * tf.log(y), reduction_indices=[1]))
-        correct_prediction = tf.equal(tf.argmax(y,1), tf.argmax(y_,1)) # list of booleans indicating correct predictions
-        #
-        accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
-        loss = cross_entropy
-    else:
-        l2_loss = tf.reduce_sum( tf.reduce_mean(tf.square(y_-y), 0) )
-        #
-        accuracy = tf.reduce_mean(tf.cast(l2_loss, tf.float32))
-        loss = cross_entropy
-    return accuracy, loss
+    with tf.name_scope("loss_and_acc") as scope:
+        if arg.classificaton:
+            cross_entropy = tf.reduce_mean(-tf.reduce_sum(y_ * tf.log(y), reduction_indices=[1]))
+            correct_prediction = tf.equal(tf.argmax(y,1), tf.argmax(y_,1)) # list of booleans indicating correct predictions
+            #
+            loss, accuracy = cross_entropy, tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
+        else:
+            l2_loss = tf.reduce_sum( tf.reduce_mean(tf.square(y_-y), 0) )
+            #
+            l2_loss, accuracy = l2_loss, l2_loss
+    return loss, accuracy
 
 def main_hp(arg):
     '''
     executes the current hp (hyper param) slurm array task. Usually means that
     it has to either continue training a model that wasn't finished training
     or start one from scratch.
+
+    note:
     '''
-    results = {'train_errors':[], 'cv_errors':[],'test_errors':[]}
+    arg.date = datetime.date.today().strftime("%B %d").replace (" ", "_")
+    #
+    current_job_mdl_folder = '/job_mdl_folder_%s/'%arg.job_name
+    arg.path_to_hp = arg.get_path_root(arg)+current_job_mdl_folder
+    arg.path_to_ckpt = arg.get_path_root_ckpts(arg)+current_job_mdl_folder
+    ### get folder structure for experiment
+    mtf.make_and_check_dir(path=arg.get_path_root(arg)+current_job_mdl_folder)
+    mtf.make_and_check_dir(path=arg.get_path_root(arg)+current_job_mdl_folder)
+    #
+    #errors_pretty = '/errors_file_%s_slurm_sj%s.txt'%(arg.date,arg.slurm_array_task_id)
+    arg.json_hp_filename = '/json_hp_stid%s'%(arg.slurm_array_task_id)
+    arg.csv_errors_filename = '/csv_errors_slurm_array_id%s'%(arg.slurm_array_task_id)
     ## get data set
     (X_train, Y_train, X_cv, Y_cv, X_test, Y_test) = mtf.get_data(arg,arg.N_frac)
     print( '(N_train,D) = (%d,%d) \n (N_test,D_out) = (%d,%d) ', % (arg.N_train,arg.D), (arg.N_test,arg.D_out) )
@@ -181,41 +207,76 @@ def main_hp(arg):
         y_ = tf.placeholder(arg.float_type, get_y_shape(arg))
         phase_train = tf.placeholder(tf.bool, name='phase_train') # phase_train = tf.placeholder(tf.bool, name='phase_train') if arg.bn else  None
         y = get_mdl(arg,x)
-        ###
-        accuracy, loss = get_accuracy_loss(arg,x,y,y_)
+        ### get loss and accuracy
+        loss, accuracy = get_accuracy_loss(arg,x,y,y_)
         ### get optimizer variables
-        train_step = get_optimizer(arg)
-        train_step = opt.minimize(loss, global_step=global_step)
+        opt = get_optimizer(arg)
+        train_step = opt.minimize(loss, global_step=arg.global_step)
         # step for optimizer (useful for ckpts)
         step, nb_iterations = tf.Variable(0, name='step'), tf.Variable(arg.get_steps(arg), name='nb_iterations')
         batch_size = tf.Variable(arg.get_batch_size(arg), name='batch_size')
         # save everything that was saved in the session
         saver = tf.train.Saver()
     #### run session
-    with tf.Session(graph=graph) as sess:
-        # if (there is a restore ckpt mdl restore it) else (create a structure to save ckpt files)
-        if arg.restore:
-            saver.restore(sess=sess, save_path=arg.save_path_to_ckpt2restore) # e.g. saver.restore(sess=sess, save_path='./tmp/my-model')
-            print('restored model trained up to, STEP: ', step.eval())
-            print('restored model, ACCURACY:', sess.run(fetches=accuracy, feed_dict={x: X_test, y_: Y_test}))
-            arg.restore = False # after the model has been restored, we continue normal until all hp's are finished
-        else:
-            make_and_check_dir(path=arg.get_hp_ckpt_structure(arg)) # creates ./all_ckpts/exp_task_name/mdl_nn10/hp_stid_N
-            sess.run(tf.global_variables_initializer())
-        # train
-        start_iteration = step.eval() # last iteration trained is the first iteration for this model
-        for i in range(start_iteration,nb_iterations.eval()):
-            #batch_xs, batch_ys = mnist.train.next_batch(batch_size.eval())
-            batch_xs, batch_ys = get_batch_feed(X, Y, batch_size)
-            sess.run(fetches=train_step, feed_dict={x: batch_xs, y_: batch_ys})
-            # check_point mdl
-            if i % arg.report_error_freq == 0:
-                sess.run(step.assign(i))
-                #
-                train_error = sess.run(fetches=accuracy, feed_dict={x: X_train, y_: Y_train})
-                cv_error = sess.run(fetches=accuracy, feed_dict={x: X_cv, y_: Y_cv})
-                test_error = sess.run(fetches=accuracy, feed_dict={x: X_test, y_: Y_test})
-                # Append the step number to the checkpoint name:
-                saver.save(sess=sess,save_path=arg.get_save_path(arg))
-        # evaluate
-        print(sess.run(fetches=accuracy, feed_dict={x: mnist.test.images, y_: mnist.test.labels}))
+    with open(arg.path_to_hp+csv_errors_filename) as errors_csv_f, open(arg.path_to_hp+json_hp_filename) as hp_json_f:
+        arg.hp_json_f, arg.errors_csv_f = hp_json_f, errors_csv_f
+        with tf.Session(graph=graph) as sess:
+            # if (there is a restore ckpt mdl restore it) else (create a structure to save ckpt files)
+            if arg.restore:
+                arg = restore_hps(arg)
+                saver.restore(sess=sess, save_path=arg.save_path_to_ckpt2restore) # e.g. saver.restore(sess=sess, save_path='./tmp/my-model')
+                print('restored model trained up to, STEP: ', step.eval())
+                print('restored model, ACCURACY:', sess.run(fetches=accuracy, feed_dict={x: X_test, y_: Y_test, phase_train: False}))
+                arg.restore = False # after the model has been restored, we continue normal until all hp's are finished
+            else:
+                save_hps(arg) # save current hyper params
+                make_and_check_dir(path=arg.get_hp_ckpt_structure(arg)) # creates ./all_ckpts/exp_task_name/mdl_nn10/hp_stid_N
+                sess.run(tf.global_variables_initializer())
+            # train
+            start_iteration = step.eval() # last iteration trained is the first iteration for this model
+            for i in range(start_iteration,nb_iterations.eval()):
+                #batch_xs, batch_ys = mnist.train.next_batch(batch_size.eval())
+                batch_xs, batch_ys = get_batch_feed(X_train, Y_train, batch_size.eval())
+                sess.run(fetches=train_step, feed_dict={x: batch_xs, y_: batch_ys, phase_train: True})
+                # check_point mdl
+                if i % arg.report_error_freq == 0:
+                    sess.run(step.assign(i))
+                    #
+                    train_error = sess.run(fetches=accuracy, feed_dict={x: X_train, y_: Y_train, phase_train: False})
+                    cv_error = sess.run(fetches=accuracy, feed_dict={x: X_cv, y_: Y_cv, phase_train: False})
+                    test_error = sess.run(fetches=accuracy, feed_dict={x: X_test, y_: Y_test, phase_train: False})
+                    # save checkpoint
+                    saver.save(sess=sess,save_path=arg.get_save_path(arg))
+                    # write files
+                    errors_csv_file
+            # evaluate
+            print(sess.run(fetches=accuracy, feed_dict={x: mnist.test.images, y_: mnist.test.labels}))
+
+#
+
+def restore_hps(arg):
+    '''
+
+    note: the hps are only restored if there is some tensorflow ckpt, meaning that
+    some iteration has been saved/checkpointed. Thus, it means that the hyper params that were saved
+    correspond to the hyper params for the checkpointed model. Why? Hyper params
+    for a model that has not started are always saved (and overwrite old ones). Thus, if there are no tf
+    ckpts it means the restored flag is not set and thus it can't run old hyper params because arg.restore is not true.
+    However, if the restore flag is set to true then some iteration must have been ran.
+    Thus, the restore flag is true and the hyper params for that run will be used.
+    '''
+    with open(arg.path_to_hp+arg.json_hp_filename, 'r') as f:
+        hps = json.load(f)
+    arg = ns.Namespace(hps['arg_dict'])
+    return arg
+
+def save_hps(arg):
+    '''
+    '''
+    # make path and file to hps
+    make_and_check_dir(arg.path_to_hp+arg.)
+    # get arguments to this hp run
+    arg_dict = dict( get_remove_functions_from_dict(arg) )
+    with open(arg.path+arg.json_hp_filename, 'w+') as f:
+        hps = {'arg_dict':arg_dict}
+        json.dump(hps,f,indent=2, separators=(',', ': '))
