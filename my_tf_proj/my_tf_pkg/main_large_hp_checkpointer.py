@@ -64,6 +64,7 @@ def ckpts_exist_for_job_mdl(path_to_task_exp):
 
     path_to_task_exp = ./all_ckpts/exp_task_name/mdl_job
     '''
+    print('=======> path_to_task_exp',path_to_task_exp)
     return os.path.isdir(path_to_task_exp)
 
 #
@@ -73,7 +74,6 @@ def get_hp_largest_stid(path_to_folder_with_hps_jobs):
     goes to the experiment with the current model folder (as in /all_ckpts/expt_task_name/mdl_nn10/)
     and gets the most recent stid of the hps.
     '''
-    #pdb.set_trace()
     #For each directory in the tree rooted at directory top (including top itself), it yields a 3-tuple (dirpath, dirnames, filenames).
     for (dirpath, dirnames, filenames) in os.walk(top=path_to_folder_with_hps_jobs,topdown=True):
         # dirnames = [...,hp_stid_N,...] or []
@@ -136,7 +136,7 @@ def get_latest_and_only_save_path_to_ckpt(arg, largest_stid):
     gets the path to ckpts
     '''
     #save_path_to_ckpt = arg.path_to_ckpt+arg.hp_folder_for_ckpt+arg.prefix_ckpt
-    save_path_to_ckpt = arg.path_to_ckpt+'hp_stid_'+str(arg.slurm_array_task_id)+arg.prefix_ckpt
+    save_path_to_ckpt = arg.path_to_ckpt+'hp_stid_%s/%s'%(largest_stid,arg.prefix_ckpt)
     return save_path_to_ckpt
 
 def get_latest_save_path_to_ckpt(arg, largest_stid):
@@ -181,11 +181,12 @@ def main_large_hp_ckpt(arg):
     is re-ran but from the last iteration. Thus, the model might change but the
     change should be insignificant.
     '''
-    current_job_mdl_folder = '/job_mdl_folder_%s/'%arg.job_name
+    current_job_mdl_folder = 'job_mdl_folder_%s/'%arg.job_name
     arg.path_to_ckpt = arg.get_path_root_ckpts(arg)+current_job_mdl_folder
     # if (there is a ckpt structure for this experiment and job continue training) otherwise (start from scratch and run job for experiment)
     if ckpts_exist_for_job_mdl(arg.path_to_ckpt): # if any of the dirs don't exist then start from scratch
         # continue training, since there is a ckpt for this experiment
+        print('>>>some chekpoint exists')
         path_to_folder_with_hps_jobs = arg.path_to_ckpt
         largest_stid = get_hp_largest_stid(path_to_folder_with_hps_jobs) # it can be -1
         print('largest_stid: ', largest_stid)
@@ -200,19 +201,21 @@ def main_large_hp_ckpt(arg):
             # if (a ckpt iteration exists continue from it) otherwise (start hp iteration from scratch)
             if does_hp_have_tf_ckpt(path_to_hp_folder): # is there a tf ckpt for this hp?
                 # start from this specific hp ckpt
-                print('here')
+                print('>>>found tf ckpt')
                 arg.start_stid = largest_stid
                 arg.end_stid = arg.nb_array_jobs
                 arg.restore = True
                 arg.save_path_to_ckpt2restore = get_latest_save_path_to_ckpt(arg,largest_stid) # /task_exp_name/mdl_nn10/hp_stid_N/ckptK
-                print('1 --> arg.save_path_to_ckpt2restore', arg.save_path_to_ckpt2restore)
+                print('>>>arg.save_path_to_ckpt2restore', arg.save_path_to_ckpt2restore)
             else:
                 # train hp from the first iteration
+                print('>>>NOT found tf ckpt')
                 arg.start_stid = largest_stid
                 arg.end_stid = arg.nb_array_jobs
                 arg.restore = False
     else:
         #start from scratch, since there wasn't a ckpt structure for this experiment
+        print('>>>Nothing has been run before so running something from scratch.')
         arg.start_stid = 1
         arg.end_stid = arg.nb_array_jobs
         arg.restore = False
@@ -239,73 +242,7 @@ def run_hyperparam_search(arg):
         main_hp.main_hp(arg)
 #
 
-def get_mdl(x):
-    '''
-    since this is just a test to do the ckpt, it creates a very simple mdl to test.
-    '''
-    # get model
-    W = tf.Variable(tf.truncated_normal([784, 10], mean=0.0, stddev=0.1),name='w')
-    b = tf.Variable(tf.constant(0.1, shape=[10]),name='b')
-    y = tf.nn.softmax(tf.matmul(x, W) + b)
-    return y
-
-def execute_hp_array_task_draft(arg):
-    '''
-    executes the current hp (hyper param) slurm array task. Usually means that
-    it has to either continue training a model that wasn't finished training
-    or start one from scratch.
-    '''
-    #build graph
-    graph = tf.Graph()
-    with graph.as_default():
-        x = tf.placeholder(tf.float32, [None, 784])
-        y_ = tf.placeholder(tf.float32, [None, 10])
-        y = get_mdl(x)
-        phase_train = tf.placeholder(tf.bool, name='phase_train')
-        # loss and accuracy
-        cross_entropy = tf.reduce_mean(-tf.reduce_sum(y_ * tf.log(y), reduction_indices=[1]))
-        correct_prediction = tf.equal(tf.argmax(y,1), tf.argmax(y_,1)) # list of booleans indicating correct predictions
-        accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
-        # optimizer
-        train_step = tf.train.GradientDescentOptimizer(0.5).minimize(cross_entropy)
-        # step for optimizer
-        step = tf.Variable(0, name='step') #step = tf.Variable(0, name='step')
-        nb_iterations = tf.Variable(arg.nb_iterations, name='nb_iterations') #nb_iterations = tf.Variable(arg.nb_iterations, name='nb_iterations')
-        batch_size = tf.Variable(arg.get_batch_size(arg), name='batch_size')
-        #step_assign = step.assign(i) #why is it ok to define it alter and not here?
-        # save everything that was saved in the session
-        saver = tf.train.Saver()
-
-    with tf.Session(graph=graph) as sess:
-        # if (there is a restore ckpt mdl restore it) else (create a structure to save ckpt files)
-        if arg.restore:
-            arg = restore_hps(arg)
-            saver.restore(sess=sess, save_path=arg.save_path_to_ckpt2restore) # e.g. saver.restore(sess=sess, save_path='./tmp/my-model')
-            print('restored model trained up to, STEP: ', step.eval())
-            print('restored model, ACCURACY:', sess.run(fetches=accuracy, feed_dict={x: mnist.test.images, y_: mnist.test.labels,}))
-            # after the model has been restored, we continue normal until all hp's are finished,
-            arg.restore = False # note this is neccessary because there is noop calling this function many times that needs to know that the restoration has already been done, so the following hp's don't need to also be restored.
-        else:
-            save_hps(arg) # save current hyper params
-            make_and_check_dir(path=arg.get_hp_ckpt_structure(arg)) # creates ./all_ckpts/exp_task_name/mdl_nn10/hp_stid_N
-            sess.run(tf.global_variables_initializer())
-        # train
-        start_iteration = step.eval() # last iteration trained is the first iteration for this model
-        for i in range(start_iteration,nb_iterations.eval()):
-            batch_xs, batch_ys = mnist.train.next_batch(batch_size.eval())
-            sess.run(fetches=train_step, feed_dict={x: batch_xs, y_: batch_ys})
-            # check_point mdl
-            if i % 100 == 0:
-                step_assign = step.assign(i)
-                sess.run(step_assign)
-                print('step: ', i)
-                print('accuracy: ', sess.run(fetches=accuracy, feed_dict={x: mnist.test.images, y_: mnist.test.labels, phase_train: False}))
-                # Append the step number to the checkpoint name:
-                saver.save(sess=sess,save_path=arg.get_save_path(arg))
-        # evaluate
-        print(sess.run(fetches=accuracy, feed_dict={x: mnist.test.images, y_: mnist.test.labels}))
-
-def get_args_for_experiment():
+def get_args_for_experiment_test():
     arg = ns.Namespace()
     #
     arg.nb_array_jobs = 3

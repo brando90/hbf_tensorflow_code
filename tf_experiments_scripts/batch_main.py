@@ -7,7 +7,7 @@
 #SBATCH --mail-user=rene_sax14@yahoo.com
 #SBATCH --gres=gpu:1
 
-#from __future__ import print_function
+#from __future__ import #print_function
 #tensorboard --logdir=/tmp/mdl_logs
 #
 
@@ -23,81 +23,112 @@ import numpy as np
 import tensorflow as tf
 
 import my_tf_pkg as mtf
+from my_tf_pkg import main_hp
 
 ##
-print('In batch script', flush=True)
-print(ns)
+#print('In batch script', flush=True)
+#print(ns)
 ###
 arg = ns.Namespace()
 
 #
+arg.get_errors_from = mtf.get_errors_based_on_train_error
+#arg.get_errors_from = mtf.get_errors_based_on_validation_error
+#
+
 #arg.nb_array_jobs = 1
 #arg.type_job = 'serial' #careful when this is on and GPU is NOT on
-arg.type_job = 'slurm_array_parallel'
+#arg.type_job = 'slurm_array_parallel'
+arg.type_job = 'main_large_hp_ckpt'
 
-# to run locally: python batch_main.py -sj sj
-arg.data_dirpath = './data/'
-prefix_path = '../../simulation_results_scripts/%s/%s'
+## debug mode
+arg.data_dirpath = './data/' # path to datasets
+prefix_path_sim_results = './tmp_simulation_results_scripts/%s/%s/' # folder where the results from script is saved
+prefix_path_ckpts = './tmp_all_ckpts/%s/%s/' # folder where the results from script is saved
+arg.nb_array_jobs = 3
+## to run locally: python batch_main.py -sj sj
+# arg.data_dirpath = './data/' # path to datasets
+# prefix_path_sim_results = '../../simulation_results_scripts/%s/%s/' # folder where the results from script is saved
+# prefix_path_ckpts = '../../all_ckpts/%s/%s/' # folder where the results from script is saved
+# ## to run in docker
+# arg.data_dirpath = '/home_simulation_research/hbf_tensorflow_code/tf_experiments_scripts/data/' # path to datasets
+# prefix_path_sim_results = '/home_simulation_research/simulation_results_scripts/%s/%s/' # folder where the results from script is saved
+# prefix_path_ckpts = '/home_simulation_research/all_ckpts/%s/%s/' # folder where the results from script is saved
 
-# to run in docker
-#arg.data_dirpath = '/home_simulation_research/hbf_tensorflow_code/tf_experiments_scripts/data/'
-#prefix_path = '/home_simulation_research/simulation_results_scripts/%s/%s'
-##
+# prefix_path_sim_results = '../../simulation_results_scripts/%s/%s'
+# prefix_path_ckpts = '../../all_ckpts/%s/%s' # folder where the results from script is saved
+arg.get_path_root =  lambda arg: prefix_path_sim_results%(arg.experiment_root_dir,arg.experiment_name)
+arg.get_path_root_ckpts =  lambda arg: prefix_path_ckpts%(arg.experiment_root_dir,arg.experiment_name)
 
-#arg.data_file_name = 'h_gabor_data_and_mesh'
-#arg.data_file_name = 'f_1D_cos_no_noise_data' #task_qianli_func
-#arg.data_file_name = 'f_4D_conv_2nd'
-#arg.data_file_name = 'f_4D_conv_2nd_noise_3_0_25std'
-#arg.data_file_name = 'f_4D_conv_2nd_noise_6_0_5std'
-#arg.data_file_name = 'f_4D_conv_2nd_noise_12_1std'
-#arg.data_file_name = 'f_4D_cos_x2_BT'
-#arg.data_file_name = 'f_4D_simple_ReLu_BT_2_units_1st'
-#arg.data_file_name = 'f_8D_conv_cos_poly1_poly1'
-#arg.data_file_name = 'f_8D_single_relu'
-#arg.data_file_name = 'f_8D_conv_quad_cubic_sqrt'
-#arg.data_file_name = 'f_8D_conv_quad_cubic_sqrt'
-arg.data_file_name = 'f_256D_L8_ppt_1'
-#arg.data_file_name = 'f_8D_conv_quad_cubic_sqrt_shuffled'
-#arg.data_file_name = 'f_4D_simple_ReLu_BT'
-#arg.data_file_name = 'MNIST_flat'
-#arg.data_file_name = 'MNIST_flat_auto_encoder'
-arg.task_folder_name = mtf.get_experiment_folder(arg.data_file_name) #om_f_4d_conv
+arg.prefix_ckpt = 'mdl_ckpt'
+
+####
+#arg.data_filename = 'h_gabor_data_and_mesh'
+#arg.data_filename = 'f_1D_cos_no_noise_data' #task_qianli_func
+#arg.data_filename = 'f_4D_conv_2nd'
+#arg.data_filename = 'f_4D_conv_2nd_noise_3_0_25std'
+#arg.data_filename = 'f_4D_conv_2nd_noise_6_0_5std'
+#arg.data_filename = 'f_4D_conv_2nd_noise_12_1std'
+#arg.data_filename = 'f_4D_cos_x2_BT'
+#arg.data_filename = 'f_4D_simple_ReLu_BT_2_units_1st'
+#arg.data_filename = 'f_8D_conv_cos_poly1_poly1'
+#arg.data_filename = 'f_8D_single_relu'
+#arg.data_filename = 'f_8D_conv_quad_cubic_sqrt'
+#arg.data_filename = 'f_8D_conv_quad_cubic_sqrt'
+arg.data_filename = 'f_256D_L8_ppt_1'
+#arg.data_filename = 'f_8D_conv_quad_cubic_sqrt_shuffled'
+#arg.data_filename = 'f_4D_simple_ReLu_BT'
+arg.data_filename = 'tmp_MNIST_dataset'
+arg.task_folder_name = mtf.get_experiment_folder(arg.data_filename) #om_f_4d_conv
+arg.type_preprocess_data = None
 #
 arg.N_frac = 60000
-print('arg.N_frac: ', arg.N_frac)
+#print('arg.N_frac: ', arg.N_frac)
+
+arg.classificaton = True
+#arg.classificaton = False
 
 #arg.experiment_name = 'task_Nov_22_BTSG1_2_3_8D_Adam_xavier_relu_N60000' # task_Oct_10_BT4D_MGD_xavier_relu_N2000 e.g. task_August_10_BT
 #arg.experiment_name = 'task_Nov_22_BTSG2_3_2_8D_Adam_xavier_relu_N60000'
 #arg.experiment_name = 'task_Nov_22_BTSG3_3_3_8D_Adam_xavier_relu_N60000'
 #arg.experiment_name = 'tmp_task_Nov_22_BTSG4_4_2_8D_Adam_xavier_relu_N60000'
-arg.experiment_name = 'task_Jan_19_BT_256D_Adam_xavier_relu_N60000'
-#arg.experiment_name = 'TMP_TMP'
-arg.experiment_root_dir = mtf.get_experiment_folder(arg.data_file_name)
+#arg.experiment_name = 'task_Jan_19_BT_256D_Adam_xavier_relu_N60000'
+arg.experiment_name = 'TMP_TASK_EXPERIMENT'
 #arg.job_name = 'BTSG1_8D_a19_Adam_200' # job name e.g BTHL_4D_6_12_MGD_200
 #arg.job_name = 'BTSG2_8D_a3_Adam_200'
 #arg.job_name = 'BTSG3_8D_a2_Adam_200'
 #arg.job_name = 'BTSG4_8D_a1_Adam_200'
-arg.job_name = 'BT_256D_units4_params1395780_Adam_200'
+#arg.job_name = 'BT_256D_units4_params1395780_Adam_200'
+#arg.job_name = 'BT_256D_units4_params1395780_Adam_200'
+arg.job_name = 'MDL_NN10'
 
 #arg.experiment_name = 'task_Nov_19_NN_Adam_xavier_relu_N60000' # experiment_name e.g. task_Oct_10_NN_MGD_xavier_relu_N2000
-arg.experiment_name = 'task_Jan_19_NN_256D_Adam_xavier_relu_N60000'
-#arg.experiment_root_dir = mtf.get_experiment_folder(arg.data_file_name)
+#arg.experiment_name = 'TMP_task_Jan_19_NN_256D_Adam_xavier_relu_N60000'
 #arg.job_name = 'NN_8D_31_Adam_200' # job name e.g NN_4D_31_MGD_200
-arg.job_name = 'NN_256D_units5410_params1395780_Adam_200'
+#arg.job_name = 'NN_256D_units5410_params1395780_Adam_200'
 #
-arg.mdl = 'standard_nn'
+arg.experiment_root_dir = mtf.get_experiment_folder(arg.data_filename)
+#
+#arg.mdl = 'standard_nn'
 #arg.mdl = 'hbf'
 #arg.mdl = 'binary_tree_4D_conv_hidden_layer'
 #arg.mdl = "binary_tree_4D_conv_hidden_layer_automatic"
 #arg.mdl = 'binary_tree_8D_conv_hidden_layer'
 #arg.mdl = 'binary_tree_256D_conv_hidden_layer'
 #arg.mdl = 'bt_subgraph'
-if arg.mdl == 'standard_nn':
+arg.mdl = 'debug_mdl'
+if arg.mdl == 'debug_mdl':
+    arg.act = tf.nn.relu
+    arg.dims = None
+    arg.get_dims = lambda arg: arg.dims
+    arg.get_x_shape = lambda arg: [None,arg.D]
+    arg.get_y_shape = lambda arg: [None,arg.D_out]
+elif arg.mdl == 'standard_nn':
     arg.init_type = 'truncated_normal'
     arg.init_type = 'data_xavier_kern'
     arg.init_type = 'xavier'
 
-    K = 5410
+    K = 10
     arg.units = [K]
     #arg.units = [110]
     #arg.units = [237]
@@ -124,6 +155,9 @@ if arg.mdl == 'standard_nn':
     arg.act = tf.nn.relu
     #arg.act = tf.nn.elu
     #arg.act = tf.nn.softplus
+    #
+    arg.get_x_shape = lambda arg: [None,arg.D]
+    arg.get_dims = lambda arg: [arg.D]+arg.units+[arg.D_out]
 elif arg.mdl == 'hbf':
     pass
     # arg.init_type = 'truncated_normal'
@@ -165,6 +199,11 @@ elif arg.mdl == "binary_tree_4D_conv_hidden_layer_automatic":
     arg.act = tf.nn.relu
     #arg.act = tf.nn.elu
     #arg.act = tf.nn.softplus
+    #
+    arg.get_x_shape = lambda arg: [None,1,D,1]
+    arg.type_preprocess_data = 're_shape_X_to_(N,1,D,1)'
+    #
+    arg.get_dims = lambda arg: [D]+arg.nb_filters[1:]+[D_out]
 elif arg.mdl == 'binary_tree_8D_conv_hidden_layer':
     arg.L, arg.padding, arg.scope_name, arg.verbose = 3, 'VALID', 'BT_8D', False
     #
@@ -182,6 +221,11 @@ elif arg.mdl == 'binary_tree_8D_conv_hidden_layer':
     arg.act = tf.nn.relu
     #arg.act = tf.nn.elu
     #arg.act = tf.nn.softplus
+    #
+    arg.get_x_shape = lambda arg: [None,1,D,1]
+    arg.type_preprocess_data = 're_shape_X_to_(N,1,D,1)'
+    #
+    arg.dims = [D]+arg.nb_filters[1:]+[D_out]
 elif arg.mdl == 'binary_tree_256D_conv_hidden_layer':
     logD = 8
     L = logD
@@ -201,6 +245,11 @@ elif arg.mdl == 'binary_tree_256D_conv_hidden_layer':
     arg.act = tf.nn.relu
     #arg.act = tf.nn.elu
     #arg.act = tf.nn.softplus
+    #
+    arg.get_x_shape = lambda arg: [None,1,D,1]
+    arg.type_preprocess_data = 're_shape_X_to_(N,1,D,1)'
+    #
+    arg.dims = [D]+arg.nb_filters[1:]+[D_out]
 elif arg.mdl == 'bt_subgraph':
     arg.L, arg.padding, arg.scope_name, arg.verbose = 3, 'VALID', 'BT_subgraph', False
     #
@@ -243,12 +292,20 @@ elif arg.mdl == 'bt_subgraph':
     arg.act = tf.nn.relu
     #arg.act = tf.nn.elu
     #arg.act = tf.nn.softplus
+    #
+    arg.get_x_shape = lambda arg: [None,1,D,1]
+    arg.type_preprocess_data = 're_shape_X_to_(N,1,D,1)'
+    #
+    arg.dims = [D]+arg.nb_filters[1:]+[D_out]
 else:
     raise ValueError('Need to use a valid model, incorrect or unknown model %s give.'%arg.mdl)
 
+arg.get_y_shape = lambda arg: [None, arg.D_out]
+# float type
+arg.float_type = tf.float32
 #steps
 arg.steps_low = int(2*60000)
-#arg.steps_low = int(1*50)
+arg.steps_low = int(1*1001)
 arg.steps_high = arg.steps_low+1
 arg.get_steps = lambda arg: int( np.random.randint(low=arg.steps_low ,high=arg.steps_high) )
 
@@ -335,10 +392,8 @@ arg.save_config_args = False
 #arg.debug = False
 # arg.slurm_jobid = os.environ['SLURM_JOBID']
 # arg.slurm_array_task_id = os.environ['SLURM_ARRAY_TASK_ID']
-#
-arg.path_root = prefix_path%(arg.experiment_root_dir,arg.experiment_name)
-arg.get_path_root =  lambda arg: arg.path_root
-#
+
+####
 parser = argparse.ArgumentParser()
 parser.add_argument("-d", "--debug", help="debug mode: loads the old (pickle) config file to run in debug mode", action='store_true')
 parser.add_argument("-tj", "--type_job", help="type_job for run")
@@ -354,33 +409,43 @@ parser.add_argument("-pr", "--path_root", help="path_root: specifies the path ro
 #parser.add_argument("-hp", "--hyper_parameter", help="hyper_parameter: when searching for hp on needs to specify were to store the results of experiment or it will default.")
 
 cmd_args = parser.parse_args()
-print('cmd_args ', cmd_args)
 # (do if first if statment is true) if (return true when cmd_args is initialized to None) else (do this)
 cmd_args.type_job = cmd_args.type_job if cmd_args.type_job else arg.type_job
-print('--> arg.type_job ', cmd_args.type_job)
 # if the flag is initialized (not None) then use it, otherwise use the flag from environment veriable
 arg.slurm_jobid = cmd_args.SLURM_JOBID if cmd_args.SLURM_JOBID else os.environ['SLURM_JOBID']
+
+######## try: TODO: fix this
+#     #this should only succeed when slurm is being called in parallel with an array id i.e. if (arg.type_job == 'slurm_array_parallel') is true.
+#     arg.slurm_array_task_id = cmd_args.SLURM_ARRAY_TASK_ID if cmd_args.SLURM_ARRAY_TASK_ID else os.environ['SLURM_ARRAY_TASK_ID']
+# except:
+#     if arg.type_job == 'slurm_array_parallel':
+#         # stry should have been succesful: arg.slurm_array_task_id = cmd_args.SLURM_ARRAY_TASK_ID if cmd_args.SLURM_ARRAY_TASK_ID else os.environ['SLURM_ARRAY_TASK_ID']
+#         pass
+#     elif arg.type_job == 'slurm_array_parallel':
+#         arg.slurm_array_task_id = arg.type_job
 if arg.type_job == 'slurm_array_parallel':
     arg.slurm_array_task_id = cmd_args.SLURM_ARRAY_TASK_ID if cmd_args.SLURM_ARRAY_TASK_ID else os.environ['SLURM_ARRAY_TASK_ID']
 else:
     arg.slurm_array_task_id = arg.type_job
-print('--> arg ', arg.slurm_jobid, arg.slurm_array_task_id)
+#print('--> arg ', arg.slurm_jobid, arg.slurm_array_task_id)
+#########
+
 if cmd_args.save_config_args:
     # flag to save current config files to pickle file
-    print(cmd_args.save_config_args)
+    #print(cmd_args.save_config_args)
     arg.save_config_args = cmd_args.save_config_args
 if cmd_args.debug:
     #arg.debug = cmd_args.debug
     # load old pickle config
     # pickled_arg_dict = pickle.load( open( "pickle-slurm-%s_%s.p"%(int(arg.slurm_jobid)+int(arg.slurm_array_task_id),arg.slurm_array_task_id), "rb" ) )
-    # print( pickled_arg_dict )
+    # #print( pickled_arg_dict )
     # # values merged with the second dict's values overwriting those from the first.
     # arg_dict = {**dict(arg), **pickled_arg_dict}
     # arg = ns.Namespace(arg_dict)
     print('EMPTY IF STATEMENT') #TODO fix line above that gives syntax error
-if cmd_args.path_root:
-    arg.path_root = cmd_args.path_root
-    arg.get_path_root =  lambda arg: arg.path_root
+# if cmd_args.path_root:
+#     arg.path_root = cmd_args.path_root
+#     arg.get_path_root =  lambda arg: arg.path_root
 
 #
 arg.mdl_save = False
@@ -388,21 +453,19 @@ arg.mdl_save = False
 
 #
 arg.use_tensorboard = cmd_args.tensorboard
-print('---> arg.use_tensorboard: ', arg.use_tensorboard)
-print('---> cmd_args.tensorboard: ', cmd_args.tensorboard)
+#print('---> arg.use_tensorboard: ', arg.use_tensorboard)
+#print('---> cmd_args.tensorboard: ', cmd_args.tensorboard)
 
 arg.max_to_keep = 1
 
-arg.get_errors_from = mtf.get_errors_based_on_train_error
-#arg.get_errors_from = mtf.get_errors_based_on_validation_error
-
-print('cmd_args ', cmd_args)
-#print('arg ', arg)
+arg.act_name = arg.act.__name__
 if __name__ == '__main__':
-    print('In __name__ == __main__')
+    #print('In __name__ == __main__')
     if cmd_args.type_job == 'serial':
         # jobs one job. No slurm array
         mtf.main_serial(arg)
     elif cmd_args.type_job == 'slurm_array_parallel':
         # run one single job according to slurm array command
         mtf.main_nn(arg)
+    elif cmd_args.type_job == 'main_large_hp_ckpt':
+        main_hp.main_large_hp_ckpt(arg)

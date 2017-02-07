@@ -36,14 +36,14 @@ def get_remove_functions_from_dict(arg_dict):
         Removes functions from dictionary and returns modified dictionary
     '''
     #arg_dict = copy.deepcopy(arg_dict)
-    arg_dict = copy.copy(dict(arg_dict))
+    arg_dict_copy = copy.copy(dict(arg_dict))
     keys_to_delete = []
-    for key,value in arg_dict.items():
+    for key,value in arg_dict_copy.items():
         if hasattr(value, '__call__') or not is_jsonable(value):
             keys_to_delete.append(key)
     for key in keys_to_delete:
-        del arg_dict[key]
-    return arg_dict
+        del arg_dict_copy[key]
+    return arg_dict_copy
 
 #
 
@@ -113,7 +113,7 @@ def get_mdl(arg,x):
 ##
 def get_optimizer(arg):
     ### set up optimizer from args
-    arg.steps = arg.get_steps(arg)
+    arg.nb_steps = arg.get_steps(arg)
     arg.batch_size = arg.get_batch_size(arg)
     arg.log_learning_rate = arg.get_log_learning_rate(arg)
     arg.starter_learning_rate = arg.get_start_learning_rate(arg)
@@ -196,7 +196,7 @@ def get_accuracy_loss(arg,x,y,y_):
             #
             loss, accuracy = cross_entropy, tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
         else:
-            l2_loss = tf.reduce_sum( tf.reduce_mean(tf.square(y_-y), 0) )
+            l2_loss = tf.reduce_sum( tf.reduce_mean(tf.square(y_-y), 0))
             #
             l2_loss, accuracy = l2_loss, l2_loss
     return loss, accuracy
@@ -209,12 +209,15 @@ def main_hp(arg):
 
     note:
     '''
+    print('>>> arg.restore = ', arg.restore)
+    #pdb.set_trace()
+    #
     arg.date = datetime.date.today().strftime("%B %d").replace (" ", "_")
     #
-    current_job_mdl_folder = '/job_mdl_folder_%s/'%arg.job_name
+    current_job_mdl_folder = 'job_mdl_folder_%s/'%arg.job_name
     arg.path_to_hp = arg.get_path_root(arg)+current_job_mdl_folder
     arg.path_to_ckpt = arg.get_path_root_ckpts(arg)+current_job_mdl_folder
-    arg.hp_folder_for_ckpt = 'hp_stid_'+str(arg.slurm_array_task_id)+'/'
+    arg.hp_folder_for_ckpt = 'hp_stid_%s/'%str(arg.slurm_array_task_id)
     ### get folder structure for experiment
     mtf.make_and_check_dir(path=arg.get_path_root(arg)+current_job_mdl_folder)
     mtf.make_and_check_dir(path=arg.get_path_root_ckpts(arg)+current_job_mdl_folder)
@@ -242,8 +245,8 @@ def main_hp(arg):
         opt = get_optimizer(arg)
         train_step = opt.minimize(loss, global_step=arg.global_step)
         # step for optimizer (useful for ckpts)
-        step, nb_iterations = tf.Variable(0, name='step'), tf.Variable(arg.get_steps(arg), name='nb_iterations')
-        batch_size = tf.Variable(arg.get_batch_size(arg), name='batch_size')
+        step, nb_iterations = tf.Variable(0, name='step'), tf.Variable(arg.nb_steps, name='nb_iterations')
+        batch_size = tf.Variable(arg.batch_size, name='batch_size')
         # save everything that was saved in the session
         saver = tf.train.Saver()
     #### run session
@@ -253,8 +256,9 @@ def main_hp(arg):
             writer = csv.DictWriter(errors_csv_f,['train_error', 'cv_error', 'test_error'])
             # if (there is a restore ckpt mdl restore it) else (create a structure to save ckpt files)
             if arg.restore:
-                arg = restore_hps(arg)
                 saver.restore(sess=sess, save_path=arg.save_path_to_ckpt2restore) # e.g. saver.restore(sess=sess, save_path='./tmp/my-model')
+                arg = restore_hps(arg)
+                #pdb.set_trace()
                 print('restored model trained up to, STEP: ', step.eval())
                 print('restored model, ACCURACY:', sess.run(fetches=accuracy, feed_dict={x: X_test, y_: Y_test, phase_train: False}))
                 arg.restore = False # after the model has been restored, we continue normal until all hp's are finished
@@ -264,7 +268,7 @@ def main_hp(arg):
                 #
                 save_hps(arg) # save current hyper params
                 mtf.make_and_check_dir(path=arg.path_to_ckpt+arg.hp_folder_for_ckpt) # creates ./all_ckpts/exp_task_name/mdl_nn10/hp_stid_N
-            sess.run(tf.global_variables_initializer())
+                sess.run(tf.global_variables_initializer())
             # train
             start_iteration = step.eval() # last iteration trained is the first iteration for this model
             for i in range(start_iteration,nb_iterations.eval()):
@@ -273,13 +277,15 @@ def main_hp(arg):
                 sess.run(fetches=train_step, feed_dict={x: batch_xs, y_: batch_ys, phase_train: True})
                 # check_point mdl
                 if i % arg.report_error_freq == 0:
+                    #pdb.set_trace()
                     sess.run(step.assign(i))
                     #
-                    train_error = sess.run(fetches=accuracy, feed_dict={x: X_train, y_: Y_train, phase_train: False})
-                    cv_error = sess.run(fetches=accuracy, feed_dict={x: X_cv, y_: Y_cv, phase_train: False})
-                    test_error = sess.run(fetches=accuracy, feed_dict={x: X_test, y_: Y_test, phase_train: False})
-                    print('step %d, train error: %d',(i,train_error))
+                    train_error = sess.run(fetches=loss, feed_dict={x: X_train, y_: Y_train, phase_train: False})
+                    cv_error = sess.run(fetches=loss, feed_dict={x: X_cv, y_: Y_cv, phase_train: False})
+                    test_error = sess.run(fetches=loss, feed_dict={x: X_test, y_: Y_test, phase_train: False})
+                    print( 'step %d, train error: %s | batch_size(step.eval(),arg.batch_size): %s,%s log_learning_rate: %s '%(i,train_error,batch_size.eval(),arg.batch_size,arg.log_learning_rate) )
                     # save checkpoint
+                    #pdb.set_trace()
                     saver.save(sess=sess,save_path=arg.path_to_ckpt+arg.hp_folder_for_ckpt+arg.prefix_ckpt)
                     # write files
                     writer.writerow({'train_error':train_error,'cv_error':cv_error,'test_error':test_error})
