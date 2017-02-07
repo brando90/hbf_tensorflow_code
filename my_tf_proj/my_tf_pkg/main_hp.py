@@ -223,8 +223,8 @@ def main_hp(arg):
     mtf.make_and_check_dir(path=arg.get_path_root_ckpts(arg)+current_job_mdl_folder)
     #
     #errors_pretty = '/errors_file_%s_slurm_sj%s.txt'%(arg.date,arg.slurm_array_task_id)
-    arg.json_hp_filename = '/json_hp_stid%s'%(arg.slurm_array_task_id)
-    arg.csv_errors_filename = '/csv_errors_slurm_array_id%s'%(arg.slurm_array_task_id)
+    arg.json_hp_filename = 'json_hp_stid%s'%(arg.slurm_array_task_id)
+    arg.csv_errors_filename = 'csv_errors_slurm_array_id%s'%(arg.slurm_array_task_id)
     ## get data set
     (X_train, Y_train, X_cv, Y_cv, X_test, Y_test) = mtf.get_data(arg,arg.N_frac)
     print( '(N_train,D) = (%d,%d) \n (N_test,D_out) = (%d,%d) ' % (arg.N_train,arg.D, arg.N_test,arg.D_out) )
