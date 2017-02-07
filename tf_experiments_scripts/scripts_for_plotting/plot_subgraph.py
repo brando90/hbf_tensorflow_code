@@ -38,7 +38,7 @@ def task_f_4D_conv_2nd_mdl_relu():
 
     ########
     ######## SHALLOW
-    path_to_experiments_NN = '../../%s/task_Oct_30_NN_Adam_xavier_relu_N60000'%experiment_name
+    path_to_experiments_NN = '../../simulation_results_scripts/%s/task_Oct_30_NN_Adam_xavier_relu_N60000'%experiment_name
     #
     expts_best_results = mtf.get_best_results_for_experiments(path_to_experiments_NN,decider,verbose=False)
     #pdb.set_trace()
@@ -112,7 +112,7 @@ def task_f_4D_conv_2nd_mdl_relu():
     ######## SUBGRAPH
     #path_to_experiments_BT = '../../%s/task_Nov_22_BTSG1_2_3_8D_Adam_xavier_relu_N60000'%experiment_name
     #path_to_experiments_BT = '../../%s/task_Nov_22_BTSG2_3_2_8D_Adam_xavier_relu_N60000'%experiment_name
-    path_to_experiments_BT = '../../%s/task_Nov_22_BTSG3_3_3_8D_Adam_xavier_relu_N60000'%experiment_name
+    path_to_experiments_BT = '../../simulation_results_scripts/%s/task_Nov_22_BTSG3_3_3_8D_Adam_xavier_relu_N60000'%experiment_name
     #path_to_experiments_BT = '../../%s/task_Nov_22_BTSG4_4_2_8D_Adam_xavier_relu_N60000'%experiment_name
     #path_to_experiments_BT = '../../%s/task_Nov_22_BTSG5_4_3_8D_Adam_xavier_relu_N60000'%experiment_name
     expts_best_results = mtf.get_best_results_for_experiments(path_to_experiments_BT,decider,verbose=False,mdl_complexity_criteria='nb_params')
@@ -141,7 +141,7 @@ def task_f_4D_conv_2nd_mdl_relu():
     #sorted_test_errors = sorted_test_errors/worst
     #sorted_train_errors = np.log(sorted_train_errors)
     #sorted_test_errors = np.log(sorted_test_errors)
-    krls.plot_values(nb_params_bt,sorted_train_errors,xlabel='number of parameters',y_label='squared error (l2 loss)',label='Train errors for Sub Graph 4 (SG) Neural Net (NN)',markersize=3,colour='r')
+    krls.plot_values(nb_params_bt,sorted_train_errors,xlabel='number of parameters',y_label='squared error (l2 loss)',label='Train errors for subgraph 4 (SG) Neural Net (NN)',markersize=3,colour='r')
     #krls.plot_values(nb_params_bt,sorted_test_errors,xlabel='number of parameters',y_label='squared error (l2 loss)',label='Test errors for Binary Tree (BT) Neural Net',markersize=3,colour='c')
 
     print()
@@ -151,7 +151,7 @@ def task_f_4D_conv_2nd_mdl_relu():
     #path_to_experiments_BT = '../../%s/task_Nov_22_BTSG2_3_2_8D_Adam_xavier_relu_N60000'%experiment_name
     #path_to_experiments_BT = '../../%s/task_Nov_22_BTSG3_3_3_8D_Adam_xavier_relu_N60000'%experiment_name
     #path_to_experiments_BT = '../../%s/task_Nov_22_BTSG4_4_2_8D_Adam_xavier_relu_N60000'%experiment_name
-    path_to_experiments_BT = '../../%s/task_Nov_22_BTSG5_4_3_8D_Adam_xavier_relu_N60000'%experiment_name
+    path_to_experiments_BT = '../../simulation_results_scripts/%s/task_Nov_22_BTSG5_4_3_8D_Adam_xavier_relu_N60000'%experiment_name
     expts_best_results = mtf.get_best_results_for_experiments(path_to_experiments_BT,decider,verbose=False,mdl_complexity_criteria='nb_params')
     #pdb.set_trace()
     sorted_units, sorted_train_errors, sorted_validation_errors, sorted_test_errors = mtf.get_errors_for_display(expts_best_results)
@@ -178,14 +178,14 @@ def task_f_4D_conv_2nd_mdl_relu():
     #sorted_test_errors = sorted_test_errors/worst
     #sorted_train_errors = np.log(sorted_train_errors)
     #sorted_test_errors = np.log(sorted_test_errors)
-    krls.plot_values(nb_params_bt,sorted_train_errors,xlabel='number of parameters',y_label='squared error (l2 loss)',label='Train errors for Sub Graph 5 (SG) Neural Net (NN)',markersize=3,colour='m')
+    krls.plot_values(nb_params_bt,sorted_train_errors,xlabel='number of parameters',y_label='squared error (l2 loss)',label='Train errors for subgraph 5 (SG) Neural Net (NN)',markersize=3,colour='m')
     #krls.plot_values(nb_params_bt,sorted_test_errors,xlabel='number of parameters',y_label='squared error (l2 loss)',label='Test errors for Binary Tree (BT) Neural Net',markersize=3,colour='c')
 
     print()
 
     ########
     ######## BT
-    path_to_experiments_BT = '../../%s/task_Oct_30_BT8D_Adam_xavier_relu_N60000'%experiment_name
+    path_to_experiments_BT = '../../simulation_results_scripts/%s/task_Oct_30_BT8D_Adam_xavier_relu_N60000'%experiment_name
     expts_best_results = mtf.get_best_results_for_experiments(path_to_experiments_BT,decider,verbose=False,mdl_complexity_criteria='nb_units')
     #pdb.set_trace()
     sorted_units, sorted_train_errors, sorted_validation_errors, sorted_test_errors = mtf.get_errors_for_display(expts_best_results)

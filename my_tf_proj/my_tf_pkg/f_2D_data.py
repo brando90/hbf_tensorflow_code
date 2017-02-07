@@ -1,6 +1,6 @@
 import numpy as np
 import json
-from sklearn.cross_validation import train_test_split
+#from sklearn.cross_validation import train_test_split
 
 # def f2D_task2(X,Y, nb_recursive_layers=2, c1=0.3*np.pi, c2=0.4*np.pi ):
 #     # input layer

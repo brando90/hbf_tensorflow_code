@@ -213,6 +213,7 @@ def main_large_hp_ckpt(arg):
                 arg.start_stid = largest_stid
                 arg.end_stid = arg.nb_array_jobs
                 arg.restore = False
+                #pdb.set_trace()
     else:
         #start from scratch, since there wasn't a ckpt structure for this experiment
         print('>>>Nothing has been run before so running something from scratch.')

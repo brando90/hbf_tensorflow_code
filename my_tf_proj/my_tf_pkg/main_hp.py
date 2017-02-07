@@ -21,6 +21,10 @@ import time
 
 import namespaces as ns
 
+def deleteContent(pfile):
+    pfile.seek(0)
+    pfile.truncate()
+
 def is_jsonable(x):
     '''
     checks if x is json dumpable
@@ -256,13 +260,15 @@ def main_hp(arg):
             writer = csv.DictWriter(errors_csv_f,['train_error', 'cv_error', 'test_error'])
             # if (there is a restore ckpt mdl restore it) else (create a structure to save ckpt files)
             if arg.restore:
+                arg.restore = False # after the model has been restored, we continue normal until all hp's are finished
                 saver.restore(sess=sess, save_path=arg.save_path_to_ckpt2restore) # e.g. saver.restore(sess=sess, save_path='./tmp/my-model')
                 arg = restore_hps(arg)
                 #pdb.set_trace()
                 print('restored model trained up to, STEP: ', step.eval())
-                print('restored model, ACCURACY:', sess.run(fetches=accuracy, feed_dict={x: X_test, y_: Y_test, phase_train: False}))
-                arg.restore = False # after the model has been restored, we continue normal until all hp's are finished
+                print('restored model, ACCURACY:', sess.run(fetches=accuracy, feed_dict={x: X_train, y_: Y_train, phase_train: False}))
             else: # NOT Restore
+                pdb.set_trace()
+                deleteContent(pfile=errors_csv_f)
                 # not restored, so its a virgin run from scratch for this hp
                 writer.writeheader()
                 #

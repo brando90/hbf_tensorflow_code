@@ -18,7 +18,8 @@ make_and_check_dir(path_root)
 #pdb.set_trace()
 with open(path_root+'errors_csv_file.csv',mode='a+') as f_errors:
     #writer = csv.writer(f_errors)
-    writer = csv.DictWriter(f_errors,['val1', 'val2', 'val3'])
+    #writer = csv.DictWriter(f_errors,['val1', 'val2', 'val3'])
+    writer = csv.DictWriter(f_errors)
     #writer.writeheader(['val1', 'val2', 'val3'])
     writer.writeheader()
     for i in range(15):

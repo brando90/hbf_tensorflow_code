@@ -459,6 +459,7 @@ arg.use_tensorboard = cmd_args.tensorboard
 arg.max_to_keep = 1
 
 arg.act_name = arg.act.__name__
+arg.restore = False
 if __name__ == '__main__':
     #print('In __name__ == __main__')
     if cmd_args.type_job == 'serial':

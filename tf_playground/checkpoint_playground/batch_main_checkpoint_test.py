@@ -9,6 +9,17 @@ import tensorflow as tf
 from tensorflow.examples.tutorials.mnist import input_data
 mnist = input_data.read_data_sets("tmp_MNIST_data/", one_hot=True)
 
+def get_remove_functions_from_dict(arg_dict):
+    '''
+        Removes functions from dictionary and returns modified dictionary
+    '''
+    keys_to_delete = []
+    for key,value in arg_dict.items():
+        if hasattr(value, '__call__'):
+            keys_to_delete.append(key)
+    for key in keys_to_delete:
+        del arg_dict[key]
+    return arg_dict
 
 def make_and_check_dir(path):
     '''
@@ -246,6 +257,7 @@ def execute_hp_array_task(arg):
         x = tf.placeholder(tf.float32, [None, 784])
         y_ = tf.placeholder(tf.float32, [None, 10])
         y = get_mdl(x)
+        phase_train = tf.placeholder(tf.bool, name='phase_train')
         # loss and accuracy
         cross_entropy = tf.reduce_mean(-tf.reduce_sum(y_ * tf.log(y), reduction_indices=[1]))
         correct_prediction = tf.equal(tf.argmax(y,1), tf.argmax(y_,1)) # list of booleans indicating correct predictions
@@ -253,9 +265,9 @@ def execute_hp_array_task(arg):
         # optimizer
         train_step = tf.train.GradientDescentOptimizer(0.5).minimize(cross_entropy)
         # step for optimizer
-        step = tf.Variable(0, name='step')
-        nb_iterations = tf.Variable(2001, name='nb_iterations')
-        batch_size = tf.Variable(100, name='batch_size')
+        step = tf.Variable(0, name='step') #step = tf.Variable(0, name='step')
+        nb_iterations = tf.Variable(arg.nb_iterations, name='nb_iterations') #nb_iterations = tf.Variable(arg.nb_iterations, name='nb_iterations')
+        batch_size = tf.Variable(arg.get_batch_size(arg), name='batch_size')
         #step_assign = step.assign(i) #why is it ok to define it alter and not here?
         # save everything that was saved in the session
         saver = tf.train.Saver()
@@ -263,11 +275,14 @@ def execute_hp_array_task(arg):
     with tf.Session(graph=graph) as sess:
         # if (there is a restore ckpt mdl restore it) else (create a structure to save ckpt files)
         if arg.restore:
+            arg = restore_hps(arg)
             saver.restore(sess=sess, save_path=arg.save_path_to_ckpt2restore) # e.g. saver.restore(sess=sess, save_path='./tmp/my-model')
             print('restored model trained up to, STEP: ', step.eval())
-            print('restored model, ACCURACY:', sess.run(fetches=accuracy, feed_dict={x: mnist.test.images, y_: mnist.test.labels}))
-            arg.restore = False # after the model has been restored, we continue normal until all hp's are finished
+            print('restored model, ACCURACY:', sess.run(fetches=accuracy, feed_dict={x: mnist.test.images, y_: mnist.test.labels,}))
+            # after the model has been restored, we continue normal until all hp's are finished,
+            arg.restore = False # note this is neccessary because there is noop calling this function many times that needs to know that the restoration has already been done, so the following hp's don't need to also be restored.
         else:
+            save_hps(arg) # save current hyper params
             make_and_check_dir(path=arg.get_hp_ckpt_structure(arg)) # creates ./all_ckpts/exp_task_name/mdl_nn10/hp_stid_N
             sess.run(tf.global_variables_initializer())
         # train
@@ -280,7 +295,7 @@ def execute_hp_array_task(arg):
                 step_assign = step.assign(i)
                 sess.run(step_assign)
                 print('step: ', i)
-                print('accuracy: ', sess.run(fetches=accuracy, feed_dict={x: mnist.test.images, y_: mnist.test.labels}))
+                print('accuracy: ', sess.run(fetches=accuracy, feed_dict={x: mnist.test.images, y_: mnist.test.labels, phase_train: False}))
                 # Append the step number to the checkpoint name:
                 saver.save(sess=sess,save_path=arg.get_save_path(arg))
         # evaluate
@@ -292,8 +307,13 @@ def get_args_for_experiment():
     arg = ns.Namespace()
     #
     arg.nb_array_jobs = 3
+    arg.nb_iterations = 2001
+    arg.get_batch_size = lambda arg: arg.slurm_array_task_id*10
+    #arg.batch_size = 100
     #
+    arg.root_experiment_folder = 'tmp_sim_results'
     arg.root_cktps_folder = 'tmp_all_ckpt'
+    #
     arg.experiment_name = 'experiment_task_test1'
     arg.job_name = 'job_mdl_nn10'
     arg.prefix_ckpt = 'mdl_ckpt' # checkpoint prefix
@@ -301,6 +321,17 @@ def get_args_for_experiment():
     arg.get_save_path = lambda arg: './%s/%s/%s/%s/%s'%(arg.root_cktps_folder, arg.experiment_name, arg.job_name, 'hp_stid_'+str(arg.slurm_array_task_id), arg.prefix_ckpt)
     arg.get_hp_ckpt_structure = lambda arg: './%s/%s/%s/%s'%(arg.root_cktps_folder, arg.experiment_name, arg.job_name, 'hp_stid_'+str(arg.slurm_array_task_id))
     return arg
+
+def restore_hps(arg):
+
+    return
+
+def save_hps(arg):
+    make_and_check_dir('./%s/%s/hps_file_stid%s'%arg.root_experiment_results,arg.job_name,arg.slurm_array_task_id)
+    #
+    arg_dict = dict( get_remove_functions_from_dict(arg) )
+    with open(path+json_file, 'w+') as f_json:
+        json.dump({'arg_dict':arg_dict},f_json,indent=2, separators=(',', ': '))
 
 if __name__ == '__main__':
     arg = get_args_for_experiment()
