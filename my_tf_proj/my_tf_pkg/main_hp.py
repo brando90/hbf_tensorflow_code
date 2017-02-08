@@ -74,6 +74,7 @@ def preprocess_data(arg, X_train, Y_train, X_cv, Y_cv, X_test, Y_test):
 #
 
 def get_mdl(arg,x):
+    X_train, Y_train, X_cv, Y_cv, X_test, Y_test = arg.get_dataset(arg)
     ## Make Model
     if arg.mdl == 'debug_mdl':
         W = tf.Variable(tf.truncated_normal([784, 10], mean=0.0, stddev=0.1),name='w')
@@ -85,11 +86,11 @@ def get_mdl(arg,x):
         arg.std_init_list = arg.get_W_std_init(arg)
         arg.b_init = arg.get_b_init(arg)
 
-        nb_layers = len(arg.dims)-1
+        nb_layers = len(arg.get_dims(arg))-1
         nb_hidden_layers = nb_layers-1
-        inits_C,inits_W,inits_b = mtf.get_initilizations_standard_NN(init_type=arg.init_type,dims=arg.dims,mu=arg.mu_init_list,std=arg.std_init_list,b_init=arg.b_init, X_train=X_train, Y_train=Y_train)
+        inits_C,inits_W,inits_b = mtf.get_initilizations_standard_NN(init_type=arg.init_type,dims=arg.get_dims(arg),mu=arg.mu_init_list,std=arg.std_init_list,b_init=arg.b_init, X_train=X_train, Y_train=Y_train)
         with tf.name_scope("standardNN") as scope:
-            y = mtf.build_standard_NN(arg, x,arg.dims,(None,inits_W,inits_b),arg.phase_train,arg.trainable_bn)
+            y = mtf.build_standard_NN(arg, x,arg.get_dims(arg),(None,inits_W,inits_b))
             y = mtf.get_summation_layer(l=str(nb_layers),x=y,init=inits_C[0])
     elif arg.mdl == 'hbf':
         raise ValueError('HBF not implemented yet.')
@@ -111,7 +112,6 @@ def get_mdl(arg,x):
         # note: x is shape [None,1,D,1]
         with tf.name_scope("mdl"+arg.scope_name) as scope:
             y = mtf.bt_mdl_conv_subgraph(arg,x)
-        arg.dims = [D]+arg.nb_filters[1:]+[D_out]
     return y
 
 ##
@@ -179,7 +179,6 @@ def main_hp_serial(arg):
         scope_name = 'stid_'+str(job_array_index)
         #with tf.name_scope(scope_name):
         with tf.variable_scope(scope_name):
-            #pdb.set_trace()
             arg.slurm_array_task_id = job_array_index
             main_nn(arg)
 ##
@@ -214,7 +213,6 @@ def main_hp(arg):
     note:
     '''
     print('>>> arg.restore = ', arg.restore)
-    #pdb.set_trace()
     #
     arg.date = datetime.date.today().strftime("%B %d").replace (" ", "_")
     #
@@ -230,7 +228,7 @@ def main_hp(arg):
     arg.json_hp_filename = 'json_hp_stid%s'%(arg.slurm_array_task_id)
     arg.csv_errors_filename = 'csv_errors_slurm_array_id%s'%(arg.slurm_array_task_id)
     ## get data set
-    (X_train, Y_train, X_cv, Y_cv, X_test, Y_test) = mtf.get_data(arg,arg.N_frac)
+    X_train, Y_train, X_cv, Y_cv, X_test, Y_test = mtf.get_data(arg,arg.N_frac)
     print( '(N_train,D) = (%d,%d) \n (N_test,D_out) = (%d,%d) ' % (arg.N_train,arg.D, arg.N_test,arg.D_out) )
     ## if (preprocess_data, then preprocess) else (do nothing to the data)
     if arg.type_preprocess_data:
@@ -242,6 +240,7 @@ def main_hp(arg):
         x = tf.placeholder(arg.float_type, arg.get_x_shape(arg), name='x-input')
         y_ = tf.placeholder(arg.float_type, arg.get_y_shape(arg))
         phase_train = tf.placeholder(tf.bool, name='phase_train') # phase_train = tf.placeholder(tf.bool, name='phase_train') if arg.bn else  None
+        arg.phase_train = phase_train
         y = get_mdl(arg,x)
         ### get loss and accuracy
         loss, accuracy = get_accuracy_loss(arg,x,y,y_)
@@ -263,13 +262,11 @@ def main_hp(arg):
                 arg.restore = False # after the model has been restored, we continue normal until all hp's are finished
                 saver.restore(sess=sess, save_path=arg.save_path_to_ckpt2restore) # e.g. saver.restore(sess=sess, save_path='./tmp/my-model')
                 arg = restore_hps(arg)
-                #pdb.set_trace()
                 print('restored model trained up to, STEP: ', step.eval())
                 print('restored model, ACCURACY:', sess.run(fetches=accuracy, feed_dict={x: X_train, y_: Y_train, phase_train: False}))
             else: # NOT Restore
-                pdb.set_trace()
-                deleteContent(pfile=errors_csv_f)
                 # not restored, so its a virgin run from scratch for this hp
+                deleteContent(pfile=errors_csv_f) # since its a virgin run we
                 writer.writeheader()
                 #
                 save_hps(arg) # save current hyper params
@@ -283,7 +280,6 @@ def main_hp(arg):
                 sess.run(fetches=train_step, feed_dict={x: batch_xs, y_: batch_ys, phase_train: True})
                 # check_point mdl
                 if i % arg.report_error_freq == 0:
-                    #pdb.set_trace()
                     sess.run(step.assign(i))
                     #
                     train_error = sess.run(fetches=loss, feed_dict={x: X_train, y_: Y_train, phase_train: False})
@@ -291,7 +287,6 @@ def main_hp(arg):
                     test_error = sess.run(fetches=loss, feed_dict={x: X_test, y_: Y_test, phase_train: False})
                     print( 'step %d, train error: %s | batch_size(step.eval(),arg.batch_size): %s,%s log_learning_rate: %s '%(i,train_error,batch_size.eval(),arg.batch_size,arg.log_learning_rate) )
                     # save checkpoint
-                    #pdb.set_trace()
                     saver.save(sess=sess,save_path=arg.path_to_ckpt+arg.hp_folder_for_ckpt+arg.prefix_ckpt)
                     # write files
                     writer.writerow({'train_error':train_error,'cv_error':cv_error,'test_error':test_error})

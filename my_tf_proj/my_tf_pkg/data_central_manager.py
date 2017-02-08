@@ -33,6 +33,8 @@ def get_data(arg,N_frac=60000):
     arg.N_train, arg.D = X_train.shape
     arg.N_cv = X_cv.shape[0]
     arg.N_test, arg.D_out = Y_test.shape
+    ##
+    arg.X_train, arg.Y_train, arg.X_cv, arg.Y_cv, arg.X_test, arg.Y_test = X_train, Y_train, X_cv, Y_cv, X_test, Y_test
     return X_train, Y_train, X_cv, Y_cv, X_test, Y_test
 
 def get_data_from_file(dirpath,filename):

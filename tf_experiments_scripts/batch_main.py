@@ -40,17 +40,17 @@ arg.get_errors_from = mtf.get_errors_based_on_train_error
 #arg.type_job = 'serial' #careful when this is on and GPU is NOT on
 #arg.type_job = 'slurm_array_parallel'
 arg.type_job = 'main_large_hp_ckpt'
+arg.nb_array_jobs = 3
 
 ## debug mode
 arg.data_dirpath = './data/' # path to datasets
 prefix_path_sim_results = './tmp_simulation_results_scripts/%s/%s/' # folder where the results from script is saved
 prefix_path_ckpts = './tmp_all_ckpts/%s/%s/' # folder where the results from script is saved
-arg.nb_array_jobs = 3
 ## to run locally: python batch_main.py -sj sj
 # arg.data_dirpath = './data/' # path to datasets
 # prefix_path_sim_results = '../../simulation_results_scripts/%s/%s/' # folder where the results from script is saved
 # prefix_path_ckpts = '../../all_ckpts/%s/%s/' # folder where the results from script is saved
-# ## to run in docker
+## to run in docker
 # arg.data_dirpath = '/home_simulation_research/hbf_tensorflow_code/tf_experiments_scripts/data/' # path to datasets
 # prefix_path_sim_results = '/home_simulation_research/simulation_results_scripts/%s/%s/' # folder where the results from script is saved
 # prefix_path_ckpts = '/home_simulation_research/all_ckpts/%s/%s/' # folder where the results from script is saved
@@ -78,7 +78,7 @@ arg.prefix_ckpt = 'mdl_ckpt'
 arg.data_filename = 'f_256D_L8_ppt_1'
 #arg.data_filename = 'f_8D_conv_quad_cubic_sqrt_shuffled'
 #arg.data_filename = 'f_4D_simple_ReLu_BT'
-arg.data_filename = 'tmp_MNIST_dataset'
+#arg.data_filename = 'tmp_MNIST_dataset'
 arg.task_folder_name = mtf.get_experiment_folder(arg.data_filename) #om_f_4d_conv
 arg.type_preprocess_data = None
 #
@@ -109,14 +109,14 @@ arg.job_name = 'MDL_NN10'
 #
 arg.experiment_root_dir = mtf.get_experiment_folder(arg.data_filename)
 #
-#arg.mdl = 'standard_nn'
+arg.mdl = 'standard_nn'
 #arg.mdl = 'hbf'
 #arg.mdl = 'binary_tree_4D_conv_hidden_layer'
 #arg.mdl = "binary_tree_4D_conv_hidden_layer_automatic"
 #arg.mdl = 'binary_tree_8D_conv_hidden_layer'
 #arg.mdl = 'binary_tree_256D_conv_hidden_layer'
 #arg.mdl = 'bt_subgraph'
-arg.mdl = 'debug_mdl'
+#arg.mdl = 'debug_mdl'
 if arg.mdl == 'debug_mdl':
     arg.act = tf.nn.relu
     arg.dims = None
@@ -150,7 +150,7 @@ elif arg.mdl == 'standard_nn':
     #arg.get_W_std_init = lambda arg: len(arg.dims)*[arg.std]
 
     arg.b = 0.1
-    arg.get_b_init = lambda arg: len(arg.dims)*[arg.b]
+    arg.get_b_init = lambda arg: len(arg.get_dims(arg))*[arg.b]
 
     arg.act = tf.nn.relu
     #arg.act = tf.nn.elu
@@ -200,10 +200,10 @@ elif arg.mdl == "binary_tree_4D_conv_hidden_layer_automatic":
     #arg.act = tf.nn.elu
     #arg.act = tf.nn.softplus
     #
-    arg.get_x_shape = lambda arg: [None,1,D,1]
+    arg.get_x_shape = lambda arg: [None,1,arg.D,1]
     arg.type_preprocess_data = 're_shape_X_to_(N,1,D,1)'
     #
-    arg.get_dims = lambda arg: [D]+arg.nb_filters[1:]+[D_out]
+    arg.get_dims = lambda arg: [arg.D]+arg.nb_filters[1:]+[arg.D_out]
 elif arg.mdl == 'binary_tree_8D_conv_hidden_layer':
     arg.L, arg.padding, arg.scope_name, arg.verbose = 3, 'VALID', 'BT_8D', False
     #
@@ -222,10 +222,10 @@ elif arg.mdl == 'binary_tree_8D_conv_hidden_layer':
     #arg.act = tf.nn.elu
     #arg.act = tf.nn.softplus
     #
-    arg.get_x_shape = lambda arg: [None,1,D,1]
+    arg.get_x_shape = lambda arg: [None,1,arg.D,1]
     arg.type_preprocess_data = 're_shape_X_to_(N,1,D,1)'
     #
-    arg.dims = [D]+arg.nb_filters[1:]+[D_out]
+    arg.get_dims = lambda arg: [arg.D]+arg.nb_filters[1:]+[arg.D_out]
 elif arg.mdl == 'binary_tree_256D_conv_hidden_layer':
     logD = 8
     L = logD
@@ -249,7 +249,7 @@ elif arg.mdl == 'binary_tree_256D_conv_hidden_layer':
     arg.get_x_shape = lambda arg: [None,1,D,1]
     arg.type_preprocess_data = 're_shape_X_to_(N,1,D,1)'
     #
-    arg.dims = [D]+arg.nb_filters[1:]+[D_out]
+    arg.get_dims = lambda arg: [arg.D]+arg.nb_filters[1:]+[arg.D_out]
 elif arg.mdl == 'bt_subgraph':
     arg.L, arg.padding, arg.scope_name, arg.verbose = 3, 'VALID', 'BT_subgraph', False
     #
@@ -296,7 +296,7 @@ elif arg.mdl == 'bt_subgraph':
     arg.get_x_shape = lambda arg: [None,1,D,1]
     arg.type_preprocess_data = 're_shape_X_to_(N,1,D,1)'
     #
-    arg.dims = [D]+arg.nb_filters[1:]+[D_out]
+    arg.get_dims = lambda arg: [arg.D]+arg.nb_filters[1:]+[arg.D_out]
 else:
     raise ValueError('Need to use a valid model, incorrect or unknown model %s give.'%arg.mdl)
 
@@ -457,6 +457,8 @@ arg.use_tensorboard = cmd_args.tensorboard
 #print('---> cmd_args.tensorboard: ', cmd_args.tensorboard)
 
 arg.max_to_keep = 1
+
+arg.get_dataset = lambda arg: (arg.X_train, arg.Y_train, arg.X_cv, arg.Y_cv, arg.X_test, arg.Y_test)
 
 arg.act_name = arg.act.__name__
 arg.restore = False

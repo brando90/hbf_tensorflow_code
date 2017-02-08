@@ -18,7 +18,7 @@ def build_standard_NN(arg, x, dims, inits):
     layer = x
     nb_hidden_layers = len(dims)-1
     for l in range(1,nb_hidden_layers): # from 1 to L-1
-        layer = get_NN_layer(arg, l=str(l), x=layer, init=(inits_W[l],inits_b[l]), dims=(dims[l-1], dims[l]), phase_train=arg.phase_train, trainable_bn=arg.trainable_bn)
+        layer = get_NN_layer(arg, l=str(l), x=layer, init=(inits_W[l],inits_b[l]), dims=(dims[l-1], dims[l]))
     return layer
 
 ## building blocks for NN
@@ -28,7 +28,7 @@ def get_NN_layer(arg, l, x, dims, init, scope="NNLayer"):
     with tf.name_scope(scope+l):
         #print( 'init_W ', init_W )
         W = get_W(init_W, l, dims)
-        b = tf.get_variable(name='b'+l, dtype=tf.float64, initializer=init_b, regularizer=None, trainable=True)
+        b = tf.get_variable(name='b'+l, dtype=tf.float32, initializer=init_b, regularizer=None, trainable=True)
         with tf.name_scope('Z'+l):
             Z = tf.matmul(x,W) + b
             if arg.bn:
@@ -82,7 +82,7 @@ def get_W_BT4D(arg,l,name,dtype=tf.float32):
         W = tf.get_variable(name='W'+name, dtype=dtype, initializer=init_W, regularizer=None, trainable=True, shape=[dim_input,dim_out])
     return W
 
-def get_W(init_W,l,dims,dtype=tf.float64):
+def get_W(init_W,l,dims,dtype=tf.float32):
     #pdb.set_trace()
     #if isinstance(init_W, tf.python.framework.ops.Tensor):
     if isinstance(init_W, tf.Tensor):
@@ -157,7 +157,7 @@ def build_summed_NN(x, dims, inits, phase_train=None):
 def get_summation_layer(l, x, init, layer_name="SumLayer"):
     with tf.name_scope(layer_name+l):
         #print init
-        C = tf.get_variable(name='C', dtype=tf.float64, initializer=init, regularizer=None, trainable=True)
+        C = tf.get_variable(name='C', dtype=tf.float32, initializer=init, regularizer=None, trainable=True)
         layer = tf.matmul(x, C)
     var_prefix = 'vars_'+layer_name+l
     put_summaries(C, prefix_name=var_prefix+'C', suffix_text = 'C')
@@ -175,12 +175,12 @@ def standard_batch_norm(l, x, n_out, phase_train, scope='BN'):
         normed:      batch-normalized maps
     """
     with tf.variable_scope(scope+l):
-        #beta = tf.Variable(tf.constant(0.0, shape=[n_out], dtype=tf.float64 ), name='beta', trainable=True, dtype=tf.float64 )
-        #gamma = tf.Variable(tf.constant(1.0, shape=[n_out],dtype=tf.float64 ), name='gamma', trainable=True, dtype=tf.float64 )
-        init_beta = tf.constant(0.0, shape=[n_out], dtype=tf.float64)
-        init_gamma = tf.constant(1.0, shape=[n_out],dtype=tf.float64)
-        beta = tf.get_variable(name='beta'+l, dtype=tf.float64, initializer=init_beta, regularizer=None, trainable=True)
-        gamma = tf.get_variable(name='gamma'+l, dtype=tf.float64, initializer=init_gamma, regularizer=None, trainable=True)
+        #beta = tf.Variable(tf.constant(0.0, shape=[n_out], dtype=tf.float32 ), name='beta', trainable=True, dtype=tf.float32 )
+        #gamma = tf.Variable(tf.constant(1.0, shape=[n_out],dtype=tf.float32 ), name='gamma', trainable=True, dtype=tf.float32 )
+        init_beta = tf.constant(0.0, shape=[n_out], dtype=tf.float32)
+        init_gamma = tf.constant(1.0, shape=[n_out],dtype=tf.float32)
+        beta = tf.get_variable(name='beta'+l, dtype=tf.float32, initializer=init_beta, regularizer=None, trainable=True)
+        gamma = tf.get_variable(name='gamma'+l, dtype=tf.float32, initializer=init_gamma, regularizer=None, trainable=True)
         batch_mean, batch_var = tf.nn.moments(x, [0], name='moments')
         ema = tf.train.ExponentialMovingAverage(decay=0.5)
 
