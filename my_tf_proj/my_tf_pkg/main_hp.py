@@ -201,7 +201,7 @@ def get_accuracy_loss(arg,x,y,y_):
         else:
             l2_loss = tf.reduce_sum( tf.reduce_mean(tf.square(y_-y), 0))
             #
-            l2_loss, accuracy = l2_loss, l2_loss
+            loss, accuracy = l2_loss, l2_loss
     return loss, accuracy
 
 def main_hp(arg):
@@ -277,7 +277,7 @@ def main_hp(arg):
             for i in range(start_iteration,nb_iterations.eval()):
                 #batch_xs, batch_ys = mnist.train.next_batch(batch_size.eval())
                 batch_xs, batch_ys = get_batch_feed(X_train, Y_train, batch_size.eval())
-                sess.run(fetches=train_step, feed_dict={x: batch_xs, y_: batch_ys, phase_train: True})
+                sess.run(fetches=train_step, feed_dict={x: batch_xs, y_: batch_ys, phase_train: False})
                 # check_point mdl
                 if i % arg.report_error_freq == 0:
                     sess.run(step.assign(i))

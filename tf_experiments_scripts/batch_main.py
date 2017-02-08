@@ -85,8 +85,7 @@ arg.type_preprocess_data = None
 arg.N_frac = 60000
 #print('arg.N_frac: ', arg.N_frac)
 
-arg.classificaton = True
-#arg.classificaton = False
+arg.classificaton = mtf.classification_task_or_not(arg)
 
 #arg.experiment_name = 'task_Nov_22_BTSG1_2_3_8D_Adam_xavier_relu_N60000' # task_Oct_10_BT4D_MGD_xavier_relu_N2000 e.g. task_August_10_BT
 #arg.experiment_name = 'task_Nov_22_BTSG2_3_2_8D_Adam_xavier_relu_N60000'

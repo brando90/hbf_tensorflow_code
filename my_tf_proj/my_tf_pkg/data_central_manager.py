@@ -2,6 +2,8 @@ import numpy as np
 import json
 #from sklearn.cross_validation import train_test_split
 
+import re
+
 import os
 
 from tensorflow.examples.tutorials.mnist import input_data
@@ -13,6 +15,16 @@ def get_experiment_folder(data_filename):
     #print( task_name.split('task_') )
     #task_prefix, task = task_name.split('task_')
     return 'om_'+data_filename
+
+def classification_task_or_not(arg):
+    if arg.data_filename == 'MNIST':
+        return True
+    elif arg.data_filename == 'CIFAR':
+        return True
+    elif bool(re.search('f_\d+D_\w+', arg.data_filename)):
+        return False
+    else:
+        raise ValueError('Need to use valid data set')
 
 def get_data(arg,N_frac=60000):
     '''
