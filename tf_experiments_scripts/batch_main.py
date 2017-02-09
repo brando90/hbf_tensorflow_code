@@ -43,17 +43,17 @@ arg.type_job = 'main_large_hp_ckpt'
 arg.nb_array_jobs = 3
 
 ## debug mode
-arg.data_dirpath = './data/' # path to datasets
-prefix_path_sim_results = './tmp_simulation_results_scripts/%s/%s/' # folder where the results from script is saved
-prefix_path_ckpts = './tmp_all_ckpts/%s/%s/' # folder where the results from script is saved
+# arg.data_dirpath = './data/' # path to datasets
+# prefix_path_sim_results = './tmp_simulation_results_scripts/%s/%s/' # folder where the results from script is saved
+# prefix_path_ckpts = './tmp_all_ckpts/%s/%s/' # folder where the results from script is saved
 ## to run locally: python batch_main.py -sj sj
 # arg.data_dirpath = './data/' # path to datasets
 # prefix_path_sim_results = '../../simulation_results_scripts/%s/%s/' # folder where the results from script is saved
 # prefix_path_ckpts = '../../all_ckpts/%s/%s/' # folder where the results from script is saved
 ## to run in docker
-# arg.data_dirpath = '/home_simulation_research/hbf_tensorflow_code/tf_experiments_scripts/data/' # path to datasets
-# prefix_path_sim_results = '/home_simulation_research/simulation_results_scripts/%s/%s/' # folder where the results from script is saved
-# prefix_path_ckpts = '/home_simulation_research/all_ckpts/%s/%s/' # folder where the results from script is saved
+arg.data_dirpath = '/home_simulation_research/hbf_tensorflow_code/tf_experiments_scripts/data/' # path to datasets
+prefix_path_sim_results = '/home_simulation_research/simulation_results_scripts/%s/%s/' # folder where the results from script is saved
+prefix_path_ckpts = '/home_simulation_research/all_ckpts/%s/%s/' # folder where the results from script is saved
 
 # prefix_path_sim_results = '../../simulation_results_scripts/%s/%s'
 # prefix_path_ckpts = '../../all_ckpts/%s/%s' # folder where the results from script is saved
@@ -61,7 +61,6 @@ arg.get_path_root =  lambda arg: prefix_path_sim_results%(arg.experiment_root_di
 arg.get_path_root_ckpts =  lambda arg: prefix_path_ckpts%(arg.experiment_root_dir,arg.experiment_name)
 
 arg.prefix_ckpt = 'mdl_ckpt'
-
 ####
 #arg.data_filename = 'h_gabor_data_and_mesh'
 #arg.data_filename = 'f_1D_cos_no_noise_data' #task_qianli_func
