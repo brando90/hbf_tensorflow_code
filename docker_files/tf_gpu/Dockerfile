@@ -22,7 +22,7 @@ RUN pip3 install keras
 
 # install my library (only when the a container is spun)
 # bash script that configures the running container
-ENTRYPOINT ["sh", "/home_simulation_research/hbf_tensorflow_code/docker_files/tf_cpu/container_setup.sh"]
+ENTRYPOINT ["sh", "/home_simulation_research/hbf_tensorflow_code/docker_files/tf_gpu/container_setup.sh"]
 
 # enviromnet
 ENV OMP_NUM_THREADS=2
