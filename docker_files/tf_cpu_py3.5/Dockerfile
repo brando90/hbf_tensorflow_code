@@ -16,7 +16,6 @@ RUN apt-get -y install python3.5
 
 RUN wget https://bootstrap.pypa.io/get-pip.py
 RUN python3.5 get-pip.py
-RUN python3.5 -m pip install -U numpy
 
 #Install some stuff my lib needs
 RUN python3.5 -m pip install -U numpy
@@ -25,6 +24,10 @@ RUN python3.5 -m pip install -U scikit-learn
 RUN python3.5 -m pip install -U scipy
 RUN python3.5 -m pip install -U pdb
 RUN python3.5 -m pip install -U keras
+
+#
+#export TF_BINARY_URL=https://storage.googleapis.com/tensorflow/linux/cpu/tensorflow-0.12.1-cp35-cp35m-linux_x86_64.whl
+RUN python3.5 -m pip install https://storage.googleapis.com/tensorflow/linux/cpu/tensorflow-0.12.1-cp35-cp35m-linux_x86_64.whl
 
 # install my library (only when the a container is spun)
 # bash script that configures the running container
