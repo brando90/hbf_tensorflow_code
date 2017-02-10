@@ -16,7 +16,6 @@ import csv
 import copy
 
 import my_tf_pkg as mtf
-#from my_tf_pkg import main_large_hp_checkpointer as large_checkpointer
 import time
 
 import namespaces as ns
@@ -108,10 +107,13 @@ def get_mdl(arg,x):
         # with tf.name_scope("HBF") as scope:
         #     mdl = mtf.build_HBF2(x,arg.dims,(inits_C,inits_W,inits_S),phase_train,arg.trainable_bn,trainable_S)
         #     mdl = mtf.get_summation_layer(l=str(nb_layers),x=mdl,init=inits_C[0])
-    elif arg.mdl == 'bt_subgraph' or 'binary_tree' in arg.mdl:
+    elif arg.mdl == 'bt_subgraph':
         # note: x is shape [None,1,D,1]
         with tf.name_scope("mdl"+arg.scope_name) as scope:
             y = mtf.bt_mdl_conv_subgraph(arg,x)
+    elif 'binary_tree' in arg.mdl:
+        with tf.name_scope("mdl"+arg.scope_name) as scope:
+            y = mtf.bt_mdl_conv(arg,x)
     return y
 
 ##
@@ -232,7 +234,7 @@ def main_hp(arg):
     print( '(N_train,D) = (%d,%d) \n (N_test,D_out) = (%d,%d) ' % (arg.N_train,arg.D, arg.N_test,arg.D_out) )
     ## if (preprocess_data, then preprocess) else (do nothing to the data)
     if arg.type_preprocess_data:
-        X_train, Y_train, X_cv, Y_cv, X_test, Y_test = preprocess_data(X_train, Y_train, X_cv, Y_cv, X_test, Y_test)
+        X_train, Y_train, X_cv, Y_cv, X_test, Y_test = preprocess_data(arg, X_train, Y_train, X_cv, Y_cv, X_test, Y_test)
     #### build graph
     graph = tf.Graph()
     with graph.as_default():

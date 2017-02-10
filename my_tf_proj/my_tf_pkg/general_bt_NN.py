@@ -114,7 +114,7 @@ def bt_mdl_conv(arg,x):
         # print(conv)
     # make each layer
     for l in range(1,len(arg.F)):
-        print('>>loop index ', l)
+        #print('>>loop index ', l)
         nb_filters = arg.F[l] # nb of filters for current layer
         # if arg.verbose:
         #     debug_print(l, conv, conv_new, arg)

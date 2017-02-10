@@ -11,6 +11,9 @@
 #tensorboard --logdir=/tmp/mdl_logs
 #
 
+print('#!/usr/bin/env python')
+print('#!/usr/bin/python')
+
 import os
 import sys
 
@@ -44,17 +47,17 @@ arg.type_job = 'main_large_hp_ckpt'
 arg.nb_array_jobs = 3
 
 ## debug mode
-# arg.data_dirpath = './data/' # path to datasets
-# prefix_path_sim_results = './tmp_simulation_results_scripts/%s/%s/' # folder where the results from script is saved
-# prefix_path_ckpts = './tmp_all_ckpts/%s/%s/' # folder where the results from script is saved
+#arg.data_dirpath = './data/' # path to datasets
+#prefix_path_sim_results = './tmp_simulation_results_scripts/%s/%s/' # folder where the results from script is saved
+#prefix_path_ckpts = './tmp_all_ckpts/%s/%s/' # folder where the results from script is saved
 ## to run locally: python batch_main.py -sj sj
-# arg.data_dirpath = './data/' # path to datasets
-# prefix_path_sim_results = '../../simulation_results_scripts/%s/%s/' # folder where the results from script is saved
-# prefix_path_ckpts = '../../all_ckpts/%s/%s/' # folder where the results from script is saved
+arg.data_dirpath = './data/' # path to datasets
+prefix_path_sim_results = '../../simulation_results_scripts/%s/%s/' # folder where the results from script is saved
+prefix_path_ckpts = '../../all_ckpts/%s/%s/' # folder where the results from script is saved
 ## to run in docker
-arg.data_dirpath = '/home_simulation_research/hbf_tensorflow_code/tf_experiments_scripts/data/' # path to datasets
-prefix_path_sim_results = '/home_simulation_research/simulation_results_scripts/%s/%s/' # folder where the results from script is saved
-prefix_path_ckpts = '/home_simulation_research/all_ckpts/%s/%s/' # folder where the results from script is saved
+#arg.data_dirpath = '/home_simulation_research/hbf_tensorflow_code/tf_experiments_scripts/data/' # path to datasets
+#prefix_path_sim_results = '/home_simulation_research/simulation_results_scripts/%s/%s/' # folder where the results from script is saved
+#prefix_path_ckpts = '/home_simulation_research/all_ckpts/%s/%s/' # folder where the results from script is saved
 
 # prefix_path_sim_results = '../../simulation_results_scripts/%s/%s'
 # prefix_path_ckpts = '../../all_ckpts/%s/%s' # folder where the results from script is saved
@@ -92,28 +95,33 @@ arg.classificaton = mtf.classification_task_or_not(arg)
 #arg.experiment_name = 'task_Nov_22_BTSG3_3_3_8D_Adam_xavier_relu_N60000'
 #arg.experiment_name = 'tmp_task_Nov_22_BTSG4_4_2_8D_Adam_xavier_relu_N60000'
 #arg.experiment_name = 'task_Jan_19_BT_256D_Adam_xavier_relu_N60000'
-arg.experiment_name = 'TMP_TASK_EXPERIMENT'
+#arg.experiment_name = 'TMP_TASK_EXPERIMENT'
+arg.experiment_name = 'dgx1_Feb_8_256D_Adam_xavier_relu_N60000'
 #arg.job_name = 'BTSG1_8D_a19_Adam_200' # job name e.g BTHL_4D_6_12_MGD_200
 #arg.job_name = 'BTSG2_8D_a3_Adam_200'
 #arg.job_name = 'BTSG3_8D_a2_Adam_200'
 #arg.job_name = 'BTSG4_8D_a1_Adam_200'
-#arg.job_name = 'BT_256D_units4_params1395780_Adam_200'
-#arg.job_name = 'BT_256D_units4_params1395780_Adam_200'
-arg.job_name = 'MDL_NN10'
+#arg.job_name = 'BT_256D_units1_params88146_Adam_200'
+#arg.job_name = 'BT_256D_units2_params351044_Adam_200'
+#arg.job_name = 'BT_256D_units4_params1401096_Adam_200'
+arg.job_name = 'BT10_MDL'
 
 #arg.experiment_name = 'task_Nov_19_NN_Adam_xavier_relu_N60000' # experiment_name e.g. task_Oct_10_NN_MGD_xavier_relu_N2000
 #arg.experiment_name = 'TMP_task_Jan_19_NN_256D_Adam_xavier_relu_N60000'
 #arg.job_name = 'NN_8D_31_Adam_200' # job name e.g NN_4D_31_MGD_200
-#arg.job_name = 'NN_256D_units5410_params1395780_Adam_200'
+arg.job_name = 'NN_256D_units330_85140_Adam_200'
+arg.job_name = 'NN_256D_units1350_params348300_Adam_200'
+arg.job_name = 'NN_256D_units5410_params1395780_Adam_200'
+#arg.job_name = 'NN10_MDL'
 #
 arg.experiment_root_dir = mtf.get_experiment_folder(arg.data_filename)
 #
-arg.mdl = 'standard_nn'
+#arg.mdl = 'standard_nn'
 #arg.mdl = 'hbf'
 #arg.mdl = 'binary_tree_4D_conv_hidden_layer'
 #arg.mdl = "binary_tree_4D_conv_hidden_layer_automatic"
 #arg.mdl = 'binary_tree_8D_conv_hidden_layer'
-#arg.mdl = 'binary_tree_256D_conv_hidden_layer'
+arg.mdl = 'binary_tree_256D_conv_hidden_layer'
 #arg.mdl = 'bt_subgraph'
 #arg.mdl = 'debug_mdl'
 if arg.mdl == 'debug_mdl':
@@ -236,6 +244,7 @@ elif arg.mdl == 'binary_tree_256D_conv_hidden_layer':
     #
     F1 = 4
     arg.F = [None] + [ F1*(2**l) for l in range(1,L+1) ]
+    arg.nb_filters = arg.F
     #
     arg.normalizer_fn = None
     arg.trainable = True
@@ -245,7 +254,7 @@ elif arg.mdl == 'binary_tree_256D_conv_hidden_layer':
     #arg.act = tf.nn.elu
     #arg.act = tf.nn.softplus
     #
-    arg.get_x_shape = lambda arg: [None,1,D,1]
+    arg.get_x_shape = lambda arg: [None,1,arg.D,1]
     arg.type_preprocess_data = 're_shape_X_to_(N,1,D,1)'
     #
     arg.get_dims = lambda arg: [arg.D]+arg.nb_filters[1:]+[arg.D_out]
@@ -292,7 +301,7 @@ elif arg.mdl == 'bt_subgraph':
     #arg.act = tf.nn.elu
     #arg.act = tf.nn.softplus
     #
-    arg.get_x_shape = lambda arg: [None,1,D,1]
+    arg.get_x_shape = lambda arg: [None,1,arg.D,1]
     arg.type_preprocess_data = 're_shape_X_to_(N,1,D,1)'
     #
     arg.get_dims = lambda arg: [arg.D]+arg.nb_filters[1:]+[arg.D_out]

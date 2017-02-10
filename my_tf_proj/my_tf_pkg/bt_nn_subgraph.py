@@ -75,7 +75,7 @@ def bt_mdl_conv_subgraph(arg,x):
         debug_print(l,None,conv,arg)
     # make each layer
     for l in range(1,len(arg.nb_filters)):
-        print('>>loop index ', l)
+        #print('>>loop index ', l)
         filter_width = arg.list_filter_widths[l] # filter width for current layer
         nb_filters = arg.nb_filters[l] # nb of filters for current layer
         stride_width = arg.list_strides[l] # stride_width for current layer
