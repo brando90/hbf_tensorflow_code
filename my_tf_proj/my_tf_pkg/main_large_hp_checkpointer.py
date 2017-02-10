@@ -12,18 +12,6 @@ import tensorflow as tf
 from tensorflow.examples.tutorials.mnist import input_data
 #mnist = input_data.read_data_sets("tmp_MNIST_data/", one_hot=True)
 
-def get_remove_functions_from_dict(arg_dict):
-    '''
-        Removes functions from dictionary and returns modified dictionary
-    '''
-    keys_to_delete = []
-    for key,value in arg_dict.items():
-        if hasattr(value, '__call__'):
-            keys_to_delete.append(key)
-    for key in keys_to_delete:
-        del arg_dict[key]
-    return arg_dict
-
 def make_and_check_dir(path):
     '''
         tries to make dir/file, if it exists already does nothing else creates it.

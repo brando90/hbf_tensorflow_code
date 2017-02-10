@@ -24,6 +24,7 @@ import tensorflow as tf
 
 import my_tf_pkg as mtf
 from my_tf_pkg import main_hp
+from my_tf_pkg import main_large_hp_checkpointer as large_main_hp
 
 ##
 #print('In batch script', flush=True)
@@ -469,4 +470,4 @@ if __name__ == '__main__':
         # run one single job according to slurm array command
         mtf.main_nn(arg)
     elif cmd_args.type_job == 'main_large_hp_ckpt':
-        main_hp.main_large_hp_ckpt(arg)
+        large_main_hp.main_large_hp_ckpt(arg)

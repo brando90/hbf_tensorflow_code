@@ -16,7 +16,7 @@ import csv
 import copy
 
 import my_tf_pkg as mtf
-from my_tf_pkg import main_large_hp_checkpointer as large_checkpointer
+#from my_tf_pkg import main_large_hp_checkpointer as large_checkpointer
 import time
 
 import namespaces as ns
@@ -321,8 +321,3 @@ def save_hps(arg):
         #
         hps = {'arg_dict':arg_dict}
         json.dump(hps,f,indent=2, separators=(',', ': '))
-
-##
-
-def main_large_hp_ckpt(arg):
-    large_checkpointer.main_large_hp_ckpt(arg)
