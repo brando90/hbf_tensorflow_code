@@ -9,7 +9,7 @@ RUN apt-get install -y vim
 # get python 3
 #RUN apt-get install -y python3
 #RUN apt-get install -y python3-pip
-RUN pip3 install --upgrade pip
+RUN pip install --upgrade pip
 
 #Install some stuff my lib needs
 #RUN pip3 install tensorflow-gpu
