@@ -6,6 +6,6 @@
 # the incoming script command
 
 # install my library (intention: only when the a container is spun)
-pip3 install /home_simulation_research/hbf_tensorflow_code/my_tf_proj
+pip install /home_simulation_research/hbf_tensorflow_code/my_tf_proj
 # intention: do the command docker is suppose to do
 $@

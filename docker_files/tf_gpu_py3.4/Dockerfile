@@ -13,12 +13,12 @@ RUN pip install --upgrade pip
 
 #Install some stuff my lib needs
 #RUN pip3 install tensorflow-gpu
-RUN pip3 install numpy
-RUN pip3 install namespaces
-RUN pip3 install scikit-learn
-RUN pip3 install scipy
-RUN pip3 install pdb
-RUN pip3 install keras
+RUN pip install numpy
+RUN pip install namespaces
+RUN pip install scikit-learn
+RUN pip install scipy
+RUN pip install pdb
+RUN pip install keras
 
 # install my library (only when the a container is spun)
 # bash script that configures the running container
