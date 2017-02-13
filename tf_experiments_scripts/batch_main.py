@@ -17,7 +17,7 @@ print('#!/usr/bin/python')
 import os
 import sys
 
-import pickle
+#import pickle
 import namespaces as ns
 import argparse
 import pdb
@@ -42,9 +42,10 @@ arg.get_errors_from = mtf.get_errors_based_on_train_error
 
 #arg.nb_array_jobs = 1
 #arg.type_job = 'serial' #careful when this is on and GPU is NOT on
-#arg.type_job = 'slurm_array_parallel'
-arg.type_job = 'main_large_hp_ckpt'
-arg.nb_array_jobs = 3
+arg.type_job = 'slurm_array_parallel'
+#arg.type_job, arg.nb_array_jobs = 'main_large_hp_ckpt', 3
+#arg.save_checkpoints = True
+arg.save_checkpoints = False
 
 ## debug mode
 #arg.data_dirpath = './data/' # path to datasets
@@ -135,7 +136,7 @@ elif arg.mdl == 'standard_nn':
     arg.init_type = 'data_xavier_kern'
     arg.init_type = 'xavier'
 
-    K = 10
+    K = 2
     arg.units = [K]
     #arg.units = [110]
     #arg.units = [237]
@@ -242,7 +243,7 @@ elif arg.mdl == 'binary_tree_256D_conv_hidden_layer':
     arg.weights_initializer = tf.contrib.layers.xavier_initializer(dtype=tf.float32)
     arg.biases_initializer = tf.constant_initializer(value=0.1, dtype=tf.float32)
     #
-    F1 = 4
+    F1 = 1
     arg.F = [None] + [ F1*(2**l) for l in range(1,L+1) ]
     arg.nb_filters = arg.F
     #
@@ -313,14 +314,15 @@ arg.get_y_shape = lambda arg: [None, arg.D_out]
 arg.float_type = tf.float32
 #steps
 arg.steps_low = int(2*60000)
-arg.steps_low = int(1*1001)
+arg.steps_low = int(1*101)
 arg.steps_high = arg.steps_low+1
 arg.get_steps = lambda arg: int( np.random.randint(low=arg.steps_low ,high=arg.steps_high) )
 
 # arg.M_low = 2
 # arg.M_high = 3
 # arg.get_batch_size = lambda arg: int(np.random.randint(low=arg.M_low , high=arg.M_high))
-arg.potential_batch_sizes = [16,32,64,128,256,512,1024]
+#arg.potential_batch_sizes = [16,32,64,128,256,512,1024]
+arg.potential_batch_sizes = [4]
 def get_power2_batch_size(arg):
     i = np.random.randint( low=0, high=len(arg.potential_batch_sizes) )
     batch_size = arg.potential_batch_sizes[i]
@@ -470,6 +472,9 @@ arg.get_dataset = lambda arg: (arg.X_train, arg.Y_train, arg.X_cv, arg.Y_cv, arg
 
 arg.act_name = arg.act.__name__
 arg.restore = False
+
+#pickle.dump( dict(arg), open( "pickle_file" , "wb" ) )
+#pdb.set_trace()
 if __name__ == '__main__':
     #print('In __name__ == __main__')
     if cmd_args.type_job == 'serial':
@@ -477,6 +482,6 @@ if __name__ == '__main__':
         mtf.main_serial(arg)
     elif cmd_args.type_job == 'slurm_array_parallel':
         # run one single job according to slurm array command
-        mtf.main_nn(arg)
+        main_hp.main_hp(arg)
     elif cmd_args.type_job == 'main_large_hp_ckpt':
         large_main_hp.main_large_hp_ckpt(arg)

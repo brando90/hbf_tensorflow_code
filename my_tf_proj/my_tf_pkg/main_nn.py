@@ -445,6 +445,7 @@ def main_nn(arg):
     if arg.save_config_args:
         arg_dict = dict(arg).copy()
         arg_dict = get_remove_functions_from_dict(arg_dict)
+        pickle.dump( dict(arg), open( "tmp_tmp" , "wb" ) )
         pickle.dump( arg_dict, open( "pickle-slurm-%s_%s.p"%(arg.slurm_jobid,arg.slurm_array_task_id) , "wb" ) )
         #with open('json-slurm-%s_%s.json', 'w+') as f_json:
         #    json.dump(results,f_json,sort_keys=True, indent=2, separators=(',', ': '))
