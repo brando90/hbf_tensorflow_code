@@ -72,6 +72,28 @@ def preprocess_data(arg, X_train, Y_train, X_cv, Y_cv, X_test, Y_test):
     return X_train, Y_train, X_cv, Y_cv, X_test, Y_test
 #
 
+def count_number_trainable_params(y):
+    '''
+    Receives model y=mdl tf graph/thing/object and counts the number of trainable variables.
+    '''
+    tot_nb_params = 0
+    for trainable_variable in tf.trainable_variables():
+        #print('trainable_variable ', trainable_variable.__dict__)
+        shape = trainable_variable.get_shape() # e.g [D,F] or [W,H,C]
+        current_nb_params = get_nb_params_shape(shape)
+        tot_nb_params = tot_nb_params + current_nb_params
+    return tot_nb_params
+
+def get_nb_params_shape(shape):
+    '''
+    Computes the total number of params for a given shap.
+    Works for any number of shapes etc [D,F] or [W,H,C] computes D*F and W*H*C.
+    '''
+    nb_params = 1
+    for dim in shape:
+        nb_params = nb_params*int(dim)
+    return nb_params
+
 def get_mdl(arg,x):
     X_train, Y_train, X_cv, Y_cv, X_test, Y_test = arg.get_dataset(arg)
     ## Make Model
@@ -85,11 +107,12 @@ def get_mdl(arg,x):
         arg.std_init_list = arg.get_W_std_init(arg)
         arg.b_init = arg.get_b_init(arg)
 
-        nb_layers = len(arg.get_dims(arg))-1
+        arg.dims = arg.get_dims(arg)
+        nb_layers = len(arg.dims)-1
         nb_hidden_layers = nb_layers-1
-        inits_C,inits_W,inits_b = mtf.get_initilizations_standard_NN(init_type=arg.init_type,dims=arg.get_dims(arg),mu=arg.mu_init_list,std=arg.std_init_list,b_init=arg.b_init, X_train=X_train, Y_train=Y_train)
+        inits_C,inits_W,inits_b = mtf.get_initilizations_standard_NN(init_type=arg.init_type,dims=arg.dims,mu=arg.mu_init_list,std=arg.std_init_list,b_init=arg.b_init, X_train=X_train, Y_train=Y_train)
         with tf.name_scope("standardNN") as scope:
-            y = mtf.build_standard_NN(arg, x,arg.get_dims(arg),(None,inits_W,inits_b))
+            y = mtf.build_standard_NN(arg, x,arg.dims,(None,inits_W,inits_b))
             y = mtf.get_summation_layer(l=str(nb_layers),x=y,init=inits_C[0])
     elif arg.mdl == 'hbf':
         raise ValueError('HBF not implemented yet.')
@@ -114,6 +137,8 @@ def get_mdl(arg,x):
     elif 'binary_tree' in arg.mdl:
         with tf.name_scope("mdl"+arg.scope_name) as scope:
             y = mtf.bt_mdl_conv(arg,x)
+    #
+    arg.nb_params = count_number_trainable_params(y)
     return y
 
 ##
