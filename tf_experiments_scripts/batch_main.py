@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #SBATCH --job-name=Python
-#SBATCH --array=1-50
+#SBATCH --array=1-100
 #SBATCH --mem=4000
 #SBATCH --time=3-18:20
 #SBATCH --mail-type=ALL
@@ -96,7 +96,9 @@ arg.classificaton = mtf.classification_task_or_not(arg)
 #arg.experiment_name = 'task_Nov_22_BTSG3_3_3_8D_Adam_xavier_relu_N60000'
 #arg.experiment_name = 'tmp_task_Nov_22_BTSG4_4_2_8D_Adam_xavier_relu_N60000'
 #arg.experiment_name = 'task_Jan_19_BT_256D_Adam_xavier_relu_N60000'
-arg.experiment_name = 'TMP_hp_test'
+arg.experiment_name = 'task_Feb_20_BT_256D_Adam_xavier_relu_N60000_100'
+arg.experiment_name = 'task_Feb_20_NN_256D_Adam_xavier_relu_N60000_100'
+#arg.experiment_name = 'TMP_hp_test'
 #arg.experiment_name = 'dgx1_Feb_8_256D_Adam_xavier_relu_N60000'
 #arg.job_name = 'BTSG1_8D_a19_Adam_200' # job name e.g BTHL_4D_6_12_MGD_200
 #arg.job_name = 'BTSG2_8D_a3_Adam_200'
@@ -105,6 +107,7 @@ arg.experiment_name = 'TMP_hp_test'
 #arg.job_name = 'BT_256D_units1_params88146_Adam_200'
 #arg.job_name = 'BT_256D_units2_params351044_Adam_200'
 #arg.job_name = 'BT_256D_units4_params1401096_Adam_200'
+arg.job_name = 'BT_256D_units6_params3150156_Adam_200'
 #arg.job_name = 'BT10_MDL'
 
 #arg.experiment_name = 'task_Nov_19_NN_Adam_xavier_relu_N60000' # experiment_name e.g. task_Oct_10_NN_MGD_xavier_relu_N2000
@@ -113,7 +116,8 @@ arg.experiment_name = 'TMP_hp_test'
 #arg.job_name = 'NN_256D_units330_85140_Adam_200'
 #arg.job_name = 'NN_256D_units1350_params348300_Adam_200'
 #arg.job_name = 'NN_256D_units5410_params1395780_Adam_200'
-arg.job_name = 'NN6_MDL'
+arg.job_name = 'NN_256D_units12100_params3121800_Adam_200'
+#arg.job_name = 'NN6_MDL'
 #
 arg.experiment_root_dir = mtf.get_experiment_folder(arg.data_filename)
 #
