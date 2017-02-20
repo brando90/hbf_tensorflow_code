@@ -42,8 +42,8 @@ arg.get_errors_from = mtf.get_errors_based_on_train_error
 
 #arg.nb_array_jobs = 1
 #arg.type_job = 'serial' #careful when this is on and GPU is NOT on
-#arg.type_job = 'slurm_array_parallel'
-arg.type_job, arg.nb_array_jobs = 'main_large_hp_ckpt', 3
+arg.type_job = 'slurm_array_parallel'
+#arg.type_job, arg.nb_array_jobs = 'main_large_hp_ckpt', 3
 #arg.save_checkpoints = True
 arg.save_checkpoints = False
 
@@ -107,7 +107,7 @@ arg.experiment_name = 'task_Feb_20_NN_256D_Adam_xavier_relu_N60000_100'
 #arg.job_name = 'BT_256D_units1_params88146_Adam_200'
 #arg.job_name = 'BT_256D_units2_params351044_Adam_200'
 #arg.job_name = 'BT_256D_units4_params1401096_Adam_200'
-arg.job_name = 'BT_256D_units6_params3150156_Adam_200'
+arg.job_name = 'BT_256D_units6_params3150156_Adam'
 #arg.job_name = 'BT10_MDL'
 
 #arg.experiment_name = 'task_Nov_19_NN_Adam_xavier_relu_N60000' # experiment_name e.g. task_Oct_10_NN_MGD_xavier_relu_N2000
@@ -116,7 +116,7 @@ arg.job_name = 'BT_256D_units6_params3150156_Adam_200'
 #arg.job_name = 'NN_256D_units330_85140_Adam_200'
 #arg.job_name = 'NN_256D_units1350_params348300_Adam_200'
 #arg.job_name = 'NN_256D_units5410_params1395780_Adam_200'
-arg.job_name = 'NN_256D_units12100_params3121800_Adam_200'
+arg.job_name = 'NN_256D_units12100_params3121800_Adam'
 #arg.job_name = 'NN6_MDL'
 #
 arg.experiment_root_dir = mtf.get_experiment_folder(arg.data_filename)
