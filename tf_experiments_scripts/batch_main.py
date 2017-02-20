@@ -42,8 +42,8 @@ arg.get_errors_from = mtf.get_errors_based_on_train_error
 
 #arg.nb_array_jobs = 1
 #arg.type_job = 'serial' #careful when this is on and GPU is NOT on
-arg.type_job = 'slurm_array_parallel'
-#arg.type_job, arg.nb_array_jobs = 'main_large_hp_ckpt', 3
+#arg.type_job = 'slurm_array_parallel'
+arg.type_job, arg.nb_array_jobs = 'main_large_hp_ckpt', 3
 #arg.save_checkpoints = True
 arg.save_checkpoints = False
 
@@ -96,7 +96,7 @@ arg.classificaton = mtf.classification_task_or_not(arg)
 #arg.experiment_name = 'task_Nov_22_BTSG3_3_3_8D_Adam_xavier_relu_N60000'
 #arg.experiment_name = 'tmp_task_Nov_22_BTSG4_4_2_8D_Adam_xavier_relu_N60000'
 #arg.experiment_name = 'task_Jan_19_BT_256D_Adam_xavier_relu_N60000'
-arg.experiment_name = 'TMP_TASK_NEW'
+arg.experiment_name = 'TMP_hp_test'
 #arg.experiment_name = 'dgx1_Feb_8_256D_Adam_xavier_relu_N60000'
 #arg.job_name = 'BTSG1_8D_a19_Adam_200' # job name e.g BTHL_4D_6_12_MGD_200
 #arg.job_name = 'BTSG2_8D_a3_Adam_200'
@@ -105,24 +105,24 @@ arg.experiment_name = 'TMP_TASK_NEW'
 #arg.job_name = 'BT_256D_units1_params88146_Adam_200'
 #arg.job_name = 'BT_256D_units2_params351044_Adam_200'
 #arg.job_name = 'BT_256D_units4_params1401096_Adam_200'
-arg.job_name = 'BT10_MDL'
+#arg.job_name = 'BT10_MDL'
 
 #arg.experiment_name = 'task_Nov_19_NN_Adam_xavier_relu_N60000' # experiment_name e.g. task_Oct_10_NN_MGD_xavier_relu_N2000
 #arg.experiment_name = 'TMP_task_Jan_19_NN_256D_Adam_xavier_relu_N60000'
 #arg.job_name = 'NN_8D_31_Adam_200' # job name e.g NN_4D_31_MGD_200
-arg.job_name = 'NN_256D_units330_85140_Adam_200'
-arg.job_name = 'NN_256D_units1350_params348300_Adam_200'
-arg.job_name = 'NN_256D_units5410_params1395780_Adam_200'
-#arg.job_name = 'NN10_MDL'
+#arg.job_name = 'NN_256D_units330_85140_Adam_200'
+#arg.job_name = 'NN_256D_units1350_params348300_Adam_200'
+#arg.job_name = 'NN_256D_units5410_params1395780_Adam_200'
+arg.job_name = 'NN6_MDL'
 #
 arg.experiment_root_dir = mtf.get_experiment_folder(arg.data_filename)
 #
-#arg.mdl = 'standard_nn'
+arg.mdl = 'standard_nn'
 #arg.mdl = 'hbf'
 #arg.mdl = 'binary_tree_4D_conv_hidden_layer'
 #arg.mdl = "binary_tree_4D_conv_hidden_layer_automatic"
 #arg.mdl = 'binary_tree_8D_conv_hidden_layer'
-arg.mdl = 'binary_tree_256D_conv_hidden_layer'
+#arg.mdl = 'binary_tree_256D_conv_hidden_layer'
 #arg.mdl = 'bt_subgraph'
 #arg.mdl = 'debug_mdl'
 if arg.mdl == 'debug_mdl':
@@ -136,14 +136,8 @@ elif arg.mdl == 'standard_nn':
     arg.init_type = 'data_xavier_kern'
     arg.init_type = 'xavier'
 
-    K = 2
+    K = 6
     arg.units = [K]
-    #arg.units = [110]
-    #arg.units = [237]
-    #arg.units = [412]
-    #arg.units = [635]
-    #arg.units = [906]
-
     #arg.mu = 0.0
     #arg.std = 0.5
 
@@ -313,8 +307,8 @@ arg.get_y_shape = lambda arg: [None, arg.D_out]
 # float type
 arg.float_type = tf.float32
 #steps
-arg.steps_low = int(2*60000)
-arg.steps_low = int(1*101)
+#arg.steps_low = int(2*60000)
+arg.steps_low = int(1*1001)
 arg.steps_high = arg.steps_low+1
 arg.get_steps = lambda arg: int( np.random.randint(low=arg.steps_low ,high=arg.steps_high) )
 

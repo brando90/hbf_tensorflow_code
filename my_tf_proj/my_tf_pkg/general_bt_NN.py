@@ -299,6 +299,9 @@ class TestNN_BT(unittest.TestCase):
         arg.get_b_init = lambda arg: len(arg.dims)*[arg.b]
 
         arg.act = tf.nn.relu
+
+        arg.get_dims = lambda arg: [arg.D]+arg.units+[arg.D_out]
+        arg.bn = False
         return arg
 
     def get_shallow(self,arg,x):
@@ -313,14 +316,14 @@ class TestNN_BT(unittest.TestCase):
         arg.std_init_list = arg.get_W_std_init(arg)
 
         arg.b_init = arg.get_b_init(arg)
-        float_type = tf.float64
+        float_type = tf.float32
         x = tf.placeholder(float_type, shape=[None, D], name='x-input') # M x D
 
         nb_layers = len(arg.dims)-1
         nb_hidden_layers = nb_layers-1
         (inits_C,inits_W,inits_b) = mtf.get_initilizations_standard_NN(init_type=arg.init_type,dims=arg.dims,mu=arg.mu_init_list,std=arg.std_init_list,b_init=arg.b_init, X_train=X_train, Y_train=Y_train)
         with tf.name_scope("standardNN") as scope:
-            mdl = mtf.build_standard_NN(arg, x,arg.dims,(None,inits_W,inits_b),phase_train,arg.trainable_bn)
+            mdl = mtf.build_standard_NN(arg, x,arg.get_dims(arg),(None,inits_W,inits_b))
             mdl = mtf.get_summation_layer(l=str(nb_layers),x=mdl,init=inits_C[0])
         inits_S = inits_b
         return mdl
@@ -328,8 +331,8 @@ class TestNN_BT(unittest.TestCase):
     def test_NN_BT256D(self,M=3,logD=8):
         L = logD
         D = 2**L
-        F1 = 1 # <--- EDIT
-        nb_units = 330 # <-- EDIT
+        F1 = 6 # <--- EDIT
+        nb_units = 12100 # <-- EDIT
         F = [None] + [ F1*(2**l) for l in range(1,L+1) ]
         print('F ', F)
         print('\n -------test'+str(D))
