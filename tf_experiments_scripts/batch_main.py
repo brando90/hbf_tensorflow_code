@@ -1,6 +1,4 @@
-#!/usr/bin/env python
-#SBATCH --job-name=Python
-#SBATCH --array=1-100
+00
 #SBATCH --mem=4000
 #SBATCH --time=3-18:20
 #SBATCH --mail-type=ALL
@@ -79,7 +77,8 @@ arg.prefix_ckpt = 'mdl_ckpt'
 #arg.data_filename = 'f_8D_single_relu'
 #arg.data_filename = 'f_8D_conv_quad_cubic_sqrt'
 #arg.data_filename = 'f_8D_conv_quad_cubic_sqrt'
-arg.data_filename = 'f_256D_L8_ppt_1'
+arg.data_filename = 'f_16D_ppt'
+#arg.data_filename = 'f_256D_L8_ppt_1'
 #arg.data_filename = 'f_8D_conv_quad_cubic_sqrt_shuffled'
 #arg.data_filename = 'f_4D_simple_ReLu_BT'
 #arg.data_filename = 'tmp_MNIST_dataset'
@@ -96,8 +95,9 @@ arg.classificaton = mtf.classification_task_or_not(arg)
 #arg.experiment_name = 'task_Nov_22_BTSG3_3_3_8D_Adam_xavier_relu_N60000'
 #arg.experiment_name = 'tmp_task_Nov_22_BTSG4_4_2_8D_Adam_xavier_relu_N60000'
 #arg.experiment_name = 'task_Jan_19_BT_256D_Adam_xavier_relu_N60000'
-arg.experiment_name = 'task_Feb_20_BT_256D_Adam_xavier_relu_N60000_100'
+#arg.experiment_name = 'task_Feb_20_BT_256D_Adam_xavier_relu_N60000_100'
 #arg.experiment_name = 'task_Feb_20_NN_256D_Adam_xavier_relu_N60000_100'
+arg.experiment_name = 'TMP'
 #arg.experiment_name = 'TMP_hp_test'
 #arg.experiment_name = 'dgx1_Feb_8_256D_Adam_xavier_relu_N60000'
 #arg.job_name = 'BTSG1_8D_a19_Adam_200' # job name e.g BTHL_4D_6_12_MGD_200
@@ -107,8 +107,9 @@ arg.experiment_name = 'task_Feb_20_BT_256D_Adam_xavier_relu_N60000_100'
 #arg.job_name = 'BT_256D_units1_params88146_Adam_200'
 #arg.job_name = 'BT_256D_units2_params351044_Adam_200'
 #arg.job_name = 'BT_256D_units4_params1401096_Adam_200'
-arg.job_name = 'BT_256D_units6_params3150156_Adam'
+#arg.job_name = 'BT_256D_units6_params3150156_Adam'
 #arg.job_name = 'BT10_MDL'
+arg.job_name = 'BT_16D_units6_Adam'
 
 #arg.experiment_name = 'task_Nov_19_NN_Adam_xavier_relu_N60000' # experiment_name e.g. task_Oct_10_NN_MGD_xavier_relu_N2000
 #arg.experiment_name = 'TMP_task_Jan_19_NN_256D_Adam_xavier_relu_N60000'
@@ -118,6 +119,7 @@ arg.job_name = 'BT_256D_units6_params3150156_Adam'
 #arg.job_name = 'NN_256D_units5410_params1395780_Adam_200'
 #arg.job_name = 'NN_256D_units12100_params3121800_Adam'
 #arg.job_name = 'NN6_MDL'
+#arg.job_name = 'NN_16D_units6_Adam'
 #
 arg.experiment_root_dir = mtf.get_experiment_folder(arg.data_filename)
 #
@@ -126,7 +128,8 @@ arg.experiment_root_dir = mtf.get_experiment_folder(arg.data_filename)
 #arg.mdl = 'binary_tree_4D_conv_hidden_layer'
 #arg.mdl = "binary_tree_4D_conv_hidden_layer_automatic"
 #arg.mdl = 'binary_tree_8D_conv_hidden_layer'
-arg.mdl = 'binary_tree_256D_conv_hidden_layer'
+arg.mdl = 'binary_tree_16D_conv_hidden_layer'
+#arg.mdl = 'binary_tree_256D_conv_hidden_layer'
 #arg.mdl = 'bt_subgraph'
 #arg.mdl = 'debug_mdl'
 if arg.mdl == 'debug_mdl':
@@ -219,6 +222,31 @@ elif arg.mdl == 'binary_tree_8D_conv_hidden_layer':
     #
     F1 = 2
     arg.F = [None, F1, 2*F1, 4*F1]
+    #
+    arg.normalizer_fn = None
+    arg.trainable = True
+    #arg.normalizer_fn = tf.contrib.layers.batch_norm
+
+    arg.act = tf.nn.relu
+    #arg.act = tf.nn.elu
+    #arg.act = tf.nn.softplus
+    #
+    arg.get_x_shape = lambda arg: [None,1,arg.D,1]
+    arg.type_preprocess_data = 're_shape_X_to_(N,1,D,1)'
+    #
+    arg.get_dims = lambda arg: [arg.D]+arg.nb_filters[1:]+[arg.D_out]
+elif arg.mdl == 'binary_tree_16D_conv_hidden_layer':
+    logD = 4
+    L = logD
+    arg.L, arg.padding, arg.scope_name, arg.verbose = L, 'VALID', 'BT_8D', False
+    #
+    arg.init_type = 'xavier'
+    arg.weights_initializer = tf.contrib.layers.xavier_initializer(dtype=tf.float32)
+    arg.biases_initializer = tf.constant_initializer(value=0.1, dtype=tf.float32)
+    #
+    F1 = 6
+    arg.F = [None] + [ F1*(2**l) for l in range(1,L+1) ]
+    arg.nb_filters = arg.F
     #
     arg.normalizer_fn = None
     arg.trainable = True
