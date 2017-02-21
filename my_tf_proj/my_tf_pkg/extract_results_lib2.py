@@ -9,7 +9,10 @@ import six
 
 import namespaces as ns
 
+import my_tf_pkg as mtf
+
 import pdb
+import pandas as pd
 
 ##
 
@@ -368,3 +371,63 @@ def _get_durations(result, duration_type):
     '''
     duration = result[duration_type] #result['seconds'], result['minutes'], result['hours']
     return duration
+
+#
+
+
+def combine_errors_and_hps_to_one_json_file(path_to_all_experiments_for_task,verbose=True,overwrite_old=True):
+    '''
+    Given a path that points to where all the results are stored in hps json files and csv error files,
+    it inserts the whole error csv array into the json struct.
+
+    example:
+    path_to_all_experiments_for_task = ../../om_mnist/task_August_7_NN1_xavier_momentum
+
+    ../../om_mnist/expts_task_August_7_NN/expt_NN1_xavier/run_json_* lots of these
+                                          expt_NN2_xavier/run_json_*
+                                          expt_NN3_xavier/run_json_*
+    '''
+    print('running combine_errors_and_hps_to_one_json_file')
+    #pdb.set_trace()
+    for (dirpath, dirnames, filenames) in os.walk(top=path_to_all_experiments_for_task,topdown=True):
+        #dirpath = om_task_data_set/august_NN1_xavier/NN1_xavier
+        #filenames = [file conents of current dirpath]
+        print('dirpath: ', dirpath)
+        print('filenames: ', filenames)
+        if (dirpath != path_to_all_experiments_for_task): # if current dirpath is a valid experiment and not . (itself)
+            experiment_dirpath = dirpath
+            for run_filename in filenames: # for every hp (errors and hps)
+                if 'csv' in run_filename: # make sure to only process all hp's only **once**
+                    # get stid for the current hp model
+                    stid = run_filename.split('id')[1]
+                    results_and_hps = add_missing_errors_to_json_results(experiment_dirpath,run_filename,stid)
+                    #write to hps
+                    path_for_json = (experiment_dirpath+'/json_hp_stid'+stid) if overwrite_old else (experiment_dirpath+'/json_new_hp_stid'+stid) # when overwrite_old use the original name else, make a new json file
+                    with open(path_for_json, 'w+') as f:
+                        json.dump(results_and_hps,f,indent=2, separators=(',', ': '))
+
+def add_missing_errors_to_json_results(experiment_dirpath,run_filename,stid):
+    '''
+    Since the new code appends each error as it goes, at the end of the training,
+    its useful to add the whole error iterations to the json struct so that then
+    the library for exactring results can be used.
+    '''
+    # get the errors for current model
+    errors_df = pd.read_csv(experiment_dirpath+'/'+run_filename) # pandas data frame
+    # add errors to json struct
+    with open(experiment_dirpath+'/json_hp_stid'+stid, 'r') as data_file:
+        hps_current_run = json.load(data_file)
+    hps_current_run['train_errors'] = [ float(error) for error in errors_df['train_error'] ]
+    hps_current_run['cv_errors'] = [ float(error) for error in errors_df['cv_error'] ]
+    hps_current_run['test_errors'] = [ float(error) for error in errors_df['test_error'] ]
+    results_and_hps = hps_current_run
+    return results_and_hps
+
+if __name__ == '__main__':
+    print('Runing __main__')
+    task_name = 'f_256D_L8_ppt_1'
+    experiment_name = mtf.get_experiment_folder(task_name)
+    path_to_all_experiments_for_task = '../../../simulation_results_scripts/%s/TMP_hp_test'%experiment_name
+    print('path_to_all_experiments_for_task: ', path_to_all_experiments_for_task)
+    combine_errors_and_hps_to_one_json_file(path_to_all_experiments_for_task,verbose=True,overwrite_old=False)
+    print('finish combining files')
