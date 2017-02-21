@@ -8,10 +8,10 @@ import my_tf_pkg as mtf
 
 import pdb
 
-logD = 8
+logD = 4
 D = 2**logD
 f,h_list,params = mtf.get_ppt_function(L=logD)
-file_name = './data/f_D256_ppt.npz'
+file_name = './data/f_D16_ppt.npz'
 N = 60000
 N_train, N_cv, N_test = N, N, N
 print('file_name ', file_name)
