@@ -19,6 +19,7 @@ RUN pip install scikit-learn
 RUN pip install scipy
 RUN pip install pdb
 RUN pip install keras
+RUN pip install pandas
 
 # install my library (only when the a container is spun)
 # bash script that configures the running container
