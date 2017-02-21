@@ -97,7 +97,7 @@ arg.classificaton = mtf.classification_task_or_not(arg)
 #arg.experiment_name = 'tmp_task_Nov_22_BTSG4_4_2_8D_Adam_xavier_relu_N60000'
 #arg.experiment_name = 'task_Jan_19_BT_256D_Adam_xavier_relu_N60000'
 arg.experiment_name = 'task_Feb_20_BT_256D_Adam_xavier_relu_N60000_100'
-arg.experiment_name = 'task_Feb_20_NN_256D_Adam_xavier_relu_N60000_100'
+#arg.experiment_name = 'task_Feb_20_NN_256D_Adam_xavier_relu_N60000_100'
 #arg.experiment_name = 'TMP_hp_test'
 #arg.experiment_name = 'dgx1_Feb_8_256D_Adam_xavier_relu_N60000'
 #arg.job_name = 'BTSG1_8D_a19_Adam_200' # job name e.g BTHL_4D_6_12_MGD_200
@@ -116,17 +116,17 @@ arg.job_name = 'BT_256D_units6_params3150156_Adam'
 #arg.job_name = 'NN_256D_units330_85140_Adam_200'
 #arg.job_name = 'NN_256D_units1350_params348300_Adam_200'
 #arg.job_name = 'NN_256D_units5410_params1395780_Adam_200'
-arg.job_name = 'NN_256D_units12100_params3121800_Adam'
+#arg.job_name = 'NN_256D_units12100_params3121800_Adam'
 #arg.job_name = 'NN6_MDL'
 #
 arg.experiment_root_dir = mtf.get_experiment_folder(arg.data_filename)
 #
-arg.mdl = 'standard_nn'
+#arg.mdl = 'standard_nn'
 #arg.mdl = 'hbf'
 #arg.mdl = 'binary_tree_4D_conv_hidden_layer'
 #arg.mdl = "binary_tree_4D_conv_hidden_layer_automatic"
 #arg.mdl = 'binary_tree_8D_conv_hidden_layer'
-#arg.mdl = 'binary_tree_256D_conv_hidden_layer'
+arg.mdl = 'binary_tree_256D_conv_hidden_layer'
 #arg.mdl = 'bt_subgraph'
 #arg.mdl = 'debug_mdl'
 if arg.mdl == 'debug_mdl':
@@ -140,7 +140,7 @@ elif arg.mdl == 'standard_nn':
     arg.init_type = 'data_xavier_kern'
     arg.init_type = 'xavier'
 
-    K = 6
+    K = 12100
     arg.units = [K]
     #arg.mu = 0.0
     #arg.std = 0.5
@@ -241,7 +241,7 @@ elif arg.mdl == 'binary_tree_256D_conv_hidden_layer':
     arg.weights_initializer = tf.contrib.layers.xavier_initializer(dtype=tf.float32)
     arg.biases_initializer = tf.constant_initializer(value=0.1, dtype=tf.float32)
     #
-    F1 = 1
+    F1 = 6
     arg.F = [None] + [ F1*(2**l) for l in range(1,L+1) ]
     arg.nb_filters = arg.F
     #
@@ -311,16 +311,16 @@ arg.get_y_shape = lambda arg: [None, arg.D_out]
 # float type
 arg.float_type = tf.float32
 #steps
-#arg.steps_low = int(2*60000)
-arg.steps_low = int(1*1001)
+arg.steps_low = int(2*60000)
+#arg.steps_low = int(1*1001)
 arg.steps_high = arg.steps_low+1
 arg.get_steps = lambda arg: int( np.random.randint(low=arg.steps_low ,high=arg.steps_high) )
 
 # arg.M_low = 2
 # arg.M_high = 3
 # arg.get_batch_size = lambda arg: int(np.random.randint(low=arg.M_low , high=arg.M_high))
-#arg.potential_batch_sizes = [16,32,64,128,256,512,1024]
-arg.potential_batch_sizes = [4]
+arg.potential_batch_sizes = [16,32,64,128,256,512,1024]
+#arg.potential_batch_sizes = [4]
 def get_power2_batch_size(arg):
     i = np.random.randint( low=0, high=len(arg.potential_batch_sizes) )
     batch_size = arg.potential_batch_sizes[i]
