@@ -1,6 +1,6 @@
 #FROM ubuntu:16.04
 # This means you derive your docker image from the tensorflow docker image
-FROM gcr.io/tensorflow/tensorflow:1.0.0-devel
+FROM gcr.io/tensorflow/tensorflow:1.0.0-devel-py3
 
 # note this is needed to be able to install pip3
 RUN apt-get update && apt-get install -y build-essential git libjpeg-dev
