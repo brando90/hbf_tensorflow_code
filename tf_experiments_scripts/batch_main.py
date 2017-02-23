@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-#SBATCH --mem=4000
+#SBATCH --mem=4500
 #SBATCH --time=3-18:20
 #SBATCH --array=1-200
 #SBATCH --mail-type=ALL
@@ -41,19 +41,19 @@ arg.get_errors_from = mtf.get_errors_based_on_train_error
 
 #arg.nb_array_jobs = 1
 #arg.type_job = 'serial' #careful when this is on and GPU is NOT on
-#arg.type_job = 'slurm_array_parallel'
-arg.type_job, arg.nb_array_jobs = 'main_large_hp_ckpt', 1
-arg.save_checkpoints = True
-#arg.save_checkpoints = False
+arg.type_job = 'slurm_array_parallel'
+#arg.type_job, arg.nb_array_jobs = 'main_large_hp_ckpt', 1
+#arg.save_checkpoints = True
+arg.save_checkpoints = False
 
 ## debug mode
-arg.data_dirpath = './data/' # path to datasets
-prefix_path_sim_results = './tmp_simulation_results_scripts/%s/%s/' # folder where the results from script is saved
-prefix_path_ckpts = './tmp_all_ckpts/%s/%s/' # folder where the results from script is saved
+# arg.data_dirpath = './data/' # path to datasets
+# prefix_path_sim_results = './tmp_simulation_results_scripts/%s/%s/' # folder where the results from script is saved
+# prefix_path_ckpts = './tmp_all_ckpts/%s/%s/' # folder where the results from script is saved
 ## to run locally: python batch_main.py -sj sj
-#arg.data_dirpath = './data/' # path to datasets
-#prefix_path_sim_results = '../../simulation_results_scripts/%s/%s/' # folder where the results from script is saved
-#prefix_path_ckpts = '../../all_ckpts/%s/%s/' # folder where the results from script is saved
+arg.data_dirpath = './data/' # path to datasets
+prefix_path_sim_results = '../../simulation_results_scripts/%s/%s/' # folder where the results from script is saved
+prefix_path_ckpts = '../../all_ckpts/%s/%s/' # folder where the results from script is saved
 ## to run in docker
 #arg.data_dirpath = '/home_simulation_research/hbf_tensorflow_code/tf_experiments_scripts/data/' # path to datasets
 #prefix_path_sim_results = '/home_simulation_research/simulation_results_scripts/%s/%s/' # folder where the results from script is saved
@@ -78,7 +78,8 @@ arg.prefix_ckpt = 'mdl_ckpt'
 #arg.data_filename = 'f_8D_single_relu'
 #arg.data_filename = 'f_8D_conv_quad_cubic_sqrt'
 #arg.data_filename = 'f_8D_conv_quad_cubic_sqrt'
-arg.data_filename = 'f_16D_ppt'
+#arg.data_filename = 'f_16D_ppt'
+arg.data_filename = 'f_64D_ppt'
 #arg.data_filename = 'f_256D_L8_ppt_1'
 #arg.data_filename = 'f_8D_conv_quad_cubic_sqrt_shuffled'
 #arg.data_filename = 'f_4D_simple_ReLu_BT'
@@ -110,7 +111,7 @@ arg.experiment_name = 'TMP'
 #arg.job_name = 'BT_256D_units4_params1401096_Adam_200'
 #arg.job_name = 'BT_256D_units6_params3150156_Adam'
 #arg.job_name = 'BT10_MDL'
-#arg.job_name = 'BT_16D_units6_Adam'
+arg.job_name = 'BT_64D_units6_Adam'
 
 #arg.experiment_name = 'task_Nov_19_NN_Adam_xavier_relu_N60000' # experiment_name e.g. task_Oct_10_NN_MGD_xavier_relu_N2000
 #arg.experiment_name = 'TMP_task_Jan_19_NN_256D_Adam_xavier_relu_N60000'
@@ -120,8 +121,8 @@ arg.experiment_name = 'TMP'
 #arg.job_name = 'NN_256D_units5410_params1395780_Adam_200'
 #arg.job_name = 'NN_256D_units12100_params3121800_Adam'
 #arg.job_name = 'NN6_MDL'
-#arg.job_name = 'NN_16D_units6_Adam'
-arg.job_name = 'NN_debug2'
+#arg.job_name = 'NN_64D_units6_Adam'
+#arg.job_name = 'NN_debug2'
 #
 arg.experiment_root_dir = mtf.get_experiment_folder(arg.data_filename)
 #
@@ -287,6 +288,31 @@ elif arg.mdl == 'binary_tree_32D_conv_hidden_layer':
     arg.type_preprocess_data = 're_shape_X_to_(N,1,D,1)'
     #
     arg.get_dims = lambda arg: [arg.D]+arg.nb_filters[1:]+[arg.D_out]
+elif arg.mdl == 'binary_tree_64D_conv_hidden_layer':
+    logD = 6
+    L = logD
+    arg.L, arg.padding, arg.scope_name, arg.verbose = L, 'VALID', 'BT_8D', False
+    #
+    arg.init_type = 'xavier'
+    arg.weights_initializer = tf.contrib.layers.xavier_initializer(dtype=tf.float32)
+    arg.biases_initializer = tf.constant_initializer(value=0.1, dtype=tf.float32)
+    #
+    F1 = 6
+    arg.F = [None] + [ F1*(2**l) for l in range(1,L+1) ]
+    arg.nb_filters = arg.F
+    #
+    arg.normalizer_fn = None
+    arg.trainable = True
+    #arg.normalizer_fn = tf.contrib.layers.batch_norm
+
+    arg.act = tf.nn.relu
+    #arg.act = tf.nn.elu
+    #arg.act = tf.nn.softplus
+    #
+    arg.get_x_shape = lambda arg: [None,1,arg.D,1]
+    arg.type_preprocess_data = 're_shape_X_to_(N,1,D,1)'
+    #
+    arg.get_dims = lambda arg: [arg.D]+arg.nb_filters[1:]+[arg.D_out]
 elif arg.mdl == 'binary_tree_256D_conv_hidden_layer':
     logD = 8
     L = logD
@@ -371,16 +397,16 @@ arg.steps_low = int(2*60000)
 arg.steps_high = arg.steps_low+1
 arg.get_steps = lambda arg: int( np.random.randint(low=arg.steps_low ,high=arg.steps_high) )
 
-# arg.M_low = 2
-# arg.M_high = 3
-# arg.get_batch_size = lambda arg: int(np.random.randint(low=arg.M_low , high=arg.M_high))
+arg.M_low = 32
+arg.M_high = 15000
+arg.get_batch_size = lambda arg: int(np.random.randint(low=arg.M_low , high=arg.M_high))
 #arg.potential_batch_sizes = [16,32,64,128,256,512,1024]
-arg.potential_batch_sizes = [15000]
+#arg.potential_batch_sizes = [15000]
 def get_power2_batch_size(arg):
     i = np.random.randint( low=0, high=len(arg.potential_batch_sizes) )
     batch_size = arg.potential_batch_sizes[i]
     return batch_size
-arg.get_batch_size = get_power2_batch_size
+#arg.get_batch_size = get_power2_batch_size
 arg.report_error_freq = 50
 
 arg.low_log_const_learning_rate, arg.high_log_const_learning_rate = -0.5, -4
