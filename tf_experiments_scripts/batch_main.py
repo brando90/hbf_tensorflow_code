@@ -41,19 +41,19 @@ arg.get_errors_from = mtf.get_errors_based_on_train_error
 
 #arg.nb_array_jobs = 1
 #arg.type_job = 'serial' #careful when this is on and GPU is NOT on
-arg.type_job = 'slurm_array_parallel'
-#arg.type_job, arg.nb_array_jobs = 'main_large_hp_ckpt', 1
-#arg.save_checkpoints = True
-arg.save_checkpoints = False
+#arg.type_job = 'slurm_array_parallel'
+arg.type_job, arg.nb_array_jobs = 'main_large_hp_ckpt', 1
+arg.save_checkpoints = True
+#arg.save_checkpoints = False
 
 ## debug mode
-# arg.data_dirpath = './data/' # path to datasets
-# prefix_path_sim_results = './tmp_simulation_results_scripts/%s/%s/' # folder where the results from script is saved
-# prefix_path_ckpts = './tmp_all_ckpts/%s/%s/' # folder where the results from script is saved
-## to run locally: python batch_main.py -sj sj
 arg.data_dirpath = './data/' # path to datasets
-prefix_path_sim_results = '../../simulation_results_scripts/%s/%s/' # folder where the results from script is saved
-prefix_path_ckpts = '../../all_ckpts/%s/%s/' # folder where the results from script is saved
+prefix_path_sim_results = './tmp_simulation_results_scripts/%s/%s/' # folder where the results from script is saved
+prefix_path_ckpts = './tmp_all_ckpts/%s/%s/' # folder where the results from script is saved
+## to run locally: python batch_main.py -sj sj
+#arg.data_dirpath = './data/' # path to datasets
+#prefix_path_sim_results = '../../simulation_results_scripts/%s/%s/' # folder where the results from script is saved
+#prefix_path_ckpts = '../../all_ckpts/%s/%s/' # folder where the results from script is saved
 ## to run in docker
 #arg.data_dirpath = '/home_simulation_research/hbf_tensorflow_code/tf_experiments_scripts/data/' # path to datasets
 #prefix_path_sim_results = '/home_simulation_research/simulation_results_scripts/%s/%s/' # folder where the results from script is saved
@@ -298,7 +298,7 @@ elif arg.mdl == 'binary_tree_64D_conv_hidden_layer':
     arg.weights_initializer = tf.contrib.layers.xavier_initializer(dtype=tf.float32)
     arg.biases_initializer = tf.constant_initializer(value=0.1, dtype=tf.float32)
     #
-    F1 = 6
+    F1 = 1
     arg.F = [None] + [ F1*(2**l) for l in range(1,L+1) ]
     arg.nb_filters = arg.F
     #
@@ -393,21 +393,21 @@ arg.get_y_shape = lambda arg: [None, arg.D_out]
 # float type
 arg.float_type = tf.float32
 #steps
-arg.steps_low = int(2*60000)
-#arg.steps_low = int(1*1001)
+#arg.steps_low = int(2*60000)
+arg.steps_low = int(1*1001)
 arg.steps_high = arg.steps_low+1
 arg.get_steps = lambda arg: int( np.random.randint(low=arg.steps_low ,high=arg.steps_high) )
 
-arg.M_low = 32
-arg.M_high = 15000
-arg.get_batch_size = lambda arg: int(np.random.randint(low=arg.M_low , high=arg.M_high))
-#arg.potential_batch_sizes = [16,32,64,128,256,512,1024]
-#arg.potential_batch_sizes = [15000]
+#arg.M_low = 32
+#arg.M_high = 15000
+#arg.get_batch_size = lambda arg: int(np.random.randint(low=arg.M_low , high=arg.M_high))
+arg.potential_batch_sizes = [16,32,64,128,256,512,1024]
+arg.potential_batch_sizes = [4]
 def get_power2_batch_size(arg):
     i = np.random.randint( low=0, high=len(arg.potential_batch_sizes) )
     batch_size = arg.potential_batch_sizes[i]
     return batch_size
-#arg.get_batch_size = get_power2_batch_size
+arg.get_batch_size = get_power2_batch_size
 arg.report_error_freq = 50
 
 arg.low_log_const_learning_rate, arg.high_log_const_learning_rate = -0.5, -4

@@ -1,6 +1,6 @@
 import numpy as np
 import json
-from sklearn.cross_validation import train_test_split
+#from sklearn.cross_validation import train_test_split
 
 from tensorflow.examples.tutorials.mnist import input_data
 
@@ -8,10 +8,10 @@ import my_tf_pkg as mtf
 
 import pdb
 
-logD = 5
+logD = 7
 D = 2**logD
 f,h_list,params = mtf.get_ppt_function(L=logD)
-file_name = './data/f_32D_ppt.npz'
+file_name = './data/f_128D_ppt.npz'
 N = 60000
 N_train, N_cv, N_test = N, N, N
 print('file_name ', file_name)

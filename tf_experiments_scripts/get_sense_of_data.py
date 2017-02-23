@@ -1,6 +1,6 @@
 import numpy as np
 import json
-from sklearn.cross_validation import train_test_split
+#from sklearn.cross_validation import train_test_split
 
 import namespaces as ns
 

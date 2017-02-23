@@ -70,7 +70,7 @@ def get_key_for_mdl_complexity(key,best_data):
         raise ValueError('key %s not handled yet.',key)
     return mdl_complexity_key
 
-def get_best_results_for_experiments(path_to_all_experiments_for_task,decider,verbose=True,mdl_complexity_criteria='nb_units'):
+def get_best_results_for_experiments(path_to_all_experiments_for_task,decider,verbose=True,mdl_complexity_criteria='nb_units',json_string='json_hp'):
     '''
     Given a path to all the experiments for a specific task, goes through each individual folder for each experiment for each different
     model tested and extracts the lowest error according to the decider. For example, the if the decider is set to choose based on train
@@ -101,7 +101,7 @@ def get_best_results_for_experiments(path_to_all_experiments_for_task,decider,ve
             #print('=> potential_runs_filenames: ', potential_runs_filenames)
             print('dirpath ' , dirpath)
             # best_data contains all the data from experiments
-            best_data = _get_best_results_obj_from_current_experiment(experiment_dirpath=dirpath,list_runs_filenames=filenames,decider=decider)
+            best_data = _get_best_results_obj_from_current_experiment(experiment_dirpath=dirpath,list_runs_filenames=filenames,decider=decider,json_string=json_string)
 
             #
             #nb_units = best_data.results_best['arg_dict']['dims'][1] if not 'dims' in best_data.results_best else best_data.results_best['dims'][1]
@@ -121,7 +121,7 @@ def get_best_results_for_experiments(path_to_all_experiments_for_task,decider,ve
     #print(expts_best_results)
     return expts_best_results
 
-def _get_best_results_obj_from_current_experiment(experiment_dirpath,list_runs_filenames,decider):
+def _get_best_results_obj_from_current_experiment(experiment_dirpath,list_runs_filenames,decider,json_string):
     '''
     Given a specific experiment path, it goes through all the file runs inside (i.e. json files) and gets the best models according to
     decider (e.g. according to train error etc).
@@ -133,7 +133,7 @@ def _get_best_results_obj_from_current_experiment(experiment_dirpath,list_runs_f
     #best_decider_error = float('inf')
     best_data = ns.Namespace(best_decider_error=float('inf'))
     for run_filename in list_runs_filenames:
-        if 'json' in run_filename: # if current run=filenmae is a json struct then it has the results
+        if json_string in run_filename: # if current run=filenmae is a json struct then it has the results
             #print('run_filename', run_filename)
             with open(experiment_dirpath+'/'+run_filename, 'r') as data_file:
                 results_current_run = json.load(data_file)
@@ -392,8 +392,8 @@ def combine_errors_and_hps_to_one_json_file(path_to_all_experiments_for_task,ver
     for (dirpath, dirnames, filenames) in os.walk(top=path_to_all_experiments_for_task,topdown=True):
         #dirpath = om_task_data_set/august_NN1_xavier/NN1_xavier
         #filenames = [file conents of current dirpath]
-        print('dirpath: ', dirpath)
-        print('filenames: ', filenames)
+        #print('dirpath: ', dirpath)
+        #print('filenames: ', filenames)
         if (dirpath != path_to_all_experiments_for_task): # if current dirpath is a valid experiment and not . (itself)
             experiment_dirpath = dirpath
             for run_filename in filenames: # for every hp (errors and hps)
@@ -420,14 +420,31 @@ def add_missing_errors_to_json_results(experiment_dirpath,run_filename,stid):
     hps_current_run['train_errors'] = [ float(error) for error in errors_df['train_error'] ]
     hps_current_run['cv_errors'] = [ float(error) for error in errors_df['cv_error'] ]
     hps_current_run['test_errors'] = [ float(error) for error in errors_df['test_error'] ]
+    hps_current_run['nb_params'] = hps_current_run['arg_dict']['nb_params']
     results_and_hps = hps_current_run
     return results_and_hps
 
-if __name__ == '__main__':
-    print('Runing __main__')
+#
+
+def test1():
     task_name = 'f_256D_L8_ppt_1'
     experiment_name = mtf.get_experiment_folder(task_name)
     path_to_all_experiments_for_task = '../../../simulation_results_scripts/%s/TMP_hp_test'%experiment_name
     print('path_to_all_experiments_for_task: ', path_to_all_experiments_for_task)
     combine_errors_and_hps_to_one_json_file(path_to_all_experiments_for_task,verbose=True,overwrite_old=False)
     print('finish combining files')
+
+def test2():
+    experiment_name = mtf.get_experiment_folder('f_256D_L8_ppt_1')
+    path_to_all_experiments_for_task = '../../../simulation_results_scripts/%s/TMP_hp_test'%experiment_name
+    get_errors_from = mtf.get_errors_based_on_train_error
+    decider = ns.Namespace(get_errors_from=get_errors_from)
+    combine_errors_and_hps_to_one_json_file(path_to_all_experiments_for_task,verbose=True,overwrite_old=True)
+    # get_best_results_for_experiments(path_to_all_experiments_for_task,decider,verbose=True,mdl_complexity_criteria='nb_units',json_string='json_hp')
+    expts_best_results = get_best_results_for_experiments(path_to_all_experiments_for_task,decider,verbose=True,mdl_complexity_criteria='nb_params',json_string='json_hp')
+    print('expts_best_results: ', expts_best_results)
+
+if __name__ == '__main__':
+    print('Runing __main__')
+    #test1()
+    test2()

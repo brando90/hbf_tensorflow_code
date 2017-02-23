@@ -10,7 +10,7 @@ import json
 import sys
 import datetime
 import os
-from sklearn.cross_validation import train_test_split
+#from sklearn.cross_validation import train_test_split
 
 import my_tf_pkg as mtf
 #from tensorflow.python import control_flow_ops

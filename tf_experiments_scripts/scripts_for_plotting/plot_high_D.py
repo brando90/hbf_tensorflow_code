@@ -35,6 +35,7 @@ def shallow_vs_deep():
     path_to_experiments_NN = '../../simulation_results_scripts/%s/task_Jan_19_NN_256D_Adam_xavier_relu_N60000'%experiment_name
     path_to_experiments_NN = '../../simulation_results_scripts/%s/task_Feb_20_NN_256D_Adam_xavier_relu_N60000_100'%experiment_name
     path_to_experiments_NN = '../../simulation_results_scripts/%s/task_Feb_21_NN_256D_Adam_xavier_relu_N60000_original_setup'%experiment_name
+    path_to_experiments_NN = '../../simulation_results_scripts/%s/task_Feb_21_NN_16D_Adam_xavier_relu_N60000_small_batchsize'%experiment_name
     mtf.combine_errors_and_hps_to_one_json_file(path_to_experiments_NN,verbose=True,overwrite_old=True)
     expts_best_results = mtf.get_best_results_for_experiments(path_to_experiments_NN,decider,verbose=False,mdl_complexity_criteria='nb_params')
     sorted_units, sorted_train_errors, sorted_validation_errors, sorted_test_errors = mtf.get_errors_for_display(expts_best_results)
@@ -66,6 +67,7 @@ def shallow_vs_deep():
     path_to_experiments_BT = '../../simulation_results_scripts/%s/task_Jan_19_BT_256D_Adam_xavier_relu_N60000'%experiment_name
     path_to_experiments_BT = '../../simulation_results_scripts/%s/task_Feb_20_BT_256D_Adam_xavier_relu_N60000_100'%experiment_name
     path_to_experiments_BT = '../../simulation_results_scripts/%s/task_Feb_21_BT_256D_Adam_xavier_relu_N60000_original_setup'%experiment_name
+    path_to_experiments_BT = '../../simulation_results_scripts/%s/task_Feb_21_BT_16D_Adam_xavier_relu_N60000_small_batchsize'%experiment_name
     mtf.combine_errors_and_hps_to_one_json_file(path_to_experiments_BT,verbose=True,overwrite_old=True)
     expts_best_results = mtf.get_best_results_for_experiments(path_to_experiments_BT,decider,verbose=False,mdl_complexity_criteria='nb_params')
     sorted_units, sorted_train_errors, sorted_validation_errors, sorted_test_errors = mtf.get_errors_for_display(expts_best_results)
