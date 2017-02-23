@@ -42,7 +42,7 @@ arg.get_errors_from = mtf.get_errors_based_on_train_error
 #arg.nb_array_jobs = 1
 #arg.type_job = 'serial' #careful when this is on and GPU is NOT on
 #arg.type_job = 'slurm_array_parallel'
-arg.type_job, arg.nb_array_jobs = 'main_large_hp_ckpt', 1
+arg.type_job, arg.nb_array_jobs = 'main_large_hp_ckpt', 2
 arg.save_checkpoints = True
 #arg.save_checkpoints = False
 
@@ -126,13 +126,13 @@ arg.job_name = 'BT_64D_units6_Adam'
 #
 arg.experiment_root_dir = mtf.get_experiment_folder(arg.data_filename)
 #
-#arg.mdl = 'standard_nn'
+arg.mdl = 'standard_nn'
 #arg.mdl = 'hbf'
 #arg.mdl = 'binary_tree_4D_conv_hidden_layer'
 #arg.mdl = "binary_tree_4D_conv_hidden_layer_automatic"
 #arg.mdl = 'binary_tree_8D_conv_hidden_layer'
 #arg.mdl = 'binary_tree_16D_conv_hidden_layer'
-arg.mdl = 'binary_tree_64D_conv_hidden_layer'
+#arg.mdl = 'binary_tree_64D_conv_hidden_layer'
 #arg.mdl = 'binary_tree_256D_conv_hidden_layer'
 #arg.mdl = 'bt_subgraph'
 #arg.mdl = 'debug_mdl'
@@ -147,7 +147,7 @@ elif arg.mdl == 'standard_nn':
     arg.init_type = 'data_xavier_kern'
     arg.init_type = 'xavier'
 
-    K = 700
+    K = 322
     arg.units = [K]
     #arg.mu = 0.0
     #arg.std = 0.5
