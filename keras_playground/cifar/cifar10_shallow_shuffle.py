@@ -38,6 +38,7 @@ print(X_test.shape[0], 'test samples')
 Y_train = np_utils.to_categorical(y_train, nb_classes)
 Y_test = np_utils.to_categorical(y_test, nb_classes)
 
+# create model
 model = Sequential()
 
 model.add(Dense(units_single_layer, input_shape=(32*32*3,)))
@@ -45,9 +46,9 @@ model.add(Activation('relu'))
 model.add(Dense(nb_classes))
 model.add(Activation('softmax'))
 
-# Let's train the model using RMSprop
+# Compile model
 model.compile(loss='categorical_crossentropy',
-              optimizer='rmsprop',
+              optimizer='adam',
               metrics=['accuracy'])
 
 X_train = X_train.astype('float32')
