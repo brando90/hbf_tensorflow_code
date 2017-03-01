@@ -19,7 +19,8 @@ def shallow_vs_deep():
     decider = ns.Namespace(get_errors_from=get_errors_from)
     #
     #task_name = 'f_256D_L8_ppt_1'
-    task_name ='f_16D_ppt'
+    #task_name ='f_16D_ppt'
+    task_name ='f_64D_ppt'
     #
     experiment_name = mtf.get_experiment_folder(task_name)
     print(experiment_name)
@@ -35,7 +36,8 @@ def shallow_vs_deep():
     path_to_experiments_NN = '../../simulation_results_scripts/%s/task_Jan_19_NN_256D_Adam_xavier_relu_N60000'%experiment_name
     path_to_experiments_NN = '../../simulation_results_scripts/%s/task_Feb_20_NN_256D_Adam_xavier_relu_N60000_100'%experiment_name
     path_to_experiments_NN = '../../simulation_results_scripts/%s/task_Feb_21_NN_256D_Adam_xavier_relu_N60000_original_setup'%experiment_name
-    path_to_experiments_NN = '../../simulation_results_scripts/%s/task_Feb_21_NN_16D_Adam_xavier_relu_N60000_small_batchsize'%experiment_name
+    #path_to_experiments_NN = '../../simulation_results_scripts/%s/task_Feb_21_NN_16D_Adam_xavier_relu_N60000_small_batchsize'%experiment_name
+    path_to_experiments_NN = '../../simulation_results_scripts/%s/task_Feb_22_NN_256D_Adam_xavier_relu_N60000_original_setup'%experiment_name
     mtf.combine_errors_and_hps_to_one_json_file(path_to_experiments_NN,verbose=True,overwrite_old=True)
     expts_best_results = mtf.get_best_results_for_experiments(path_to_experiments_NN,decider,verbose=False,mdl_complexity_criteria='nb_params')
     sorted_units, sorted_train_errors, sorted_validation_errors, sorted_test_errors = mtf.get_errors_for_display(expts_best_results)
@@ -60,14 +62,17 @@ def shallow_vs_deep():
     #sorted_test_errors = sorted_test_errors/worst
     #sorted_train_errors = np.log(sorted_train_errors)
     #sorted_test_errors = np.log(sorted_test_errors)
-    krls.plot_values(nb_params_shallow,sorted_train_errors,xlabel='number of parameters',y_label='squared error (l2 loss)',label='Train errors for Shallow Neural Net (NN)',markersize=3,colour='b')
+    nb_params_shallow = [50,322,1322,2900]
+    print('total units: ', nb_params_shallow)
+    krls.plot_values(nb_params_shallow,sorted_train_errors,xlabel='number of units',y_label='squared error (l2 loss)',label='Train errors for Shallow Neural Net (NN)',markersize=3,colour='b')
     #krls.plot_values(nb_params_shallow,sorted_test_errors,xlabel='number of parameters',y_label='squared error (l2 loss)',label='Test error for Shallow NN',markersize=3,colour='b')
 
     path_to_experiments_BT = '../../simulation_results_scripts/%s/task_Dec_6_BT_256D_Adam_xavier_relu_N60000'%experiment_name
     path_to_experiments_BT = '../../simulation_results_scripts/%s/task_Jan_19_BT_256D_Adam_xavier_relu_N60000'%experiment_name
     path_to_experiments_BT = '../../simulation_results_scripts/%s/task_Feb_20_BT_256D_Adam_xavier_relu_N60000_100'%experiment_name
     path_to_experiments_BT = '../../simulation_results_scripts/%s/task_Feb_21_BT_256D_Adam_xavier_relu_N60000_original_setup'%experiment_name
-    path_to_experiments_BT = '../../simulation_results_scripts/%s/task_Feb_21_BT_16D_Adam_xavier_relu_N60000_small_batchsize'%experiment_name
+    #path_to_experiments_BT = '../../simulation_results_scripts/%s/task_Feb_21_BT_16D_Adam_xavier_relu_N60000_small_batchsize'%experiment_name
+    path_to_experiments_BT = '../../simulation_results_scripts/%s/task_Feb_22_BT_256D_Adam_xavier_relu_N60000_original_setup'%experiment_name
     mtf.combine_errors_and_hps_to_one_json_file(path_to_experiments_BT,verbose=True,overwrite_old=True)
     expts_best_results = mtf.get_best_results_for_experiments(path_to_experiments_BT,decider,verbose=False,mdl_complexity_criteria='nb_params')
     sorted_units, sorted_train_errors, sorted_validation_errors, sorted_test_errors = mtf.get_errors_for_display(expts_best_results)
@@ -93,7 +98,9 @@ def shallow_vs_deep():
     #sorted_train_errors = np.log(sorted_train_errors)
     #sorted_test_errors = np.log(sorted_test_errors)
     #
-    krls.plot_values(nb_params_bt,sorted_train_errors,xlabel='number of parameters',y_label='squared error (l2 loss)',label='Train errors for Binary Tree (BT) Neural Net',markersize=3,colour='c',linestyle='--')
+    nb_params_bt = 63*np.array([1,2,4,6])
+    print('total units: ', nb_params_bt)
+    krls.plot_values(nb_params_bt,sorted_train_errors,xlabel='number of units',y_label='squared error (l2 loss)',label='Train errors for Binary Tree (BT) Neural Net',markersize=3,colour='c',linestyle='--')
     #krls.plot_values(nb_params_bt,sorted_test_errors,xlabel='number of parameters',y_label='squared error (l2 loss)',label='Test errors for Binary Tree (BT) Neural Net',markersize=3,colour='c')
     #
     plt.legend(bbox_to_anchor=(0., 1.02, 1., .102), loc=3, ncol=2, mode="expand", borderaxespad=0.)
