@@ -78,8 +78,9 @@ arg.prefix_ckpt = 'mdl_ckpt'
 #arg.data_filename = 'f_8D_single_relu'
 #arg.data_filename = 'f_8D_conv_quad_cubic_sqrt'
 #arg.data_filename = 'f_8D_conv_quad_cubic_sqrt'
+arg.data_filename = 'f_8D_product_continuous'
 #arg.data_filename = 'f_16D_ppt'
-arg.data_filename = 'f_32D_ppt'
+#arg.data_filename = 'f_32D_ppt'
 #arg.data_filename = 'f_64D_ppt'
 #arg.data_filename = 'f_256D_L8_ppt_1'
 #arg.data_filename = 'f_8D_conv_quad_cubic_sqrt_shuffled'
@@ -100,7 +101,9 @@ arg.classificaton = mtf.classification_task_or_not(arg)
 #arg.experiment_name = 'task_Jan_19_BT_256D_Adam_xavier_relu_N60000'
 #arg.experiment_name = 'task_Feb_28_BT_32D_Adam_xavier_relu_N60000_100'
 #arg.experiment_name = 'task_Feb_28_NN_32D_Adam_xavier_relu_N60000_100'
-arg.experiment_name = 'TMP'
+#arg.experiment_name = 'task_Mar_2_BT_8D_Adam_xavier_relu_N60000_original_setup'
+arg.experiment_name = 'task_Mar_2_NN_8D_Adam_xavier_relu_N60000_original_setup'
+#arg.experiment_name = 'TMP'
 #arg.experiment_name = 'TMP_hp_test'
 #arg.experiment_name = 'dgx1_Feb_8_256D_Adam_xavier_relu_N60000'
 #arg.job_name = 'BTSG1_8D_a19_Adam_200' # job name e.g BTHL_4D_6_12_MGD_200
@@ -112,7 +115,7 @@ arg.experiment_name = 'TMP'
 #arg.job_name = 'BT_256D_units4_params1401096_Adam_200'
 #arg.job_name = 'BT_256D_units6_params3150156_Adam'
 #arg.job_name = 'BT10_MDL'
-arg.job_name = 'BT_32D_units1_Adam'
+arg.job_name = 'BT_8D_units3_Adam'
 
 #arg.experiment_name = 'task_Nov_19_NN_Adam_xavier_relu_N60000' # experiment_name e.g. task_Oct_10_NN_MGD_xavier_relu_N2000
 #arg.experiment_name = 'TMP_task_Jan_19_NN_256D_Adam_xavier_relu_N60000'
@@ -131,9 +134,9 @@ arg.experiment_root_dir = mtf.get_experiment_folder(arg.data_filename)
 #arg.mdl = 'hbf'
 #arg.mdl = 'binary_tree_4D_conv_hidden_layer'
 #arg.mdl = "binary_tree_4D_conv_hidden_layer_automatic"
-#arg.mdl = 'binary_tree_8D_conv_hidden_layer'
+arg.mdl = 'binary_tree_8D_conv_hidden_layer'
 #arg.mdl = 'binary_tree_16D_conv_hidden_layer'
-arg.mdl = 'binary_tree_32D_conv_hidden_layer'
+#arg.mdl = 'binary_tree_32D_conv_hidden_layer'
 #arg.mdl = 'binary_tree_64D_conv_hidden_layer'
 #arg.mdl = 'binary_tree_256D_conv_hidden_layer'
 #arg.mdl = 'bt_subgraph'
@@ -226,7 +229,7 @@ elif arg.mdl == 'binary_tree_8D_conv_hidden_layer':
     arg.weights_initializer = tf.contrib.layers.xavier_initializer(dtype=tf.float32)
     arg.biases_initializer = tf.constant_initializer(value=0.1, dtype=tf.float32)
     #
-    F1 = 2
+    F1 = 3
     arg.F = [None, F1, 2*F1, 4*F1]
     #
     arg.normalizer_fn = None
@@ -395,8 +398,8 @@ arg.get_y_shape = lambda arg: [None, arg.D_out]
 # float type
 arg.float_type = tf.float32
 #steps
-#arg.steps_low = int(2*60000)
-arg.steps_low = int(1*1001)
+arg.steps_low = int(2.5*60000)
+#arg.steps_low = int(1*1001)
 arg.steps_high = arg.steps_low+1
 arg.get_steps = lambda arg: int( np.random.randint(low=arg.steps_low ,high=arg.steps_high) )
 
