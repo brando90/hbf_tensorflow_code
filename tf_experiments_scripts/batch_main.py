@@ -45,6 +45,8 @@ arg.type_job = 'slurm_array_parallel'
 #arg.type_job, arg.nb_array_jobs = 'main_large_hp_ckpt', 2
 #arg.save_checkpoints = True
 arg.save_checkpoints = False
+#arg.save_last_mdl = True
+arg.save_last_mdl = False
 
 ## debug mode
 #arg.data_dirpath = './data/' # path to datasets
@@ -102,8 +104,8 @@ arg.classificaton = mtf.classification_task_or_not(arg)
 #arg.experiment_name = 'task_Feb_28_BT_32D_Adam_xavier_relu_N60000_100'
 #arg.experiment_name = 'task_Feb_28_NN_32D_Adam_xavier_relu_N60000_100'
 #arg.experiment_name = 'task_Mar_2_BT_8D_Adam_xavier_relu_N60000_original_setup'
-arg.experiment_name = 'task_Mar_2_NN_8D_Adam_xavier_relu_N60000_original_setup'
-#arg.experiment_name = 'TMP'
+#arg.experiment_name = 'task_Mar_2_NN_8D_Adam_xavier_relu_N60000_original_setup'
+arg.experiment_name = 'TMP3'
 #arg.experiment_name = 'TMP_hp_test'
 #arg.experiment_name = 'dgx1_Feb_8_256D_Adam_xavier_relu_N60000'
 #arg.job_name = 'BTSG1_8D_a19_Adam_200' # job name e.g BTHL_4D_6_12_MGD_200
@@ -229,7 +231,7 @@ elif arg.mdl == 'binary_tree_8D_conv_hidden_layer':
     arg.weights_initializer = tf.contrib.layers.xavier_initializer(dtype=tf.float32)
     arg.biases_initializer = tf.constant_initializer(value=0.1, dtype=tf.float32)
     #
-    F1 = 3
+    F1 = 1
     arg.F = [None, F1, 2*F1, 4*F1]
     #
     arg.normalizer_fn = None
@@ -398,13 +400,13 @@ arg.get_y_shape = lambda arg: [None, arg.D_out]
 # float type
 arg.float_type = tf.float32
 #steps
-arg.steps_low = int(2.5*60000)
-#arg.steps_low = int(1*1001)
+#arg.steps_low = int(2.5*60000)
+arg.steps_low = int(1*101)
 arg.steps_high = arg.steps_low+1
 arg.get_steps = lambda arg: int( np.random.randint(low=arg.steps_low ,high=arg.steps_high) )
 
 arg.M_low = 32
-arg.M_high = 15000
+arg.M_high = 35
 arg.get_batch_size = lambda arg: int(np.random.randint(low=arg.M_low , high=arg.M_high))
 #arg.potential_batch_sizes = [16,32,64,128,256,512,1024]
 #arg.potential_batch_sizes = [4]

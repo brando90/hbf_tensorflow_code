@@ -297,7 +297,7 @@ def main_hp(arg):
                 writer.writeheader()
                 #
                 save_hps(arg) # save current hyper params
-                if arg.save_checkpoints:
+                if arg.save_checkpoints or arg.save_last_mdl:
                     mtf.make_and_check_dir(path=arg.path_to_ckpt+arg.hp_folder_for_ckpt) # creates ./all_ckpts/exp_task_name/mdl_nn10/hp_stid_N
                 sess.run(tf.global_variables_initializer())
             # train
@@ -320,6 +320,9 @@ def main_hp(arg):
                     # write files
                     #pdb.set_trace()
                     writer.writerow({'train_error':train_error,'cv_error':cv_error,'test_error':test_error})
+                # save last model
+                if arg.save_last_mdl:
+                    saver.save(sess=sess,save_path=arg.path_to_ckpt+arg.hp_folder_for_ckpt+arg.prefix_ckpt)
             # evaluate
             print('Final Test Acc/error: ', sess.run(fetches=accuracy, feed_dict={x: X_test, y_: Y_test}))
 
