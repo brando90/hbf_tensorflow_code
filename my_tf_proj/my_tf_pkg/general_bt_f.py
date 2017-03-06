@@ -155,10 +155,11 @@ def generate_and_save_data_set_general_D_binary(file_name,f,D,M, type_input_dist
     note: params is given just because we want to save the params that made this function, it doesn't need it to compute the function.
     '''
     if type_input_dist == 'full_2^D_space':
-        X_train, Y_train, X_cv, Y_cv, X_test, Y_test = _generate_input_data_full(D)
-        Y_train, Y_cv, Y_test = _get_labels_general_D(X_train), _get_labels_general_D(X_cv), _get_labels_general_D(X_test)
+        X_train, X_cv, X_test = _generate_input_data_full_binary(D)
+        Y_train, Y_cv, Y_test = _get_labels_general_D(X_train,f), _get_labels_general_D(X_cv,f), _get_labels_general_D(X_test,f)
     elif type_input_dist == 'full_random_M':
-        X_train, Y_train, X_cv, Y_cv, X_test, Y_test = _generate_input_data_random(M)
+        X_train, Y_train, X_cv, Y_cv, X_test, Y_test = _generate_input_data_random_binary(M)
+        Y_train, Y_cv, Y_test = _get_labels_general_D(X_train,f), _get_labels_general_D(X_cv,f), _get_labels_general_D(X_test,f)
     else:
         raise ValueError('Input Distribution for Binary not defined (usually full 2^D or random M from 2^D), but you gave %s.'%(type_input_dist) )
     D = np.array(D)
@@ -166,7 +167,7 @@ def generate_and_save_data_set_general_D_binary(file_name,f,D,M, type_input_dist
     np.savez(file_name, file_name,file_name, params=params,D=D,X_train=X_train,Y_train=Y_train, X_cv=X_cv,Y_cv=Y_cv, X_test=X_test,Y_test=Y_test)
     return X_train, Y_train, X_cv, Y_cv, X_test, Y_test
 
-def _generate_input_data_full(D):
+def _generate_input_data_full_binary(D):
     '''
     full means generate all 2^D.
     '''
@@ -184,27 +185,28 @@ def _generate_input_data_full(D):
         #pdb.set_trace()
     # create copies
     X = np.array( current_all_permutations )
-    X_train, Y_train, X_cv, Y_cv, X_test, Y_test = np.copy(X), np.copy(X), np.copy(X), np.copy(X), np.copy(X), np.copy(X)
-    return (X_train, Y_train, X_cv, Y_cv, X_test, Y_test)
+    X_train, X_cv, X_test = np.copy(X), np.copy(X), np.copy(X)
+    return (X_train, X_cv, X_test)
 
-def _generate_input_data_random(M):
+def _generate_input_data_random_binary(D,M):
     '''
     random means generate M random from the 2^D.
     '''
+    X_train = _generate_single_data_binary_random_size(D,M)
+    X_cv = _generate_single_data_binary_random_size(D,M)
+    X_test = _generate_single_data_binary_random_size(D,M)
+    return X_train, X_cv, X_test
 
-    return (X_train, Y_train, X_cv, Y_cv, X_test, Y_test)
+def _generate_single_data_binary_random_size(D,M,seed=None):
+    binary_set = set()
+    while len(binary_set) < M:
+        new_binary_array = tuple( _randomly_generate_bit_array_length(D) )
+        binary_set.add(new_binary_array)
+    X = np.array(list(binary_set))
+    return X
 
-def _generate_data_general_D_binary(f,D,N_train=60000, N_cv=60000, N_test=60000, low_x=-1, high_x=1):
-    # train
-    X_train = low_x + (high_x - low_x) * np.random.rand(N_train,D)
-    Y_train = _get_labels_general_D(X_train, f)
-    # CV
-    X_cv = low_x + (high_x - low_x) * np.random.rand(N_cv,D)
-    Y_cv = _get_labels_general_D(X_cv, f)
-    # test
-    X_test = low_x + (high_x - low_x) * np.random.rand(N_test,D)
-    Y_test = _get_labels_general_D(X_test, f)
-    return (X_train, Y_train, X_cv, Y_cv, X_test, Y_test)
+def _randomly_generate_bit_array_length(D,seed=None):
+    return np.random.choice([1,-1],D)
 
 #
 
