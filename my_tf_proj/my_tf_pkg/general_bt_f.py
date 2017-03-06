@@ -148,30 +148,43 @@ def _generate_data_general_D(f,D,N_train=60000, N_cv=60000, N_test=60000, low_x=
 
 ## Binary
 
-def generate_and_save_data_set_general_D_binary(file_name,f,D, type_input_dist, params=None,N_train=60000, N_cv=60000, N_test=60000):
+def generate_and_save_data_set_general_D_binary(file_name,f,D,M, type_input_dist, params=None,N_train=60000, N_cv=60000, N_test=60000):
     '''
     Generates a binary data set according to file
     note: it also returns the data set to inspect it if desired.
     note: params is given just because we want to save the params that made this function, it doesn't need it to compute the function.
     '''
     if type_input_dist == 'full_2^D_space':
-        X_train, Y_train, X_cv, Y_cv, X_test, Y_test = _generate_input_data_full()
+        X_train, Y_train, X_cv, Y_cv, X_test, Y_test = _generate_input_data_full(D)
+        Y_train, Y_cv, Y_test = _get_labels_general_D(X_train), _get_labels_general_D(X_cv), _get_labels_general_D(X_test)
     elif type_input_dist == 'full_random_M':
         X_train, Y_train, X_cv, Y_cv, X_test, Y_test = _generate_input_data_random(M)
     else:
         raise ValueError('Input Distribution for Binary not defined (usually full 2^D or random M from 2^D), but you gave %s.'%(type_input_dist) )
-
-    X_train, Y_train, X_cv, Y_cv, X_test, Y_test = _generate_data_general_D(f,D,N_train, N_cv, N_test, low_x, high_x)
     D = np.array(D)
     params = np.array([]) if params == None else params
     np.savez(file_name, file_name,file_name, params=params,D=D,X_train=X_train,Y_train=Y_train, X_cv=X_cv,Y_cv=Y_cv, X_test=X_test,Y_test=Y_test)
     return X_train, Y_train, X_cv, Y_cv, X_test, Y_test
 
-def _generate_input_data_full():
+def _generate_input_data_full(D):
     '''
     full means generate all 2^D.
     '''
-    X = np.zeros(2**D)
+    D = D-1
+    prev_all_permutations = [ [-1], [1] ]
+    current_all_permutations = prev_all_permutations
+    for k in range(D):
+        current_all_permutations = []
+        for prev_perm in prev_all_permutations:
+            #print('prev_perm: ', prev_perm)
+            for b in [-1,1]:
+                new_perm = prev_perm + [b]
+                current_all_permutations.append(new_perm)
+        prev_all_permutations = current_all_permutations
+        #pdb.set_trace()
+    # create copies
+    X = np.array( current_all_permutations )
+    X_train, Y_train, X_cv, Y_cv, X_test, Y_test = np.copy(X), np.copy(X), np.copy(X), np.copy(X), np.copy(X), np.copy(X)
     return (X_train, Y_train, X_cv, Y_cv, X_test, Y_test)
 
 def _generate_input_data_random(M):
@@ -248,5 +261,24 @@ class TestF_BT(unittest.TestCase):
         correct = Y_train_general
         self.assertIsNotNone(correct)
 
+def test_generate_input_data():
+    f = np.prod
+    D = 2
+    (X_train, Y_train, X_cv, Y_cv, X_test, Y_test) = _generate_input_data_full(D)
+    print( X_train )
+    Y_train = _get_labels_general_D(X_train,f)
+    print(Y_train)
+    '''
+    [[-1 -1]
+     [-1  1]
+     [ 1 -1]
+     [ 1  1]]
+    [[ 1.]
+     [-1.]
+     [-1.]
+     [ 1.]]
+    '''
+
 if __name__ == '__main__':
-    unittest.main()
+    test_generate_input_data()
+    #unittest.main()
