@@ -413,6 +413,7 @@ def add_missing_errors_to_json_results(experiment_dirpath,run_filename,stid):
     the library for exactring results can be used.
     '''
     # get the errors for current model
+    print('experiment_dirpath+/+run_filename: ', (experiment_dirpath+'/'+run_filename) ) 
     errors_df = pd.read_csv(experiment_dirpath+'/'+run_filename) # pandas data frame
     # add errors to json struct
     with open(experiment_dirpath+'/json_hp_stid'+stid, 'r') as data_file:

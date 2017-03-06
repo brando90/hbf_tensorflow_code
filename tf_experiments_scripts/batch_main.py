@@ -20,6 +20,7 @@ import sys
 import namespaces as ns
 import argparse
 import pdb
+import functools
 
 import numpy as np
 import tensorflow as tf
@@ -30,6 +31,7 @@ from my_tf_pkg import main_large_hp_checkpointer as large_main_hp
 
 ##
 #print('In batch script', flush=True)
+#print = functools.partial(print, flush=True)
 #print(ns)
 ###
 arg = ns.Namespace()
@@ -117,7 +119,7 @@ arg.experiment_name = 'TMP3'
 #arg.job_name = 'BT_256D_units4_params1401096_Adam_200'
 #arg.job_name = 'BT_256D_units6_params3150156_Adam'
 #arg.job_name = 'BT10_MDL'
-arg.job_name = 'BT_8D_units3_Adam'
+#arg.job_name = 'BT_8D_units5_Adam'
 
 #arg.experiment_name = 'task_Nov_19_NN_Adam_xavier_relu_N60000' # experiment_name e.g. task_Oct_10_NN_MGD_xavier_relu_N2000
 #arg.experiment_name = 'TMP_task_Jan_19_NN_256D_Adam_xavier_relu_N60000'
@@ -128,15 +130,15 @@ arg.job_name = 'BT_8D_units3_Adam'
 #arg.job_name = 'NN_256D_units12100_params3121800_Adam'
 #arg.job_name = 'NN6_MDL'
 #arg.job_name = 'NN_64D_units6_Adam'
-#arg.job_name = 'NN_debug2'
+arg.job_name = 'NN_debug2'
 #
 arg.experiment_root_dir = mtf.get_experiment_folder(arg.data_filename)
 #
-#arg.mdl = 'standard_nn'
+arg.mdl = 'standard_nn'
 #arg.mdl = 'hbf'
 #arg.mdl = 'binary_tree_4D_conv_hidden_layer'
 #arg.mdl = "binary_tree_4D_conv_hidden_layer_automatic"
-arg.mdl = 'binary_tree_8D_conv_hidden_layer'
+#arg.mdl = 'binary_tree_8D_conv_hidden_layer'
 #arg.mdl = 'binary_tree_16D_conv_hidden_layer'
 #arg.mdl = 'binary_tree_32D_conv_hidden_layer'
 #arg.mdl = 'binary_tree_64D_conv_hidden_layer'
@@ -154,7 +156,7 @@ elif arg.mdl == 'standard_nn':
     arg.init_type = 'data_xavier_kern'
     arg.init_type = 'xavier'
 
-    K = 322
+    K = 35
     arg.units = [K]
     #arg.mu = 0.0
     #arg.std = 0.5
@@ -400,13 +402,13 @@ arg.get_y_shape = lambda arg: [None, arg.D_out]
 # float type
 arg.float_type = tf.float32
 #steps
-#arg.steps_low = int(2.5*60000)
-arg.steps_low = int(1*101)
+arg.steps_low = int(2.5*60000)
+#arg.steps_low = int(1*101)
 arg.steps_high = arg.steps_low+1
 arg.get_steps = lambda arg: int( np.random.randint(low=arg.steps_low ,high=arg.steps_high) )
 
-arg.M_low = 32
-arg.M_high = 35
+arg.M_low = 15000
+arg.M_high = 15001
 arg.get_batch_size = lambda arg: int(np.random.randint(low=arg.M_low , high=arg.M_high))
 #arg.potential_batch_sizes = [16,32,64,128,256,512,1024]
 #arg.potential_batch_sizes = [4]
@@ -560,6 +562,11 @@ arg.get_dataset = lambda arg: (arg.X_train, arg.Y_train, arg.X_cv, arg.Y_cv, arg
 arg.act_name = arg.act.__name__
 arg.restore = False
 
+#
+arg.print_func = print
+if arg.slurm_array_task_id == '1':
+    print = functools.partial(print, flush=True)
+    arg.print_func = print
 #pickle.dump( dict(arg), open( "pickle_file" , "wb" ) )
 #pdb.set_trace()
 if __name__ == '__main__':

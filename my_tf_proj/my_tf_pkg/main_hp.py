@@ -14,6 +14,7 @@ import ast
 import pickle
 import csv
 import copy
+import functools
 
 import my_tf_pkg as mtf
 import time
@@ -239,6 +240,10 @@ def main_hp(arg):
 
     note:
     '''
+    # force to flushing to output as default
+    print = arg.print_func
+    print(print)
+    pdb.set_trace()
     print('>>> arg.restore = ', arg.restore)
     #
     arg.date = datetime.date.today().strftime("%B %d").replace (" ", "_")
