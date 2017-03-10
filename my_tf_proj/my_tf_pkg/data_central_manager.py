@@ -58,7 +58,7 @@ def get_data_from_file(dirpath,filename):
 
     e.g. load(dirpath+filename) = load("./data/f_4D_simple_ReLu_BT" )
     '''
-    print( '===> os.listdir('.'): ', os.listdir('.') )
+    print( '===> os.listdir(.): ', os.listdir('.') )
     #pdb.set_trace()
     npzfile = np.load(dirpath+filename+'.npz')
     # get data
