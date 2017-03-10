@@ -59,13 +59,13 @@ arg.save_last_mdl = False
 #prefix_path_sim_results = './tmp_simulation_results_scripts/%s/%s/' # folder where the results from script is saved
 #prefix_path_ckpts = './tmp_all_ckpts/%s/%s/' # folder where the results from script is saved
 ## to run locally: python batch_main.py -sj sj
-arg.data_dirpath = './data/' # path to datasets
-prefix_path_sim_results = '../../simulation_results_scripts/%s/%s/' # folder where the results from script is saved
-prefix_path_ckpts = '../../all_ckpts/%s/%s/' # folder where the results from script is saved
+#arg.data_dirpath = './data/' # path to datasets
+#prefix_path_sim_results = '../../simulation_results_scripts/%s/%s/' # folder where the results from script is saved
+#prefix_path_ckpts = '../../all_ckpts/%s/%s/' # folder where the results from script is saved
 ## to run in docker
-#arg.data_dirpath = '/home_simulation_research/hbf_tensorflow_code/tf_experiments_scripts/data/' # path to datasets
-#prefix_path_sim_results = '/home_simulation_research/simulation_results_scripts/%s/%s/' # folder where the results from script is saved
-#prefix_path_ckpts = '/home_simulation_research/all_ckpts/%s/%s/' # folder where the results from script is saved
+arg.data_dirpath = '/home_simulation_research/hbf_tensorflow_code/tf_experiments_scripts/data/' # path to datasets
+prefix_path_sim_results = '/home_simulation_research/simulation_results_scripts/%s/%s/' # folder where the results from script is saved
+prefix_path_ckpts = '/home_simulation_research/all_ckpts/%s/%s/' # folder where the results from script is saved
 
 # prefix_path_sim_results = '../../simulation_results_scripts/%s/%s'
 # prefix_path_ckpts = '../../all_ckpts/%s/%s' # folder where the results from script is saved
