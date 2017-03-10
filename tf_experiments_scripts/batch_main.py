@@ -29,6 +29,11 @@ import my_tf_pkg as mtf
 from my_tf_pkg import main_hp
 from my_tf_pkg import main_large_hp_checkpointer as large_main_hp
 
+
+print( '===> os.listdir(.): ', os.listdir('.') )
+print( 'os.getcwd(): ', os.getcwd())
+print('os.path.dirname(os.path.abspath(__file__)): ', os.path.dirname(os.path.abspath(__file__)))
+
 ##
 #print('In batch script', flush=True)
 #print = functools.partial(print, flush=True)
