@@ -1,4 +1,8 @@
 import os
+#from multiprocessing import Pool
+from multiprocessing import Process
+import contextlib
+import time
 
 import namespaces as ns
 import pdb
@@ -209,7 +213,7 @@ def main_large_hp_ckpt(arg):
         arg.end_stid = arg.nb_array_jobs
         arg.restore = False
         make_and_check_dir(path=arg.path_to_ckpt) #first create and make the ckpt directory
-    run_hyperparam_search(arg)
+    run_hyperparam_search2(arg)
 
 ##
 
@@ -229,6 +233,28 @@ def run_hyperparam_search(arg):
         arg.slurm_array_task_id = job_array_index
         # trains the current hp
         main_hp.main_hp(arg)
+
+def run_hyperparam_search2(arg):
+    '''
+    Runs all the hp (hyper param) jobs that it needs to run.
+    Assume that the code calling it has figured out weather it has to restore
+    a model or not. If it does have to restore a model then the stid should be
+    initialized correctly so that it doesn't overwrite old ckpts.
+    '''
+    #do hyper_params
+    SLURM_ARRAY_TASK_IDS = list(range(int(arg.start_stid),int(arg.end_stid+1)))
+    for job_array_index in SLURM_ARRAY_TASK_IDS:
+        scope_name = 'stid_'+str(job_array_index)
+        print('--> stid: ',job_array_index)
+        #with tf.variable_scope(scope_name):
+        arg.slurm_array_task_id = job_array_index
+        # trains the current hp
+        #with contextlib.closing( Pool(num_pool_workers) ) as po:
+        p = Process(target=main_hp.main_hp, args=(arg,))
+        p.start()
+        p.join()
+        print('--> Done!!! with stid: ',job_array_index)
+
 #
 
 def get_args_for_experiment_test():

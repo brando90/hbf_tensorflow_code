@@ -243,7 +243,7 @@ def main_hp(arg):
     # force to flushing to output as default
     print = arg.print_func
     print(print)
-    pdb.set_trace()
+    #pdb.set_trace()
     print('>>> arg.restore = ', arg.restore)
     #
     arg.date = datetime.date.today().strftime("%B %d").replace (" ", "_")

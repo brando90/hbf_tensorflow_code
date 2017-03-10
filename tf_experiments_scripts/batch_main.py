@@ -41,9 +41,8 @@ arg.get_errors_from = mtf.get_errors_based_on_train_error
 #arg.get_errors_from = mtf.get_errors_based_on_validation_error
 #
 
-#arg.nb_array_jobs = 1
-#arg.type_job = 'serial' #careful when this is on and GPU is NOT on
-arg.type_job = 'slurm_array_parallel'
+arg.type_job, arg.nb_array_jobs = 'serial', 2 #careful when this is on and GPU is NOT on
+#arg.type_job = 'slurm_array_parallel'
 #arg.type_job, arg.nb_array_jobs = 'main_large_hp_ckpt', 2
 #arg.save_checkpoints = True
 arg.save_checkpoints = False
@@ -402,13 +401,13 @@ arg.get_y_shape = lambda arg: [None, arg.D_out]
 # float type
 arg.float_type = tf.float32
 #steps
-arg.steps_low = int(2.5*60000)
-#arg.steps_low = int(1*101)
+#arg.steps_low = int(2.5*60000)
+arg.steps_low = int(1*101)
 arg.steps_high = arg.steps_low+1
 arg.get_steps = lambda arg: int( np.random.randint(low=arg.steps_low ,high=arg.steps_high) )
 
-arg.M_low = 15000
-arg.M_high = 15001
+arg.M_low = 2
+arg.M_high = 4
 arg.get_batch_size = lambda arg: int(np.random.randint(low=arg.M_low , high=arg.M_high))
 #arg.potential_batch_sizes = [16,32,64,128,256,512,1024]
 #arg.potential_batch_sizes = [4]
@@ -573,9 +572,12 @@ if __name__ == '__main__':
     #print('In __name__ == __main__')
     if cmd_args.type_job == 'serial':
         # jobs one job. No slurm array
-        mtf.main_serial(arg)
+        arg.start_stid = 1
+        arg.end_stid = arg.nb_array_jobs
+        large_main_hp.run_hyperparam_search2(arg)
     elif cmd_args.type_job == 'slurm_array_parallel':
         # run one single job according to slurm array command
         main_hp.main_hp(arg)
     elif cmd_args.type_job == 'main_large_hp_ckpt':
         large_main_hp.main_large_hp_ckpt(arg)
+    #elif cmd_args.type_job = 'dgx1_multiprocess':
