@@ -46,26 +46,26 @@ arg.get_errors_from = mtf.get_errors_based_on_train_error
 #arg.get_errors_from = mtf.get_errors_based_on_validation_error
 #
 
-arg.type_job, arg.nb_array_jobs = 'serial', 1 #careful when this is on and GPU is NOT on
+#arg.type_job, arg.nb_array_jobs = 'serial', 1 #careful when this is on and GPU is NOT on
 #arg.type_job = 'slurm_array_parallel'
-#arg.type_job, arg.nb_array_jobs = 'main_large_hp_ckpt', 2
-#arg.save_checkpoints = True
-arg.save_checkpoints = False
+arg.type_job, arg.nb_array_jobs = 'main_large_hp_ckpt', 3
+arg.save_checkpoints = True
+#arg.save_checkpoints = False
 #arg.save_last_mdl = True
 arg.save_last_mdl = False
 
 ## debug mode
-#arg.data_dirpath = './data/' # path to datasets
-#prefix_path_sim_results = './tmp_simulation_results_scripts/%s/%s/' # folder where the results from script is saved
-#prefix_path_ckpts = './tmp_all_ckpts/%s/%s/' # folder where the results from script is saved
+arg.data_dirpath = './data/' # path to datasets
+prefix_path_sim_results = './tmp_simulation_results_scripts/%s/%s/' # folder where the results from script is saved
+prefix_path_ckpts = './tmp_all_ckpts/%s/%s/' # folder where the results from script is saved
 ## to run locally: python batch_main.py -sj sj
 #arg.data_dirpath = './data/' # path to datasets
 #prefix_path_sim_results = '../../simulation_results_scripts/%s/%s/' # folder where the results from script is saved
 #prefix_path_ckpts = '../../all_ckpts/%s/%s/' # folder where the results from script is saved
 ## to run in docker
-arg.data_dirpath = '/home_simulation_research/hbf_tensorflow_code/tf_experiments_scripts/data/' # path to datasets
-prefix_path_sim_results = '/home_simulation_research/simulation_results_scripts/%s/%s/' # folder where the results from script is saved
-prefix_path_ckpts = '/home_simulation_research/all_ckpts/%s/%s/' # folder where the results from script is saved
+#arg.data_dirpath = '/home_simulation_research/hbf_tensorflow_code/tf_experiments_scripts/data/' # path to datasets
+#prefix_path_sim_results = '/home_simulation_research/simulation_results_scripts/%s/%s/' # folder where the results from script is saved
+#prefix_path_ckpts = '/home_simulation_research/all_ckpts/%s/%s/' # folder where the results from script is saved
 
 # prefix_path_sim_results = '../../simulation_results_scripts/%s/%s'
 # prefix_path_ckpts = '../../all_ckpts/%s/%s' # folder where the results from script is saved
@@ -407,12 +407,12 @@ arg.get_y_shape = lambda arg: [None, arg.D_out]
 arg.float_type = tf.float32
 #steps
 #arg.steps_low = int(2.5*60000)
-arg.steps_low = int(1*101)
+arg.steps_low = int(1*501)
 arg.steps_high = arg.steps_low+1
 arg.get_steps = lambda arg: int( np.random.randint(low=arg.steps_low ,high=arg.steps_high) )
 
-arg.M_low = 2
-arg.M_high = 4
+arg.M_low = 100
+arg.M_high = 200
 arg.get_batch_size = lambda arg: int(np.random.randint(low=arg.M_low , high=arg.M_high))
 #arg.potential_batch_sizes = [16,32,64,128,256,512,1024]
 #arg.potential_batch_sizes = [4]

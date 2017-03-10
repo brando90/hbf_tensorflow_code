@@ -66,9 +66,11 @@ def get_hp_largest_stid(path_to_folder_with_hps_jobs):
     goes to the experiment with the current model folder (as in /all_ckpts/expt_task_name/mdl_nn10/)
     and gets the most recent stid of the hps.
     '''
+    print('>>path_to_folder_with_hps_jobs: ', path_to_folder_with_hps_jobs)
     #For each directory in the tree rooted at directory top (including top itself), it yields a 3-tuple (dirpath, dirnames, filenames).
     for (dirpath, dirnames, filenames) in os.walk(top=path_to_folder_with_hps_jobs,topdown=True):
         # dirnames = [...,hp_stid_N,...] or []
+        print('dirnames: ', dirnames)
         largest_stid = get_largest(hp_dirnames=dirnames)
         return largest_stid
     # if it gets here it means something bad happened and it starting all the hp's from the first one
@@ -242,6 +244,7 @@ def run_hyperparam_search2(arg):
     initialized correctly so that it doesn't overwrite old ckpts.
     '''
     #do hyper_params
+    #pdb.set_trace()
     SLURM_ARRAY_TASK_IDS = list(range(int(arg.start_stid),int(arg.end_stid+1)))
     for job_array_index in SLURM_ARRAY_TASK_IDS:
         print('\n')
@@ -249,11 +252,10 @@ def run_hyperparam_search2(arg):
         print('--> stid: ',job_array_index)
         #with tf.variable_scope(scope_name):
         arg.slurm_array_task_id = job_array_index
-        # trains the current hp
-        #with contextlib.closing( Pool(num_pool_workers) ) as po:
         p = Process(target=main_hp.main_hp, args=(arg,))
         p.start()
         p.join()
+        arg.restore = False # after the model has been restored, we continue normal until all hp's are finished
         print('--> Done!!! with stid: ',job_array_index)
 
 #
