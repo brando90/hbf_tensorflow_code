@@ -1,4 +1,7 @@
 from time import sleep
+import functools
+
+print = functools.partial(print, flush=True)
 
 var1 = 'var1'
 var2 = 'var2'
