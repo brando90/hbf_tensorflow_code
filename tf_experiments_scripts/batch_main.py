@@ -55,17 +55,17 @@ arg.save_checkpoints = True
 arg.save_last_mdl = False
 
 ## debug mode
-arg.data_dirpath = './data/' # path to datasets
-prefix_path_sim_results = './tmp_simulation_results_scripts/%s/%s/' # folder where the results from script is saved
-prefix_path_ckpts = './tmp_all_ckpts/%s/%s/' # folder where the results from script is saved
+#arg.data_dirpath = './data/' # path to datasets
+#prefix_path_sim_results = './tmp_simulation_results_scripts/%s/%s/' # folder where the results from script is saved
+#prefix_path_ckpts = './tmp_all_ckpts/%s/%s/' # folder where the results from script is saved
 ## to run locally: python batch_main.py -sj sj
 #arg.data_dirpath = './data/' # path to datasets
 #prefix_path_sim_results = '../../simulation_results_scripts/%s/%s/' # folder where the results from script is saved
 #prefix_path_ckpts = '../../all_ckpts/%s/%s/' # folder where the results from script is saved
 ## to run in docker
-#arg.data_dirpath = '/home_simulation_research/hbf_tensorflow_code/tf_experiments_scripts/data/' # path to datasets
-#prefix_path_sim_results = '/home_simulation_research/simulation_results_scripts/%s/%s/' # folder where the results from script is saved
-#prefix_path_ckpts = '/home_simulation_research/all_ckpts/%s/%s/' # folder where the results from script is saved
+arg.data_dirpath = '/home_simulation_research/hbf_tensorflow_code/tf_experiments_scripts/data/' # path to datasets
+prefix_path_sim_results = '/home_simulation_research/simulation_results_scripts/%s/%s/' # folder where the results from script is saved
+prefix_path_ckpts = '/home_simulation_research/all_ckpts/%s/%s/' # folder where the results from script is saved
 
 # prefix_path_sim_results = '../../simulation_results_scripts/%s/%s'
 # prefix_path_ckpts = '../../all_ckpts/%s/%s' # folder where the results from script is saved
@@ -111,7 +111,9 @@ arg.classificaton = mtf.classification_task_or_not(arg)
 #arg.experiment_name = 'task_Feb_28_NN_32D_Adam_xavier_relu_N60000_100'
 #arg.experiment_name = 'task_Mar_2_BT_8D_Adam_xavier_relu_N60000_original_setup'
 #arg.experiment_name = 'task_Mar_2_NN_8D_Adam_xavier_relu_N60000_original_setup'
-arg.experiment_name = 'TMP3'
+arg.experiment_name = 'task_Mar_3_BT_8D_Adam_xavier_relu_N60000_original_setup_dgx1'
+arg.experiment_name = 'task_Mar_3_NN_8D_Adam_xavier_relu_N60000_original_setup_dgx1'
+#arg.experiment_name = 'TMP3'
 #arg.experiment_name = 'TMP_hp_test'
 #arg.experiment_name = 'dgx1_Feb_8_256D_Adam_xavier_relu_N60000'
 #arg.job_name = 'BTSG1_8D_a19_Adam_200' # job name e.g BTHL_4D_6_12_MGD_200
@@ -123,7 +125,7 @@ arg.experiment_name = 'TMP3'
 #arg.job_name = 'BT_256D_units4_params1401096_Adam_200'
 #arg.job_name = 'BT_256D_units6_params3150156_Adam'
 #arg.job_name = 'BT10_MDL'
-#arg.job_name = 'BT_8D_units5_Adam'
+#arg.job_name = 'BT_8D_units2_Adam'
 
 #arg.experiment_name = 'task_Nov_19_NN_Adam_xavier_relu_N60000' # experiment_name e.g. task_Oct_10_NN_MGD_xavier_relu_N2000
 #arg.experiment_name = 'TMP_task_Jan_19_NN_256D_Adam_xavier_relu_N60000'
@@ -133,8 +135,8 @@ arg.experiment_name = 'TMP3'
 #arg.job_name = 'NN_256D_units5410_params1395780_Adam_200'
 #arg.job_name = 'NN_256D_units12100_params3121800_Adam'
 #arg.job_name = 'NN6_MDL'
-#arg.job_name = 'NN_64D_units6_Adam'
-arg.job_name = 'NN_debug2'
+#arg.job_name = 'NN_8D_units14_Adam'
+#arg.job_name = 'NN_debug2'
 #
 arg.experiment_root_dir = mtf.get_experiment_folder(arg.data_filename)
 #
@@ -160,7 +162,7 @@ elif arg.mdl == 'standard_nn':
     arg.init_type = 'data_xavier_kern'
     arg.init_type = 'xavier'
 
-    K = 35
+    K = 14
     arg.units = [K]
     #arg.mu = 0.0
     #arg.std = 0.5
@@ -406,13 +408,13 @@ arg.get_y_shape = lambda arg: [None, arg.D_out]
 # float type
 arg.float_type = tf.float32
 #steps
-#arg.steps_low = int(2.5*60000)
-arg.steps_low = int(1*501)
+arg.steps_low = int(2.5*60000)
+#arg.steps_low = int(1*501)
 arg.steps_high = arg.steps_low+1
 arg.get_steps = lambda arg: int( np.random.randint(low=arg.steps_low ,high=arg.steps_high) )
 
-arg.M_low = 100
-arg.M_high = 200
+arg.M_low = 32
+arg.M_high = 15000
 arg.get_batch_size = lambda arg: int(np.random.randint(low=arg.M_low , high=arg.M_high))
 #arg.potential_batch_sizes = [16,32,64,128,256,512,1024]
 #arg.potential_batch_sizes = [4]
