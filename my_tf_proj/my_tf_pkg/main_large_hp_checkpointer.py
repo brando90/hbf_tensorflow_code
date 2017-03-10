@@ -244,6 +244,7 @@ def run_hyperparam_search2(arg):
     #do hyper_params
     SLURM_ARRAY_TASK_IDS = list(range(int(arg.start_stid),int(arg.end_stid+1)))
     for job_array_index in SLURM_ARRAY_TASK_IDS:
+        print('\n')
         scope_name = 'stid_'+str(job_array_index)
         print('--> stid: ',job_array_index)
         #with tf.variable_scope(scope_name):
