@@ -48,7 +48,7 @@ arg.get_errors_from = mtf.get_errors_based_on_train_error
 
 #arg.type_job, arg.nb_array_jobs = 'serial', 1 #careful when this is on and GPU is NOT on
 #arg.type_job = 'slurm_array_parallel'
-arg.type_job, arg.nb_array_jobs = 'main_large_hp_ckpt', 3
+arg.type_job, arg.nb_array_jobs = 'main_large_hp_ckpt', 200
 arg.save_checkpoints = True
 #arg.save_checkpoints = False
 #arg.save_last_mdl = True
@@ -86,7 +86,8 @@ arg.prefix_ckpt = 'mdl_ckpt'
 #arg.data_filename = 'f_8D_single_relu'
 #arg.data_filename = 'f_8D_conv_quad_cubic_sqrt'
 #arg.data_filename = 'f_8D_conv_quad_cubic_sqrt'
-arg.data_filename = 'f_8D_product_continuous'
+#arg.data_filename = 'f_8D_product_continuous'
+arg.data_filename = 'f_64D_product_binary'
 #arg.data_filename = 'f_16D_ppt'
 #arg.data_filename = 'f_32D_ppt'
 #arg.data_filename = 'f_64D_ppt'
@@ -111,32 +112,20 @@ arg.classificaton = mtf.classification_task_or_not(arg)
 #arg.experiment_name = 'task_Feb_28_NN_32D_Adam_xavier_relu_N60000_100'
 #arg.experiment_name = 'task_Mar_2_BT_8D_Adam_xavier_relu_N60000_original_setup'
 #arg.experiment_name = 'task_Mar_2_NN_8D_Adam_xavier_relu_N60000_original_setup'
-arg.experiment_name = 'task_Mar_3_BT_8D_Adam_xavier_relu_N60000_original_setup_dgx1'
-arg.experiment_name = 'task_Mar_3_NN_8D_Adam_xavier_relu_N60000_original_setup_dgx1'
-#arg.experiment_name = 'TMP3'
+arg.experiment_name = 'task_Mar_12_BT_8D_Adam_xavier_relu_N60000_original_setup_dgx1'
+arg.experiment_name = 'task_Mar_12_NN_8D_Adam_xavier_relu_N60000_original_setup_dgx1'
+arg.experiment_name = 'TMP3'
 #arg.experiment_name = 'TMP_hp_test'
 #arg.experiment_name = 'dgx1_Feb_8_256D_Adam_xavier_relu_N60000'
 #arg.job_name = 'BTSG1_8D_a19_Adam_200' # job name e.g BTHL_4D_6_12_MGD_200
-#arg.job_name = 'BTSG2_8D_a3_Adam_200'
-#arg.job_name = 'BTSG3_8D_a2_Adam_200'
-#arg.job_name = 'BTSG4_8D_a1_Adam_200'
-#arg.job_name = 'BT_256D_units1_params88146_Adam_200'
-#arg.job_name = 'BT_256D_units2_params351044_Adam_200'
-#arg.job_name = 'BT_256D_units4_params1401096_Adam_200'
-#arg.job_name = 'BT_256D_units6_params3150156_Adam'
-#arg.job_name = 'BT10_MDL'
-#arg.job_name = 'BT_8D_units2_Adam'
+#arg.job_name = 'BT_debug1'
+arg.job_name = 'BT_64D_units31x2_Adam'
 
 #arg.experiment_name = 'task_Nov_19_NN_Adam_xavier_relu_N60000' # experiment_name e.g. task_Oct_10_NN_MGD_xavier_relu_N2000
 #arg.experiment_name = 'TMP_task_Jan_19_NN_256D_Adam_xavier_relu_N60000'
 #arg.job_name = 'NN_8D_31_Adam_200' # job name e.g NN_4D_31_MGD_200
-#arg.job_name = 'NN_256D_units330_85140_Adam_200'
-#arg.job_name = 'NN_256D_units1350_params348300_Adam_200'
-#arg.job_name = 'NN_256D_units5410_params1395780_Adam_200'
-#arg.job_name = 'NN_256D_units12100_params3121800_Adam'
-#arg.job_name = 'NN6_MDL'
-#arg.job_name = 'NN_8D_units14_Adam'
 #arg.job_name = 'NN_debug2'
+arg.job_name = 'NN_64D_units2_Adam'
 #
 arg.experiment_root_dir = mtf.get_experiment_folder(arg.data_filename)
 #
@@ -147,7 +136,7 @@ arg.mdl = 'standard_nn'
 #arg.mdl = 'binary_tree_8D_conv_hidden_layer'
 #arg.mdl = 'binary_tree_16D_conv_hidden_layer'
 #arg.mdl = 'binary_tree_32D_conv_hidden_layer'
-#arg.mdl = 'binary_tree_64D_conv_hidden_layer'
+arg.mdl = 'binary_tree_64D_conv_hidden_layer'
 #arg.mdl = 'binary_tree_256D_conv_hidden_layer'
 #arg.mdl = 'bt_subgraph'
 #arg.mdl = 'debug_mdl'
@@ -162,7 +151,7 @@ elif arg.mdl == 'standard_nn':
     arg.init_type = 'data_xavier_kern'
     arg.init_type = 'xavier'
 
-    K = 14
+    K = 3
     arg.units = [K]
     #arg.mu = 0.0
     #arg.std = 0.5
@@ -313,7 +302,7 @@ elif arg.mdl == 'binary_tree_64D_conv_hidden_layer':
     arg.weights_initializer = tf.contrib.layers.xavier_initializer(dtype=tf.float32)
     arg.biases_initializer = tf.constant_initializer(value=0.1, dtype=tf.float32)
     #
-    F1 = 1
+    F1 = 3
     arg.F = [None] + [ F1*(2**l) for l in range(1,L+1) ]
     arg.nb_filters = arg.F
     #
