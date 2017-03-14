@@ -148,11 +148,13 @@ def _generate_data_general_D(f,D,N_train=60000, N_cv=60000, N_test=60000, low_x=
 
 ## Binary
 
-def generate_and_save_data_set_general_D_binary(file_name,f,D,M, type_input_dist, params=None,N_train=60000, N_cv=60000, N_test=60000):
+def generate_and_save_data_set_general_D_binary(file_name,f,D,M, type_input_dist, params=None):
     '''
     Generates a binary data set according to file
     note: it also returns the data set to inspect it if desired.
     note: params is given just because we want to save the params that made this function, it doesn't need it to compute the function.
+
+    note: M - size of all data sets, ignored if full is set to true
     '''
     if type_input_dist == 'full_2^D_space':
         X_train, X_cv, X_test = _generate_input_data_full_binary(D)
@@ -265,8 +267,9 @@ class TestF_BT(unittest.TestCase):
 
 def test_generate_input_data():
     f = np.prod
-    D = 2
-    (X_train, Y_train, X_cv, Y_cv, X_test, Y_test) = _generate_input_data_full(D)
+    D = 64
+    #(X_train, Y_train, X_cv, Y_cv, X_test, Y_test) = _generate_input_data_full(D)
+    (X_train, X_cv, X_test) = _generate_input_data_random_binary(D=D,M=60000)
     print( X_train )
     Y_train = _get_labels_general_D(X_train,f)
     print(Y_train)
