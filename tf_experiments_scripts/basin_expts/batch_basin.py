@@ -45,8 +45,8 @@ arg.get_errors_from = mtf.get_errors_based_on_train_error
 #arg.type_job, arg.nb_array_jobs = 'serial', 1 #careful when this is on and GPU is NOT on
 arg.type_job = 'slurm_array_parallel'
 #arg.type_job, arg.nb_array_jobs = 'main_large_hp_ckpt', 200
-arg.save_checkpoints = True
-#arg.save_checkpoints = False
+#arg.save_checkpoints = True
+arg.save_checkpoints = False
 #arg.save_last_mdl = True
 arg.save_last_mdl = False
 
@@ -97,15 +97,16 @@ elif arg.mdl == 'basin_1D':
     arg.D = 1
     arg.get_x_shape = lambda arg: arg.D
     #
-    arg.init_std = lambda: [1.0,1.0]
-    arg.init_mu = lambda: [5.0,-5.0]
-    arg.init_W = lambda: [0.0]
+    arg.init_std = lambda: tf.constant([1.0,1.0])
+    arg.init_mu = lambda: tf.constant([1.0,-1.0])
+    arg.init_W = lambda: tf.constant([0.0],shape=[1,1])
     def get_basins(arg):
-        W = tf.get_variable(name='W', initializer=arg.init_W, trainable=True)
-        init_std = arg.init_std
-        init_mu = arg.init_mu
-        basins = [ sgd_lib.get_basin(W,init_std[0],init_mu[0]) ]
-        basins.append( get_basin(W,init_std[1],init_mu[1]) )
+        #pdb.set_trace()
+        W = tf.get_variable(name='W', initializer=arg.init_W(), trainable=True)
+        init_std = arg.init_std()
+        init_mu = arg.init_mu()
+        basins = [ sgd_lib.get_basin(W,init_std[0],init_mu[0],str(1)) ]
+        basins.append( sgd_lib.get_basin(W,init_std[1],init_mu[1],str(2)) )
         return basins
     arg.get_basins = get_basins
 
@@ -114,12 +115,12 @@ elif arg.mdl == 'basin_1D':
 arg.float_type = tf.float32
 #steps
 #arg.steps_low = int(2.5*60000)
-arg.steps_low = int(1*1001)
+arg.steps_low = int(1*101)
 arg.steps_high = arg.steps_low+1
 arg.get_steps = lambda arg: int( np.random.randint(low=arg.steps_low ,high=arg.steps_high) )
 
 arg.M_low = 32
-arg.M_high = 15000
+arg.M_high = 33
 arg.get_batch_size = lambda arg: int(np.random.randint(low=arg.M_low , high=arg.M_high))
 #arg.potential_batch_sizes = [16,32,64,128,256,512,1024]
 #arg.potential_batch_sizes = [4]
@@ -127,8 +128,8 @@ def get_power2_batch_size(arg):
     i = np.random.randint( low=0, high=len(arg.potential_batch_sizes) )
     batch_size = arg.potential_batch_sizes[i]
     return batch_size
-#.get_batch_size = get_power2_batch_size
-arg.report_error_freq = 50
+#arg.get_batch_size = get_power2_batch_size
+arg.report_error_freq = 2
 
 arg.low_log_const_learning_rate, arg.high_log_const_learning_rate = -0.5, -4
 arg.get_log_learning_rate =  lambda arg: np.random.uniform(low=arg.low_log_const_learning_rate, high=arg.high_log_const_learning_rate)
@@ -136,6 +137,7 @@ arg.get_start_learning_rate = lambda arg: 10**arg.log_learning_rate
 ## decayed_learning_rate = learning_rate * decay_rate ^ (global_step / decay_steps)
 #arg.decay_rate_low, arg.decay_rate_high = 0.1, 1.0
 #arg.get_decay_rate = lambda arg: np.random.uniform(low=arg.decay_rate_low, high=arg.decay_rate_high)
+arg.get_start_learning_rate = lambda arg: 0.9
 arg.get_decay_rate = lambda arg: 1.0
 
 #arg.decay_steps_low, arg.decay_steps_high = arg.report_error_freq, arg.M
@@ -184,6 +186,9 @@ elif optimization_alg == 'RMSProp':
     arg.get_decay = lambda arg: np.random.uniform(low=arg.decay_loc,high=arg.decay_high)
     arg.momentum_low, arg.momontum_high = 0.0, 0.99
     arg.get_momentum = lambda arg: np.random.uniform(low=arg.momentum_low,high=arg.momontum_high)
+elif optimization_alg == 'GDL':
+    arg.get_gdl_mu_noise =  lambda arg: 0.0
+    arg.get_gdl_stddev_noise = lambda arg: 1.0
 else:
     pass
 

@@ -2,6 +2,7 @@
 # easier to use funcs in all modules
 # following line imports (i.e. similar to copying the code) from the declared packages
 from sgd_lib.main_basin import *
+from sgd_lib.GDL import *
 #having the package name declared
 #from pkg_1.module2 import *
 

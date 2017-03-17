@@ -1,26 +1,38 @@
 import tensorflow as tf
+import csv
 
 import datetime
 
 import my_tf_pkg as mtf
+from my_tf_pkg import main_hp
+
+import pdb
+
+##
+
+#def get_
+
+##
 
 def get_basin_loss_surface(arg):
     basins = arg.get_basins(arg)
     #
     loss = 1
-    for i in range(basins):
-        basin = arg.basins[i]
+    for i in range( len(basins) ):
+        basin = basins[i]
         loss = loss + basin # loss := loss + - exp( - 1/2sig [x - mu]^2)
     return loss
 
-def get_basin(W,init_std,init_mu):
+def get_basin(W,init_std,init_mu,l):
     # make standard dev
-    S = tf.get_variable(name='S', initializer=init_std, trainable=False)
-    beta = tf.pow(tf.div( tf.constant(1.0,dtype=tf.float64),S), 2)
+    S = tf.get_variable(name='S'+l, initializer=init_std, trainable=False)
+    beta = tf.pow(tf.div( tf.constant(1.0,dtype=tf.float32),S), 2)
     # make basin
-    mu = tf.get_variable(name='mu', initializer=init_mu, trainable=False)
+    mu = tf.get_variable(name='mu'+l, initializer=init_mu, trainable=False)
     basin = tf.exp( - beta * tf.matmul(W - mu, W - mu) )
     return basin
+
+##
 
 def main_basin(arg):
     '''
@@ -50,8 +62,9 @@ def main_basin(arg):
         w = tf.placeholder(arg.float_type, arg.get_x_shape(arg), name='x-input')
         ### get basin
         loss = get_basin_loss_surface(arg)
+        accuracy = loss
         ### get optimizer variables
-        opt = mtf.get_optimizer(arg)
+        opt = main_hp.get_optimizer(arg)
         train_step = opt.minimize(loss, global_step=arg.global_step)
         # step for optimizer (useful for ckpts)
         step, nb_iterations = tf.Variable(0, name='step'), tf.Variable(arg.nb_steps, name='nb_iterations')
@@ -67,15 +80,15 @@ def main_basin(arg):
             if arg.restore:
                 arg.restore = False # after the model has been restored, we continue normal until all hp's are finished
                 saver.restore(sess=sess, save_path=arg.save_path_to_ckpt2restore) # e.g. saver.restore(sess=sess, save_path='./tmp/my-model')
-                arg = restore_hps(arg)
+                arg = main_hp.restore_hps(arg)
                 print('restored model trained up to, STEP: ', step.eval())
                 print('restored model, ACCURACY:', sess.run(fetches=accuracy, feed_dict={x: X_train, y_: Y_train, phase_train: False}))
             else: # NOT Restore
                 # not restored, so its a virgin run from scratch for this hp
-                deleteContent(pfile=errors_csv_f) # since its a virgin run we
+                main_hp.deleteContent(pfile=errors_csv_f) # since its a virgin run we
                 writer.writeheader()
                 #
-                save_hps(arg) # save current hyper params
+                main_hp.save_hps(arg) # save current hyper params
                 if arg.save_checkpoints or arg.save_last_mdl:
                     mtf.make_and_check_dir(path=arg.path_to_ckpt+arg.hp_folder_for_ckpt) # creates ./all_ckpts/exp_task_name/mdl_nn10/hp_stid_N
                 sess.run(tf.global_variables_initializer())
@@ -83,8 +96,9 @@ def main_basin(arg):
             start_iteration = step.eval() # last iteration trained is the first iteration for this model
             for i in range(start_iteration,nb_iterations.eval()):
                 #batch_xs, batch_ys = mnist.train.next_batch(batch_size.eval())
-                batch_xs, batch_ys = get_batch_feed(X_train, Y_train, batch_size.eval())
-                sess.run(fetches=train_step, feed_dict={x: batch_xs, y_: batch_ys, phase_train: False})
+                #batch_xs, batch_ys = main_hp.get_batch_feed(X_train, Y_train, batch_size.eval())
+                pdb.set_trace()
+                sess.run(fetches=train_step)
                 # check_point mdl
                 if i % arg.report_error_freq == 0:
                     sess.run(step.assign(i))
@@ -92,7 +106,8 @@ def main_basin(arg):
                     train_error = sess.run(fetches=loss)
                     cv_error = sess.run(fetches=loss)
                     test_error = sess.run(fetches=loss)
-                    print( 'step %d, train error: %s | batch_size(step.eval(),arg.batch_size): %s,%s log_learning_rate: %s | mdl %s '%(i,train_error,batch_size.eval(),arg.batch_size,arg.log_learning_rate,arg.mdl) )
+                    #print( 'step %d, train error: %s | batch_size(step.eval(),arg.batch_size): %s,%s log_learning_rate: %s | mdl %s '%(i,train_error,batch_size.eval(),arg.batch_size,arg.log_learning_rate,arg.mdl) )
+                    print( 'step %d, train error: %s | starter_learning_rate: %s | mdl %s '%(i,train_error,arg.starter_learning_rate, arg.mdl) )
                     # save checkpoint
                     if arg.save_checkpoints:
                         saver.save(sess=sess,save_path=arg.path_to_ckpt+arg.hp_folder_for_ckpt+arg.prefix_ckpt)
