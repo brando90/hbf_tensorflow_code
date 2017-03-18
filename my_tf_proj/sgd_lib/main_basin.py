@@ -63,9 +63,11 @@ def main_basin(arg):
         ### get basin
         loss = get_basin_loss_surface(arg)
         accuracy = loss
+        arg.loss = loss
         ### get optimizer variables
         opt = main_hp.get_optimizer(arg)
-        train_step = opt.minimize(loss, global_step=arg.global_step)
+        train_step = opt
+        #train_step = opt.minimize(loss, global_step=arg.global_step)
         # step for optimizer (useful for ckpts)
         step, nb_iterations = tf.Variable(0, name='step'), tf.Variable(arg.nb_steps, name='nb_iterations')
         batch_size = tf.Variable(arg.batch_size, name='batch_size')
@@ -97,8 +99,8 @@ def main_basin(arg):
             for i in range(start_iteration,nb_iterations.eval()):
                 #batch_xs, batch_ys = mnist.train.next_batch(batch_size.eval())
                 #batch_xs, batch_ys = main_hp.get_batch_feed(X_train, Y_train, batch_size.eval())
-                pdb.set_trace()
-                print(train_step)
+                #pdb.set_trace()
+                #print(train_step)
                 sess.run(fetches=train_step)
                 # check_point mdl
                 if i % arg.report_error_freq == 0:

@@ -12,19 +12,29 @@ import tensorflow as tf
 
 ##
 
-# def process_gradients_my_way():
-#     # Create an optimizer.
-#     opt = GradientDescentOptimizer(learning_rate=0.1)
-#
-#     # Compute the gradients for a list of variables.
-#     grads_and_vars = opt.compute_gradients(loss, <list of variables>)
-#
-#     # grads_and_vars is a list of tuples (gradient, variable).  Do whatever you
-#     # need to the 'gradient' part, for example cap them, etc.
-#     capped_grads_and_vars = [(MyCapper(gv[0]), gv[1]) for gv in grads_and_vars]
-#
-#     # Ask the optimizer to apply the capped gradients.
-#     opt.apply_gradients(capped_grads_and_vars)
+def _GDL(g,mu_noise,stddev_noise):
+    '''
+    adding noise to gradients
+    '''
+    return g + tf.random_normal(tf.shape(g),mean=mu_noise,stddev=stddev_noise)
+
+def GDL_official_tf(loss,learning_rate,mu_noise,stddev_noise):
+    # Create an optimizer.
+    opt = tf.train.GradientDescentOptimizer(learning_rate=learning_rate)
+    # Compute the gradients for a list of variables.
+    grads_and_vars = opt.compute_gradients(loss)
+    # process gradients
+    processed_grads_and_vars = [(_GDL(g,mu_noise,stddev_noise), v) for g,v in grads_and_vars]
+    # Ask the optimizer to apply the capped gradients.
+    return opt.apply_gradients(processed_grads_and_vars)
+
+def get_vars(loss):
+    grads_and_vars = self.compute_gradients( loss )
+    # get the trainable ones
+    vars_with_grad = [v for g, v in grads_and_vars if g is not None]
+    if not vars_with_grad:
+        throw_error(grads_and_vars,loss)
+    return grads_and_vars
 
 ##
 
