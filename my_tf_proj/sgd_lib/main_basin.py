@@ -98,6 +98,7 @@ def main_basin(arg):
                 #batch_xs, batch_ys = mnist.train.next_batch(batch_size.eval())
                 #batch_xs, batch_ys = main_hp.get_batch_feed(X_train, Y_train, batch_size.eval())
                 pdb.set_trace()
+                print(train_step)
                 sess.run(fetches=train_step)
                 # check_point mdl
                 if i % arg.report_error_freq == 0:
