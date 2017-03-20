@@ -20,7 +20,7 @@ def get_basin_loss_surface(arg):
     loss = 1
     for i in range( len(basins) ):
         basin = basins[i]
-        loss = loss + basin # loss := loss + - exp( - 1/2sig [x - mu]^2)
+        loss = loss - basin # loss := loss + - exp( - 1/2sig [x - mu]^2)
     return loss
 
 def get_basin(W,init_std,init_mu,l):
@@ -30,8 +30,7 @@ def get_basin(W,init_std,init_mu,l):
     # make basin
     mu = tf.get_variable(name='mu'+l, initializer=init_mu, trainable=False)
     basin = tf.exp( - beta * tf.matmul(W - mu, W - mu) )
-    #
-    tf.summary.histogram('W', W)
+    #basin = tf.exp( - beta * (W - mu)*(W - mu) )
     return basin
 
 ##
@@ -127,7 +126,7 @@ def main_basin(arg):
                     # save checkpoint
                     if arg.save_checkpoints:
                         saver.save(sess=sess,save_path=arg.path_to_ckpt+arg.hp_folder_for_ckpt+arg.prefix_ckpt)
-                    #
+                    # write tensorboard
                     if arg.use_tensorboard:
                         train_writer.add_summary(train_summary, i)
                 # save last model

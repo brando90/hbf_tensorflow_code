@@ -98,15 +98,21 @@ elif arg.mdl == 'basin_1D':
     arg.get_x_shape = lambda arg: arg.D
     #
     arg.init_std = lambda: tf.constant([1.0,1.0])
-    arg.init_mu = lambda: tf.constant([-3.0,3.0])
+    arg.init_mu = lambda: tf.constant([-2.0,2.0])
     arg.init_W = lambda: tf.constant([0.0],shape=[1,1])
+    #arg.init_W = lambda: tf.constant(0.0)
     def get_basins(arg):
         #pdb.set_trace()
         W = tf.get_variable(name='W', initializer=arg.init_W(), trainable=True)
+        tf.summary.histogram('Weights', W)
+        #tf.summary.scalar('Weights_scal', W)
+        #
         init_std = arg.init_std()
         init_mu = arg.init_mu()
-        basins = [ sgd_lib.get_basin(W,init_std[0],init_mu[0],str(1)) ]
-        basins.append( sgd_lib.get_basin(W,init_std[1],init_mu[1],str(2)) )
+        #
+        basin1 = sgd_lib.get_basin(W,init_std[0],init_mu[0],str(1))
+        basin2 = sgd_lib.get_basin(W,init_std[1],init_mu[1],str(2))
+        basins = [basin1, basin2]
         return basins
     arg.get_basins = get_basins
 
@@ -115,7 +121,7 @@ elif arg.mdl == 'basin_1D':
 arg.float_type = tf.float32
 #steps
 #arg.steps_low = int(2.5*60000)
-arg.steps_low = int(1*1001)
+arg.steps_low = int(1*3001)
 arg.steps_high = arg.steps_low+1
 arg.get_steps = lambda arg: int( np.random.randint(low=arg.steps_low ,high=arg.steps_high) )
 
@@ -189,7 +195,7 @@ elif optimization_alg == 'RMSProp':
     arg.get_momentum = lambda arg: np.random.uniform(low=arg.momentum_low,high=arg.momontum_high)
 elif optimization_alg == 'GDL':
     arg.get_gdl_mu_noise =  lambda arg: 0.0
-    arg.get_gdl_stddev_noise = lambda arg: 0.1
+    arg.get_gdl_stddev_noise = lambda arg: 0.5
 else:
     pass
 
