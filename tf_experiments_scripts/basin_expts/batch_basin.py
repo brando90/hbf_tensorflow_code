@@ -98,7 +98,7 @@ elif arg.mdl == 'basin_1D':
     arg.get_x_shape = lambda arg: arg.D
     #
     arg.init_std = lambda: tf.constant([1.0,1.0])
-    arg.init_mu = lambda: tf.constant([1.0,-1.0])
+    arg.init_mu = lambda: tf.constant([-3.0,3.0])
     arg.init_W = lambda: tf.constant([0.0],shape=[1,1])
     def get_basins(arg):
         #pdb.set_trace()
@@ -115,7 +115,7 @@ elif arg.mdl == 'basin_1D':
 arg.float_type = tf.float32
 #steps
 #arg.steps_low = int(2.5*60000)
-arg.steps_low = int(1*101)
+arg.steps_low = int(1*1001)
 arg.steps_high = arg.steps_low+1
 arg.get_steps = lambda arg: int( np.random.randint(low=arg.steps_low ,high=arg.steps_high) )
 
@@ -129,7 +129,7 @@ def get_power2_batch_size(arg):
     batch_size = arg.potential_batch_sizes[i]
     return batch_size
 #arg.get_batch_size = get_power2_batch_size
-arg.report_error_freq = 2
+arg.report_error_freq = 10
 
 arg.low_log_const_learning_rate, arg.high_log_const_learning_rate = -0.5, -4
 arg.get_log_learning_rate =  lambda arg: np.random.uniform(low=arg.low_log_const_learning_rate, high=arg.high_log_const_learning_rate)
@@ -137,7 +137,7 @@ arg.get_start_learning_rate = lambda arg: 10**arg.log_learning_rate
 ## decayed_learning_rate = learning_rate * decay_rate ^ (global_step / decay_steps)
 #arg.decay_rate_low, arg.decay_rate_high = 0.1, 1.0
 #arg.get_decay_rate = lambda arg: np.random.uniform(low=arg.decay_rate_low, high=arg.decay_rate_high)
-arg.get_start_learning_rate = lambda arg: 0.9
+arg.get_start_learning_rate = lambda arg: 0.01
 arg.get_decay_rate = lambda arg: 1.0
 
 #arg.decay_steps_low, arg.decay_steps_high = arg.report_error_freq, arg.M
@@ -153,12 +153,13 @@ arg.get_decay_steps = get_decay_steps # when stair case, how often to shrink
 #arg.staircase = False
 arg.staircase = True
 
-optimization_alg = 'GD'
+#optimization_alg = 'GD'
 #optimization_alg = 'Momentum'
-# optimization_alg = 'Adadelta'
-# optimization_alg = 'Adagrad'
+#optimization_alg = 'Adadelta'
+#optimization_alg = 'Adagrad'
 #optimization_alg = 'Adam'
 #optimization_alg = 'RMSProp'
+optimization_alg = 'GDL'
 arg.optimization_alg = optimization_alg
 
 if optimization_alg == 'GD':
@@ -188,7 +189,7 @@ elif optimization_alg == 'RMSProp':
     arg.get_momentum = lambda arg: np.random.uniform(low=arg.momentum_low,high=arg.momontum_high)
 elif optimization_alg == 'GDL':
     arg.get_gdl_mu_noise =  lambda arg: 0.0
-    arg.get_gdl_stddev_noise = lambda arg: 1.0
+    arg.get_gdl_stddev_noise = lambda arg: 0.1
 else:
     pass
 
@@ -269,8 +270,7 @@ arg.mdl_save = False
 
 #
 arg.use_tensorboard = cmd_args.tensorboard
-#print('---> arg.use_tensorboard: ', arg.use_tensorboard)
-#print('---> cmd_args.tensorboard: ', cmd_args.tensorboard)
+arg.tensorboard_data_dump_train = './tmp/train'
 
 arg.max_to_keep = 1
 
