@@ -123,7 +123,7 @@ elif arg.mdl == 'basin_1D':
 arg.float_type = tf.float32
 #steps
 #arg.steps_low = int(2.5*60000)
-arg.steps_low = int(2*10001)
+arg.steps_low = int(1*10001)
 arg.steps_high = arg.steps_low+1
 arg.get_steps = lambda arg: int( np.random.randint(low=arg.steps_low ,high=arg.steps_high) )
 
@@ -145,7 +145,7 @@ arg.get_start_learning_rate = lambda arg: 10**arg.log_learning_rate
 ## decayed_learning_rate = learning_rate * decay_rate ^ (global_step / decay_steps)
 #arg.decay_rate_low, arg.decay_rate_high = 0.1, 1.0
 #arg.get_decay_rate = lambda arg: np.random.uniform(low=arg.decay_rate_low, high=arg.decay_rate_high)
-arg.get_start_learning_rate = lambda arg: 0.01
+arg.get_start_learning_rate = lambda arg: 0.03
 arg.get_decay_rate = lambda arg: 1.0
 
 #arg.decay_steps_low, arg.decay_steps_high = arg.report_error_freq, arg.M
@@ -197,9 +197,15 @@ elif optimization_alg == 'RMSProp':
     arg.get_momentum = lambda arg: np.random.uniform(low=arg.momentum_low,high=arg.momontum_high)
 elif optimization_alg == 'GDL':
     arg.get_gdl_mu_noise =  lambda arg: 0.0
-    arg.get_gdl_stddev_noise = lambda arg: 6.1
+    arg.get_gdl_stddev_noise = lambda arg: 4.8
 else:
     pass
+
+#saving pickle histogram data
+arg.p_path = './tmp_pickle'
+arg.p_filename = 'W_hist_data.p'
+#arg.save_hist = False
+arg.save_hist = True
 
 #arg.bn = True
 #arg.trainable_bn = True #scale, shift BN

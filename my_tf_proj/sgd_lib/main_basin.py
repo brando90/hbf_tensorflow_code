@@ -2,6 +2,7 @@ import tensorflow as tf
 import numpy as np
 import matplotlib.pyplot as plt
 import csv
+import pickle
 
 import datetime
 import time
@@ -152,12 +153,14 @@ def main_basin(arg):
             print("\a")
             #
             seconds = (time.time() - start_time)
-            minutes, hours = seconds/60, minutes/60
+            minutes, hours = seconds/60, seconds/(60*60)
             print("--- %s seconds --- \n --- %s minutes --- \n --- %s hours ---"%(seconds, minutes, hours) )
             # hist
             plt.hist(W_hist_data,bins=10,normed=True)
             plt.title("Histogram W")
             plt.show()
             #
-            #if arg.save_config_args:
-            #    pickle.dump( {'W_hist_data':W_hist_data}, open( "pickle-slurm-%s_%s.p"%(arg.slurm_jobid,arg.slurm_array_task_id) , "wb" ) )
+            if arg.save_hist:
+                mtf.make_and_check_dir(path=arg.p_path)
+                p_loc_filename = '%s/%s'%(arg.p_path,arg.p_filename)
+                pickle.dump( {'W_hist_data':W_hist_data}, open( p_loc_filename, "wb" ) )
