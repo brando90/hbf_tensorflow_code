@@ -1,9 +1,8 @@
 #!/usr/bin/env python
-#SBATCH --mem=4500
+#SBATCH --mem=8000
 #SBATCH --time=3-18:20
-#SBATCH --array=1-200
 #SBATCH --mail-type=ALL
-#SBATCH --mail-user=rene_sax14@yahoo.com
+#SBATCH --mail-user=brando90@mit.edu
 #SBATCH --gres=gpu:1
 
 #from __future__ import #print_function
