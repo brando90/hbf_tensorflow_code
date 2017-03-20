@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #SBATCH --mem=8000
-#SBATCH --time=3-18:20
+#SBATCH --time=4-18:20
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=brando90@mit.edu
 #SBATCH --gres=gpu:1
@@ -97,9 +97,9 @@ elif arg.mdl == 'basin_1D':
     arg.D = 1
     arg.get_x_shape = lambda arg: arg.D
     #
-    arg.init_std = lambda: tf.constant([2.0,4.0])
-    arg.init_mu = lambda: tf.constant([-5.0,5.6])
-    arg.init_W = lambda: tf.constant([-0.6],shape=[1,1])
+    arg.init_std = lambda: tf.constant([4.0,1.0])
+    arg.init_mu = lambda: tf.constant([-5.5,9.0])
+    arg.init_W = lambda: tf.constant([5.7],shape=[1,1])
     #arg.init_W = lambda: tf.constant(0.0)
     def get_basins(arg):
         #pdb.set_trace()
