@@ -94,16 +94,18 @@ if arg.mdl == 'debug_mdl':
     arg.get_x_shape = lambda arg: [None,arg.D]
     arg.get_y_shape = lambda arg: [None,arg.D_out]
 elif arg.mdl == 'basin_1D':
+    arg.mdl_scope_name = arg.mdl
     arg.D = 1
     arg.get_x_shape = lambda arg: arg.D
     #
     arg.init_std = lambda: tf.constant([1.0,1.0])
-    arg.init_mu = lambda: tf.constant([-2.0,2.0])
+    arg.init_mu = lambda: tf.constant([-2.9,2.9])
     arg.init_W = lambda: tf.constant([0.0],shape=[1,1])
     #arg.init_W = lambda: tf.constant(0.0)
     def get_basins(arg):
         #pdb.set_trace()
         W = tf.get_variable(name='W', initializer=arg.init_W(), trainable=True)
+        print('==> W.name', W.name)
         tf.summary.histogram('Weights', W)
         #tf.summary.scalar('Weights_scal', W)
         #
@@ -121,7 +123,7 @@ elif arg.mdl == 'basin_1D':
 arg.float_type = tf.float32
 #steps
 #arg.steps_low = int(2.5*60000)
-arg.steps_low = int(1*3001)
+arg.steps_low = int(2*10001)
 arg.steps_high = arg.steps_low+1
 arg.get_steps = lambda arg: int( np.random.randint(low=arg.steps_low ,high=arg.steps_high) )
 
@@ -195,7 +197,7 @@ elif optimization_alg == 'RMSProp':
     arg.get_momentum = lambda arg: np.random.uniform(low=arg.momentum_low,high=arg.momontum_high)
 elif optimization_alg == 'GDL':
     arg.get_gdl_mu_noise =  lambda arg: 0.0
-    arg.get_gdl_stddev_noise = lambda arg: 0.5
+    arg.get_gdl_stddev_noise = lambda arg: 6.1
 else:
     pass
 

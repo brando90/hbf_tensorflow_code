@@ -1,7 +1,10 @@
 import tensorflow as tf
+import numpy as np
+import matplotlib.pyplot as plt
 import csv
 
 import datetime
+import time
 
 import my_tf_pkg as mtf
 from my_tf_pkg import main_hp
@@ -15,18 +18,21 @@ import pdb
 ##
 
 def get_basin_loss_surface(arg):
-    basins = arg.get_basins(arg)
-    #
-    loss = 1
-    for i in range( len(basins) ):
-        basin = basins[i]
-        loss = loss - basin # loss := loss + - exp( - 1/2sig [x - mu]^2)
+    #with tf.name_scope(arg.mdl_scope_name):
+    with tf.variable_scope(arg.mdl_scope_name):
+        basins = arg.get_basins(arg)
+        #
+        loss = 1
+        for i in range( len(basins) ):
+            basin = basins[i]
+            loss = loss - basin # loss := loss + - exp( - 1/2sig [x - mu]^2)
     return loss
 
 def get_basin(W,init_std,init_mu,l):
     # make standard dev
-    S = tf.get_variable(name='S'+l, initializer=init_std, trainable=False)
-    beta = tf.pow(tf.div( tf.constant(1.0,dtype=tf.float32),S), 2)
+    S = tf.get_variable(name='S'+l, initializer=init_std, trainable=False) # S
+    SS = tf.pow(S,2) # S^2
+    beta = tf.div(1.0,2*SS) # 1/2S^2
     # make basin
     mu = tf.get_variable(name='mu'+l, initializer=init_mu, trainable=False)
     basin = tf.exp( - beta * tf.matmul(W - mu, W - mu) )
@@ -74,8 +80,13 @@ def main_basin(arg):
         batch_size = tf.Variable(arg.batch_size, name='batch_size')
         # save everything that was saved in the session
         saver = tf.train.Saver()
+    #
+    start_time = time.time()
     #### run session
+    W_hist_data = []
     with tf.Session(graph=graph) as sess:
+        with tf.variable_scope(arg.mdl_scope_name,reuse=True):
+            W_var = tf.get_variable(name='W')
         with open(arg.path_to_hp+arg.csv_errors_filename,mode='a') as errors_csv_f: # a option: Opens a file for appending. The file pointer is at the end of the file if the file exists. That is, the file is in the append mode. If the file does not exist, it creates a new file for writing.
             #writer = csv.Writer(errors_csv_f)
             writer = csv.DictWriter(errors_csv_f,['train_error', 'cv_error', 'test_error'])
@@ -119,8 +130,12 @@ def main_basin(arg):
                     sess.run(step.assign(i))
                     #
                     train_summary, train_error = sess.run(fetches=loss)
+                    #
+                    W_val = float(W_var.eval())
+                    W_hist_data.append( W_val )
                     #print( 'step %d, train error: %s | batch_size(step.eval(),arg.batch_size): %s,%s log_learning_rate: %s | mdl %s '%(i,train_error,batch_size.eval(),arg.batch_size,arg.log_learning_rate,arg.mdl) )
-                    print( 'step %d, train error: %s | starter_learning_rate: %s | mdl %s '%(i,train_error,arg.starter_learning_rate, arg.mdl) )
+                    #print( 'step %d, train error: %s W_val: %s | starter_learning_rate: %s | mdl %s '%(i,train_error,W_val,arg.starter_learning_rate, arg.mdl) )
+                    print( 'step %d, train error: %.4f | starter_learning_rate: %s | mdl %s W_val: %.4f '%(i,train_error,arg.starter_learning_rate, arg.mdl, W_val) )
                     # write files
                     writer.writerow({'train_error':train_error})
                     # save checkpoint
@@ -134,3 +149,15 @@ def main_basin(arg):
                     saver.save(sess=sess,save_path=arg.path_to_ckpt+arg.hp_folder_for_ckpt+arg.prefix_ckpt)
             # evaluate
             print('Final Test Acc/error: ', sess.run(fetches=accuracy))
+            print("\a")
+            #
+            seconds = (time.time() - start_time)
+            minutes, hours = seconds/60, minutes/60
+            print("--- %s seconds --- \n --- %s minutes --- \n --- %s hours ---"%(seconds, minutes, hours) )
+            # hist
+            plt.hist(W_hist_data,bins=10,normed=True)
+            plt.title("Histogram W")
+            plt.show()
+            #
+            #if arg.save_config_args:
+            #    pickle.dump( {'W_hist_data':W_hist_data}, open( "pickle-slurm-%s_%s.p"%(arg.slurm_jobid,arg.slurm_array_task_id) , "wb" ) )
