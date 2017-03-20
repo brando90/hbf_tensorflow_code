@@ -16,13 +16,12 @@ from keras.utils import np_utils
 #params
 nb_classes = 10
 
-
 units_single_layer = 10000
 data_augmentation = False
 
 #units_single_layer = 10000
 actication_func = 'relu'
-actication_func = 'sigmoid'
+#actication_func = 'sigmoid'
 
 nb_epoch = 25
 batch_size = 64
@@ -69,7 +68,7 @@ model.add(Activation(actication_func))
 model.add(Dense(nb_classes))
 model.add(Activation('softmax'))
 
-# Let's train the model using RMSprop
+# Let's train the model using
 model.compile(loss='categorical_crossentropy',
               optimizer=optimizer,
               metrics=['accuracy'])

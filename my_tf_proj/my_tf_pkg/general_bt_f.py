@@ -160,7 +160,7 @@ def generate_and_save_data_set_general_D_binary(file_name,f,D,M, type_input_dist
         X_train, X_cv, X_test = _generate_input_data_full_binary(D)
         Y_train, Y_cv, Y_test = _get_labels_general_D(X_train,f), _get_labels_general_D(X_cv,f), _get_labels_general_D(X_test,f)
     elif type_input_dist == 'full_random_M':
-        X_train, Y_train, X_cv, Y_cv, X_test, Y_test = _generate_input_data_random_binary(M)
+        X_train, X_cv, X_test = _generate_input_data_random_binary(D,M)
         Y_train, Y_cv, Y_test = _get_labels_general_D(X_train,f), _get_labels_general_D(X_cv,f), _get_labels_general_D(X_test,f)
     else:
         raise ValueError('Input Distribution for Binary not defined (usually full 2^D or random M from 2^D), but you gave %s.'%(type_input_dist) )

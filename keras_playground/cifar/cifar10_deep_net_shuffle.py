@@ -16,13 +16,12 @@ from keras.utils import np_utils
 #params
 nb_classes = 10
 
-
 units_single_layer = 10000
 data_augmentation = False
 
 #units_single_layer = 10000
-actication_func = 'relu'
-actication_func = 'sigmoid'
+activation_func = 'relu'
+activation_func = 'sigmoid'
 
 nb_epoch = 25
 batch_size = 64
@@ -47,29 +46,29 @@ Y_test = np_utils.to_categorical(y_test, nb_classes)
 #create model
 print('\n ---- Deep Layer Model ----')
 print('units_single_layer: ', units_single_layer)
-print('actication_func: ', actication_func)
+print('activation_func: ', activation_func)
 model = Sequential()
 
 model.add(Convolution2D(32, 3, 3, border_mode='same', input_shape=X_train.shape[1:]))
-model.add(Activation(actication_func))
+model.add(Activation(activation_func))
 
 model.add(Convolution2D(32, 3, 3))
-model.add(Activation(actication_func))
+model.add(Activation(activation_func))
 
 model.add(Convolution2D(64, 3, 3, border_mode='same'))
-model.add(Activation(actication_func))
+model.add(Activation(activation_func))
 
 model.add(Convolution2D(64, 3, 3))
-model.add(Activation(actication_func))
+model.add(Activation(activation_func))
 
 model.add(Flatten())
 model.add(Dense(512))
 
-model.add(Activation(actication_func))
+model.add(Activation(activation_func))
 model.add(Dense(nb_classes))
 model.add(Activation('softmax'))
 
-# Let's train the model using RMSprop
+# Let's train the model
 model.compile(loss='categorical_crossentropy',
               optimizer=optimizer,
               metrics=['accuracy'])

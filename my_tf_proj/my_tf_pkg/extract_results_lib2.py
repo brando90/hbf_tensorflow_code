@@ -133,13 +133,16 @@ def _get_best_results_obj_from_current_experiment(experiment_dirpath,list_runs_f
     #best_decider_error = float('inf')
     best_data = ns.Namespace(best_decider_error=float('inf'))
     for run_filename in list_runs_filenames:
-        if json_string in run_filename: # if current run=filenmae is a json struct then it has the results
-            #print('run_filename', run_filename)
-            with open(experiment_dirpath+'/'+run_filename, 'r') as data_file:
-                results_current_run = json.load(data_file)
-            decider_error, train_error, cv_error, test_error = decider.get_errors_from(results_current_run)
-            if decider_error < best_data.best_decider_error:
-                _update(best_data,decider_error,run_filename,results_current_run, train_error,cv_error,test_error)
+        try:
+            if json_string in run_filename: # if current run=filenmae is a json struct then it has the results
+                #print('run_filename', run_filename)
+                with open(experiment_dirpath+'/'+run_filename, 'r') as data_file:
+                    results_current_run = json.load(data_file)
+                decider_error, train_error, cv_error, test_error = decider.get_errors_from(results_current_run)
+                if decider_error < best_data.best_decider_error:
+                    _update(best_data,decider_error,run_filename,results_current_run, train_error,cv_error,test_error)
+        except:
+            continue
     return best_data
 
 def _update(best_data,decider_error,run_filename,results_current_run, train_error,cv_error,test_error):
@@ -412,18 +415,21 @@ def add_missing_errors_to_json_results(experiment_dirpath,run_filename,stid):
     its useful to add the whole error iterations to the json struct so that then
     the library for exactring results can be used.
     '''
-    # get the errors for current model
-    print('experiment_dirpath+/+run_filename: ', (experiment_dirpath+'/'+run_filename) ) 
-    errors_df = pd.read_csv(experiment_dirpath+'/'+run_filename) # pandas data frame
-    # add errors to json struct
-    with open(experiment_dirpath+'/json_hp_stid'+stid, 'r') as data_file:
-        hps_current_run = json.load(data_file)
-    hps_current_run['train_errors'] = [ float(error) for error in errors_df['train_error'] ]
-    hps_current_run['cv_errors'] = [ float(error) for error in errors_df['cv_error'] ]
-    hps_current_run['test_errors'] = [ float(error) for error in errors_df['test_error'] ]
-    hps_current_run['nb_params'] = hps_current_run['arg_dict']['nb_params']
-    results_and_hps = hps_current_run
-    return results_and_hps
+    try:
+        # get the errors for current model
+        #print('experiment_dirpath+/+run_filename: ', (experiment_dirpath+'/'+run_filename) )
+        errors_df = pd.read_csv(experiment_dirpath+'/'+run_filename) # pandas data frame
+        # add errors to json struct
+        with open(experiment_dirpath+'/json_hp_stid'+stid, 'r') as data_file:
+            hps_current_run = json.load(data_file)
+        hps_current_run['train_errors'] = [ float(error) for error in errors_df['train_error'] ]
+        hps_current_run['cv_errors'] = [ float(error) for error in errors_df['cv_error'] ]
+        hps_current_run['test_errors'] = [ float(error) for error in errors_df['test_error'] ]
+        hps_current_run['nb_params'] = hps_current_run['arg_dict']['nb_params']
+        results_and_hps = hps_current_run
+        return results_and_hps
+    except:
+        pass
 
 #
 

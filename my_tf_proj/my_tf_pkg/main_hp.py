@@ -17,6 +17,7 @@ import copy
 import functools
 
 import my_tf_pkg as mtf
+import sgd_lib
 import time
 
 import namespaces as ns
@@ -138,7 +139,10 @@ def get_mdl(arg,x):
     elif 'binary_tree' in arg.mdl:
         with tf.name_scope("mdl"+arg.scope_name) as scope:
             y = mtf.bt_mdl_conv(arg,x)
-    #
+    # elif arg.mdl == 'basin_expt':
+    #     with tf.name_scope("mdl"+arg.scope_name) as scope:
+    #         y = mtf.bt_mdl_conv(arg,x)
+
     arg.nb_params = count_number_trainable_params(y)
     return y
 
@@ -175,6 +179,9 @@ def get_optimizer(arg):
         arg.momentum = arg.get_momentum(arg)
         print('arg.decay', arg.decay)
         print('arg.momentum', arg.momentum)
+    elif arg.optimization_alg == 'GDL':
+        arg.mu_noise = arg.get_gdl_mu_noise(arg)
+        arg.stddev_noise = arg.get_gdl_stddev_noise(arg)
     else:
         raise ValueError('Invalid optimizer. Make sure you are using an optimizer that exists.')
     with tf.name_scope("train") as scope:
@@ -195,6 +202,9 @@ def get_optimizer(arg):
             opt = tf.train.AdagradOptimizer(learning_rate)
         elif arg.optimization_alg == 'RMSProp':
             opt = tf.train.RMSPropOptimizer(learning_rate=learning_rate, decay=arg.decay, momentum=arg.momentum, epsilon=1e-10, name='RMSProp')
+        elif arg.optimization_alg == 'GDL':
+            #opt = sgd_lib.GDL(learning_rate,mu_noise=arg.mu_noise,stddev_noise=arg.stddev_noise)
+            opt = sgd_lib.GDL_official_tf(loss=arg.loss,learning_rate=learning_rate,mu_noise=arg.mu_noise,stddev_noise=arg.stddev_noise)
     train_step = opt
     return train_step
 
@@ -243,9 +253,7 @@ def main_hp(arg):
     # force to flushing to output as default
     print = arg.print_func
     print(print)
-    #pdb.set_trace()
     print('>>> arg.restore = ', arg.restore)
-    #
     arg.date = datetime.date.today().strftime("%B %d").replace (" ", "_")
     #
     current_job_mdl_folder = 'job_mdl_folder_%s/'%arg.job_name
@@ -259,6 +267,10 @@ def main_hp(arg):
     #errors_pretty = '/errors_file_%s_slurm_sj%s.txt'%(arg.date,arg.slurm_array_task_id)
     arg.json_hp_filename = 'json_hp_stid%s'%(arg.slurm_array_task_id)
     arg.csv_errors_filename = 'csv_errors_slurm_array_id%s'%(arg.slurm_array_task_id)
+    ##
+    # if arg.restore: TODO
+    #     arg = restore_hps(arg)
+    #     arg.float_type = tf.float32
     ## get data set
     X_train, Y_train, X_cv, Y_cv, X_test, Y_test = mtf.get_data(arg,arg.N_frac)
     print( '(N_train,D) = (%d,%d) \n (N_test,D_out) = (%d,%d) ' % (arg.N_train,arg.D, arg.N_test,arg.D_out) )
@@ -318,7 +330,7 @@ def main_hp(arg):
                     train_error = sess.run(fetches=loss, feed_dict={x: X_train, y_: Y_train, phase_train: False})
                     cv_error = sess.run(fetches=loss, feed_dict={x: X_cv, y_: Y_cv, phase_train: False})
                     test_error = sess.run(fetches=loss, feed_dict={x: X_test, y_: Y_test, phase_train: False})
-                    print( 'step %d, train error: %s | batch_size(step.eval(),arg.batch_size): %s,%s log_learning_rate: %s '%(i,train_error,batch_size.eval(),arg.batch_size,arg.log_learning_rate) )
+                    print( 'step %d, train error: %s | batch_size(step.eval(),arg.batch_size): %s,%s log_learning_rate: %s | mdl %s '%(i,train_error,batch_size.eval(),arg.batch_size,arg.log_learning_rate,arg.mdl) )
                     # save checkpoint
                     if arg.save_checkpoints:
                         saver.save(sess=sess,save_path=arg.path_to_ckpt+arg.hp_folder_for_ckpt+arg.prefix_ckpt)
