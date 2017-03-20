@@ -97,9 +97,9 @@ elif arg.mdl == 'basin_1D':
     arg.D = 1
     arg.get_x_shape = lambda arg: arg.D
     #
-    arg.init_std = lambda: tf.constant([1.0,1.0])
-    arg.init_mu = lambda: tf.constant([-2.9,2.9])
-    arg.init_W = lambda: tf.constant([0.0],shape=[1,1])
+    arg.init_std = lambda: tf.constant([2.0,4.0])
+    arg.init_mu = lambda: tf.constant([-5.0,5.6])
+    arg.init_W = lambda: tf.constant([-0.6],shape=[1,1])
     #arg.init_W = lambda: tf.constant(0.0)
     def get_basins(arg):
         #pdb.set_trace()
@@ -122,7 +122,7 @@ elif arg.mdl == 'basin_1D':
 arg.float_type = tf.float32
 #steps
 #arg.steps_low = int(2.5*60000)
-arg.steps_low = int(1*10001)
+arg.steps_low = 5*int(1.3*10001)
 arg.steps_high = arg.steps_low+1
 arg.get_steps = lambda arg: int( np.random.randint(low=arg.steps_low ,high=arg.steps_high) )
 
@@ -196,7 +196,7 @@ elif optimization_alg == 'RMSProp':
     arg.get_momentum = lambda arg: np.random.uniform(low=arg.momentum_low,high=arg.momontum_high)
 elif optimization_alg == 'GDL':
     arg.get_gdl_mu_noise =  lambda arg: 0.0
-    arg.get_gdl_stddev_noise = lambda arg: 4.8
+    arg.get_gdl_stddev_noise = lambda arg: 5.0
 else:
     pass
 
