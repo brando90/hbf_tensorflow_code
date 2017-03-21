@@ -122,7 +122,7 @@ elif arg.mdl == 'basin_1D':
 arg.float_type = tf.float32
 #steps
 #arg.steps_low = int(2.5*60000)
-arg.steps_low = 2*int(1.3*10001)
+arg.steps_low = 10*int(1.3*10001)
 arg.steps_high = arg.steps_low+1
 arg.get_steps = lambda arg: int( np.random.randint(low=arg.steps_low ,high=arg.steps_high) )
 
@@ -201,13 +201,15 @@ else:
     pass
 
 #saving pickle histogram data
-arg.nb_bins = 20
-arg.p_path = './tmp_pickle'
+arg.nb_bins = 35
+#arg.p_path = './tmp_pickle'
+arg.p_path = './tmp_om_pickle'
+#arg.p_path = './folder_pickle_W_hist'
 arg.p_filename = 'W_hist_data.p'
 #arg.save_hist = False
 arg.save_hist = True
-#arg.display_hist = False
-arg.display_hist = True
+arg.display_hist = False
+#arg.display_hist = True
 
 #arg.bn = True
 #arg.trainable_bn = True #scale, shift BN
@@ -302,6 +304,7 @@ if arg.slurm_array_task_id == '1':
     arg.print_func = print
 #pickle.dump( dict(arg), open( "pickle_file" , "wb" ) )
 #pdb.set_trace()
+print(arg)
 if __name__ == '__main__':
     #print('In __name__ == __main__')
     if cmd_args.type_job == 'serial':
