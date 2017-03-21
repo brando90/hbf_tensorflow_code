@@ -118,7 +118,7 @@ def main_basin(arg):
                 merged = tf.summary.merge_all()
                 train_writer = tf.summary.FileWriter(arg.tensorboard_data_dump_train,sess.graph)
                 #test_writer = tf.summary.FileWriter(FLAGS.summaries_dir + '/test')
-                loss = [merged, loss]
+                loss = [loss, merged]
             # train
             start_iteration = step.eval() # last iteration trained is the first iteration for this model
             for i in range(start_iteration,nb_iterations.eval()):
@@ -130,7 +130,8 @@ def main_basin(arg):
                 if i % arg.report_error_freq == 0:
                     sess.run(step.assign(i))
                     #
-                    train_summary, train_error = sess.run(fetches=loss)
+                    result = sess.run(fetches=loss) # train_error, train_summary
+                    train_error = result[0]
                     #
                     W_val = float(W_var.eval())
                     W_hist_data.append( W_val )
@@ -144,6 +145,7 @@ def main_basin(arg):
                         saver.save(sess=sess,save_path=arg.path_to_ckpt+arg.hp_folder_for_ckpt+arg.prefix_ckpt)
                     # write tensorboard
                     if arg.use_tensorboard:
+                        train_summary = result[1]
                         train_writer.add_summary(train_summary, i)
                 # save last model
                 if arg.save_last_mdl:
