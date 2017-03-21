@@ -156,9 +156,10 @@ def main_basin(arg):
             minutes, hours = seconds/60, seconds/(60*60)
             print("--- %s seconds --- \n --- %s minutes --- \n --- %s hours ---"%(seconds, minutes, hours) )
             # hist
-            plt.hist(W_hist_data,bins=10,normed=True)
-            plt.title("Histogram W")
-            plt.show()
+            if arg.display_hist:
+                plt.hist(W_hist_data,bins=arg.nb_bins,normed=True)
+                plt.title("Histogram W")
+                plt.show()
             #
             if arg.save_hist:
                 mtf.make_and_check_dir(path=arg.p_path)

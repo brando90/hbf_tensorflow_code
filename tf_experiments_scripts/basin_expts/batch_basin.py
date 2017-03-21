@@ -99,7 +99,7 @@ elif arg.mdl == 'basin_1D':
     #
     arg.init_std = lambda: tf.constant([2.0,1.0])
     arg.init_mu = lambda: tf.constant([-2.2,9.0])
-    arg.init_W = lambda: tf.constant([5.19],shape=[1,1])
+    arg.init_W = lambda: tf.constant([5.1345],shape=[1,1])
     #arg.init_W = lambda: tf.constant(0.0)
     def get_basins(arg):
         #pdb.set_trace()
@@ -206,6 +206,8 @@ arg.p_path = './tmp_pickle'
 arg.p_filename = 'W_hist_data.p'
 #arg.save_hist = False
 arg.save_hist = True
+#arg.display_hist = False
+arg.display_hist = True
 
 #arg.bn = True
 #arg.trainable_bn = True #scale, shift BN
