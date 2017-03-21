@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #SBATCH --mem=8000
 #SBATCH --time=4-18:20
-#SBATCH --mail-type=END,FAIL
+#SBATCH --mail-type=ALL
 #SBATCH --mail-user=brando90@mit.edu
 
 #from __future__ import #print_function
@@ -80,11 +80,12 @@ arg.data_filename = 'basin_expt'
 arg.experiment_name = 'task_Mar_12_1D_basin_dgx1'
 #arg.job_name = 'BT_debug1'
 arg.job_name = 'basin_1D'
-
+arg.job_name = 'basin_2D'
 #
 arg.experiment_root_dir = mtf.get_experiment_folder(arg.data_filename)
 #
 arg.mdl = 'basin_1D'
+arg.mdl = 'basin_2D'
 if arg.mdl == 'debug_mdl':
     arg.act = tf.nn.relu
     arg.dims = None
@@ -115,13 +116,37 @@ elif arg.mdl == 'basin_1D':
         basins = [basin1, basin2]
         return basins
     arg.get_basins = get_basins
+elif arg.mdl == 'basin_2D':
+    arg.mdl_scope_name = arg.mdl
+    arg.D = 2
+    arg.get_x_shape = lambda arg: arg.D
+    #
+    arg.init_std = lambda: tf.constant([2.0,1.0])
+    arg.init_mu = lambda: [ tf.constant([-2.2,-2.2],shape=[2,1]), tf.constant([9.0,9.0],shape=[2,1]) ]
+    arg.init_W = lambda: tf.constant([4.508,4.252],shape=[2,1])
+    #arg.init_W = lambda: tf.constant(0.0)
+    def get_basins(arg):
+        #pdb.set_trace()
+        W = tf.get_variable(name='W', initializer=arg.init_W(), trainable=True)
+        print('==> W.name', W.name)
+        tf.summary.histogram('Weights', W)
+        #tf.summary.scalar('Weights_scal', W)
+        #
+        init_std = arg.init_std()
+        init_mu = arg.init_mu()
+        #
+        basin1 = sgd_lib.get_basin(W,init_std[0],init_mu[0],str(1))
+        basin2 = sgd_lib.get_basin(W,init_std[1],init_mu[1],str(2))
+        basins = [basin1, basin2]
+        return basins
+    arg.get_basins = get_basins
 
 #arg.get_y_shape = lambda arg: [None, arg.D_out]
 # float type
 arg.float_type = tf.float32
 #steps
 #arg.steps_low = int(2.5*60000)
-arg.steps_low = 10*int(1.3*10001)
+arg.steps_low = 5*int(1.3*101)
 arg.steps_high = arg.steps_low+1
 arg.get_steps = lambda arg: int( np.random.randint(low=arg.steps_low ,high=arg.steps_high) )
 
@@ -143,7 +168,7 @@ arg.get_start_learning_rate = lambda arg: 10**arg.log_learning_rate
 ## decayed_learning_rate = learning_rate * decay_rate ^ (global_step / decay_steps)
 #arg.decay_rate_low, arg.decay_rate_high = 0.1, 1.0
 #arg.get_decay_rate = lambda arg: np.random.uniform(low=arg.decay_rate_low, high=arg.decay_rate_high)
-arg.get_start_learning_rate = lambda arg: 0.07
+arg.get_start_learning_rate = lambda arg: 0.01
 arg.get_decay_rate = lambda arg: 1.0
 
 #arg.decay_steps_low, arg.decay_steps_high = arg.report_error_freq, arg.M
@@ -195,7 +220,7 @@ elif optimization_alg == 'RMSProp':
     arg.get_momentum = lambda arg: np.random.uniform(low=arg.momentum_low,high=arg.momontum_high)
 elif optimization_alg == 'GDL':
     arg.get_gdl_mu_noise =  lambda arg: 0.0
-    arg.get_gdl_stddev_noise = lambda arg: 6.0
+    arg.get_gdl_stddev_noise = lambda arg: 8.0
 else:
     pass
 
@@ -204,11 +229,11 @@ arg.nb_bins = 35
 #arg.p_path = './tmp_pickle'
 arg.p_path = './tmp_om_pickle'
 #arg.p_path = './folder_pickle_W_hist'
-arg.p_filename = 'W_hist_data_0p7.p'
-#arg.save_hist = False
-arg.save_hist = True
-arg.display_hist = False
-#arg.display_hist = True
+arg.p_filename = 'W_hist_data.p'
+arg.save_hist = False
+#arg.save_hist = True
+#arg.display_hist = False
+arg.display_hist = True
 
 #arg.bn = True
 #arg.trainable_bn = True #scale, shift BN

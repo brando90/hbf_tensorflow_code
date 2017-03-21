@@ -72,7 +72,7 @@ def shallow_vs_deep():
     #sorted_train_errors = np.log(sorted_train_errors)
     #sorted_test_errors = np.log(sorted_test_errors)
     #nb_params_shallow = 7*np.array([3,4,5])
-    nb_params_shallow = 31*np.array([3,4])
+    nb_params_shallow = 31*np.array([3,4,5])
     print('total units: ', nb_params_shallow)
     krls.plot_values(nb_params_shallow,sorted_train_errors,xlabel='number of units',y_label='squared error (l2 loss)',label='Train errors for Shallow Neural Net (NN)',markersize=3,colour='b')
     #krls.plot_values(nb_params_shallow,sorted_test_errors,xlabel='number of parameters',y_label='squared error (l2 loss)',label='Test error for Shallow NN',markersize=3,colour='b')
@@ -112,7 +112,7 @@ def shallow_vs_deep():
     #sorted_test_errors = np.log(sorted_test_errors)
     #
     #nb_params_bt = 7*np.array([3,4,5])
-    nb_params_bt = 31*np.array([3,4])
+    nb_params_bt = 31*np.array([3,4,5])
     print('total units: ', nb_params_bt)
     krls.plot_values(nb_params_bt,sorted_train_errors,xlabel='number of units',y_label='squared error (l2 loss)',label='Train errors for Binary Tree (BT) Neural Net',markersize=3,colour='c',linestyle='--')
     #krls.plot_values(nb_params_bt,sorted_test_errors,xlabel='number of parameters',y_label='squared error (l2 loss)',label='Test errors for Binary Tree (BT) Neural Net',markersize=3,colour='c')
