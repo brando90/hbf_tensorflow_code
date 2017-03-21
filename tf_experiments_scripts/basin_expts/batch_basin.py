@@ -3,7 +3,6 @@
 #SBATCH --time=4-18:20
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=brando90@mit.edu
-#SBATCH --gres=gpu:1
 
 #from __future__ import #print_function
 #tensorboard --logdir=/tmp/mdl_logs
