@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #SBATCH --mem=8000
 #SBATCH --time=4-18:20
-#SBATCH --mail-type=ALL
+#SBATCH --mail-type=END,FAIL
 #SBATCH --mail-user=brando90@mit.edu
 
 #from __future__ import #print_function
@@ -143,7 +143,7 @@ arg.get_start_learning_rate = lambda arg: 10**arg.log_learning_rate
 ## decayed_learning_rate = learning_rate * decay_rate ^ (global_step / decay_steps)
 #arg.decay_rate_low, arg.decay_rate_high = 0.1, 1.0
 #arg.get_decay_rate = lambda arg: np.random.uniform(low=arg.decay_rate_low, high=arg.decay_rate_high)
-arg.get_start_learning_rate = lambda arg: 0.02
+arg.get_start_learning_rate = lambda arg: 0.07
 arg.get_decay_rate = lambda arg: 1.0
 
 #arg.decay_steps_low, arg.decay_steps_high = arg.report_error_freq, arg.M
@@ -204,7 +204,7 @@ arg.nb_bins = 35
 #arg.p_path = './tmp_pickle'
 arg.p_path = './tmp_om_pickle'
 #arg.p_path = './folder_pickle_W_hist'
-arg.p_filename = 'W_hist_data.p'
+arg.p_filename = 'W_hist_data_0p7.p'
 #arg.save_hist = False
 arg.save_hist = True
 arg.display_hist = False
