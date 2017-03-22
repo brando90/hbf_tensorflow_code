@@ -115,7 +115,7 @@ elif arg.mdl == 'basin_1D':
     arg.gdl_mu_noise = 0.0
     # 6.0
     arg.gdl_stddev_noise = 6.0
-    #arg.init_W = lambda: tf.constant(0.0)
+    arg.p_filename = 'W_hist_data_1D_lr0p01_0p25std_iter50000.p'
     def get_basins(arg):
         #pdb.set_trace()
         W = tf.get_variable(name='W', initializer=arg.init_W(), trainable=True)
@@ -152,7 +152,7 @@ elif arg.mdl == 'basin_2D':
     arg.gdl_mu_noise = 0.0
     # 11.3137
     arg.gdl_stddev_noise = 11.3137
-    #arg.init_W = lambda: tf.constant(0.0)
+    arg.p_filename = 'W_hist_data_2D_lr0p01_0p25std_iter50000.p'
     def get_basins(arg):
         #pdb.set_trace()
         W = tf.get_variable(name='W', initializer=arg.init_W(), trainable=True)
@@ -189,7 +189,7 @@ elif arg.mdl == 'basin_3D':
     arg.gdl_mu_noise = 0.0
     # 13.8
     arg.gdl_stddev_noise = 13.8/4
-    #arg.init_W = lambda: tf.constant(0.0)
+    arg.p_filename = 'W_hist_data_3D_lr0p01_0p25std_iter50000.p'
     def get_basins(arg):
         #pdb.set_trace()
         W = tf.get_variable(name='W', initializer=arg.init_W(), trainable=True)
@@ -226,7 +226,7 @@ elif arg.mdl == 'basin_4D':
     arg.gdl_mu_noise = 0.0
     # 16.0
     arg.gdl_stddev_noise = 16.0
-    #arg.init_W = lambda: tf.constant(0.0)
+    arg.p_filename = 'W_hist_data_4D_lr0p01_0p25std_iter50000.p'
     def get_basins(arg):
         #pdb.set_trace()
         W = tf.get_variable(name='W', initializer=arg.init_W(), trainable=True)
@@ -332,7 +332,7 @@ arg.nb_bins = 35
 #arg.p_path = './tmp_pickle'
 arg.p_path = './tmp_om_pickle'
 #arg.p_path = './folder_pickle_W_hist'
-arg.p_filename = 'W_hist_data_3D_lr0p01_0p25std_iter50000.p'
+#arg.p_filename = p_filename
 #arg.save_hist = False
 arg.save_hist = True
 arg.display_hist = False
