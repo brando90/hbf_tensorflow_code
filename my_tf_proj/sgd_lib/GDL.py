@@ -12,19 +12,39 @@ import tensorflow as tf
 
 ##
 
-def _GDL(g,mu_noise,stddev_noise):
+def manual_update_GDL(arg,learning_rate,g,mu_noise,stddev_noise):
+    sess  = arg.sess
+    with tf.variable_scope(arg.mdl_scope_name,reuse=True):
+        W_var = tf.get_variable(name='W')
+        eps = tf.random_normal(tf.shape(g),mean=mu_noise,stddev=stddev_noise)
+        #
+        W_new = tf.mod( W_var - learning_rate*g + eps , 20)
+        sess.run( W_var.assign(W_new) )
+
+def manual_GDL(arg,loss,learning_rate,mu_noise,stddev_noise,compact,B):
+    # Compute the gradients for a list of variables.
+    grads_and_vars = opt.compute_gradients(loss)
+    # process gradients
+    processed_grads_and_vars = [(manual_update_GDL(arg,learning_rate,g,mu_noise,stddev_noise), v) for g,v in grads_and_vars]
+
+#
+
+def _GDL(g,mu_noise,stddev_noise,compact,B):
     '''
     adding noise to gradients
     '''
-    return g + tf.random_normal(tf.shape(g),mean=mu_noise,stddev=stddev_noise)
+    if compact:
+        return (g + tf.random_normal(tf.shape(g),mean=mu_noise,stddev=stddev_noise) ) % B
+    else:
+        return g + tf.random_normal(tf.shape(g),mean=mu_noise,stddev=stddev_noise)
 
-def GDL_official_tf(loss,learning_rate,mu_noise,stddev_noise):
+def GDL_official_tf(loss,learning_rate,mu_noise,stddev_noise,compact,B):
     # Create an optimizer.
     opt = tf.train.GradientDescentOptimizer(learning_rate=learning_rate)
     # Compute the gradients for a list of variables.
     grads_and_vars = opt.compute_gradients(loss)
     # process gradients
-    processed_grads_and_vars = [(_GDL(g,mu_noise,stddev_noise), v) for g,v in grads_and_vars]
+    processed_grads_and_vars = [(_GDL(g,mu_noise,stddev_noise,compact,B), v) for g,v in grads_and_vars]
     # Ask the optimizer to apply the capped gradients.
     return opt.apply_gradients(processed_grads_and_vars)
 

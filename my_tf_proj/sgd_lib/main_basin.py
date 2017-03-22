@@ -14,7 +14,15 @@ import pdb
 
 ##
 
-#def get_
+def get_W_val(arg,W_var):
+    W_val = W_var.eval()
+    if arg.D == 1:
+        return float(W_val)
+    elif arg.D == 2:
+        return [ float(W) for W in W_val ]
+    else:
+        W_val = [ float(W) for W in W_val ]
+        return W_val[0:2]
 
 ##
 
@@ -36,7 +44,7 @@ def get_basin(W,init_std,init_mu,l):
     beta = tf.div(1.0,2*SS) # 1/2S^2
     # make basin
     mu = tf.get_variable(name='mu'+l, initializer=init_mu, trainable=False)
-    basin = tf.exp( - beta * tf.matmul(W - mu, W - mu) )
+    basin = tf.exp( - beta * tf.matmul(tf.transpose(W - mu), W - mu) )
     #basin = tf.exp( - beta * (W - mu)*(W - mu) )
     return basin
 
@@ -126,6 +134,10 @@ def main_basin(arg):
                 #batch_xs, batch_ys = main_hp.get_batch_feed(X_train, Y_train, batch_size.eval())
                 #pdb.set_trace()
                 sess.run(fetches=train_step)
+                if arg.compact:
+                    # apply w := ( w - mu*g + eps ) mod B
+                    W_new = tf.mod(W_var,arg.B).eval()
+                    W_var.assign(W_new).eval()
                 # check_point mdl
                 if i % arg.report_error_freq == 0:
                     sess.run(step.assign(i))
@@ -133,13 +145,14 @@ def main_basin(arg):
                     result = sess.run(fetches=loss) # train_error, train_summary
                     train_error = result[0]
                     #
-                    W_val = float(W_var.eval())
+                    #W_val = float(W_var.eval())
+                    W_val = get_W_val(arg,W_var)
                     W_hist_data.append( W_val )
                     #print( 'step %d, train error: %s | batch_size(step.eval(),arg.batch_size): %s,%s log_learning_rate: %s | mdl %s '%(i,train_error,batch_size.eval(),arg.batch_size,arg.log_learning_rate,arg.mdl) )
                     #print( 'step %d, train error: %s W_val: %s | starter_learning_rate: %s | mdl %s '%(i,train_error,W_val,arg.starter_learning_rate, arg.mdl) )
-                    print( 'step %d, train error: %.4f | starter_learning_rate: %s | mdl %s W_val: %.4f '%(i,train_error,arg.starter_learning_rate, arg.mdl, W_val) )
+                    #print( 'step %d, train error: %.4f | starter_learning_rate: %s | mdl %s W_val: %s '%(i,train_error,arg.starter_learning_rate, arg.mdl, W_val) )
                     # write files
-                    writer.writerow({'train_error':train_error})
+                    #writer.writerow({'train_error':train_error})
                     # save checkpoint
                     if arg.save_checkpoints:
                         saver.save(sess=sess,save_path=arg.path_to_ckpt+arg.hp_folder_for_ckpt+arg.prefix_ckpt)
@@ -157,13 +170,19 @@ def main_basin(arg):
             seconds = (time.time() - start_time)
             minutes, hours = seconds/60, seconds/(60*60)
             print("--- %s seconds --- \n --- %s minutes --- \n --- %s hours ---"%(seconds, minutes, hours) )
-            # hist
-            if arg.display_hist:
-                plt.hist(W_hist_data,bins=arg.nb_bins,normed=True)
-                plt.title("Histogram W")
-                plt.show()
-            #
+            # save hist
             if arg.save_hist:
                 mtf.make_and_check_dir(path=arg.p_path)
                 p_loc_filename = '%s/%s'%(arg.p_path,arg.p_filename)
                 pickle.dump( {'W_hist_data':W_hist_data}, open( p_loc_filename, "wb" ) )
+            # display hist
+            if arg.display_hist:
+                if arg.D == 1:
+                    plt.hist(W_hist_data,bins=arg.nb_bins,normed=True)
+                    plt.title("Histogram W")
+                    plt.show()
+                elif arg.D == 2:
+                    W_hist_data = np.array(W_hist_data)
+                    H, xedges, yedges = np.histogram2d(x=W_hist_data[:,0], y=W_hist_data[:,1],bins=arg.nb_bins)
+                    plt.imshow(H)
+                    plt.show()
