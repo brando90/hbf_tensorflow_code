@@ -86,7 +86,7 @@ arg.experiment_root_dir = mtf.get_experiment_folder(arg.data_filename)
 #
 arg.mdl = 'basin_1D'
 arg.mdl = 'basin_2D'
-#arg.mdl = 'basin_3D'
+arg.mdl = 'basin_3D'
 #arg.mdl = 'basin_4D'
 if arg.mdl == 'debug_mdl':
     arg.act = tf.nn.relu
@@ -133,7 +133,7 @@ elif arg.mdl == 'basin_1D':
     arg.get_basins = get_basins
 elif arg.mdl == 'basin_2D':
     arg.printing = True
-    #arg.printing = False
+    arg.printing = False
     #
     arg.mdl_scope_name = arg.mdl
     D = 2
@@ -170,7 +170,7 @@ elif arg.mdl == 'basin_2D':
     arg.get_basins = get_basins
 elif arg.mdl == 'basin_3D':
     arg.printing = True
-    #arg.printing = False
+    arg.printing = False
     #
     arg.mdl_scope_name = arg.mdl
     D = 3
@@ -207,7 +207,7 @@ elif arg.mdl == 'basin_3D':
     arg.get_basins = get_basins
 elif arg.mdl == 'basin_4D':
     arg.printing = True
-    #arg.printing = False
+    arg.printing = False
     #
     arg.mdl_scope_name = arg.mdl
     D = 4
@@ -249,7 +249,7 @@ arg.float_type = tf.float32
 #steps
 #arg.steps_low = int(2.5*60000)
 #arg.steps_low = 1*int(1.3*10001) # 1D
-arg.steps_low = 5*int(1.0*10001) # 2D
+arg.steps_low = 1*int(1.0*101) # 2D
 arg.steps_high = arg.steps_low+1
 arg.get_steps = lambda arg: int( np.random.randint(low=arg.steps_low ,high=arg.steps_high) )
 
@@ -332,7 +332,7 @@ arg.nb_bins = 35
 #arg.p_path = './tmp_pickle'
 arg.p_path = './tmp_om_pickle'
 #arg.p_path = './folder_pickle_W_hist'
-arg.p_filename = 'W_hist_data.p'
+arg.p_filename = 'W_hist_data123.p'
 #arg.save_hist = False
 arg.save_hist = True
 #arg.display_hist = False

@@ -204,7 +204,7 @@ def get_optimizer(arg):
             opt = tf.train.RMSPropOptimizer(learning_rate=learning_rate, decay=arg.decay, momentum=arg.momentum, epsilon=1e-10, name='RMSProp')
         elif arg.optimization_alg == 'GDL':
             #opt = sgd_lib.GDL(learning_rate,mu_noise=arg.mu_noise,stddev_noise=arg.stddev_noise)
-            opt = sgd_lib.GDL_official_tf(loss=arg.loss,learning_rate=learning_rate,mu_noise=arg.mu_noise,stddev_noise=arg.stddev_noise)
+            opt = sgd_lib.GDL_official_tf(loss=arg.loss,learning_rate=learning_rate,mu_noise=arg.mu_noise,stddev_noise=arg.stddev_noise,compact=arg.compact,B=arg.B)
     train_step = opt
     return train_step
 

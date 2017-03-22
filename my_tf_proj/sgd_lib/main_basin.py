@@ -18,11 +18,9 @@ def get_W_val(arg,W_var):
     W_val = W_var.eval()
     if arg.D == 1:
         return float(W_val)
-    elif arg.D == 2:
-        return [ float(W) for W in W_val ]
     else:
         W_val = [ float(W) for W in W_val ]
-        return W_val[0:2]
+        return W_val
 
 ##
 
@@ -148,11 +146,11 @@ def main_basin(arg):
                     #W_val = float(W_var.eval())
                     W_val = get_W_val(arg,W_var)
                     W_hist_data.append( W_val )
-                    #print( 'step %d, train error: %s | batch_size(step.eval(),arg.batch_size): %s,%s log_learning_rate: %s | mdl %s '%(i,train_error,batch_size.eval(),arg.batch_size,arg.log_learning_rate,arg.mdl) )
-                    #print( 'step %d, train error: %s W_val: %s | starter_learning_rate: %s | mdl %s '%(i,train_error,W_val,arg.starter_learning_rate, arg.mdl) )
-                    #print( 'step %d, train error: %.4f | starter_learning_rate: %s | mdl %s W_val: %s '%(i,train_error,arg.starter_learning_rate, arg.mdl, W_val) )
-                    # write files
-                    #writer.writerow({'train_error':train_error})
+                    #print(W_val)
+                    W_val = W_val[0:2] if arg.D > 2 else W_val
+                    # print
+                    if arg.printing:
+                        print( 'step %d, train error: %.4f | starter_learning_rate: %s | mdl %s W_val: %s '%(i,train_error,arg.starter_learning_rate, arg.mdl, W_val) )
                     # save checkpoint
                     if arg.save_checkpoints:
                         saver.save(sess=sess,save_path=arg.path_to_ckpt+arg.hp_folder_for_ckpt+arg.prefix_ckpt)
@@ -160,6 +158,8 @@ def main_basin(arg):
                     if arg.use_tensorboard:
                         train_summary = result[1]
                         train_writer.add_summary(train_summary, i)
+                    # write files
+                    #writer.writerow({'train_error':train_error})
                 # save last model
                 if arg.save_last_mdl:
                     saver.save(sess=sess,save_path=arg.path_to_ckpt+arg.hp_folder_for_ckpt+arg.prefix_ckpt)
