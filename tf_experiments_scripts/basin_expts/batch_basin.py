@@ -86,6 +86,8 @@ arg.experiment_root_dir = mtf.get_experiment_folder(arg.data_filename)
 #
 arg.mdl = 'basin_1D'
 arg.mdl = 'basin_2D'
+#arg.mdl = 'basin_3D'
+#arg.mdl = 'basin_4D'
 if arg.mdl == 'debug_mdl':
     arg.act = tf.nn.relu
     arg.dims = None
@@ -93,16 +95,26 @@ if arg.mdl == 'debug_mdl':
     arg.get_x_shape = lambda arg: [None,arg.D]
     arg.get_y_shape = lambda arg: [None,arg.D_out]
 elif arg.mdl == 'basin_1D':
+    arg.printing = True
+    #arg.printing = False
+    #
     arg.mdl_scope_name = arg.mdl
-    arg.D = 1
+    D = 1
+    arg.D = D
     arg.get_x_shape = lambda arg: arg.D
     #
-    arg.compact = False
-    arg.B = 20
+    arg.compact = True
+    #arg.compact = False
+    arg.B = 18
     #
-    arg.init_std = lambda: tf.constant([2.0,1.0])
-    arg.init_mu = lambda: tf.constant([-2.2,9.0])
-    arg.init_W = lambda: tf.constant([5.1345],shape=[1,1])
+    arg.init_std = lambda: tf.constant([1.0,2.0])
+    arg.init_mu = lambda: tf.constant([3.0,12.0])
+    arg.init_W = lambda: tf.constant([6.154],shape=[1,1])
+    #
+    arg.start_learning_rate = 0.01
+    arg.gdl_mu_noise = 0.0
+    # 6.0
+    arg.gdl_stddev_noise = 6.0
     #arg.init_W = lambda: tf.constant(0.0)
     def get_basins(arg):
         #pdb.set_trace()
@@ -120,16 +132,100 @@ elif arg.mdl == 'basin_1D':
         return basins
     arg.get_basins = get_basins
 elif arg.mdl == 'basin_2D':
+    arg.printing = True
+    #arg.printing = False
+    #
     arg.mdl_scope_name = arg.mdl
-    arg.D = 2
+    D = 2
+    arg.D = D
     arg.get_x_shape = lambda arg: arg.D
     #
     arg.compact = True
-    arg.B = 20
+    #arg.compact = False
+    arg.B = 18
     #
     arg.init_std = lambda: tf.constant([1.0,2.0])
-    arg.init_mu = lambda: [ tf.constant([4.0,4.0],shape=[2,1]), tf.constant([12.0,12.0],shape=[2,1]) ]
-    arg.init_W = lambda: tf.constant([6.783,7.05],shape=[2,1])
+    arg.init_mu = lambda: [ tf.constant([4.0,4.0],shape=[D,1]), tf.constant([12.0,12.0],shape=[D,1]) ]
+    arg.init_W = lambda: tf.constant([6.783,7.05],shape=[D,1])
+    #
+    arg.start_learning_rate = 0.01
+    arg.gdl_mu_noise = 0.0
+    # 11.3137
+    arg.gdl_stddev_noise = 11.3137
+    #arg.init_W = lambda: tf.constant(0.0)
+    def get_basins(arg):
+        #pdb.set_trace()
+        W = tf.get_variable(name='W', initializer=arg.init_W(), trainable=True)
+        print('==> W.name', W.name)
+        tf.summary.histogram('Weights', W)
+        #tf.summary.scalar('Weights_scal', W)
+        #
+        init_std = arg.init_std()
+        init_mu = arg.init_mu()
+        #
+        basin1 = sgd_lib.get_basin(W,init_std[0],init_mu[0],str(1))
+        basin2 = sgd_lib.get_basin(W,init_std[1],init_mu[1],str(2))
+        basins = [basin1, basin2]
+        return basins
+    arg.get_basins = get_basins
+elif arg.mdl == 'basin_3D':
+    arg.printing = True
+    #arg.printing = False
+    #
+    arg.mdl_scope_name = arg.mdl
+    D = 3
+    arg.D = D
+    arg.get_x_shape = lambda arg: arg.D
+    #
+    arg.compact = True
+    #arg.compact = False
+    arg.B = 18
+    #
+    arg.init_std = lambda: tf.constant([1.0,2.0])
+    arg.init_mu = lambda: [ tf.constant([4.0,4.0,4.0],shape=[D,1]), tf.constant([12.0,12.0,12.0],shape=[D,1]) ]
+    arg.init_W = lambda: tf.constant([6.783,7.05,7.05],shape=[D,1])
+    #
+    arg.start_learning_rate = 0.01
+    arg.gdl_mu_noise = 0.0
+    # 13.8
+    arg.gdl_stddev_noise = 13.8
+    #arg.init_W = lambda: tf.constant(0.0)
+    def get_basins(arg):
+        #pdb.set_trace()
+        W = tf.get_variable(name='W', initializer=arg.init_W(), trainable=True)
+        print('==> W.name', W.name)
+        tf.summary.histogram('Weights', W)
+        #tf.summary.scalar('Weights_scal', W)
+        #
+        init_std = arg.init_std()
+        init_mu = arg.init_mu()
+        #
+        basin1 = sgd_lib.get_basin(W,init_std[0],init_mu[0],str(1))
+        basin2 = sgd_lib.get_basin(W,init_std[1],init_mu[1],str(2))
+        basins = [basin1, basin2]
+        return basins
+    arg.get_basins = get_basins
+elif arg.mdl == 'basin_4D':
+    arg.printing = True
+    #arg.printing = False
+    #
+    arg.mdl_scope_name = arg.mdl
+    D = 4
+    arg.D = D
+    arg.get_x_shape = lambda arg: arg.D
+    #
+    arg.compact = True
+    #arg.compact = False
+    arg.B = 18
+    #
+    arg.init_std = lambda: tf.constant([1.0,2.0])
+    arg.init_mu = lambda: [ tf.constant([4.0,4.0,4.0,4.0],shape=[D,1]), tf.constant([12.0,12.0,12.0,12.0],shape=[D,1]) ]
+    arg.init_W = lambda: tf.constant([6.783,7.05,7.05,7.05],shape=[D,1])
+    #
+    arg.start_learning_rate = 0.01
+    arg.gdl_mu_noise = 0.0
+    # 16.0
+    arg.gdl_stddev_noise = 16.0
     #arg.init_W = lambda: tf.constant(0.0)
     def get_basins(arg):
         #pdb.set_trace()
@@ -153,7 +249,7 @@ arg.float_type = tf.float32
 #steps
 #arg.steps_low = int(2.5*60000)
 #arg.steps_low = 1*int(1.3*10001) # 1D
-arg.steps_low = 2*int(1.3*10001) # 2D
+arg.steps_low = 5*int(1.0*10001) # 2D
 arg.steps_high = arg.steps_low+1
 arg.get_steps = lambda arg: int( np.random.randint(low=arg.steps_low ,high=arg.steps_high) )
 
@@ -167,7 +263,7 @@ def get_power2_batch_size(arg):
     batch_size = arg.potential_batch_sizes[i]
     return batch_size
 #arg.get_batch_size = get_power2_batch_size
-arg.report_error_freq = 10
+arg.report_error_freq = 2
 
 arg.low_log_const_learning_rate, arg.high_log_const_learning_rate = -0.5, -4
 arg.get_log_learning_rate =  lambda arg: np.random.uniform(low=arg.low_log_const_learning_rate, high=arg.high_log_const_learning_rate)
@@ -175,7 +271,7 @@ arg.get_start_learning_rate = lambda arg: 10**arg.log_learning_rate
 ## decayed_learning_rate = learning_rate * decay_rate ^ (global_step / decay_steps)
 #arg.decay_rate_low, arg.decay_rate_high = 0.1, 1.0
 #arg.get_decay_rate = lambda arg: np.random.uniform(low=arg.decay_rate_low, high=arg.decay_rate_high)
-arg.get_start_learning_rate = lambda arg: 0.01
+arg.get_start_learning_rate = lambda arg: arg.start_learning_rate
 arg.get_decay_rate = lambda arg: 1.0
 
 #arg.decay_steps_low, arg.decay_steps_high = arg.report_error_freq, arg.M
@@ -226,8 +322,8 @@ elif optimization_alg == 'RMSProp':
     arg.momentum_low, arg.momontum_high = 0.0, 0.99
     arg.get_momentum = lambda arg: np.random.uniform(low=arg.momentum_low,high=arg.momontum_high)
 elif optimization_alg == 'GDL':
-    arg.get_gdl_mu_noise =  lambda arg: 0.0
-    arg.get_gdl_stddev_noise = lambda arg: 5.5
+    arg.get_gdl_mu_noise =  lambda arg: arg.gdl_mu_noise
+    arg.get_gdl_stddev_noise = lambda arg: arg.gdl_stddev_noise
 else:
     pass
 
