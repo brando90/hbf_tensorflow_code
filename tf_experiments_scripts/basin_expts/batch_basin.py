@@ -148,7 +148,7 @@ elif arg.mdl == 'basin_2D':
     arg.init_mu = lambda: [ tf.constant([4.0,4.0],shape=[D,1]), tf.constant([12.0,12.0],shape=[D,1]) ]
     arg.init_W = lambda: tf.constant([6.783,7.05],shape=[D,1])
     #
-    arg.start_learning_rate = 0.01
+    arg.start_learning_rate = 0.02
     arg.gdl_mu_noise = 0.0
     # 11.3137
     arg.gdl_stddev_noise = 11.3137
@@ -169,7 +169,7 @@ elif arg.mdl == 'basin_2D':
         return basins
     arg.get_basins = get_basins
 elif arg.mdl == 'basin_3D':
-    arg.printing = True
+    #arg.printing = True
     arg.printing = False
     #
     arg.mdl_scope_name = arg.mdl
@@ -188,7 +188,7 @@ elif arg.mdl == 'basin_3D':
     arg.start_learning_rate = 0.01
     arg.gdl_mu_noise = 0.0
     # 13.8
-    arg.gdl_stddev_noise = 13.8
+    arg.gdl_stddev_noise = 13.8/4
     #arg.init_W = lambda: tf.constant(0.0)
     def get_basins(arg):
         #pdb.set_trace()
@@ -249,7 +249,7 @@ arg.float_type = tf.float32
 #steps
 #arg.steps_low = int(2.5*60000)
 #arg.steps_low = 1*int(1.3*10001) # 1D
-arg.steps_low = 1*int(1.0*101) # 2D
+arg.steps_low = 5*int(1.0*10001) # 2D
 arg.steps_high = arg.steps_low+1
 arg.get_steps = lambda arg: int( np.random.randint(low=arg.steps_low ,high=arg.steps_high) )
 
@@ -332,11 +332,11 @@ arg.nb_bins = 35
 #arg.p_path = './tmp_pickle'
 arg.p_path = './tmp_om_pickle'
 #arg.p_path = './folder_pickle_W_hist'
-arg.p_filename = 'W_hist_data123.p'
+arg.p_filename = 'W_hist_data_3D_lr0p01_0p25std_iter50000.p'
 #arg.save_hist = False
 arg.save_hist = True
-#arg.display_hist = False
-arg.display_hist = True
+arg.display_hist = False
+#arg.display_hist = True
 
 #arg.bn = True
 #arg.trainable_bn = True #scale, shift BN
