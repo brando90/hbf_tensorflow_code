@@ -3,6 +3,7 @@
 #SBATCH --time=4-18:20
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=brando90@mit.edu
+#SBATCH --gres=gpu:1
 
 #from __future__ import #print_function
 #tensorboard --logdir=/tmp/mdl_logs
@@ -90,6 +91,7 @@ arg.mdl = 'basin_3D'
 #arg.mdl = 'basin_4D'
 arg.mdl = 'basin_8D'
 arg.mdl = 'basin_16D'
+arg.mdl = 'basin_32D'
 if arg.mdl == 'debug_mdl':
     arg.act = tf.nn.relu
     arg.dims = None
@@ -307,6 +309,49 @@ elif arg.mdl == 'basin_16D':
     arg.gdl_stddev_noise = arg.frac*32.0
     #
     p_filename = 'W_hist_data_16D_lr%s_%sstd_%snoise_iter%s'%(arg.start_learning_rate,arg.frac,arg.gdl_stddev_noise,arg.iter)
+    arg.p_filename = p_filename.replace('.','p')+'.p'
+    print(arg.p_filename)
+    def get_basins(arg):
+        #pdb.set_trace()
+        W = tf.get_variable(name='W', initializer=arg.init_W(), trainable=True)
+        print('==> W.name', W.name)
+        tf.summary.histogram('Weights', W)
+        #tf.summary.scalar('Weights_scal', W)
+        #
+        init_std = arg.init_std()
+        init_mu = arg.init_mu()
+        #
+        basin1 = sgd_lib.get_basin(W,init_std[0],init_mu[0],str(1))
+        basin2 = sgd_lib.get_basin(W,init_std[1],init_mu[1],str(2))
+        basins = [basin1, basin2]
+        return basins
+    arg.get_basins = get_basins
+elif arg.mdl == 'basin_32D':
+    #arg.printing = True
+    arg.printing = False
+    #
+    arg.mdl_scope_name = arg.mdl
+    D = 32
+    arg.D = D
+    arg.get_x_shape = lambda arg: arg.D
+    #
+    arg.compact = True
+    #arg.compact = False
+    arg.B = 18
+    #
+    arg.init_std = lambda: tf.constant([1.0,2.0])
+    arg.init_mu = lambda: [ tf.constant( 4.0*np.ones([D,1]),dtype=np.float32,shape=[D,1]), tf.constant(12.0*np.ones([D,1]),dtype=np.float32,shape=[D,1]) ]
+    arg.init_W = lambda: tf.constant(6.9*np.ones([D,1]),dtype=np.float32,shape=[D,1])
+    #
+    arg.iter = 5*int(1.0*10001)
+    #
+    arg.start_learning_rate = 0.01
+    arg.gdl_mu_noise = 0.0
+    # 45.2548
+    arg.frac = 1.0
+    arg.gdl_stddev_noise = arg.frac*45.2548
+    #
+    p_filename = 'W_hist_data_32D_lr%s_%sstd_%snoise_iter%s'%(arg.start_learning_rate,arg.frac,arg.gdl_stddev_noise,arg.iter)
     arg.p_filename = p_filename.replace('.','p')+'.p'
     print(arg.p_filename)
     def get_basins(arg):
