@@ -89,6 +89,7 @@ arg.mdl = 'basin_2D'
 arg.mdl = 'basin_3D'
 #arg.mdl = 'basin_4D'
 arg.mdl = 'basin_8D'
+arg.mdl = 'basin_16D'
 if arg.mdl == 'debug_mdl':
     arg.act = tf.nn.relu
     arg.dims = None
@@ -264,7 +265,50 @@ elif arg.mdl == 'basin_8D':
     arg.gdl_mu_noise = 0.0
     # 16.0
     arg.gdl_stddev_noise = 16.0
-    arg.p_filename = 'W_hist_data_8D_lr0p01_1std_iter50000.p'
+    arg.p_filename = 'W_hist_data_8D_test.p'
+    def get_basins(arg):
+        #pdb.set_trace()
+        W = tf.get_variable(name='W', initializer=arg.init_W(), trainable=True)
+        print('==> W.name', W.name)
+        tf.summary.histogram('Weights', W)
+        #tf.summary.scalar('Weights_scal', W)
+        #
+        init_std = arg.init_std()
+        init_mu = arg.init_mu()
+        #
+        basin1 = sgd_lib.get_basin(W,init_std[0],init_mu[0],str(1))
+        basin2 = sgd_lib.get_basin(W,init_std[1],init_mu[1],str(2))
+        basins = [basin1, basin2]
+        return basins
+    arg.get_basins = get_basins
+elif arg.mdl == 'basin_16D':
+    #arg.printing = True
+    arg.printing = False
+    #
+    arg.mdl_scope_name = arg.mdl
+    D = 16
+    arg.D = D
+    arg.get_x_shape = lambda arg: arg.D
+    #
+    arg.compact = True
+    #arg.compact = False
+    arg.B = 18
+    #
+    arg.init_std = lambda: tf.constant([1.0,2.0])
+    arg.init_mu = lambda: [ tf.constant( 4.0*np.ones([D,1]),dtype=np.float32,shape=[D,1]), tf.constant(12.0*np.ones([D,1]),dtype=np.float32,shape=[D,1]) ]
+    arg.init_W = lambda: tf.constant(6.9*np.ones([D,1]),dtype=np.float32,shape=[D,1])
+    #
+    arg.iter = 1*int(1.0*50001)
+    #
+    arg.start_learning_rate = 0.01
+    arg.gdl_mu_noise = 0.0
+    # 32.0
+    arg.frac = 1.0
+    arg.gdl_stddev_noise = arg.frac*32.0
+    #
+    p_filename = 'W_hist_data_16D_lr%s_%sstd_%snoise_iter%s'%(arg.start_learning_rate,arg.frac,arg.gdl_stddev_noise,arg.iter)
+    arg.p_filename = p_filename.replace('.','p')+'.p'
+    print(arg.p_filename)
     def get_basins(arg):
         #pdb.set_trace()
         W = tf.get_variable(name='W', initializer=arg.init_W(), trainable=True)
@@ -287,7 +331,7 @@ arg.float_type = tf.float32
 #steps
 #arg.steps_low = int(2.5*60000)
 #arg.steps_low = 1*int(1.3*10001) # 1D
-arg.steps_low = 5*int(1.0*10001) # 2D
+arg.steps_low = arg.iter # 2D
 arg.steps_high = arg.steps_low+1
 arg.get_steps = lambda arg: int( np.random.randint(low=arg.steps_low ,high=arg.steps_high) )
 
