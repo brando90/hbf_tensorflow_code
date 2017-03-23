@@ -13,7 +13,7 @@ import pdb
 arg = ns.Namespace()
 arg.nb_bins = 35
 # load pickle file
-loaded_stuff = pickle.load( open( "./tmp_om_pickle/W_hist_data.p", "rb" ) )
+loaded_stuff = pickle.load( open( "./tmp_om_pickle/current_test.p", "rb" ) )
 W_hist_data = loaded_stuff['W_hist_data']
 # display pickle file
 W_hist_data = np.array(W_hist_data)

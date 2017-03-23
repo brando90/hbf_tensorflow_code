@@ -29,24 +29,32 @@ def manual_GDL(arg,loss,learning_rate,mu_noise,stddev_noise,compact,B):
 
 #
 
-def _GDL(g,mu_noise,stddev_noise,compact,B):
+def _GDL(arg,g):
     '''
     adding noise to gradients
-    '''
-    if compact:
-        return (g + tf.random_normal(tf.shape(g),mean=mu_noise,stddev=stddev_noise) ) % B
-    else:
-        return g + tf.random_normal(tf.shape(g),mean=mu_noise,stddev=stddev_noise)
 
-def GDL_official_tf(loss,learning_rate,mu_noise,stddev_noise,compact,B):
+    g,mu_noise,stddev_noise,compact,B
+    '''
+    amp = tf.constant(arg.noise_amplitude)
+    if arg.compact:
+        return ( g + amp*tf.random_normal(tf.shape(g),mean=arg.mu_noise,stddev=arg.stddev_noise) ) % arg.B
+    else:
+        return g + amp*tf.random_normal(tf.shape(g),mean=arg.mu_noise,stddev=arg.stddev_noise)
+
+def GDL_official_tf(arg):
+    '''
+    loss,learning_rate,mu_noise,stddev_noise,compact,B
+    '''
     # Create an optimizer.
-    opt = tf.train.GradientDescentOptimizer(learning_rate=learning_rate)
+    opt = tf.train.GradientDescentOptimizer(learning_rate=arg.learning_rate)
     # Compute the gradients for a list of variables.
-    grads_and_vars = opt.compute_gradients(loss)
+    grads_and_vars = opt.compute_gradients(arg.loss)
     # process gradients
-    processed_grads_and_vars = [(_GDL(g,mu_noise,stddev_noise,compact,B), v) for g,v in grads_and_vars]
+    processed_grads_and_vars = [(_GDL(arg,g), v) for g,v in grads_and_vars]
     # Ask the optimizer to apply the capped gradients.
     return opt.apply_gradients(processed_grads_and_vars)
+
+#
 
 def get_vars(loss):
     grads_and_vars = self.compute_gradients( loss )

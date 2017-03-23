@@ -189,6 +189,7 @@ def get_optimizer(arg):
         # decayed_learning_rate = learning_rate * decay_rate ^ (global_step / decay_steps)
         arg.global_step = tf.Variable(0, trainable=False)
         learning_rate = tf.train.exponential_decay(learning_rate=arg.starter_learning_rate, global_step=arg.global_step,decay_steps=arg.decay_steps, decay_rate=arg.decay_rate, staircase=arg.staircase)
+        arg.learning_rate = learning_rate
         # Passing global_step to minimize() will increment it at each step.
         if arg.optimization_alg == 'GD':
             opt = tf.train.GradientDescentOptimizer(learning_rate)
@@ -204,7 +205,8 @@ def get_optimizer(arg):
             opt = tf.train.RMSPropOptimizer(learning_rate=learning_rate, decay=arg.decay, momentum=arg.momentum, epsilon=1e-10, name='RMSProp')
         elif arg.optimization_alg == 'GDL':
             #opt = sgd_lib.GDL(learning_rate,mu_noise=arg.mu_noise,stddev_noise=arg.stddev_noise)
-            opt = sgd_lib.GDL_official_tf(loss=arg.loss,learning_rate=learning_rate,mu_noise=arg.mu_noise,stddev_noise=arg.stddev_noise,compact=arg.compact,B=arg.B)
+            #opt = sgd_lib.GDL_official_tf(loss=arg.loss,learning_rate=learning_rate,mu_noise=arg.mu_noise,stddev_noise=arg.stddev_noise,compact=arg.compact,B=arg.B)
+            opt = sgd_lib.GDL_official_tf(arg)
     train_step = opt
     return train_step
 

@@ -89,9 +89,9 @@ arg.mdl = 'basin_1D'
 arg.mdl = 'basin_2D'
 arg.mdl = 'basin_3D'
 #arg.mdl = 'basin_4D'
-arg.mdl = 'basin_8D'
-arg.mdl = 'basin_16D'
-arg.mdl = 'basin_32D'
+#arg.mdl = 'basin_8D'
+#arg.mdl = 'basin_16D'
+#arg.mdl = 'basin_32D'
 if arg.mdl == 'debug_mdl':
     arg.act = tf.nn.relu
     arg.dims = None
@@ -112,14 +112,23 @@ elif arg.mdl == 'basin_1D':
     arg.B = 18
     #
     arg.init_std = lambda: tf.constant([1.0,2.0])
-    arg.init_mu = lambda: tf.constant([3.0,12.0])
-    arg.init_W = lambda: tf.constant([6.154],shape=[1,1])
+    arg.init_mu = lambda: [ tf.constant( 4.0*np.ones([D,1]),dtype=np.float32,shape=[D,1]), tf.constant(12.0*np.ones([D,1]),dtype=np.float32,shape=[D,1]) ]
+    arg.init_W = lambda: tf.constant(6.972*np.ones([D,1]),dtype=np.float32,shape=[D,1])
     #
-    arg.start_learning_rate = 0.01
+    arg.iter = 1*int(1.4*1001)
+    #
+    arg.start_learning_rate = 1.0
     arg.gdl_mu_noise = 0.0
-    # 6.0
-    arg.gdl_stddev_noise = 6.0
-    arg.p_filename = 'W_hist_data_1D_lr0p01_0p25std_iter50000.p'
+    # 13.8
+    arg.frac = 1.0
+    #arg.gdl_stddev_noise = arg.frac*13.8
+    arg.gdl_stddev_noise = arg.frac*0.1
+    arg.noise_amplitude = 7.0
+    #
+    p_filename = 'W_hist_data_%sD_lr%s_amp_%s_%sstd_%snoise_iter%s'%(arg.D,arg.start_learning_rate,arg.noise_amplitude,arg.frac,arg.gdl_stddev_noise,arg.iter)
+    arg.p_filename = p_filename.replace('.','p')+'.p'
+    arg.p_filename = 'current_test.p'
+    print(arg.p_filename)
     def get_basins(arg):
         #pdb.set_trace()
         W = tf.get_variable(name='W', initializer=arg.init_W(), trainable=True)
@@ -137,7 +146,7 @@ elif arg.mdl == 'basin_1D':
     arg.get_basins = get_basins
 elif arg.mdl == 'basin_2D':
     arg.printing = True
-    arg.printing = False
+    #arg.printing = False
     #
     arg.mdl_scope_name = arg.mdl
     D = 2
@@ -149,14 +158,23 @@ elif arg.mdl == 'basin_2D':
     arg.B = 18
     #
     arg.init_std = lambda: tf.constant([1.0,2.0])
-    arg.init_mu = lambda: [ tf.constant([4.0,4.0],shape=[D,1]), tf.constant([12.0,12.0],shape=[D,1]) ]
-    arg.init_W = lambda: tf.constant([6.783,7.05],shape=[D,1])
+    arg.init_mu = lambda: [ tf.constant( 4.0*np.ones([D,1]),dtype=np.float32,shape=[D,1]), tf.constant(12.0*np.ones([D,1]),dtype=np.float32,shape=[D,1]) ]
+    arg.init_W = lambda: tf.constant(6.9*np.ones([D,1]),dtype=np.float32,shape=[D,1])
     #
-    arg.start_learning_rate = 0.02
+    arg.iter = 1*int(1.3*1001)
+    #
+    arg.start_learning_rate = 0.1
     arg.gdl_mu_noise = 0.0
-    # 11.3137
-    arg.gdl_stddev_noise = 11.3137
-    arg.p_filename = 'W_hist_data_2D_lr0p01_0p25std_iter50000.p'
+    # 13.8
+    arg.frac = 1.0
+    #arg.gdl_stddev_noise = arg.frac*13.8
+    arg.gdl_stddev_noise = arg.frac*0.01
+    arg.noise_amplitude = 8.0
+    #
+    p_filename = 'W_hist_data_%sD_lr%s_amp_%s_%sstd_%snoise_iter%s'%(arg.D,arg.start_learning_rate,arg.noise_amplitude,arg.frac,arg.gdl_stddev_noise,arg.iter)
+    arg.p_filename = p_filename.replace('.','p')+'.p'
+    arg.p_filename = 'current_test.p'
+    print(arg.p_filename)
     def get_basins(arg):
         #pdb.set_trace()
         W = tf.get_variable(name='W', initializer=arg.init_W(), trainable=True)
@@ -173,8 +191,8 @@ elif arg.mdl == 'basin_2D':
         return basins
     arg.get_basins = get_basins
 elif arg.mdl == 'basin_3D':
-    #arg.printing = True
-    arg.printing = False
+    arg.printing = True
+    #arg.printing = False
     #
     arg.mdl_scope_name = arg.mdl
     D = 3
@@ -185,15 +203,24 @@ elif arg.mdl == 'basin_3D':
     #arg.compact = False
     arg.B = 18
     #
-    arg.init_std = lambda: tf.constant([1.0,2.0])
-    arg.init_mu = lambda: [ tf.constant([4.0,4.0,4.0],shape=[D,1]), tf.constant([12.0,12.0,12.0],shape=[D,1]) ]
-    arg.init_W = lambda: tf.constant([6.783,7.05,7.05],shape=[D,1])
+    arg.init_std = lambda: tf.constant([1.0,4.0])
+    arg.init_mu = lambda: [ tf.constant( 4.0*np.ones([D,1]),dtype=np.float32,shape=[D,1]), tf.constant(12.0*np.ones([D,1]),dtype=np.float32,shape=[D,1]) ]
+    arg.init_W = lambda: tf.constant(4.0*np.ones([D,1]),dtype=np.float32,shape=[D,1])
     #
-    arg.start_learning_rate = 0.01
+    arg.iter = 1*int(1.5*1.5*1001)
+    #
+    arg.start_learning_rate = 0.07
     arg.gdl_mu_noise = 0.0
     # 13.8
-    arg.gdl_stddev_noise = 13.8/4
-    arg.p_filename = 'W_hist_data_3D_lr0p01_0p25std_iter50000.p'
+    arg.frac = 1.0
+    #arg.gdl_stddev_noise = arg.frac*13.8
+    arg.gdl_stddev_noise = arg.frac*1.0
+    arg.noise_amplitude = 0.004
+    #
+    p_filename = 'W_hist_data_%sD_lr%s_amp_%s_%sstd_%snoise_iter%s'%(arg.D,arg.start_learning_rate,arg.noise_amplitude,arg.frac,arg.gdl_stddev_noise,arg.iter)
+    arg.p_filename = p_filename.replace('.','p')+'.p'
+    arg.p_filename = 'current_test.p'
+    print(arg.p_filename)
     def get_basins(arg):
         #pdb.set_trace()
         W = tf.get_variable(name='W', initializer=arg.init_W(), trainable=True)
@@ -211,7 +238,7 @@ elif arg.mdl == 'basin_3D':
     arg.get_basins = get_basins
 elif arg.mdl == 'basin_4D':
     arg.printing = True
-    arg.printing = False
+    #arg.printing = False
     #
     arg.mdl_scope_name = arg.mdl
     D = 4
@@ -223,14 +250,23 @@ elif arg.mdl == 'basin_4D':
     arg.B = 18
     #
     arg.init_std = lambda: tf.constant([1.0,2.0])
-    arg.init_mu = lambda: [ tf.constant([4.0,4.0,4.0,4.0],shape=[D,1]), tf.constant([12.0,12.0,12.0,12.0],shape=[D,1]) ]
-    arg.init_W = lambda: tf.constant([6.783,7.05,7.05,7.05],shape=[D,1])
+    arg.init_mu = lambda: [ tf.constant( 4.0*np.ones([D,1]),dtype=np.float32,shape=[D,1]), tf.constant(12.0*np.ones([D,1]),dtype=np.float32,shape=[D,1]) ]
+    arg.init_W = lambda: tf.constant(12.0*np.ones([D,1]),dtype=np.float32,shape=[D,1])
+    #
+    arg.iter = 1*int(1.0*1001)
     #
     arg.start_learning_rate = 0.01
     arg.gdl_mu_noise = 0.0
-    # 16.0
-    arg.gdl_stddev_noise = 16.0
-    arg.p_filename = 'W_hist_data_4D_lr0p01_0p25std_iter50000.p'
+    # 13.8
+    arg.frac = 1.0
+    #arg.gdl_stddev_noise = arg.frac*13.8
+    arg.gdl_stddev_noise = arg.frac*0.01
+    arg.noise_amplitude = 1.0
+    #
+    p_filename = 'W_hist_data_%sD_lr%s_amp_%s_%sstd_%snoise_iter%s'%(arg.D,arg.start_learning_rate,arg.noise_amplitude,arg.frac,arg.gdl_stddev_noise,arg.iter)
+    arg.p_filename = p_filename.replace('.','p')+'.p'
+    arg.p_filename = 'current_test.p'
+    print(arg.p_filename)
     def get_basins(arg):
         #pdb.set_trace()
         W = tf.get_variable(name='W', initializer=arg.init_W(), trainable=True)
@@ -247,8 +283,8 @@ elif arg.mdl == 'basin_4D':
         return basins
     arg.get_basins = get_basins
 elif arg.mdl == 'basin_8D':
-    #arg.printing = True
-    arg.printing = False
+    arg.printing = True
+    #arg.printing = False
     #
     arg.mdl_scope_name = arg.mdl
     D = 8
@@ -261,13 +297,22 @@ elif arg.mdl == 'basin_8D':
     #
     arg.init_std = lambda: tf.constant([1.0,2.0])
     arg.init_mu = lambda: [ tf.constant( 4.0*np.ones([D,1]),dtype=np.float32,shape=[D,1]), tf.constant(12.0*np.ones([D,1]),dtype=np.float32,shape=[D,1]) ]
-    arg.init_W = lambda: tf.constant(6.9*np.ones([D,1]),dtype=np.float32,shape=[D,1])
+    arg.init_W = lambda: tf.constant(12.0*np.ones([D,1]),dtype=np.float32,shape=[D,1])
+    #
+    arg.iter = 1*int(1.0*1001)
     #
     arg.start_learning_rate = 0.01
     arg.gdl_mu_noise = 0.0
-    # 16.0
-    arg.gdl_stddev_noise = 16.0
-    arg.p_filename = 'W_hist_data_8D_test.p'
+    # 13.8
+    arg.frac = 1.0
+    #arg.gdl_stddev_noise = arg.frac*13.8
+    arg.gdl_stddev_noise = arg.frac*0.01
+    arg.noise_amplitude = 1.0
+    #
+    p_filename = 'W_hist_data_%sD_lr%s_amp_%s_%sstd_%snoise_iter%s'%(arg.D,arg.start_learning_rate,arg.noise_amplitude,arg.frac,arg.gdl_stddev_noise,arg.iter)
+    arg.p_filename = p_filename.replace('.','p')+'.p'
+    arg.p_filename = 'current_test.p'
+    print(arg.p_filename)
     def get_basins(arg):
         #pdb.set_trace()
         W = tf.get_variable(name='W', initializer=arg.init_W(), trainable=True)
@@ -284,8 +329,8 @@ elif arg.mdl == 'basin_8D':
         return basins
     arg.get_basins = get_basins
 elif arg.mdl == 'basin_16D':
-    #arg.printing = True
-    arg.printing = False
+    arg.printing = True
+    #arg.printing = False
     #
     arg.mdl_scope_name = arg.mdl
     D = 16
@@ -298,18 +343,21 @@ elif arg.mdl == 'basin_16D':
     #
     arg.init_std = lambda: tf.constant([1.0,2.0])
     arg.init_mu = lambda: [ tf.constant( 4.0*np.ones([D,1]),dtype=np.float32,shape=[D,1]), tf.constant(12.0*np.ones([D,1]),dtype=np.float32,shape=[D,1]) ]
-    arg.init_W = lambda: tf.constant(6.9*np.ones([D,1]),dtype=np.float32,shape=[D,1])
+    arg.init_W = lambda: tf.constant(12.0*np.ones([D,1]),dtype=np.float32,shape=[D,1])
     #
-    arg.iter = 1*int(1.0*50001)
+    arg.iter = 1*int(1.0*1001)
     #
     arg.start_learning_rate = 0.01
     arg.gdl_mu_noise = 0.0
-    # 32.0
+    # 13.8
     arg.frac = 1.0
-    arg.gdl_stddev_noise = arg.frac*32.0
+    #arg.gdl_stddev_noise = arg.frac*13.8
+    arg.gdl_stddev_noise = arg.frac*0.01
+    arg.noise_amplitude = 1.0
     #
-    p_filename = 'W_hist_data_16D_lr%s_%sstd_%snoise_iter%s'%(arg.start_learning_rate,arg.frac,arg.gdl_stddev_noise,arg.iter)
+    p_filename = 'W_hist_data_%sD_lr%s_amp_%s_%sstd_%snoise_iter%s'%(arg.D,arg.start_learning_rate,arg.noise_amplitude,arg.frac,arg.gdl_stddev_noise,arg.iter)
     arg.p_filename = p_filename.replace('.','p')+'.p'
+    arg.p_filename = 'current_test.p'
     print(arg.p_filename)
     def get_basins(arg):
         #pdb.set_trace()
@@ -327,8 +375,8 @@ elif arg.mdl == 'basin_16D':
         return basins
     arg.get_basins = get_basins
 elif arg.mdl == 'basin_32D':
-    #arg.printing = True
-    arg.printing = False
+    arg.printing = True
+    #arg.printing = False
     #
     arg.mdl_scope_name = arg.mdl
     D = 32
@@ -341,18 +389,21 @@ elif arg.mdl == 'basin_32D':
     #
     arg.init_std = lambda: tf.constant([1.0,2.0])
     arg.init_mu = lambda: [ tf.constant( 4.0*np.ones([D,1]),dtype=np.float32,shape=[D,1]), tf.constant(12.0*np.ones([D,1]),dtype=np.float32,shape=[D,1]) ]
-    arg.init_W = lambda: tf.constant(6.9*np.ones([D,1]),dtype=np.float32,shape=[D,1])
+    arg.init_W = lambda: tf.constant(12.0*np.ones([D,1]),dtype=np.float32,shape=[D,1])
     #
-    arg.iter = 5*int(1.0*10001)
+    arg.iter = 1*int(1.0*1001)
     #
     arg.start_learning_rate = 0.01
     arg.gdl_mu_noise = 0.0
-    # 45.2548
+    # 13.8
     arg.frac = 1.0
-    arg.gdl_stddev_noise = arg.frac*45.2548
+    #arg.gdl_stddev_noise = arg.frac*13.8
+    arg.gdl_stddev_noise = arg.frac*0.01
+    arg.noise_amplitude = 1.0
     #
-    p_filename = 'W_hist_data_32D_lr%s_%sstd_%snoise_iter%s'%(arg.start_learning_rate,arg.frac,arg.gdl_stddev_noise,arg.iter)
+    p_filename = 'W_hist_data_%sD_lr%s_amp_%s_%sstd_%snoise_iter%s'%(arg.D,arg.start_learning_rate,arg.noise_amplitude,arg.frac,arg.gdl_stddev_noise,arg.iter)
     arg.p_filename = p_filename.replace('.','p')+'.p'
+    arg.p_filename = 'current_test.p'
     print(arg.p_filename)
     def get_basins(arg):
         #pdb.set_trace()
