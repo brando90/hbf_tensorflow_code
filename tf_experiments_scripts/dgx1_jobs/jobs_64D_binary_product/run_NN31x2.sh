@@ -7,4 +7,4 @@
 #SBATCH --cpus-per-task=1
 #SBATCH --time=6-18:20
 
-nvidia-docker run --rm -v /raid/poggio/home/brando90/home_simulation_research:/home_simulation_research tf_gpu_py3.4 python3 /home_simulation_research/hbf_tensorflow_code/tf_experiments_scripts/batch_main_NN31x2.py -sj sj
+nvidia-docker run --rm -v /raid/poggio/home/brando90/home_simulation_research:/home_simulation_research tf_gpu_py3.4_bm1 python3 /home_simulation_research/hbf_tensorflow_code/tf_experiments_scripts/batch_main_NN31x2.py -sj sj
