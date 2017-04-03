@@ -45,7 +45,7 @@ def shallow_vs_deep():
     path_to_experiments_NN = '../../simulation_results_scripts/%s/task_Feb_22_NN_256D_Adam_xavier_relu_N60000_original_setup'%experiment_name
     path_to_experiments_NN = '../../simulation_results_scripts/%s/task_Feb_28_NN_32D_Adam_xavier_relu_N60000_original_setup'%experiment_name
     path_to_experiments_NN = '../../simulation_results_scripts/%s/task_Mar_2_NN_8D_Adam_xavier_relu_N60000_original_setup'%experiment_name
-    path_to_experiments_NN = '../../simulation_results_scripts/%s/task_Mar_12_NN_8D_Adam_xavier_relu_N60000_original_setup_dgx1'%experiment_name
+    path_to_experiments_NN = '../../../simulation_results_scripts/%s/task_Mar_12_NN_8D_Adam_xavier_relu_N60000_original_setup_dgx1'%experiment_name
     mtf.combine_errors_and_hps_to_one_json_file(path_to_experiments_NN,verbose=True,overwrite_old=True)
     expts_best_results = mtf.get_best_results_for_experiments(path_to_experiments_NN,decider,verbose=False,mdl_complexity_criteria=mdl_complexity_criteria)
     #pdb.set_trace()
@@ -85,7 +85,7 @@ def shallow_vs_deep():
     path_to_experiments_BT = '../../simulation_results_scripts/%s/task_Feb_22_BT_256D_Adam_xavier_relu_N60000_original_setup'%experiment_name
     path_to_experiments_BT = '../../simulation_results_scripts/%s/task_Feb_28_BT_32D_Adam_xavier_relu_N60000_original_setup'%experiment_name
     path_to_experiments_BT = '../../simulation_results_scripts/%s/task_Mar_2_BT_8D_Adam_xavier_relu_N60000_original_setup'%experiment_name
-    path_to_experiments_BT = '../../simulation_results_scripts/%s/task_Mar_12_BT_8D_Adam_xavier_relu_N60000_original_setup_dgx1'%experiment_name
+    path_to_experiments_BT = '../../../simulation_results_scripts/%s/task_Mar_12_BT_8D_Adam_xavier_relu_N60000_original_setup_dgx1'%experiment_name
     mtf.combine_errors_and_hps_to_one_json_file(path_to_experiments_BT,verbose=True,overwrite_old=True)
     expts_best_results = mtf.get_best_results_for_experiments(path_to_experiments_BT,decider,verbose=False,mdl_complexity_criteria=mdl_complexity_criteria)
     sorted_units, sorted_train_errors, sorted_validation_errors, sorted_test_errors = mtf.get_errors_for_display(expts_best_results)

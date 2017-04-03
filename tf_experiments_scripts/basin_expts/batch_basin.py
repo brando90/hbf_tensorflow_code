@@ -34,8 +34,7 @@ import sgd_lib
 #print = functools.partial(print, flush=True)
 #print(ns)
 ###
-arg = ns.Namespace()
-
+arg = ns.Namespace(printing=False)
 #
 arg.get_errors_from = mtf.get_errors_based_on_train_error
 #arg.get_errors_from = mtf.get_errors_based_on_validation_error

@@ -34,6 +34,7 @@ print( '===> os.listdir(.): ', os.listdir('.') )
 print( 'os.getcwd(): ', os.getcwd())
 print('os.path.dirname(os.path.abspath(__file__)): ', os.path.dirname(os.path.abspath(__file__)))
 
+pdb.set_trace()
 ##
 #print('In batch script', flush=True)
 #print = functools.partial(print, flush=True)
