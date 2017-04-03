@@ -26,7 +26,7 @@ RUN pip install pandas
 ENTRYPOINT ["sh", "/home_simulation_research/hbf_tensorflow_code/docker_files/tf_gpu/container_setup.sh"]
 
 #
-RUN apt-get install python3-tk
+RUN apt-get install -y python3-tk
 
 # enviromnet
 ENV OMP_NUM_THREADS=2
