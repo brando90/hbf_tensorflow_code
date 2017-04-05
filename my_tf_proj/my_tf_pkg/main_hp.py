@@ -1,7 +1,9 @@
 import tensorflow as tf
 
-from sklearn import preprocessing
+#from sklearn import preprocessing
 import numpy as np
+
+import random
 
 import shutil
 import subprocess
@@ -163,6 +165,7 @@ def get_optimizer(arg):
     arg.nb_steps = arg.get_steps(arg)
     arg.batch_size = arg.get_batch_size(arg)
     arg.log_learning_rate = arg.get_log_learning_rate(arg)
+    #pdb.set_trace()
     arg.starter_learning_rate = arg.get_start_learning_rate(arg)
     # decayed_learning_rate = learning_rate * decay_rate ^ (global_step / decay_steps)
     arg.decay_rate = arg.get_decay_rate(arg)
@@ -264,6 +267,9 @@ def main_hp(arg):
 
     note:
     '''
+    np.random.seed(arg.rand_x)
+    random.seed(arg.rand_x)
+    tf.set_random_seed( arg.rand_x )
     # force to flushing to output as default
     if arg.slurm_array_task_id == '1':
         print = print_func_flush_true
@@ -361,6 +367,9 @@ def main_hp(arg):
                     saver.save(sess=sess,save_path=arg.path_to_ckpt+arg.hp_folder_for_ckpt+arg.prefix_ckpt)
             # evaluate
             print('Final Test Acc/error: ', sess.run(fetches=accuracy, feed_dict={x: X_test, y_: Y_test}))
+
+#def set_random_seed():
+
 
 #
 

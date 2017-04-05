@@ -1,4 +1,5 @@
 import os
+import sys
 #from multiprocessing import Pool
 from multiprocessing import Process
 import contextlib
@@ -262,13 +263,18 @@ def run_hyperparam_search2(arg,ckpt_arg):
         arg = arg.get_arg_for_experiment()
         arg = put_ckpt_args_to_args(arg,ckpt_arg)
         arg.slurm_array_task_id = job_array_index
-        # throw out process so that many tensorflow gpus can be used serially
-        p = Process(target=main_hp.main_hp, args=(arg,))
-        p.start()
-        p.join()
+        if arg.debug:
+            main_hp.main_hp(arg)
+        else:
+            # throw out process so that many tensorflow gpus can be used serially
+            #p = Process(target=main_hp.main_hp, args=(arg,))
+            arg.rand_x = int.from_bytes(os.urandom(4), sys.byteorder)
+            print(arg.rand_x)
+            p = Process(target=main_hp.main_hp, args=(arg,))
+            p.start()
+            p.join()
         ckpt_arg.restore = False # after the model has been restored, we continue normal until all hp's are finished
         print('--> Done!!! with stid: ',job_array_index)
-
 
 def put_ckpt_args_to_args(arg,ckpt_arg):
     '''
