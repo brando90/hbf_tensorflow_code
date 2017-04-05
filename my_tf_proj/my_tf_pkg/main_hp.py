@@ -267,13 +267,13 @@ def main_hp(arg):
 
     note:
     '''
-    arg.rand_x = int.from_bytes(os.urandom(4), sys.byteorder)
+    #arg.rand_x = int.from_bytes(os.urandom(4), sys.byteorder)
     np.random.seed(arg.rand_x)
     random.seed(arg.rand_x)
     tf.set_random_seed( arg.rand_x )
     # force to flushing to output as default
     if arg.slurm_array_task_id == '1':
-        arg.display_training = True
+        #arg.display_training = True
         print = print_func_flush_true
     if arg.flush:
         print = print_func_flush_true
@@ -322,6 +322,7 @@ def main_hp(arg):
         # save everything that was saved in the session
         saver = tf.train.Saver()
     #### run session
+    start_time = time.time()
     with tf.Session(graph=graph) as sess:
         with open(arg.path_to_hp+arg.csv_errors_filename,mode='a') as errors_csv_f: # a option: Opens a file for appending. The file pointer is at the end of the file if the file exists. That is, the file is in the append mode. If the file does not exist, it creates a new file for writing.
             #writer = csv.Writer(errors_csv_f)
@@ -370,6 +371,13 @@ def main_hp(arg):
                     saver.save(sess=sess,save_path=arg.path_to_ckpt+arg.hp_folder_for_ckpt+arg.prefix_ckpt)
             # evaluate
             print('Final Test Acc/error: ', sess.run(fetches=accuracy, feed_dict={x: X_test, y_: Y_test}))
+            seconds = (time.time() - start_time)
+            minutes = seconds/ 60
+            hours = minutes/ 60
+            print("--- %s seconds ---" % seconds )
+            print("--- %s minutes ---" % minutes )
+            print("--- %s hours ---" % hours )
+            arg.seconds, arg.minutes, arg.hours = seconds, minutes, hours
 
 #def set_random_seed():
 

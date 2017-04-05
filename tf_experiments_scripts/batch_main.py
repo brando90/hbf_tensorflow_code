@@ -51,7 +51,7 @@ arg.get_errors_from = mtf.get_errors_based_on_train_error
 
 #arg.type_job, arg.nb_array_jobs = 'serial', 1 #careful when this is on and GPU is NOT on
 #arg.type_job = 'slurm_array_parallel'
-arg.type_job, arg.nb_array_jobs = 'main_large_hp_ckpt', 10
+arg.type_job, arg.nb_array_jobs = 'main_large_hp_ckpt', 5
 arg.save_checkpoints = True
 #arg.save_checkpoints = False
 #arg.save_last_mdl = True
@@ -144,8 +144,6 @@ arg.mdl = 'binary_tree_64D_conv_hidden_layer'
 #arg.mdl = 'bt_subgraph'
 #arg.mdl = 'debug_mdl'
 #
-#arg.collect_generalization = True
-arg.collect_generalization = False
 if arg.mdl == 'debug_mdl':
     arg.act = tf.nn.relu
     arg.dims = None
@@ -543,7 +541,9 @@ arg.debug = False
 #
 arg.display_training = True
 #arg.display_training = False
-
+#
+#arg.collect_generalization = True
+arg.collect_generalization = False
 ##
 arg.start_stid = 1
 arg.end_stid = arg.nb_array_jobs

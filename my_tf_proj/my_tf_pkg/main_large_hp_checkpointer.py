@@ -251,6 +251,7 @@ def run_hyperparam_search2(arg):
     initialized correctly so that it doesn't overwrite old ckpts.
     '''
     #do hyper_params
+    start_time = time.time()
     #pdb.set_trace()
     SLURM_ARRAY_TASK_IDS = list(range(int(arg.start_stid),int(arg.end_stid+1)))
     for job_array_index in SLURM_ARRAY_TASK_IDS:
@@ -263,13 +264,19 @@ def run_hyperparam_search2(arg):
             main_hp.main_hp(arg)
         else:
             # throw out process so that many tensorflow gpus can be used serially
-            arg.rand_x = int.from_bytes(os.urandom(10), sys.byteorder)
+            arg.rand_x = int.from_bytes(os.urandom(4), sys.byteorder)
             #print(arg.rand_x)
             p = Process(target=main_hp.main_hp, args=(arg,))
             p.start()
             p.join()
         arg.restore = False # after the model has been restored, we continue normal until all hp's are finished
         print('--> Done!!! with stid: ',job_array_index)
+    seconds = (time.time() - start_time)
+    minutes = seconds/ 60
+    hours = minutes/ 60
+    print("--- %s seconds ---" % seconds )
+    print("--- %s minutes ---" % minutes )
+    print("--- %s hours ---" % hours )
 #
 
 def get_args_for_experiment_test():
