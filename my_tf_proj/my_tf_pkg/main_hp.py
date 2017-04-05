@@ -20,10 +20,12 @@ import my_tf_pkg as mtf
 import sgd_lib
 import time
 
-import namespaces as ns
-
+import maps
+import functools
 
 from tensorflow.python.client import device_lib
+
+print_func_flush_true = functools.partial(print, flush=True) # TODO fix hack
 
 def get_available_gpus():
     local_device_protos = device_lib.list_local_devices()
@@ -228,6 +230,7 @@ def main_hp_serial(arg):
         scope_name = 'stid_'+str(job_array_index)
         #with tf.name_scope(scope_name):
         with tf.variable_scope(scope_name):
+            #arg = arg.get_arg_for_experiment()
             arg.slurm_array_task_id = job_array_index
             main_nn(arg)
 ##
@@ -262,7 +265,10 @@ def main_hp(arg):
     note:
     '''
     # force to flushing to output as default
-    print = arg.print_func
+    if arg.slurm_array_task_id == '1':
+        print = print_func_flush_true
+    if arg.flush:
+        print = print_func_flush_true
     print(print)
     print('>>> arg.restore = ', arg.restore)
     arg.date = datetime.date.today().strftime("%B %d").replace (" ", "_")
@@ -330,6 +336,7 @@ def main_hp(arg):
                 sess.run(tf.global_variables_initializer())
             # train
             start_iteration = step.eval() # last iteration trained is the first iteration for this model
+            batch_size_eval = batch_size.eval()
             for i in range(start_iteration,nb_iterations.eval()):
                 #batch_xs, batch_ys = mnist.train.next_batch(batch_size.eval())
                 batch_xs, batch_ys = get_batch_feed(X_train, Y_train, batch_size.eval())
@@ -339,14 +346,15 @@ def main_hp(arg):
                     sess.run(step.assign(i))
                     #
                     train_error = sess.run(fetches=loss, feed_dict={x: X_train, y_: Y_train, phase_train: False})
-                    cv_error = sess.run(fetches=loss, feed_dict={x: X_cv, y_: Y_cv, phase_train: False})
-                    test_error = sess.run(fetches=loss, feed_dict={x: X_test, y_: Y_test, phase_train: False})
-                    print( 'step %d, train error: %s | batch_size(step.eval(),arg.batch_size): %s,%s log_learning_rate: %s | mdl %s '%(i,train_error,batch_size.eval(),arg.batch_size,arg.log_learning_rate,arg.mdl) )
+                    cv_error, test_error = -1, -1 # dummy values so that reading data to form plots is easier
+                    if arg.collect_generalization:
+                        cv_error = sess.run(fetches=loss, feed_dict={x: X_cv, y_: Y_cv, phase_train: False})
+                        test_error = sess.run(fetches=loss, feed_dict={x: X_test, y_: Y_test, phase_train: False})
+                    print( 'step %d, train error: %s | batch_size(step.eval(),arg.batch_size): %s,%s log_learning_rate: %s | mdl %s '%(i,train_error,batch_size_eval,arg.batch_size,arg.log_learning_rate,arg.mdl) )
                     # save checkpoint
                     if arg.save_checkpoints:
                         saver.save(sess=sess,save_path=arg.path_to_ckpt+arg.hp_folder_for_ckpt+arg.prefix_ckpt)
                     # write files
-                    #pdb.set_trace()
                     writer.writerow({'train_error':train_error,'cv_error':cv_error,'test_error':test_error})
                 # save last model
                 if arg.save_last_mdl:
@@ -358,7 +366,6 @@ def main_hp(arg):
 
 def restore_hps(arg):
     '''
-
     note: the hps are only restored if there is some tensorflow ckpt, meaning that
     some iteration has been saved/checkpointed. Thus, it means that the hyper params that were saved
     correspond to the hyper params for the checkpointed model. Why? Hyper params
@@ -369,7 +376,7 @@ def restore_hps(arg):
     '''
     with open(arg.path_to_hp+arg.json_hp_filename, 'r') as f:
         hps = json.load(f)
-    arg = ns.Namespace(hps['arg_dict'])
+    arg = maps.NamedDict(hps['arg_dict'])
     return arg
 
 def save_hps(arg):

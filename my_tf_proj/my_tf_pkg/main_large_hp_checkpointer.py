@@ -4,8 +4,9 @@ from multiprocessing import Process
 import contextlib
 import time
 
-import namespaces as ns
+import maps
 import pdb
+import functools
 
 #import my_tf_pkg as mtf
 from my_tf_pkg import main_hp
@@ -15,6 +16,8 @@ import tensorflow as tf
 # download and install the MNIST data automatically
 from tensorflow.examples.tutorials.mnist import input_data
 #mnist = input_data.read_data_sets("tmp_MNIST_data/", one_hot=True)
+
+print_func_flush_true = functools.partial(print, flush=True) # TODO fix hack
 
 def make_and_check_dir(path):
     '''
@@ -159,7 +162,7 @@ def does_hp_have_tf_ckpt(path_to_hp):
 
 #
 
-def main_large_hp_ckpt(arg):
+def main_large_hp_ckpt(arg,ckpt_arg):
     '''
     Runs all the hyper params the we require and restores models if they were
     interupted at any point by slurm.
@@ -175,7 +178,10 @@ def main_large_hp_ckpt(arg):
     is re-ran but from the last iteration. Thus, the model might change but the
     change should be insignificant.
     '''
+    arg = put_ckpt_args_to_args(arg,ckpt_arg)
+    ##
     current_job_mdl_folder = 'job_mdl_folder_%s/'%arg.job_name
+    #pdb.set_trace()
     arg.path_to_ckpt = arg.get_path_root_ckpts(arg)+current_job_mdl_folder
     # if (there is a ckpt structure for this experiment and job continue training) otherwise (start from scratch and run job for experiment)
     if ckpts_exist_for_job_mdl(arg.path_to_ckpt): # if any of the dirs don't exist then start from scratch
@@ -186,9 +192,9 @@ def main_large_hp_ckpt(arg):
         print('largest_stid: ', largest_stid)
         if no_hp_exists(largest_stid): # (stid == -1) means there were no hp that were previously ran
             # start training hp from scratch
-            arg.start_stid = 1
-            arg.end_stid = arg.nb_array_jobs
-            arg.restore = False
+            ckpt_arg.start_stid = 1
+            ckpt_arg.end_stid = arg.nb_array_jobs
+            ckpt_arg.restore = False
             # note we didn't create a hp_dir cuz the loop that deals with specific hp's does it at some point (in train)
         else:
             path_to_hp_folder = arg.path_to_ckpt+'/hp_stid_'+str(largest_stid)
@@ -196,47 +202,48 @@ def main_large_hp_ckpt(arg):
             if does_hp_have_tf_ckpt(path_to_hp_folder): # is there a tf ckpt for this hp?
                 # start from this specific hp ckpt
                 print('>>>found tf ckpt')
-                arg.start_stid = largest_stid
-                arg.end_stid = arg.nb_array_jobs
-                arg.restore = True
-                arg.save_path_to_ckpt2restore = get_latest_save_path_to_ckpt(arg,largest_stid) # /task_exp_name/mdl_nn10/hp_stid_N/ckptK
-                print('>>>arg.save_path_to_ckpt2restore', arg.save_path_to_ckpt2restore)
+                ckpt_arg.start_stid = largest_stid
+                ckpt_arg.end_stid = arg.nb_array_jobs
+                ckpt_arg.restore = True
+                ckpt_arg.save_path_to_ckpt2restore = get_latest_save_path_to_ckpt(arg,largest_stid) # /task_exp_name/mdl_nn10/hp_stid_N/ckptK
+                print('>>>arg.save_path_to_ckpt2restore', ckpt_arg.save_path_to_ckpt2restore)
             else:
                 # train hp from the first iteration
                 print('>>>NOT found tf ckpt')
-                arg.start_stid = largest_stid
-                arg.end_stid = arg.nb_array_jobs
-                arg.restore = False
+                ckpt_arg.start_stid = largest_stid
+                ckpt_arg.end_stid = arg.nb_array_jobs
+                ckpt_arg.restore = False
                 #pdb.set_trace()
     else:
         #start from scratch, since there wasn't a ckpt structure for this experiment
         print('>>>Nothing has been run before so running something from scratch.')
-        arg.start_stid = 1
-        arg.end_stid = arg.nb_array_jobs
-        arg.restore = False
+        ckpt_arg.start_stid = 1
+        ckpt_arg.end_stid = arg.nb_array_jobs
+        ckpt_arg.restore = False
         make_and_check_dir(path=arg.path_to_ckpt) #first create and make the ckpt directory
-    run_hyperparam_search2(arg)
+    #pdb.set_trace()
+    run_hyperparam_search2(arg,ckpt_arg)
 
 ##
 
-def run_hyperparam_search(arg):
-    '''
-    Runs all the hp (hyper param) jobs that it needs to run.
-    Assume that the code calling it has figured out weather it has to restore
-    a model or not. If it does have to restore a model then the stid should be
-    initialized correctly so that it doesn't overwrite old ckpts.
-    '''
-    #do hyper_params
-    SLURM_ARRAY_TASK_IDS = list(range(int(arg.start_stid),int(arg.end_stid+1)))
-    for job_array_index in SLURM_ARRAY_TASK_IDS:
-        scope_name = 'stid_'+str(job_array_index)
-        print('--> stid: ',job_array_index)
-        #with tf.variable_scope(scope_name):
-        arg.slurm_array_task_id = job_array_index
-        # trains the current hp
-        main_hp.main_hp(arg)
+# def run_hyperparam_search(arg):
+#     '''
+#     Runs all the hp (hyper param) jobs that it needs to run.
+#     Assume that the code calling it has figured out weather it has to restore
+#     a model or not. If it does have to restore a model then the stid should be
+#     initialized correctly so that it doesn't overwrite old ckpts.
+#     '''
+#     #do hyper_params
+#     SLURM_ARRAY_TASK_IDS = list(range(int(arg.start_stid),int(arg.end_stid+1)))
+#     for job_array_index in SLURM_ARRAY_TASK_IDS:
+#         scope_name = 'stid_'+str(job_array_index)
+#         print('--> stid: ',job_array_index)
+#         #with tf.variable_scope(scope_name):
+#         arg.slurm_array_task_id = job_array_index
+#         # trains the current hp
+#         main_hp.main_hp(arg)
 
-def run_hyperparam_search2(arg):
+def run_hyperparam_search2(arg,ckpt_arg):
     '''
     Runs all the hp (hyper param) jobs that it needs to run.
     Assume that the code calling it has figured out weather it has to restore
@@ -245,23 +252,35 @@ def run_hyperparam_search2(arg):
     '''
     #do hyper_params
     #pdb.set_trace()
+    arg = put_ckpt_args_to_args(arg,ckpt_arg)
     SLURM_ARRAY_TASK_IDS = list(range(int(arg.start_stid),int(arg.end_stid+1)))
     for job_array_index in SLURM_ARRAY_TASK_IDS:
         print('\n')
         scope_name = 'stid_'+str(job_array_index)
         print('--> stid: ',job_array_index)
         #with tf.variable_scope(scope_name):
+        arg = arg.get_arg_for_experiment()
+        arg = put_ckpt_args_to_args(arg,ckpt_arg)
         arg.slurm_array_task_id = job_array_index
+        # throw out process so that many tensorflow gpus can be used serially
         p = Process(target=main_hp.main_hp, args=(arg,))
         p.start()
         p.join()
-        arg.restore = False # after the model has been restored, we continue normal until all hp's are finished
+        ckpt_arg.restore = False # after the model has been restored, we continue normal until all hp's are finished
         print('--> Done!!! with stid: ',job_array_index)
 
+
+def put_ckpt_args_to_args(arg,ckpt_arg):
+    '''
+    load ckpt_arg to arg.
+    '''
+    for key, value in ckpt_arg.items():
+        arg[key] = value
+    return arg
 #
 
 def get_args_for_experiment_test():
-    arg = ns.Namespace()
+    arg = maps.NamedDict()
     #
     arg.nb_array_jobs = 3
     arg.nb_iterations = 2001
