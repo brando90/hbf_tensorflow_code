@@ -267,11 +267,13 @@ def main_hp(arg):
 
     note:
     '''
+    arg.rand_x = int.from_bytes(os.urandom(4), sys.byteorder)
     np.random.seed(arg.rand_x)
     random.seed(arg.rand_x)
     tf.set_random_seed( arg.rand_x )
     # force to flushing to output as default
     if arg.slurm_array_task_id == '1':
+        arg.display_training = True
         print = print_func_flush_true
     if arg.flush:
         print = print_func_flush_true
@@ -356,7 +358,8 @@ def main_hp(arg):
                     if arg.collect_generalization:
                         cv_error = sess.run(fetches=loss, feed_dict={x: X_cv, y_: Y_cv, phase_train: False})
                         test_error = sess.run(fetches=loss, feed_dict={x: X_test, y_: Y_test, phase_train: False})
-                    print( 'step %d, train error: %s | batch_size(step.eval(),arg.batch_size): %s,%s log_learning_rate: %s | mdl %s '%(i,train_error,batch_size_eval,arg.batch_size,arg.log_learning_rate,arg.mdl) )
+                    if arg.display_training:
+                        print( 'step %d, train error: %s | batch_size(step.eval(),arg.batch_size): %s,%s log_learning_rate: %s | mdl %s '%(i,train_error,batch_size_eval,arg.batch_size,arg.log_learning_rate,arg.mdl) )
                     # save checkpoint
                     if arg.save_checkpoints:
                         saver.save(sess=sess,save_path=arg.path_to_ckpt+arg.hp_folder_for_ckpt+arg.prefix_ckpt)
