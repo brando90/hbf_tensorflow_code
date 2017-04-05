@@ -28,6 +28,7 @@ import functools
 from tensorflow.python.client import device_lib
 
 print_func_flush_true = functools.partial(print, flush=True) # TODO fix hack
+print_func_flush_false = functools.partial(print, flush=False) # TODO fix hack
 
 def get_available_gpus():
     local_device_protos = device_lib.list_local_devices()
@@ -272,6 +273,7 @@ def main_hp(arg):
     random.seed(arg.rand_x)
     tf.set_random_seed( arg.rand_x )
     # force to flushing to output as default
+    print = print_func_flush_false
     if arg.slurm_array_task_id == '1':
         #arg.display_training = True
         print = print_func_flush_true
@@ -322,6 +324,7 @@ def main_hp(arg):
         # save everything that was saved in the session
         saver = tf.train.Saver()
     #### run session
+    arg.save_ckpt_freq = arg.get_save_ckpt_freq(arg)
     start_time = time.time()
     with tf.Session(graph=graph) as sess:
         with open(arg.path_to_hp+arg.csv_errors_filename,mode='a') as errors_csv_f: # a option: Opens a file for appending. The file pointer is at the end of the file if the file exists. That is, the file is in the append mode. If the file does not exist, it creates a new file for writing.
@@ -361,11 +364,13 @@ def main_hp(arg):
                         test_error = sess.run(fetches=loss, feed_dict={x: X_test, y_: Y_test, phase_train: False})
                     if arg.display_training:
                         print( 'step %d, train error: %s | batch_size(step.eval(),arg.batch_size): %s,%s log_learning_rate: %s | mdl %s '%(i,train_error,batch_size_eval,arg.batch_size,arg.log_learning_rate,arg.mdl) )
-                    # save checkpoint
-                    if arg.save_checkpoints:
-                        saver.save(sess=sess,save_path=arg.path_to_ckpt+arg.hp_folder_for_ckpt+arg.prefix_ckpt)
                     # write files
                     writer.writerow({'train_error':train_error,'cv_error':cv_error,'test_error':test_error})
+                # save checkpoint
+                if arg.save_checkpoints:
+                    if i % arg.save_ckpt_freq == 0:
+                        #print('>>>>>>>>>>CKPT',i,arg.save_ckpt_freq)
+                        saver.save(sess=sess,save_path=arg.path_to_ckpt+arg.hp_folder_for_ckpt+arg.prefix_ckpt)
                 # save last model
                 if arg.save_last_mdl:
                     saver.save(sess=sess,save_path=arg.path_to_ckpt+arg.hp_folder_for_ckpt+arg.prefix_ckpt)
@@ -377,7 +382,7 @@ def main_hp(arg):
             print("--- %s seconds ---" % seconds )
             print("--- %s minutes ---" % minutes )
             print("--- %s hours ---" % hours )
-            arg.seconds, arg.minutes, arg.hours = seconds, minutes, hours
+            #arg.seconds, arg.minutes, arg.hours = seconds, minutes, hours
 
 #def set_random_seed():
 

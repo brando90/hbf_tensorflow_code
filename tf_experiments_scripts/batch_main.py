@@ -417,6 +417,7 @@ def get_power2_batch_size(arg):
     return batch_size
 arg.get_batch_size = get_power2_batch_size
 arg.report_error_freq = 100
+arg.get_save_ckpt_freq = lambda arg: int(0.25*arg.nb_steps)
 
 arg.low_log_const_learning_rate, arg.high_log_const_learning_rate = -0.5, -4
 arg.get_log_learning_rate =  lambda arg: np.random.uniform(low=arg.low_log_const_learning_rate, high=arg.high_log_const_learning_rate)
@@ -534,9 +535,10 @@ arg.act_name = arg.act.__name__
 arg.cmd_args = cmd_args
 ##
 arg.print_func = print_func_flush_true # functools.partial(print, flush=True)
-arg.flush = True
-#arg.flush = False
-arg.debug = True
+#arg.flush = True
+arg.flush = False
+# makes things serial or not (ie. not spin serial processes or not)
+#arg.debug = True
 arg.debug = False
 #
 arg.display_training = True
