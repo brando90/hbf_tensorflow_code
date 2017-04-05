@@ -52,7 +52,7 @@ def get_arg_for_experiment():
 
     #arg.type_job, arg.nb_array_jobs = 'serial', 1 #careful when this is on and GPU is NOT on
     #arg.type_job = 'slurm_array_parallel'
-    arg.type_job, arg.nb_array_jobs = 'main_large_hp_ckpt', 3
+    arg.type_job, arg.nb_array_jobs = 'main_large_hp_ckpt', 10
     arg.save_checkpoints = True
     #arg.save_checkpoints = False
     #arg.save_last_mdl = True
@@ -489,8 +489,6 @@ def get_arg_for_experiment():
     re_train = None
     arg.re_train = re_train
     #
-    arg.save_config_args = False
-    #arg.debug = False
     # arg.slurm_jobid = os.environ['SLURM_JOBID']
     # arg.slurm_array_task_id = os.environ['SLURM_ARRAY_TASK_ID']
 
@@ -542,6 +540,8 @@ def get_arg_for_experiment():
     arg.print_func = print_func_flush_true # functools.partial(print, flush=True)
     arg.flush = True
     #arg.flush = False
+    arg.debug = True
+    arg.debug = False
     return arg
 
 ##
