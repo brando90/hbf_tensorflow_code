@@ -124,13 +124,13 @@ arg.experiment_name = 'task_Apr_5_BT_64D_Adam_xavier_relu_N60000_original_setup_
 #arg.experiment_name = 'dgx1_Feb_8_256D_Adam_xavier_relu_N60000'
 #arg.job_name = 'BTSG1_8D_a19_Adam_200' # job name e.g BTHL_4D_6_12_MGD_200
 #arg.job_name = 'BT_debug1'
-arg.job_name = 'BT_64D_units31x2_Adam'
+arg.job_name = 'BT_64D_units3_Adam'
 
 #arg.experiment_name = 'task_Nov_19_NN_Adam_xavier_relu_N60000' # experiment_name e.g. task_Oct_10_NN_MGD_xavier_relu_N2000
 #arg.experiment_name = 'TMP_task_Jan_19_NN_256D_Adam_xavier_relu_N60000'
 #arg.job_name = 'NN_8D_31_Adam_200' # job name e.g NN_4D_31_MGD_200
 #arg.job_name = 'NN_debug2'
-#arg.job_name = 'NN_64D_units2_Adam'
+#arg.job_name = 'NN_64D_units31x2_Adam'
 #
 arg.experiment_root_dir = mtf.get_experiment_folder(arg.data_filename)
 #
@@ -308,7 +308,7 @@ elif arg.mdl == 'binary_tree_64D_conv_hidden_layer':
     arg.weights_initializer = tf.contrib.layers.xavier_initializer(dtype=tf.float32)
     arg.biases_initializer = tf.constant_initializer(value=0.1, dtype=tf.float32)
     #
-    F1 = 2
+    F1 = 3
     arg.F = [None] + [ F1*(2**l) for l in range(1,L+1) ]
     arg.nb_filters = arg.F
     #
