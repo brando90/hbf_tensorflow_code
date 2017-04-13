@@ -335,6 +335,8 @@ def main_hp(arg):
                 arg.restore = False # after the model has been restored, we continue normal until all hp's are finished
                 saver.restore(sess=sess, save_path=arg.save_path_to_ckpt2restore) # e.g. saver.restore(sess=sess, save_path='./tmp/my-model')
                 arg = restore_hps(arg)
+                print('arg ', arg)
+                #print('arg.save_path_to_ckpt2restore: ',arg.save_path_to_ckpt2restore)
                 print('restored model trained up to, STEP: ', step.eval())
                 print('restored model, ACCURACY:', sess.run(fetches=accuracy, feed_dict={x: X_train, y_: Y_train, phase_train: False}))
             else: # NOT Restore
@@ -349,6 +351,7 @@ def main_hp(arg):
             # train
             start_iteration = step.eval() # last iteration trained is the first iteration for this model
             batch_size_eval = batch_size.eval()
+            #pdb.set_trace()
             for i in range(start_iteration,nb_iterations.eval()):
                 #batch_xs, batch_ys = mnist.train.next_batch(batch_size.eval())
                 batch_xs, batch_ys = get_batch_feed(X_train, Y_train, batch_size.eval())

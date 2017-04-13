@@ -386,9 +386,10 @@ def get_power2_batch_size(arg):
 #arg.get_batch_size = get_power2_batch_size
 ## report freqs
 arg.report_error_freq = 100
+#arg.get_save_ckpt_freq = lambda arg: arg.report_error_freq
 arg.get_save_ckpt_freq = lambda arg: int(0.25*arg.nb_steps)
 
-arg.low_log_const_learning_rate, arg.high_log_const_learning_rate = -0.5, -4
+arg.low_log_const_learning_rate, arg.high_log_const_learning_rate = -0.2, -4.5
 arg.get_log_learning_rate =  lambda arg: np.random.uniform(low=arg.low_log_const_learning_rate, high=arg.high_log_const_learning_rate)
 arg.get_start_learning_rate = lambda arg: 10**arg.log_learning_rate
 ## decayed_learning_rate = learning_rate * decay_rate ^ (global_step / decay_steps)
@@ -400,7 +401,7 @@ arg.get_decay_rate = lambda arg: np.random.uniform(low=arg.decay_rate_low, high=
 #arg.get_decay_steps = lambda arg: np.random.randint(low=arg.decay_steps_low, high=arg.decay_steps_high)
 def get_decay_steps(arg):
     #arg.decay_steps_low, arg.decay_steps_high = arg.report_error_freq, arg.M
-    arg.decay_steps_low, arg.decay_steps_high = 1000, 15000
+    arg.decay_steps_low, arg.decay_steps_high = 2000, 25000
     decay_steos = np.random.randint(low=arg.decay_steps_low, high=arg.decay_steps_high)
     return decay_steos
 arg.get_decay_steps = get_decay_steps # when stair case, how often to shrink

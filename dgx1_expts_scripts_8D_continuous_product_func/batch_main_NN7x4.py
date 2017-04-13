@@ -77,27 +77,16 @@ arg.get_path_root_ckpts =  lambda arg: prefix_path_ckpts%(arg.experiment_root_di
 
 arg.prefix_ckpt = 'mdl_ckpt'
 ####
-#arg.data_filename = 'h_gabor_data_and_mesh'
-#arg.data_filename = 'f_1D_cos_no_noise_data' #task_qianli_func
-#arg.data_filename = 'f_4D_conv_2nd'
-#arg.data_filename = 'f_4D_conv_2nd_noise_3_0_25std'
-#arg.data_filename = 'f_4D_conv_2nd_noise_6_0_5std'
-#arg.data_filename = 'f_4D_conv_2nd_noise_12_1std'
-#arg.data_filename = 'f_4D_cos_x2_BT'
-#arg.data_filename = 'f_4D_simple_ReLu_BT_2_units_1st'
 #arg.data_filename = 'f_8D_conv_cos_poly1_poly1'
 #arg.data_filename = 'f_8D_single_relu'
 #arg.data_filename = 'f_8D_conv_quad_cubic_sqrt'
 #arg.data_filename = 'f_8D_conv_quad_cubic_sqrt'
-#arg.data_filename = 'f_8D_product_continuous'
-arg.data_filename = 'f_64D_product_binary'
+arg.data_filename = 'f_8D_product_continuous'
+#arg.data_filename = 'f_64D_product_binary'
 #arg.data_filename = 'f_16D_ppt'
 #arg.data_filename = 'f_32D_ppt'
 #arg.data_filename = 'f_64D_ppt'
 #arg.data_filename = 'f_256D_L8_ppt_1'
-#arg.data_filename = 'f_8D_conv_quad_cubic_sqrt_shuffled'
-#arg.data_filename = 'f_4D_simple_ReLu_BT'
-#arg.data_filename = 'MNIST'
 arg.task_folder_name = mtf.get_experiment_folder(arg.data_filename) #om_f_4d_conv
 arg.type_preprocess_data = None
 #
@@ -106,45 +95,22 @@ arg.N_frac = 60000
 
 arg.classificaton = mtf.classification_task_or_not(arg)
 
-#arg.experiment_name = 'task_Nov_22_BTSG1_2_3_8D_Adam_xavier_relu_N60000' # task_Oct_10_BT4D_MGD_xavier_relu_N2000 e.g. task_August_10_BT
-#arg.experiment_name = 'task_Nov_22_BTSG2_3_2_8D_Adam_xavier_relu_N60000'
-#arg.experiment_name = 'task_Nov_22_BTSG3_3_3_8D_Adam_xavier_relu_N60000'
-#arg.experiment_name = 'tmp_task_Nov_22_BTSG4_4_2_8D_Adam_xavier_relu_N60000'
-#arg.experiment_name = 'task_Jan_19_BT_256D_Adam_xavier_relu_N60000'
-#arg.experiment_name = 'task_Feb_28_BT_32D_Adam_xavier_relu_N60000_100'
-#arg.experiment_name = 'task_Feb_28_NN_32D_Adam_xavier_relu_N60000_100'
-#arg.experiment_name = 'task_Mar_2_BT_8D_Adam_xavier_relu_N60000_original_setup'
-#arg.experiment_name = 'task_Mar_2_NN_8D_Adam_xavier_relu_N60000_original_setup'
-#arg.experiment_name = 'task_Mar_12_BT_8D_Adam_xavier_relu_N60000_original_setup_dgx1'
-#arg.experiment_name = 'task_Mar_12_NN_8D_Adam_xavier_relu_N60000_original_setup_dgx1'
+#arg.experiment_name = 'task_Apr_13_BT_8D_Adam_xavier_relu_N60000_original_setup_dgx1'
+arg.experiment_name = 'task_Apr_13_NN_8D_Adam_xavier_relu_N60000_original_setup_dgx1'
 #arg.experiment_name = 'task_Apr_5_BT_64D_Adam_xavier_relu_N60000_original_setup_dgx1'
-arg.experiment_name = 'task_Apr_5_NN_64D_Adam_xavier_relu_N60000_original_setup_dgx1'
+#arg.experiment_name = 'task_Apr_5_NN_64D_Adam_xavier_relu_N60000_original_setup_dgx1'
 #arg.experiment_name = 'TMP3'
-#arg.experiment_name = 'TMP_hp_test'
-#arg.experiment_name = 'dgx1_Feb_8_256D_Adam_xavier_relu_N60000'
-#arg.job_name = 'BTSG1_8D_a19_Adam_200' # job name e.g BTHL_4D_6_12_MGD_200
-#arg.job_name = 'BT_debug1'
-#arg.job_name = 'BT_64D_units2_Adam'
+#arg.job_name = 'BT_8D_units2_Adam'
 
 #arg.experiment_name = 'task_Nov_19_NN_Adam_xavier_relu_N60000' # experiment_name e.g. task_Oct_10_NN_MGD_xavier_relu_N2000
 #arg.experiment_name = 'TMP_task_Jan_19_NN_256D_Adam_xavier_relu_N60000'
 #arg.job_name = 'NN_8D_31_Adam_200' # job name e.g NN_4D_31_MGD_200
 #arg.job_name = 'NN_debug2'
-arg.job_name = 'NN_64D_units31x4_Adam'
+arg.job_name = 'NN_8D_units7x4_Adam'
 #
 arg.experiment_root_dir = mtf.get_experiment_folder(arg.data_filename)
 #
 arg.mdl = 'standard_nn'
-#arg.mdl = 'hbf'
-#arg.mdl = 'binary_tree_4D_conv_hidden_layer'
-#arg.mdl = "binary_tree_4D_conv_hidden_layer_automatic"
-#arg.mdl = 'binary_tree_8D_conv_hidden_layer'
-#arg.mdl = 'binary_tree_16D_conv_hidden_layer'
-#arg.mdl = 'binary_tree_32D_conv_hidden_layer'
-#arg.mdl = 'binary_tree_64D_conv_hidden_layer'
-#arg.mdl = 'binary_tree_256D_conv_hidden_layer'
-#arg.mdl = 'bt_subgraph'
-#arg.mdl = 'debug_mdl'
 #
 if arg.mdl == 'debug_mdl':
     arg.act = tf.nn.relu
@@ -157,7 +123,7 @@ elif arg.mdl == 'standard_nn':
     arg.init_type = 'data_xavier_kern'
     arg.init_type = 'xavier'
 
-    K = 31*4
+    K = 7*4
     arg.units = [K]
     #arg.mu = 0.0
     #arg.std = 0.5
@@ -234,7 +200,7 @@ elif arg.mdl == 'binary_tree_8D_conv_hidden_layer':
     arg.weights_initializer = tf.contrib.layers.xavier_initializer(dtype=tf.float32)
     arg.biases_initializer = tf.constant_initializer(value=0.1, dtype=tf.float32)
     #
-    F1 = 1
+    F1 = 2
     arg.F = [None, F1, 2*F1, 4*F1]
     #
     arg.normalizer_fn = None
@@ -420,9 +386,10 @@ def get_power2_batch_size(arg):
 #arg.get_batch_size = get_power2_batch_size
 ## report freqs
 arg.report_error_freq = 100
+#arg.get_save_ckpt_freq = lambda arg: arg.report_error_freq
 arg.get_save_ckpt_freq = lambda arg: int(0.25*arg.nb_steps)
 
-arg.low_log_const_learning_rate, arg.high_log_const_learning_rate = -0.5, -4
+arg.low_log_const_learning_rate, arg.high_log_const_learning_rate = -0.2, -4.5
 arg.get_log_learning_rate =  lambda arg: np.random.uniform(low=arg.low_log_const_learning_rate, high=arg.high_log_const_learning_rate)
 arg.get_start_learning_rate = lambda arg: 10**arg.log_learning_rate
 ## decayed_learning_rate = learning_rate * decay_rate ^ (global_step / decay_steps)
@@ -434,7 +401,7 @@ arg.get_decay_rate = lambda arg: np.random.uniform(low=arg.decay_rate_low, high=
 #arg.get_decay_steps = lambda arg: np.random.randint(low=arg.decay_steps_low, high=arg.decay_steps_high)
 def get_decay_steps(arg):
     #arg.decay_steps_low, arg.decay_steps_high = arg.report_error_freq, arg.M
-    arg.decay_steps_low, arg.decay_steps_high = 1000, 15000
+    arg.decay_steps_low, arg.decay_steps_high = 2000, 25000
     decay_steos = np.random.randint(low=arg.decay_steps_low, high=arg.decay_steps_high)
     return decay_steos
 arg.get_decay_steps = get_decay_steps # when stair case, how often to shrink

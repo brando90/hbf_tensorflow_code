@@ -205,7 +205,9 @@ def main_large_hp_ckpt(arg):
                 arg.start_stid = largest_stid
                 arg.end_stid = arg.nb_array_jobs
                 arg.restore = True
+                #pdb.set_trace()
                 arg.save_path_to_ckpt2restore = get_latest_save_path_to_ckpt(arg,largest_stid) # /task_exp_name/mdl_nn10/hp_stid_N/ckptK
+                #pdb.set_trace()
                 print('>>>arg.save_path_to_ckpt2restore', arg.save_path_to_ckpt2restore)
             else:
                 # train hp from the first iteration
@@ -261,6 +263,9 @@ def run_hyperparam_search2(arg):
         #with tf.variable_scope(scope_name):
         arg.slurm_array_task_id = job_array_index
         if arg.debug:
+            arg.rand_x = int.from_bytes(os.urandom(4), sys.byteorder)
+            #arg.save_path_to_ckpt2restore
+            #pdb.set_trace()
             main_hp.main_hp(arg)
         else:
             # throw out process so that many tensorflow gpus can be used serially
