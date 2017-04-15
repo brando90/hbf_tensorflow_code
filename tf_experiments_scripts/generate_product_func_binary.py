@@ -1,3 +1,11 @@
+#!/bin/bash
+#SBATCH --mem=60000
+#SBATCH --mail-type=ALL
+#SBATCH --mail-user=brando90@mit.edu
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=1
+#SBATCH --time=7-00:00
+
 import numpy as np
 import json
 #from sklearn.cross_validation import train_test_split
