@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env python
 #SBATCH --mem=60000
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=brando90@mit.edu
