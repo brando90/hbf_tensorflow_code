@@ -98,7 +98,7 @@ arg.classificaton = mtf.classification_task_or_not(arg)
 
 arg.experiment_name = 'task_Apr_15_BT_32D_Adam_xavier_relu_N60000_original_setup_dgx1'
 #arg.experiment_name = 'task_Apr_13_NN_8D_Adam_xavier_relu_N60000_original_setup_dgx1'
-#arg.experiment_name = 'TMP3'
+arg.experiment_name = 'TMP3'
 arg.job_name = 'BT_32D_units2_Adam'
 #arg.job_name = 'NN_64D_units31x2_Adam'
 #

@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --mem=10000
+#SBATCH --mem=50000
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=brando90@mit.edu
 #SBATCH --gres=gpu:1

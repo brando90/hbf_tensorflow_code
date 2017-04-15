@@ -321,7 +321,7 @@ def main_hp(arg):
         # step for optimizer (useful for ckpts)
         step, nb_iterations = tf.Variable(0, name='step'), tf.Variable(arg.nb_steps, name='nb_iterations')
         batch_size = tf.Variable(arg.batch_size, name='batch_size')
-        # save everything that was saved in the session
+        # saves everything that was saved in the session
         saver = tf.train.Saver()
     #### run session
     arg.save_ckpt_freq = arg.get_save_ckpt_freq(arg)
