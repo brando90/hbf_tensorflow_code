@@ -22,7 +22,7 @@ def shallow_vs_deep():
     #task_name ='f_16D_ppt'
     task_name ='f_32D_ppt'
     task_name = 'f_8D_product_continuous'
-    task_name = 'f_64D_product_binary'
+    #task_name = 'f_64D_product_binary'
     #task_name ='f_64D_ppt'
     #
     experiment_name = mtf.get_experiment_folder(task_name)
@@ -46,7 +46,7 @@ def shallow_vs_deep():
     path_to_experiments_NN = '../../simulation_results_scripts/%s/task_Feb_28_NN_32D_Adam_xavier_relu_N60000_original_setup'%experiment_name
     path_to_experiments_NN = '../../simulation_results_scripts/%s/task_Mar_2_NN_8D_Adam_xavier_relu_N60000_original_setup'%experiment_name
     path_to_experiments_NN = '../../../simulation_results_scripts/%s/task_Mar_12_NN_8D_Adam_xavier_relu_N60000_original_setup_dgx1'%experiment_name
-    path_to_experiments_NN = '../../../simulation_results_scripts/%s/task_Apr_5_NN_64D_Adam_xavier_relu_N60000_original_setup_dgx1'%experiment_name
+    path_to_experiments_NN = '../../simulation_results_scripts/%s/task_Apr_13_NN_8D_Adam_xavier_relu_N60000_original_setup_dgx1'%experiment_name
     mtf.combine_errors_and_hps_to_one_json_file(path_to_experiments_NN,verbose=True,overwrite_old=True)
     expts_best_results = mtf.get_best_results_for_experiments(path_to_experiments_NN,decider,verbose=False,mdl_complexity_criteria=mdl_complexity_criteria)
     #pdb.set_trace()
@@ -73,7 +73,7 @@ def shallow_vs_deep():
     #sorted_train_errors = np.log(sorted_train_errors)
     #sorted_test_errors = np.log(sorted_test_errors)
     #nb_params_shallow = 7*np.array([3,4,5])
-    nb_params_shallow = 31*np.array([2,3,4,5])
+    nb_params_shallow = 7*np.array([2,3])
     print('total units: ', nb_params_shallow)
     krls.plot_values(nb_params_shallow,sorted_train_errors,xlabel='number of units',y_label='squared error (l2 loss)',label='Train errors for Shallow Neural Net (NN)',markersize=3,colour='b')
     #krls.plot_values(nb_params_shallow,sorted_test_errors,xlabel='number of parameters',y_label='squared error (l2 loss)',label='Test error for Shallow NN',markersize=3,colour='b')
@@ -88,6 +88,7 @@ def shallow_vs_deep():
     path_to_experiments_BT = '../../simulation_results_scripts/%s/task_Mar_2_BT_8D_Adam_xavier_relu_N60000_original_setup'%experiment_name
     path_to_experiments_BT = '../../../simulation_results_scripts/%s/task_Mar_12_BT_8D_Adam_xavier_relu_N60000_original_setup_dgx1'%experiment_name
     path_to_experiments_BT = '../../../simulation_results_scripts/%s/task_Apr_5_BT_64D_Adam_xavier_relu_N60000_original_setup_dgx1'%experiment_name
+    path_to_experiments_BT = '../../simulation_results_scripts/%s/task_Apr_13_BT_8D_Adam_xavier_relu_N60000_original_setup_dgx1'%experiment_name
     mtf.combine_errors_and_hps_to_one_json_file(path_to_experiments_BT,verbose=True,overwrite_old=True)
     expts_best_results = mtf.get_best_results_for_experiments(path_to_experiments_BT,decider,verbose=False,mdl_complexity_criteria=mdl_complexity_criteria)
     sorted_units, sorted_train_errors, sorted_validation_errors, sorted_test_errors = mtf.get_errors_for_display(expts_best_results)
@@ -114,7 +115,7 @@ def shallow_vs_deep():
     #sorted_test_errors = np.log(sorted_test_errors)
     #
     #nb_params_bt = 7*np.array([3,4,5])
-    nb_params_bt = 31*np.array([2,3,4,5])
+    nb_params_bt = 7*np.array([2,3,4])
     print('total units: ', nb_params_bt)
     krls.plot_values(nb_params_bt,sorted_train_errors,xlabel='number of units',y_label='squared error (l2 loss)',label='Train errors for Binary Tree (BT) Neural Net',markersize=3,colour='c',linestyle='--')
     #krls.plot_values(nb_params_bt,sorted_test_errors,xlabel='number of parameters',y_label='squared error (l2 loss)',label='Test errors for Binary Tree (BT) Neural Net',markersize=3,colour='c')

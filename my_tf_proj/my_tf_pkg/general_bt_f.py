@@ -192,7 +192,7 @@ def _generate_input_data_full_binary(D):
 
 def _generate_input_data_random_binary(D,M):
     '''
-    random means generate M random from the 2^D.
+    random means generate M random from the 2^D=2^(2**logD).
     '''
     X_train = _generate_single_data_binary_random_size(D,M)
     X_cv = _generate_single_data_binary_random_size(D,M)
