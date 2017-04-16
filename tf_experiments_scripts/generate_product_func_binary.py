@@ -25,7 +25,7 @@ nbins = 10
 M = 10
 #M = 6*nbins**(2**logD)
 #M = 6*10*(10**6)
-M = 3*(10**6)
+M = 3*(10**7)
 #
 type_input_dist = 'full_random_M'
 file_name = '/home_simulation_research/hbf_tensorflow_code/tf_experiments_scripts/data/f_%sD_binary_parity_N%s.npz'%(str(D),str(M))

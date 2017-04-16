@@ -54,8 +54,8 @@ arg.type_job = 'slurm_array_parallel'
 #arg.type_job, arg.nb_array_jobs = 'main_large_hp_ckpt', 200
 #arg.save_checkpoints = True
 arg.save_checkpoints = False
-#arg.save_last_mdl = True
-arg.save_last_mdl = False
+arg.save_last_mdl = True
+#arg.save_last_mdl = False
 
 ## debug mode
 #arg.data_dirpath = './data/' # path to datasets
@@ -90,8 +90,9 @@ arg.classificaton = mtf.classification_task_or_not(arg)
 arg.experiment_name = 'task_Apr_16_BT_64D_Adam_xavier_relu_N30000000_original_setup_OM'
 #arg.experiment_name = 'task_Apr_16_NN_64D_Adam_xavier_relu_N30000000_original_setup_OM'
 #
-arg.job_name = 'BT_64D_units63x2_Adam'
-#arg.job_name = 'NN_64D_units2_Adam'
+#arg.job_name = 'BT_64D_units63x2_Adam'
+arg.job_name = 'NN_64D_units2_Adam'
+#arg.job_name = 'TMP'
 #
 arg.experiment_root_dir = mtf.get_experiment_folder(arg.data_filename)
 #
@@ -312,9 +313,12 @@ arg.display_training = True
 #arg.collect_generalization = True
 arg.collect_generalization = False
 ##
-arg.start_stid = 1
-arg.end_stid = arg.nb_array_jobs
+arg.rand_x = int.from_bytes(os.urandom(4), sys.byteorder)
 arg.restore = False
+if arg.type_job != 'slurm_array_parallel':
+    arg.start_stid = 1
+    arg.end_stid = arg.nb_array_jobs
+    arg.restore = False
 #pdb.set_trace()
 if __name__ == '__main__':
     cmd_args = arg.cmd_args

@@ -332,7 +332,7 @@ class TestNN_BT(unittest.TestCase):
         logD=6
         L = logD
         D = 2**L
-        F1 = 3 # <--- EDIT
+        F1 = 2 # <--- EDIT
         nb_units = 7*6  # <-- EDIT
         F = [None] + [ F1*(2**l) for l in range(1,L+1) ]
         print('F ', F)

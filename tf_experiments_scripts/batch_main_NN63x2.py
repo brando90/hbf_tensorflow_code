@@ -1,6 +1,6 @@
 #!/usr/bin/env python
-#SBATCH --mem=4500
-#SBATCH --time=3-18:20
+#SBATCH --mem=60000
+#SBATCH --time=7-00:00
 #SBATCH --array=1-200
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=rene_sax14@yahoo.com
@@ -50,25 +50,25 @@ arg.get_errors_from = mtf.get_errors_based_on_train_error
 #
 
 #arg.type_job, arg.nb_array_jobs = 'serial', 1 #careful when this is on and GPU is NOT on
-#arg.type_job = 'slurm_array_parallel'
-arg.type_job, arg.nb_array_jobs = 'main_large_hp_ckpt', 200
-arg.save_checkpoints = True
-#arg.save_checkpoints = False
-#arg.save_last_mdl = True
-arg.save_last_mdl = False
+arg.type_job = 'slurm_array_parallel'
+#arg.type_job, arg.nb_array_jobs = 'main_large_hp_ckpt', 200
+#arg.save_checkpoints = True
+arg.save_checkpoints = False
+arg.save_last_mdl = True
+#arg.save_last_mdl = False
 
 ## debug mode
 #arg.data_dirpath = './data/' # path to datasets
 #prefix_path_sim_results = './tmp_simulation_results_scripts/%s/%s/' # folder where the results from script is saved
 #prefix_path_ckpts = './tmp_all_ckpts/%s/%s/' # folder where the results from script is saved
 ## to run locally: python batch_main.py -sj sj
-#arg.data_dirpath = './data/' # path to datasets
-#prefix_path_sim_results = '../../simulation_results_scripts/%s/%s/' # folder where the results from script is saved
-#prefix_path_ckpts = '../../all_ckpts/%s/%s/' # folder where the results from script is saved
+arg.data_dirpath = './data/' # path to datasets
+prefix_path_sim_results = '../../simulation_results_scripts/%s/%s/' # folder where the results from script is saved
+prefix_path_ckpts = '../../all_ckpts/%s/%s/' # folder where the results from script is saved
 ## to run in docker
-arg.data_dirpath = '/home_simulation_research/hbf_tensorflow_code/tf_experiments_scripts/data/' # path to datasets
-prefix_path_sim_results = '/home_simulation_research/simulation_results_scripts/%s/%s/' # folder where the results from script is saved
-prefix_path_ckpts = '/home_simulation_research/all_ckpts/%s/%s/' # folder where the results from script is saved
+#arg.data_dirpath = '/home_simulation_research/hbf_tensorflow_code/tf_experiments_scripts/data/' # path to datasets
+#prefix_path_sim_results = '/home_simulation_research/simulation_results_scripts/%s/%s/' # folder where the results from script is saved
+#prefix_path_ckpts = '/home_simulation_research/all_ckpts/%s/%s/' # folder where the results from script is saved
 
 # prefix_path_sim_results = '../../simulation_results_scripts/%s/%s'
 # prefix_path_ckpts = '../../all_ckpts/%s/%s' # folder where the results from script is saved
@@ -77,74 +77,27 @@ arg.get_path_root_ckpts =  lambda arg: prefix_path_ckpts%(arg.experiment_root_di
 
 arg.prefix_ckpt = 'mdl_ckpt'
 ####
-#arg.data_filename = 'h_gabor_data_and_mesh'
-#arg.data_filename = 'f_1D_cos_no_noise_data' #task_qianli_func
-#arg.data_filename = 'f_4D_conv_2nd'
-#arg.data_filename = 'f_4D_conv_2nd_noise_3_0_25std'
-#arg.data_filename = 'f_4D_conv_2nd_noise_6_0_5std'
-#arg.data_filename = 'f_4D_conv_2nd_noise_12_1std'
-#arg.data_filename = 'f_4D_cos_x2_BT'
-#arg.data_filename = 'f_4D_simple_ReLu_BT_2_units_1st'
-#arg.data_filename = 'f_8D_conv_cos_poly1_poly1'
-#arg.data_filename = 'f_8D_single_relu'
-#arg.data_filename = 'f_8D_conv_quad_cubic_sqrt'
-#arg.data_filename = 'f_8D_conv_quad_cubic_sqrt'
-#arg.data_filename = 'f_8D_product_continuous'
-arg.data_filename = 'f_64D_product_binary'
-#arg.data_filename = 'f_16D_ppt'
-#arg.data_filename = 'f_32D_ppt'
-#arg.data_filename = 'f_64D_ppt'
-#arg.data_filename = 'f_256D_L8_ppt_1'
-#arg.data_filename = 'f_8D_conv_quad_cubic_sqrt_shuffled'
-#arg.data_filename = 'f_4D_simple_ReLu_BT'
-#arg.data_filename = 'MNIST'
+arg.data_filename = 'f_64D_binary_parity_N30000000'
+#
 arg.task_folder_name = mtf.get_experiment_folder(arg.data_filename) #om_f_4d_conv
 arg.type_preprocess_data = None
 #
-arg.N_frac = 60000
+arg.N_frac = 30000000
 #print('arg.N_frac: ', arg.N_frac)
 
 arg.classificaton = mtf.classification_task_or_not(arg)
 
-#arg.experiment_name = 'task_Nov_22_BTSG1_2_3_8D_Adam_xavier_relu_N60000' # task_Oct_10_BT4D_MGD_xavier_relu_N2000 e.g. task_August_10_BT
-#arg.experiment_name = 'task_Nov_22_BTSG2_3_2_8D_Adam_xavier_relu_N60000'
-#arg.experiment_name = 'task_Nov_22_BTSG3_3_3_8D_Adam_xavier_relu_N60000'
-#arg.experiment_name = 'tmp_task_Nov_22_BTSG4_4_2_8D_Adam_xavier_relu_N60000'
-#arg.experiment_name = 'task_Jan_19_BT_256D_Adam_xavier_relu_N60000'
-#arg.experiment_name = 'task_Feb_28_BT_32D_Adam_xavier_relu_N60000_100'
-#arg.experiment_name = 'task_Feb_28_NN_32D_Adam_xavier_relu_N60000_100'
-#arg.experiment_name = 'task_Mar_2_BT_8D_Adam_xavier_relu_N60000_original_setup'
-#arg.experiment_name = 'task_Mar_2_NN_8D_Adam_xavier_relu_N60000_original_setup'
-#arg.experiment_name = 'task_Mar_12_BT_8D_Adam_xavier_relu_N60000_original_setup_dgx1'
-#arg.experiment_name = 'task_Mar_12_NN_8D_Adam_xavier_relu_N60000_original_setup_dgx1'
-#arg.experiment_name = 'task_Apr_5_BT_64D_Adam_xavier_relu_N60000_original_setup_dgx1'
-arg.experiment_name = 'task_Apr_5_NN_64D_Adam_xavier_relu_N60000_original_setup_dgx1'
-#arg.experiment_name = 'TMP3'
-#arg.experiment_name = 'TMP_hp_test'
-#arg.experiment_name = 'dgx1_Feb_8_256D_Adam_xavier_relu_N60000'
-#arg.job_name = 'BTSG1_8D_a19_Adam_200' # job name e.g BTHL_4D_6_12_MGD_200
-#arg.job_name = 'BT_debug1'
-#arg.job_name = 'BT_64D_units2_Adam'
-
-#arg.experiment_name = 'task_Nov_19_NN_Adam_xavier_relu_N60000' # experiment_name e.g. task_Oct_10_NN_MGD_xavier_relu_N2000
-#arg.experiment_name = 'TMP_task_Jan_19_NN_256D_Adam_xavier_relu_N60000'
-#arg.job_name = 'NN_8D_31_Adam_200' # job name e.g NN_4D_31_MGD_200
-#arg.job_name = 'NN_debug2'
-arg.job_name = 'NN_64D_units31x5_Adam'
+#arg.experiment_name = 'task_Apr_16_BT_64D_Adam_xavier_relu_N30000000_original_setup_OM'
+arg.experiment_name = 'task_Apr_16_NN_64D_Adam_xavier_relu_N30000000_original_setup_OM'
+#
+#arg.job_name = 'BT_64D_units63x2_Adam'
+arg.job_name = 'NN_64D_units63x2_Adam'
+#arg.job_name = 'TMP'
 #
 arg.experiment_root_dir = mtf.get_experiment_folder(arg.data_filename)
 #
 arg.mdl = 'standard_nn'
-#arg.mdl = 'hbf'
-#arg.mdl = 'binary_tree_4D_conv_hidden_layer'
-#arg.mdl = "binary_tree_4D_conv_hidden_layer_automatic"
-#arg.mdl = 'binary_tree_8D_conv_hidden_layer'
-#arg.mdl = 'binary_tree_16D_conv_hidden_layer'
-#arg.mdl = 'binary_tree_32D_conv_hidden_layer'
 #arg.mdl = 'binary_tree_64D_conv_hidden_layer'
-#arg.mdl = 'binary_tree_256D_conv_hidden_layer'
-#arg.mdl = 'bt_subgraph'
-#arg.mdl = 'debug_mdl'
 #
 if arg.mdl == 'debug_mdl':
     arg.act = tf.nn.relu
@@ -157,7 +110,7 @@ elif arg.mdl == 'standard_nn':
     arg.init_type = 'data_xavier_kern'
     arg.init_type = 'xavier'
 
-    K = 31*5
+    K = 63*2
     arg.units = [K]
     #arg.mu = 0.0
     #arg.std = 0.5
@@ -181,124 +134,6 @@ elif arg.mdl == 'standard_nn':
     #
     arg.get_x_shape = lambda arg: [None,arg.D]
     arg.get_dims = lambda arg: [arg.D]+arg.units+[arg.D_out]
-elif arg.mdl == 'hbf':
-    pass
-    # arg.init_type = 'truncated_normal'
-    # arg.init_type = 'data_init'
-    # arg.init_type = 'kern_init'
-    # arg.init_type = 'kpp_init'
-    #
-    # arg.units = [5]
-    # arg.units = [6,6]
-    # arg.units = [6,6,6]
-    #
-    # arg.mu = 0.0
-    # arg.std = 0.0
-    #
-    # arg.W_mu_init = lambda arg: len(arg.dims)*[arg.mu]
-    # arg.W_std_init = lambda arg: len(arg.dims)*[arg.std]
-    #
-    # # train shape of Gaussians
-    # #arg.trainable_S = 'train_S'
-    # arg.trainable_S = 'dont_train_S'
-    # #arg.train_S_type = 'multiple_S'
-    # arg.train_S_type = 'single_S'
-    #
-    # arg.b_init = lambda: [525.32626263]
-elif arg.mdl == "binary_tree_4D_conv_hidden_layer_automatic":
-    arg.L, arg.padding, arg.scope_name, arg.verbose = 2, 'VALID', 'BT_4D', False
-    #
-    arg.init_type = 'xavier'
-    arg.weights_initializer = tf.contrib.layers.xavier_initializer(dtype=tf.float32)
-    arg.biases_initializer = tf.constant_initializer(value=0.1, dtype=tf.float32)
-    #
-    F1 = 6
-    arg.F = [None, F1, 2*F1]
-    #
-    arg.normalizer_fn = None
-    arg.trainable = True
-    #arg.normalizer_fn = tf.contrib.layers.batch_norm
-
-    arg.act = tf.nn.relu
-    #arg.act = tf.nn.elu
-    #arg.act = tf.nn.softplus
-    #
-    arg.get_x_shape = lambda arg: [None,1,arg.D,1]
-    arg.type_preprocess_data = 're_shape_X_to_(N,1,D,1)'
-    #
-    arg.get_dims = lambda arg: [arg.D]+arg.nb_filters[1:]+[arg.D_out]
-elif arg.mdl == 'binary_tree_8D_conv_hidden_layer':
-    arg.L, arg.padding, arg.scope_name, arg.verbose = 3, 'VALID', 'BT_8D', False
-    #
-    arg.init_type = 'xavier'
-    arg.weights_initializer = tf.contrib.layers.xavier_initializer(dtype=tf.float32)
-    arg.biases_initializer = tf.constant_initializer(value=0.1, dtype=tf.float32)
-    #
-    F1 = 1
-    arg.F = [None, F1, 2*F1, 4*F1]
-    #
-    arg.normalizer_fn = None
-    arg.trainable = True
-    #arg.normalizer_fn = tf.contrib.layers.batch_norm
-
-    arg.act = tf.nn.relu
-    #arg.act = tf.nn.elu
-    #arg.act = tf.nn.softplus
-    #
-    arg.get_x_shape = lambda arg: [None,1,arg.D,1]
-    arg.type_preprocess_data = 're_shape_X_to_(N,1,D,1)'
-    #
-    arg.get_dims = lambda arg: [arg.D]+arg.nb_filters[1:]+[arg.D_out]
-elif arg.mdl == 'binary_tree_16D_conv_hidden_layer':
-    logD = 4
-    L = logD
-    arg.L, arg.padding, arg.scope_name, arg.verbose = L, 'VALID', 'BT_8D', False
-    #
-    arg.init_type = 'xavier'
-    arg.weights_initializer = tf.contrib.layers.xavier_initializer(dtype=tf.float32)
-    arg.biases_initializer = tf.constant_initializer(value=0.1, dtype=tf.float32)
-    #
-    F1 = 6
-    arg.F = [None] + [ F1*(2**l) for l in range(1,L+1) ]
-    arg.nb_filters = arg.F
-    #
-    arg.normalizer_fn = None
-    arg.trainable = True
-    #arg.normalizer_fn = tf.contrib.layers.batch_norm
-
-    arg.act = tf.nn.relu
-    #arg.act = tf.nn.elu
-    #arg.act = tf.nn.softplus
-    #
-    arg.get_x_shape = lambda arg: [None,1,arg.D,1]
-    arg.type_preprocess_data = 're_shape_X_to_(N,1,D,1)'
-    #
-    arg.get_dims = lambda arg: [arg.D]+arg.nb_filters[1:]+[arg.D_out]
-elif arg.mdl == 'binary_tree_32D_conv_hidden_layer':
-    logD = 5
-    L = logD
-    arg.L, arg.padding, arg.scope_name, arg.verbose = L, 'VALID', 'BT_8D', False
-    #
-    arg.init_type = 'xavier'
-    arg.weights_initializer = tf.contrib.layers.xavier_initializer(dtype=tf.float32)
-    arg.biases_initializer = tf.constant_initializer(value=0.1, dtype=tf.float32)
-    #
-    F1 = 1
-    arg.F = [None] + [ F1*(2**l) for l in range(1,L+1) ]
-    arg.nb_filters = arg.F
-    #
-    arg.normalizer_fn = None
-    arg.trainable = True
-    #arg.normalizer_fn = tf.contrib.layers.batch_norm
-
-    arg.act = tf.nn.relu
-    #arg.act = tf.nn.elu
-    #arg.act = tf.nn.softplus
-    #
-    arg.get_x_shape = lambda arg: [None,1,arg.D,1]
-    arg.type_preprocess_data = 're_shape_X_to_(N,1,D,1)'
-    #
-    arg.get_dims = lambda arg: [arg.D]+arg.nb_filters[1:]+[arg.D_out]
 elif arg.mdl == 'binary_tree_64D_conv_hidden_layer':
     logD = 6
     L = logD
@@ -311,78 +146,6 @@ elif arg.mdl == 'binary_tree_64D_conv_hidden_layer':
     F1 = 2
     arg.F = [None] + [ F1*(2**l) for l in range(1,L+1) ]
     arg.nb_filters = arg.F
-    #
-    arg.normalizer_fn = None
-    arg.trainable = True
-    #arg.normalizer_fn = tf.contrib.layers.batch_norm
-
-    arg.act = tf.nn.relu
-    #arg.act = tf.nn.elu
-    #arg.act = tf.nn.softplus
-    #
-    arg.get_x_shape = lambda arg: [None,1,arg.D,1]
-    arg.type_preprocess_data = 're_shape_X_to_(N,1,D,1)'
-    #
-    arg.get_dims = lambda arg: [arg.D]+arg.nb_filters[1:]+[arg.D_out]
-elif arg.mdl == 'binary_tree_256D_conv_hidden_layer':
-    logD = 8
-    L = logD
-    arg.L, arg.padding, arg.scope_name, arg.verbose = L, 'VALID', 'BT_8D', False
-    #
-    arg.init_type = 'xavier'
-    arg.weights_initializer = tf.contrib.layers.xavier_initializer(dtype=tf.float32)
-    arg.biases_initializer = tf.constant_initializer(value=0.1, dtype=tf.float32)
-    #
-    F1 = 6
-    arg.F = [None] + [ F1*(2**l) for l in range(1,L+1) ]
-    arg.nb_filters = arg.F
-    #
-    arg.normalizer_fn = None
-    arg.trainable = True
-    #arg.normalizer_fn = tf.contrib.layers.batch_norm
-
-    arg.act = tf.nn.relu
-    #arg.act = tf.nn.elu
-    #arg.act = tf.nn.softplus
-    #
-    arg.get_x_shape = lambda arg: [None,1,arg.D,1]
-    arg.type_preprocess_data = 're_shape_X_to_(N,1,D,1)'
-    #
-    arg.get_dims = lambda arg: [arg.D]+arg.nb_filters[1:]+[arg.D_out]
-elif arg.mdl == 'bt_subgraph':
-    arg.L, arg.padding, arg.scope_name, arg.verbose = 3, 'VALID', 'BT_subgraph', False
-    #
-    arg.init_type = 'xavier'
-    arg.weights_initializer = tf.contrib.layers.xavier_initializer(dtype=tf.float32)
-    arg.biases_initializer = tf.constant_initializer(value=0.1, dtype=tf.float32)
-    #
-    a = 5
-    # nb of filters per unit
-    #F1, F2, F3 = a, 2*a, 4*a #BT
-    #F1, F2, F3 = a, 2*a, 4*a
-    #F1, F2, F3 = a, 2*a, 6*a
-    #F1, F2, F3 = 2*a, 3*a, 12*a
-    F1, F2, F3 = 4*a, 5*a, 20*a
-    nb_filters=[None,F1,F2,F3]
-    u1, u2, u3 = F1, F2, F3
-    # width of filters
-    #w1, w2, w3 = 2,2*u1,2*u2 #BT
-    #w1, w2, w3 = 2,3*u1,2*u2
-    #w1, w2, w3 = 3,2*u1,3*u2
-    #w1, w2, w3 = 3,3*u1,4*u2
-    w1, w2, w3 = 4,2*u1,4*u2
-    list_filter_widths=[None,w1,w2,w3]
-    # stride
-    #s1, s2, s3 = 2, 2*F1, 1 #BT
-    #s1, s2, s3 = 2, 1*F1, 1
-    #s1, s2, s3 = 1, 2*F1, 1
-    #s1, s2, s3 = 1, 1*F1, 1
-    s1, s2, s3 = 1, 1*F1, 1
-    list_strides=[None,s1,s2,s3]
-    #
-    arg.nb_filters = nb_filters
-    arg.list_filter_widths = list_filter_widths
-    arg.list_strides = list_strides
     #
     arg.normalizer_fn = None
     arg.trainable = True
@@ -550,9 +313,12 @@ arg.display_training = True
 #arg.collect_generalization = True
 arg.collect_generalization = False
 ##
-arg.start_stid = 1
-arg.end_stid = arg.nb_array_jobs
+arg.rand_x = int.from_bytes(os.urandom(4), sys.byteorder)
 arg.restore = False
+if arg.type_job != 'slurm_array_parallel':
+    arg.start_stid = 1
+    arg.end_stid = arg.nb_array_jobs
+    arg.restore = False
 #pdb.set_trace()
 if __name__ == '__main__':
     cmd_args = arg.cmd_args

@@ -50,10 +50,10 @@ arg.get_errors_from = mtf.get_errors_based_on_train_error
 #
 
 #arg.type_job, arg.nb_array_jobs = 'serial', 1 #careful when this is on and GPU is NOT on
-#arg.type_job = 'slurm_array_parallel'
-arg.type_job, arg.nb_array_jobs = 'main_large_hp_ckpt', 200
-arg.save_checkpoints = True
-#arg.save_checkpoints = False
+arg.type_job = 'slurm_array_parallel'
+#arg.type_job, arg.nb_array_jobs = 'main_large_hp_ckpt', 200
+#arg.save_checkpoints = True
+arg.save_checkpoints = False
 #arg.save_last_mdl = True
 arg.save_last_mdl = False
 
@@ -62,13 +62,13 @@ arg.save_last_mdl = False
 #prefix_path_sim_results = './tmp_simulation_results_scripts/%s/%s/' # folder where the results from script is saved
 #prefix_path_ckpts = './tmp_all_ckpts/%s/%s/' # folder where the results from script is saved
 ## to run locally: python batch_main.py -sj sj
-#arg.data_dirpath = './data/' # path to datasets
-#prefix_path_sim_results = '../../simulation_results_scripts/%s/%s/' # folder where the results from script is saved
-#prefix_path_ckpts = '../../all_ckpts/%s/%s/' # folder where the results from script is saved
+arg.data_dirpath = './data/' # path to datasets
+prefix_path_sim_results = '../../simulation_results_scripts/%s/%s/' # folder where the results from script is saved
+prefix_path_ckpts = '../../all_ckpts/%s/%s/' # folder where the results from script is saved
 ## to run in docker
-arg.data_dirpath = '/home_simulation_research/hbf_tensorflow_code/tf_experiments_scripts/data/' # path to datasets
-prefix_path_sim_results = '/home_simulation_research/simulation_results_scripts/%s/%s/' # folder where the results from script is saved
-prefix_path_ckpts = '/home_simulation_research/all_ckpts/%s/%s/' # folder where the results from script is saved
+#arg.data_dirpath = '/home_simulation_research/hbf_tensorflow_code/tf_experiments_scripts/data/' # path to datasets
+#prefix_path_sim_results = '/home_simulation_research/simulation_results_scripts/%s/%s/' # folder where the results from script is saved
+#prefix_path_ckpts = '/home_simulation_research/all_ckpts/%s/%s/' # folder where the results from script is saved
 
 # prefix_path_sim_results = '../../simulation_results_scripts/%s/%s'
 # prefix_path_ckpts = '../../all_ckpts/%s/%s' # folder where the results from script is saved
@@ -90,7 +90,9 @@ arg.prefix_ckpt = 'mdl_ckpt'
 #arg.data_filename = 'f_8D_conv_quad_cubic_sqrt'
 #arg.data_filename = 'f_8D_conv_quad_cubic_sqrt'
 #arg.data_filename = 'f_8D_product_continuous'
-arg.data_filename = 'f_64D_product_binary'
+#arg.data_filename = 'f_64D_product_binary'
+#arg.data_filename = 'f_64D_product_binary'
+arg.data_filename = 'f_64D_binary_parity_N30000000'
 #arg.data_filename = 'f_16D_ppt'
 #arg.data_filename = 'f_32D_ppt'
 #arg.data_filename = 'f_64D_ppt'
@@ -101,7 +103,7 @@ arg.data_filename = 'f_64D_product_binary'
 arg.task_folder_name = mtf.get_experiment_folder(arg.data_filename) #om_f_4d_conv
 arg.type_preprocess_data = None
 #
-arg.N_frac = 60000
+arg.N_frac = 30000000
 #print('arg.N_frac: ', arg.N_frac)
 
 arg.classificaton = mtf.classification_task_or_not(arg)
@@ -117,8 +119,12 @@ arg.classificaton = mtf.classification_task_or_not(arg)
 #arg.experiment_name = 'task_Mar_2_NN_8D_Adam_xavier_relu_N60000_original_setup'
 #arg.experiment_name = 'task_Mar_12_BT_8D_Adam_xavier_relu_N60000_original_setup_dgx1'
 #arg.experiment_name = 'task_Mar_12_NN_8D_Adam_xavier_relu_N60000_original_setup_dgx1'
-arg.experiment_name = 'task_Apr_5_BT_64D_Adam_xavier_relu_N60000_original_setup_dgx1'
+#arg.experiment_name = 'task_Apr_5_BT_64D_Adam_xavier_relu_N60000_original_setup_dgx1'
 #arg.experiment_name = 'task_Apr_5_NN_64D_Adam_xavier_relu_N60000_original_setup_dgx1'
+
+arg.experiment_name = 'task_Apr_16_BT_64D_Adam_xavier_relu_N30000000_original_setup_OM'
+#arg.experiment_name = 'task_Apr_16_NN_64D_Adam_xavier_relu_N30000000_original_setup_OM'
+
 #arg.experiment_name = 'TMP3'
 #arg.experiment_name = 'TMP_hp_test'
 #arg.experiment_name = 'dgx1_Feb_8_256D_Adam_xavier_relu_N60000'
