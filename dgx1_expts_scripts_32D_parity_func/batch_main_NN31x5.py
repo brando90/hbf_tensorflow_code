@@ -100,7 +100,7 @@ arg.classificaton = mtf.classification_task_or_not(arg)
 arg.experiment_name = 'task_Apr_15_NN_32D_Adam_xavier_relu_N60000_original_setup_dgx1'
 #arg.experiment_name = 'TMP3'
 #arg.job_name = 'BT_32D_units2_Adam'
-arg.job_name = 'NN_32D_units31x4_Adam'
+arg.job_name = 'NN_32D_units31x5_Adam'
 #
 arg.experiment_root_dir = mtf.get_experiment_folder(arg.data_filename)
 #
@@ -117,7 +117,7 @@ elif arg.mdl == 'standard_nn':
     arg.init_type = 'data_xavier_kern'
     arg.init_type = 'xavier'
 
-    K = 31*4
+    K = 31*5
     arg.units = [K]
     #arg.mu = 0.0
     #arg.std = 0.5
