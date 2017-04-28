@@ -2,8 +2,8 @@ import sys
 import pdb
 
 import numpy as np
-import sklearn
-from sklearn.metrics.pairwise import euclidean_distances
+#import sklearn
+#from sklearn.metrics.pairwise import euclidean_distances
 from scipy.interpolate import Rbf
 import matplotlib.pyplot as plt
 import json
