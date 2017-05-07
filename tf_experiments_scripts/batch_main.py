@@ -97,6 +97,7 @@ arg.prefix_ckpt = 'mdl_ckpt'
 #arg.data_filename = 'f_64D_product_binary'
 arg.data_filename = 'f_32D_binary_parity_N100'
 arg.data_filename = 'f_32D_binary_parity_N3000000'
+arg.data_filename = 'f_32D_binary_parity_N9500000'
 #arg.data_filename = 'f_16D_ppt'
 #arg.data_filename = 'f_32D_ppt'
 #arg.data_filename = 'f_64D_ppt'
@@ -107,7 +108,7 @@ arg.data_filename = 'f_32D_binary_parity_N3000000'
 arg.task_folder_name = mtf.get_experiment_folder(arg.data_filename) #om_f_4d_conv
 arg.type_preprocess_data = None
 #
-arg.N_frac = 60000
+arg.N_frac = 9500000
 #print('arg.N_frac: ', arg.N_frac)
 
 arg.classificaton = mtf.classification_task_or_not(arg)
