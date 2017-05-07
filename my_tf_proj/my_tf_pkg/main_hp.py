@@ -23,6 +23,8 @@ import sgd_lib
 import time
 
 import maps
+#from maps import NamedDict as mnd
+
 import functools
 
 from tensorflow.python.client import device_lib
@@ -35,6 +37,13 @@ def get_available_gpus():
     return [x.name for x in local_device_protos if x.device_type == 'GPU']
 
 ##
+
+def evaluate_acc_radamacher(y,y_pred):
+    #pdb.set_trace()
+    y_pred[y_pred<=-1] = -1
+    y_pred[y_pred>1] = 1
+    acc = np.sum(y_pred == y)/y.shape[0]
+    return acc
 
 def deleteContent(pfile):
     pfile.seek(0)
@@ -223,6 +232,7 @@ def get_optimizer(arg):
             #opt = sgd_lib.GDL_official_tf(loss=arg.loss,learning_rate=learning_rate,mu_noise=arg.mu_noise,stddev_noise=arg.stddev_noise,compact=arg.compact,B=arg.B)
             opt = sgd_lib.GDL_official_tf(arg)
     train_step = opt
+    ## summaries TODO
     return train_step
 
 ##
@@ -250,7 +260,9 @@ def get_accuracy_loss(arg,x,y,y_):
     '''
     with tf.name_scope("loss_and_acc") as scope:
         if arg.classificaton:
-            cross_entropy = tf.reduce_mean(-tf.reduce_sum(y_ * tf.log(y), reduction_indices=[1]))
+            #cross_entropy = tf.reduce_mean(-tf.reduce_sum(y_ * tf.log(y), reduction_indices=[1]))
+            diff = tf.nn.softmax_cross_entropy_with_logits(labels=y_, logits=y)
+            cross_entropy = tf.reduce_mean(diff)
             correct_prediction = tf.equal(tf.argmax(y,1), tf.argmax(y_,1)) # list of booleans indicating correct predictions
             #
             loss, accuracy = cross_entropy, tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
@@ -258,6 +270,8 @@ def get_accuracy_loss(arg,x,y,y_):
             l2_loss = tf.reduce_sum( tf.reduce_mean(tf.square(y_-y), 0))
             #
             loss, accuracy = l2_loss, l2_loss
+    ##
+    tf.summary.scalar('loss', loss), tf.summary.scalar('accuracy', accuracy)
     return loss, accuracy
 
 def main_hp(arg):
@@ -269,9 +283,10 @@ def main_hp(arg):
     note:
     '''
     #arg.rand_x = int.from_bytes(os.urandom(4), sys.byteorder)
-    np.random.seed(arg.rand_x)
-    random.seed(arg.rand_x)
-    tf.set_random_seed( arg.rand_x )
+    if arg.rand_x != None:
+        np.random.seed(arg.rand_x)
+        random.seed(arg.rand_x)
+        tf.set_random_seed( arg.rand_x )
     # force to flushing to output as default
     print = print_func_flush_false
     if arg.slurm_array_task_id == '1':
@@ -282,6 +297,11 @@ def main_hp(arg):
     print(print)
     print('>>> arg.restore = ', arg.restore)
     arg.date = datetime.date.today().strftime("%B %d").replace (" ", "_")
+    # tensorboard
+    if arg.use_tb:
+        if tf.gfile.Exists(arg.tb_data_dump):
+          tf.gfile.DeleteRecursively(arg.tb_data_dump)
+        tf.gfile.MakeDirs(arg.tb_data_dump)
     #
     current_job_mdl_folder = 'job_mdl_folder_%s/'%arg.job_name
     arg.path_to_hp = arg.get_path_root(arg)+current_job_mdl_folder
@@ -304,12 +324,14 @@ def main_hp(arg):
     ## if (preprocess_data, then preprocess) else (do nothing to the data)
     if arg.type_preprocess_data:
         X_train, Y_train, X_cv, Y_cv, X_test, Y_test = preprocess_data(arg, X_train, Y_train, X_cv, Y_cv, X_test, Y_test)
+    if arg.classificaton:
+        Y_train, Y_cv, Y_test = mtf.radamacher_to_one_hot(Y_train), mtf.radamacher_to_one_hot(Y_cv), mtf.radamacher_to_one_hot(Y_test)
     #### build graph
     graph = tf.Graph()
     with graph.as_default():
         ### get mdl
         x = tf.placeholder(arg.float_type, arg.get_x_shape(arg), name='x-input')
-        y_ = tf.placeholder(arg.float_type, arg.get_y_shape(arg))
+        y_ = tf.placeholder(arg.float_type, [None,2]) if arg.classificaton else tf.placeholder(arg.float_type, arg.get_y_shape(arg))
         phase_train = tf.placeholder(tf.bool, name='phase_train') # phase_train = tf.placeholder(tf.bool, name='phase_train') if arg.bn else  None
         arg.phase_train = phase_train
         y = get_mdl(arg,x)
@@ -329,7 +351,7 @@ def main_hp(arg):
     with tf.Session(graph=graph) as sess:
         with open(arg.path_to_hp+arg.csv_errors_filename,mode='a') as errors_csv_f: # a option: Opens a file for appending. The file pointer is at the end of the file if the file exists. That is, the file is in the append mode. If the file does not exist, it creates a new file for writing.
             #writer = csv.Writer(errors_csv_f)
-            writer = csv.DictWriter(errors_csv_f,['train_error', 'cv_error', 'test_error'])
+            writer = csv.DictWriter(errors_csv_f,['train_error', 'cv_error', 'test_error','train_acc','cv_acc','test_acc'])
             # if (there is a restore ckpt mdl restore it) else (create a structure to save ckpt files)
             if arg.restore:
                 arg.restore = False # after the model has been restored, we continue normal until all hp's are finished
@@ -348,37 +370,72 @@ def main_hp(arg):
                 if arg.save_checkpoints or arg.save_last_mdl:
                     mtf.make_and_check_dir(path=arg.path_to_ckpt+arg.hp_folder_for_ckpt) # creates ./all_ckpts/exp_task_name/mdl_nn10/hp_stid_N
                 sess.run(tf.global_variables_initializer())
-            # train
             start_iteration = step.eval() # last iteration trained is the first iteration for this model
             batch_size_eval = batch_size.eval()
-            #pdb.set_trace()
+            # Setup TensorBoard (or not)
+            if arg.use_tb:
+                merged = tf.summary.merge_all()
+                train_writer, cv_writer, test_writer = tf.summary.FileWriter(arg.tb_data_dump+'/train',graph), tf.summary.FileWriter(arg.tb_data_dump+'/cv',graph), tf.summary.FileWriter(arg.tb_data_dump+'/test',graph)
+                fetches_loss, fetches_acc = maps.NamedDict({'loss':loss, 'merged':merged}), maps.NamedDict({'acc':accuracy, 'merged':merged})
+            else:
+                fetches_loss, fetches_acc = maps.NamedDict({'loss':loss}), maps.NamedDict({'acc':accuracy})
+            # train
+            train_accs = []
+            train_errs = []
             for i in range(start_iteration,nb_iterations.eval()):
-                #batch_xs, batch_ys = mnist.train.next_batch(batch_size.eval())
                 batch_xs, batch_ys = get_batch_feed(X_train, Y_train, batch_size.eval())
-                sess.run(fetches=train_step, feed_dict={x: batch_xs, y_: batch_ys, phase_train: False})
-                # check_point mdl
+                sess.run(fetches=train_step, feed_dict={x: batch_xs, y_: batch_ys})
+                #pdb.set_trace()
                 if i % arg.report_error_freq == 0:
                     sess.run(step.assign(i))
-                    #
-                    train_error = sess.run(fetches=loss, feed_dict={x: X_train, y_: Y_train, phase_train: False})
-                    cv_error, test_error = -1, -1 # dummy values so that reading data to form plots is easier
+                    # train evaluate
+                    #pdb.set_trace()
+                    fetched_loss_train = sess.run(fetches=fetches_loss, feed_dict={x: X_train, y_: Y_train}) # fltr = fetches_loss_train
+                    fetched_loss_train.acc = -1
+                    if arg.classificaton:
+                        fetched_acc_train = sess.run(fetches=fetches_acc, feed_dict={x: X_train, y_: Y_train}) # fatr = fetches_acc_train
+                    # cv, test evaluate
                     if arg.collect_generalization:
-                        cv_error = sess.run(fetches=loss, feed_dict={x: X_cv, y_: Y_cv, phase_train: False})
-                        test_error = sess.run(fetches=loss, feed_dict={x: X_test, y_: Y_test, phase_train: False})
+                        fetched_loss_cv = sess.run(fetches=fetches_loss, feed_dict={x: X_cv, y_: Y_cv})
+                        fetched_loss_test = sess.run(fetches=fetches_loss, feed_dict={x: X_test, y_: Y_test})
+                        fetched_loss_cv.acc, fetched_loss_test= -1, -1
+                        if arg.classificaton:
+                            cv_acc = sess.run(fetches=fetches_acc, feed_dict={x: X_cv, y_: Y_cv})
+                            test_acc = sess.run(fetches=fetches_acc, feed_dict={x: X_test, y_: Y_test})
+                    # set variables
+                    train_error, train_acc = fetched_loss_train.loss, fetched_acc_train.acc
+                    if arg.collect_generalization:
+                        cv_error, test_error = fetched_loss_cv.loss, fetched_loss_test.loss
+                        cv_acc, test_acc = fetched_acc_cv.acc, fetched_acc_test.acc
+                    # display training stuff
                     if arg.display_training:
-                        print( 'step %d, train error: %s | batch_size(step.eval(),arg.batch_size): %s,%s log_learning_rate: %s | mdl %s '%(i,train_error,batch_size_eval,arg.batch_size,arg.log_learning_rate,arg.mdl) )
+                        print( 'step %d, train error: %s | train acc %s | batch_size(step.eval(),arg.batch_size): %s,%s log_learning_rate: %s | mdl %s '%(i,train_error,train_acc,batch_size_eval,arg.batch_size,arg.log_learning_rate,arg.mdl) )
                     # write files
-                    writer.writerow({'train_error':train_error,'cv_error':cv_error,'test_error':test_error})
-                # save checkpoint
-                if arg.save_checkpoints:
-                    if i % arg.save_ckpt_freq == 0:
-                        #print('>>>>>>>>>>CKPT',i,arg.save_ckpt_freq)
-                        saver.save(sess=sess,save_path=arg.path_to_ckpt+arg.hp_folder_for_ckpt+arg.prefix_ckpt)
-                # save last model
-                if arg.save_last_mdl:
-                    saver.save(sess=sess,save_path=arg.path_to_ckpt+arg.hp_folder_for_ckpt+arg.prefix_ckpt)
+                    if not arg.collect_generalization:
+                        dict_errs = {'train_error':train_error,'train_acc':train_acc}
+                    else:
+                        dict_errs = {'train_error':train_error,'cv_error':cv_error,'test_error':test_error,'train_acc':train_acc,'cv_error':cv_error,'test_error':test_error}
+                    writer.writerow(dict_errs)
+                    # append quick checks
+                    train_accs.append(train_acc)
+                    train_errs.append(train_error)
+                    # write tensorboard stats
+                    if arg.use_tb:
+                        train_writer.add_summary(fetched_loss_train.merged, i), train_writer.add_summary(fetched_acc_train.merged, i)
+                        if arg.collect_generalization:
+                            cv_writer.add_summary(fetched_loss_cv.merged, i), cv_writer.add_summary(fetched_acc_cv.merged, i)
+                            test_writer.add_summary(fetched_loss_test.merged, i), test_writer.add_summary(fetched_acc_test.merged, i)
+                    # save checkpoint
+                    if arg.save_checkpoints:
+                        if i % arg.save_ckpt_freq == 0:
+                            #print('>>>>>>>>>>CKPT',i,arg.save_ckpt_freq)
+                            saver.save(sess=sess,save_path=arg.path_to_ckpt+arg.hp_folder_for_ckpt+arg.prefix_ckpt)
+            # save last model
+            if arg.save_last_mdl:
+                saver.save(sess=sess,save_path=arg.path_to_ckpt+arg.hp_folder_for_ckpt+arg.prefix_ckpt)
             # evaluate
-            print('Final Test Acc/error: ', sess.run(fetches=accuracy, feed_dict={x: X_test, y_: Y_test}))
+            #print('Final Test Acc/error: ', sess.run(fetches=accuracy, feed_dict={x: X_test, y_: Y_test}))
+            print('Final -> | train error %s | train: %s'% (min(train_errs), max(train_accs)) )
             seconds = (time.time() - start_time)
             minutes = seconds/ 60
             hours = minutes/ 60

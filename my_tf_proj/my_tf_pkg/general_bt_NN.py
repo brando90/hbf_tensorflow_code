@@ -329,11 +329,11 @@ class TestNN_BT(unittest.TestCase):
         return mdl
 
     def test_NN_BTD(self,M=3):
-        logD=6
+        logD=9
         L = logD
         D = 2**L
-        F1 = 2 # <--- EDIT
-        nb_units = 7*6  # <-- EDIT
+        F1 = 6 # <--- EDIT nb units BT
+        nb_units = (D-1)*F1  # <-- EDIT nb units shallow
         F = [None] + [ F1*(2**l) for l in range(1,L+1) ]
         print('F ', F)
         print('\n -------test'+str(D))

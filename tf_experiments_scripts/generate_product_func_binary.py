@@ -26,8 +26,8 @@ f = np.prod
 #M = 6*nbins**(2**logD)
 #M = 6*10*(10**6)
 #M = 3*(10**7)
-#M = 65536
-M = int(9.5*10**6)
+M = 65536
+#M = int(9.5*10**6)
 #
 type_input_dist = 'full_random_M'
 #type_input_dist = 'full_2^D_space'

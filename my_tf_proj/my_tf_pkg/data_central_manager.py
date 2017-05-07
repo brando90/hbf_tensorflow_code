@@ -138,21 +138,21 @@ def get_data_hrushikesh_exp(task_name):
 
 #
 
+# def radamacher_to_one_hot(y):
+#     print(y)
+#     N,D = y.shape
+#     out = np.zeros([N,2],dtype=int)
+#     hot_one_indices = (y==1).astype(int)
+#     out[np.arange(N), hot_one_indices ] = 1
+#     print(hot_one_indices)
+#     return out
+#
+# def initialization_based(y):
+#     out = np.zeros((len(y),2),dtype=int)
+#     out[np.arange(out.shape[0]), (y==1).astype(int)] = 1
+#     return out
+
 def radamacher_to_one_hot(y):
-    print(y)
-    N,D = y.shape
-    out = np.zeros([N,2],dtype=int)
-    hot_one_indices = (y==1).astype(int)
-    out[np.arange(N), hot_one_indices ] = 1
-    print(hot_one_indices)
-    return out
-
-def initialization_based(y):
-    out = np.zeros((len(y),2),dtype=int)
-    out[np.arange(out.shape[0]), (y==1).astype(int)] = 1
-    return out
-
-def initialization_based_v4(y):
     out = np.zeros((len(y),2),dtype=int)
     mask = (y == -1)
     mask = np.reshape( mask, [len(y),] )
@@ -167,7 +167,7 @@ class Test_Data_center_manager(unittest.TestCase):
         X = np.array([[-1,-1],[-1,1],[1,-1],[1,1]])
         Y = np.reshape(np.prod(X,axis=1),[4,1])
         y_ans = np.array([ [0,1], [1,0], [1,0], [0,1] ])
-        Y_one_hot = initialization_based_v4(Y)
+        Y_one_hot = radamacher_to_one_hot(Y)
         self.assertTrue( np.array_equal(Y_one_hot,y_ans) )
 
 ##
