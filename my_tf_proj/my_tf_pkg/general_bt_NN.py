@@ -136,7 +136,7 @@ def bt_mdl_conv(arg,x):
     l=len(arg.F)-1
     conv = tf.squeeze(conv)
     fully_connected_filter_width = arg.F[l]
-    C = get_final_weight(arg=arg,shape=[fully_connected_filter_width,1],name='C_'+str(len(arg.F)))
+    C = get_final_weight(arg=arg,shape=[fully_connected_filter_width,arg.D_out],name='C_'+str(len(arg.F)))
     mdl = tf.matmul(conv,C)
     if arg.verbose:
         debug_print(l,conv,mdl,arg)

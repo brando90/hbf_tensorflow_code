@@ -324,14 +324,12 @@ def main_hp(arg):
     ## if (preprocess_data, then preprocess) else (do nothing to the data)
     if arg.type_preprocess_data:
         X_train, Y_train, X_cv, Y_cv, X_test, Y_test = preprocess_data(arg, X_train, Y_train, X_cv, Y_cv, X_test, Y_test)
-    if arg.classificaton:
-        Y_train, Y_cv, Y_test = mtf.radamacher_to_one_hot(Y_train), mtf.radamacher_to_one_hot(Y_cv), mtf.radamacher_to_one_hot(Y_test)
     #### build graph
     graph = tf.Graph()
     with graph.as_default():
         ### get mdl
         x = tf.placeholder(arg.float_type, arg.get_x_shape(arg), name='x-input')
-        y_ = tf.placeholder(arg.float_type, [None,2]) if arg.classificaton else tf.placeholder(arg.float_type, arg.get_y_shape(arg))
+        y_ = tf.placeholder(arg.float_type, arg.get_y_shape(arg) )
         phase_train = tf.placeholder(tf.bool, name='phase_train') # phase_train = tf.placeholder(tf.bool, name='phase_train') if arg.bn else  None
         arg.phase_train = phase_train
         y = get_mdl(arg,x)

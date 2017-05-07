@@ -1,16 +1,15 @@
-import numpy as np
 import json
-#from sklearn.cross_validation import train_test_split
-
 import re
-
 import os
-
-from tensorflow.examples.tutorials.mnist import input_data
-#mnist = input_data.read_data_sets("tmp_MNIST_data/", one_hot=True)
 import unittest
-
 import pdb
+
+import numpy as np
+from tensorflow.examples.tutorials.mnist import input_data
+
+import my_tf_pkg as mtf
+
+#mnist = input_data.read_data_sets("tmp_MNIST_data/", one_hot=True)
 
 def get_experiment_folder(data_filename):
     #print( task_name.split('task_') )
@@ -42,6 +41,8 @@ def get_data(arg,N_frac=60000):
         X_train, Y_train, X_cv, Y_cv, X_test, Y_test = get_data_from_file(dirpath=arg.data_dirpath,filename=arg.data_filename)
     # get the number/fraction of the data set that we are going to actully use
     X_train, Y_train, X_cv, Y_cv, X_test, Y_test = X_train[:N_frac,:], Y_train[:N_frac,:], X_cv[:N_frac,:], Y_cv[:N_frac,:], X_test[:N_frac,:], Y_test[:N_frac,:]
+    if arg.classificaton:
+        Y_train, Y_cv, Y_test = mtf.radamacher_to_one_hot(Y_train), mtf.radamacher_to_one_hot(Y_cv), mtf.radamacher_to_one_hot(Y_test)
     # set the data lengths
     arg.N_train, arg.D = X_train.shape
     arg.N_cv = X_cv.shape[0]
