@@ -8,6 +8,7 @@ import os
 
 from tensorflow.examples.tutorials.mnist import input_data
 #mnist = input_data.read_data_sets("tmp_MNIST_data/", one_hot=True)
+import unittest
 
 import pdb
 
@@ -134,3 +135,42 @@ def get_data_hrushikesh_exp(task_name):
         X_cv, X_test, Y_cv, Y_test = train_test_split(X_test, Y_test, test_size=0.5)
         (X_train, Y_train, X_cv, Y_cv, X_test, Y_test) = ( np.array(X_train), np.array(Y_train), np.array(X_cv), np.array(Y_cv), np.array(X_test), np.array(Y_test) )
     return (X_train, Y_train, X_cv, Y_cv, X_test, Y_test)
+
+#
+
+def radamacher_to_one_hot(y):
+    print(y)
+    N,D = y.shape
+    out = np.zeros([N,2],dtype=int)
+    hot_one_indices = (y==1).astype(int)
+    out[np.arange(N), hot_one_indices ] = 1
+    print(hot_one_indices)
+    return out
+
+def initialization_based(y):
+    out = np.zeros((len(y),2),dtype=int)
+    out[np.arange(out.shape[0]), (y==1).astype(int)] = 1
+    return out
+
+def initialization_based_v4(y):
+    out = np.zeros((len(y),2),dtype=int)
+    mask = (y == -1)
+    mask = np.reshape( mask, [len(y),] )
+    out[:,0] = mask.astype(int)
+    out[:,1] = (~mask).astype(int)
+    return out
+
+class Test_Data_center_manager(unittest.TestCase):
+    #make sure methods start with word test
+
+    def test_to_one_hot(self):
+        X = np.array([[-1,-1],[-1,1],[1,-1],[1,1]])
+        Y = np.reshape(np.prod(X,axis=1),[4,1])
+        y_ans = np.array([ [0,1], [1,0], [1,0], [0,1] ])
+        Y_one_hot = initialization_based_v4(Y)
+        self.assertTrue( np.array_equal(Y_one_hot,y_ans) )
+
+##
+
+if __name__ == '__main__':
+    unittest.main()
