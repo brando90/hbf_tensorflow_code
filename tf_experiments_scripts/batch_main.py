@@ -276,7 +276,7 @@ elif arg.mdl == 'binary_tree_32D_conv_hidden_layer':
     arg.weights_initializer = tf.contrib.layers.xavier_initializer(dtype=tf.float32)
     arg.biases_initializer = tf.constant_initializer(value=0.1, dtype=tf.float32)
     #
-    F1 = 2
+    F1 = 3
     arg.F = [None] + [ F1*(2**l) for l in range(1,L+1) ]
     arg.nb_filters = arg.F
     #
@@ -292,6 +292,8 @@ elif arg.mdl == 'binary_tree_32D_conv_hidden_layer':
     arg.type_preprocess_data = 're_shape_X_to_(N,1,D,1)'
     #
     arg.get_dims = lambda arg: [arg.D]+arg.nb_filters[1:]+[arg.D_out]
+    #
+    #arg.get_mdl_inf = lambda arg: 'nb_'
 elif arg.mdl == 'binary_tree_64D_conv_hidden_layer':
     logD = 6
     L = logD
@@ -412,7 +414,7 @@ def get_power2_batch_size(arg):
     return batch_size
 arg.get_batch_size = get_power2_batch_size
 ## report freqs
-arg.report_error_freq = 1
+arg.report_error_freq = 50
 arg.get_save_ckpt_freq = lambda arg: int(0.25*arg.nb_steps)
 
 ## learning step/rate
@@ -420,9 +422,10 @@ arg.get_save_ckpt_freq = lambda arg: int(0.25*arg.nb_steps)
 #arg.get_log_learning_rate =  lambda arg: np.random.uniform(low=arg.low_log_const_learning_rate, high=arg.high_log_const_learning_rate)
 #arg.get_start_learning_rate = lambda arg: 10**arg.log_learning_rate
 arg.get_log_learning_rate =  lambda arg: None
-arg.get_start_learning_rate = lambda arg: 0.9
+arg.get_start_learning_rate = lambda arg: 0.1
+
 ## decayed_learning_rate = learning_rate * decay_rate ^ (global_step / decay_steps)
-arg.decay_rate_low, arg.decay_rate_high = 0.1, 1.0
+#arg.decay_rate_low, arg.decay_rate_high = 0.1, 1.0
 #arg.get_decay_rate = lambda arg: np.random.uniform(low=arg.decay_rate_low, high=arg.decay_rate_high)
 arg.get_decay_rate = lambda arg: 1000
 
