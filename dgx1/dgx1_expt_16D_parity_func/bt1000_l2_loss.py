@@ -62,15 +62,15 @@ arg.save_last_mdl = False
 #prefix_path_ckpts = './tmp_all_ckpts/%s/%s/' # folder where the results from script is saved
 #arg.tb_data_dump = './tb_dump' # folder where /train,/cv,/test tb stats are stored
 ## to run locally: python batch_main.py -sj sj
-arg.data_dirpath = './data/' # path to datasets
-prefix_path_sim_results = '../../simulation_results_scripts/%s/%s/' # folder where the results from script is saved
-prefix_path_ckpts = '../../all_ckpts/%s/%s/' # folder where the results from script is saved
-arg.tb_data_dump = '../../tb_dump' # folder where /train,/cv,/test tb stats are stored
-## to run in docker
-# arg.data_dirpath = '/home_simulation_research/hbf_tensorflow_code/tf_experiments_scripts/data/' # path to datasets
-# prefix_path_sim_results = '/home_simulation_research/simulation_results_scripts/%s/%s/' # folder where the results from script is saved
-# prefix_path_ckpts = '/home_simulation_research/all_ckpts/%s/%s/' # folder where the results from script is saved
-# arg.tb_data_dump = '/home_simulation_research/tb_dump' # folder where /train,/cv,/test tb stats are stored
+#arg.data_dirpath = './data/' # path to datasets
+#prefix_path_sim_results = '../../simulation_results_scripts/%s/%s/' # folder where the results from script is saved
+#prefix_path_ckpts = '../../all_ckpts/%s/%s/' # folder where the results from script is saved
+#arg.tb_data_dump = '../../tb_dump' # folder where /train,/cv,/test tb stats are stored
+## to run in docker 
+arg.data_dirpath = '/home_simulation_research/hbf_tensorflow_code/tf_experiments_scripts/data/' # path to datasets
+prefix_path_sim_results = '/home_simulation_research/simulation_results_scripts/%s/%s/' # folder where the results from script is saved
+prefix_path_ckpts = '/home_simulation_research/all_ckpts/%s/%s/' # folder where the results from script is saved
+arg.tb_data_dump = '/home_simulation_research/tb_dump' # folder where /train,/cv,/test tb stats are stored
 
 
 # prefix_path_sim_results = '../../simulation_results_scripts/%s/%s'
