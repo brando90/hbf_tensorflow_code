@@ -41,7 +41,7 @@ def get_data(arg,N_frac=60000):
         X_train, Y_train, X_cv, Y_cv, X_test, Y_test = get_data_from_file(dirpath=arg.data_dirpath,filename=arg.data_filename)
     # get the number/fraction of the data set that we are going to actully use
     X_train, Y_train, X_cv, Y_cv, X_test, Y_test = X_train[:N_frac,:], Y_train[:N_frac,:], X_cv[:N_frac,:], Y_cv[:N_frac,:], X_test[:N_frac,:], Y_test[:N_frac,:]
-    if arg.classificaton:
+    if arg.one_hot:
         Y_train, Y_cv, Y_test = mtf.radamacher_to_one_hot(Y_train), mtf.radamacher_to_one_hot(Y_cv), mtf.radamacher_to_one_hot(Y_test)
     # set the data lengths
     arg.N_train, arg.D = X_train.shape

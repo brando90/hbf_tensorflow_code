@@ -37,22 +37,23 @@ print('os.path.dirname(os.path.abspath(__file__)): ', os.path.dirname(os.path.ab
 
 print_func_flush_true = functools.partial(print, flush=True) # TODO fix hack
 
-## create args
+##
+#print('In batch script', flush=True)
+#print = functools.partial(print, flush=True)
+#print(ns)
+###
 arg = maps.NamedDict()
 
-## test or train error
+#
 arg.get_errors_from = mtf.get_errors_based_on_train_error
 #arg.get_errors_from = mtf.get_errors_based_on_validation_error
-
-## use TensorBoard
-arg.use_tb = True
-#arg.use_tb = False
+#
 
 #arg.type_job, arg.nb_array_jobs = 'serial', 1 #careful when this is on and GPU is NOT on
-arg.type_job, arg.nb_array_jobs = 'slurm_array_parallel', 1
-#arg.type_job, arg.nb_array_jobs = 'main_large_hp_ckpt', 200
-#arg.save_checkpoints = True
-arg.save_checkpoints = False
+#arg.type_job = 'slurm_array_parallel'
+arg.type_job, arg.nb_array_jobs = 'main_large_hp_ckpt', 200
+arg.save_checkpoints = True
+#arg.save_checkpoints = False
 #arg.save_last_mdl = True
 arg.save_last_mdl = False
 
@@ -60,18 +61,14 @@ arg.save_last_mdl = False
 #arg.data_dirpath = './data/' # path to datasets
 #prefix_path_sim_results = './tmp_simulation_results_scripts/%s/%s/' # folder where the results from script is saved
 #prefix_path_ckpts = './tmp_all_ckpts/%s/%s/' # folder where the results from script is saved
-#arg.tb_data_dump = './tb_dump' # folder where /train,/cv,/test tb stats are stored
 ## to run locally: python batch_main.py -sj sj
-arg.data_dirpath = './data/' # path to datasets
-prefix_path_sim_results = '../../simulation_results_scripts/%s/%s/' # folder where the results from script is saved
-prefix_path_ckpts = '../../all_ckpts/%s/%s/' # folder where the results from script is saved
-arg.tb_data_dump = '../../tb_dump' # folder where /train,/cv,/test tb stats are stored
+#arg.data_dirpath = './data/' # path to datasets
+#prefix_path_sim_results = '../../simulation_results_scripts/%s/%s/' # folder where the results from script is saved
+#prefix_path_ckpts = '../../all_ckpts/%s/%s/' # folder where the results from script is saved
 ## to run in docker
-# arg.data_dirpath = '/home_simulation_research/hbf_tensorflow_code/tf_experiments_scripts/data/' # path to datasets
-# prefix_path_sim_results = '/home_simulation_research/simulation_results_scripts/%s/%s/' # folder where the results from script is saved
-# prefix_path_ckpts = '/home_simulation_research/all_ckpts/%s/%s/' # folder where the results from script is saved
-# arg.tb_data_dump = '/home_simulation_research/tb_dump' # folder where /train,/cv,/test tb stats are stored
-
+arg.data_dirpath = '/home_simulation_research/hbf_tensorflow_code/tf_experiments_scripts/data/' # path to datasets
+prefix_path_sim_results = '/home_simulation_research/simulation_results_scripts/%s/%s/' # folder where the results from script is saved
+prefix_path_ckpts = '/home_simulation_research/all_ckpts/%s/%s/' # folder where the results from script is saved
 
 # prefix_path_sim_results = '../../simulation_results_scripts/%s/%s'
 # prefix_path_ckpts = '../../all_ckpts/%s/%s' # folder where the results from script is saved
@@ -80,71 +77,34 @@ arg.get_path_root_ckpts =  lambda arg: prefix_path_ckpts%(arg.experiment_root_di
 
 arg.prefix_ckpt = 'mdl_ckpt'
 ####
-#arg.data_filename = 'h_gabor_data_and_mesh'
-#arg.data_filename = 'f_1D_cos_no_noise_data' #task_qianli_func
-#arg.data_filename = 'f_2D_binary_parity_N2'
-#arg.data_filename = 'f_4D_binary_parity_N16'
-#arg.data_filename = 'f_4D_conv_2nd'
-#arg.data_filename = 'f_4D_conv_2nd_noise_3_0_25std'
-#arg.data_filename = 'f_4D_conv_2nd_noise_6_0_5std'
-#arg.data_filename = 'f_4D_conv_2nd_noise_12_1std'
-#arg.data_filename = 'f_4D_cos_x2_BT'
-#arg.data_filename = 'f_4D_simple_ReLu_BT_2_units_1st'
 #arg.data_filename = 'f_8D_conv_cos_poly1_poly1'
 #arg.data_filename = 'f_8D_single_relu'
 #arg.data_filename = 'f_8D_conv_quad_cubic_sqrt'
 #arg.data_filename = 'f_8D_conv_quad_cubic_sqrt'
 #arg.data_filename = 'f_8D_product_continuous'
-#arg.data_filename = 'f_8D_binary_parity_N256'
-arg.data_filename = 'f_16D_binary_parity_N65536'
-#arg.data_filename = 'f_32D_binary_parity_N100'
-#arg.data_filename = 'f_32D_binary_parity_N3000000'
-#arg.data_filename = 'f_16D_binary_parity_N65536'
-#arg.data_filename = 'f_32D_binary_parity_N9500000'
+arg.data_filename = 'f_32D_binary_parity_N3000000'
+#arg.data_filename = 'f_64D_product_binary'
 #arg.data_filename = 'f_16D_ppt'
 #arg.data_filename = 'f_32D_ppt'
 #arg.data_filename = 'f_64D_ppt'
 #arg.data_filename = 'f_256D_L8_ppt_1'
-#arg.data_filename = 'f_8D_conv_quad_cubic_sqrt_shuffled'
-#arg.data_filename = 'f_4D_simple_ReLu_BT'
-#arg.data_filename = 'MNIST'
 arg.task_folder_name = mtf.get_experiment_folder(arg.data_filename) #om_f_4d_conv
 arg.type_preprocess_data = None
 #
-arg.N_frac = 100
+arg.N_frac = 3*(10**6)
 #print('arg.N_frac: ', arg.N_frac)
 
-## Classification Task related flags
-arg.classification = mtf.classification_task_or_not(arg)
-arg.classification = True
-#arg.classification = False
-#arg.one_hot = True
-arg.one_hot = False
-#arg.softmax = True
-arg.softmax = False
+arg.classificaton = mtf.classification_task_or_not(arg)
 
-#arg.experiment_name = 'task_Apr_16_BT_64D_Adam_xavier_relu_N30000000_original_setup_OM'
+#arg.experiment_name = 'task_Apr_15_BT_32D_Adam_xavier_relu_N60000_original_setup_dgx1'
+arg.experiment_name = 'task_Apr_15_NN_32D_Adam_xavier_relu_N60000_original_setup_dgx1'
 #arg.experiment_name = 'TMP3'
-#arg.job_name = 'BT_debug1'
-#arg.job_name = 'BT_64D_units31x2_Adam'
-
-#arg.experiment_name = 'task_Nov_19_NN_Adam_xavier_relu_N60000' # experiment_name e.g. task_Oct_10_NN_MGD_xavier_relu_N2000
-arg.experiment_name = 'TMP3'
-arg.job_name = 'NN_32D_units2_Adam'
+#arg.job_name = 'BT_32D_units2_Adam'
+arg.job_name = 'NN_32D_units31x2_Adam'
 #
 arg.experiment_root_dir = mtf.get_experiment_folder(arg.data_filename)
 #
 arg.mdl = 'standard_nn'
-#arg.mdl = 'hbf'
-#arg.mdl = 'binary_tree_4D_conv_hidden_layer'
-#arg.mdl = "binary_tree_4D_conv_hidden_layer_automatic"
-arg.mdl = 'binary_tree_8D_conv_hidden_layer'
-arg.mdl = 'binary_tree_16D_conv_hidden_layer'
-#arg.mdl = 'binary_tree_32D_conv_hidden_layer'
-#arg.mdl = 'binary_tree_64D_conv_hidden_layer'
-#arg.mdl = 'binary_tree_256D_conv_hidden_layer'
-#arg.mdl = 'bt_subgraph'
-#arg.mdl = 'debug_mdl'
 #
 if arg.mdl == 'debug_mdl':
     arg.act = tf.nn.relu
@@ -157,7 +117,7 @@ elif arg.mdl == 'standard_nn':
     arg.init_type = 'data_xavier_kern'
     arg.init_type = 'xavier'
 
-    K = 10000
+    K = 31*2
     arg.units = [K]
     #arg.mu = 0.0
     #arg.std = 0.5
@@ -234,13 +194,12 @@ elif arg.mdl == 'binary_tree_8D_conv_hidden_layer':
     arg.weights_initializer = tf.contrib.layers.xavier_initializer(dtype=tf.float32)
     arg.biases_initializer = tf.constant_initializer(value=0.1, dtype=tf.float32)
     #
-    F1 = 100
+    F1 = 2
     arg.F = [None, F1, 2*F1, 4*F1]
     #
     arg.normalizer_fn = None
     arg.trainable = True
-    arg.trainable = False
-    arg.normalizer_fn = tf.contrib.layers.batch_norm
+    #arg.normalizer_fn = tf.contrib.layers.batch_norm
 
     arg.act = tf.nn.relu
     #arg.act = tf.nn.elu
@@ -259,7 +218,7 @@ elif arg.mdl == 'binary_tree_16D_conv_hidden_layer':
     arg.weights_initializer = tf.contrib.layers.xavier_initializer(dtype=tf.float32)
     arg.biases_initializer = tf.constant_initializer(value=0.1, dtype=tf.float32)
     #
-    F1 = 10
+    F1 = 6
     arg.F = [None] + [ F1*(2**l) for l in range(1,L+1) ]
     arg.nb_filters = arg.F
     #
@@ -284,7 +243,7 @@ elif arg.mdl == 'binary_tree_32D_conv_hidden_layer':
     arg.weights_initializer = tf.contrib.layers.xavier_initializer(dtype=tf.float32)
     arg.biases_initializer = tf.constant_initializer(value=0.1, dtype=tf.float32)
     #
-    F1 = 3
+    F1 = 2
     arg.F = [None] + [ F1*(2**l) for l in range(1,L+1) ]
     arg.nb_filters = arg.F
     #
@@ -300,8 +259,6 @@ elif arg.mdl == 'binary_tree_32D_conv_hidden_layer':
     arg.type_preprocess_data = 're_shape_X_to_(N,1,D,1)'
     #
     arg.get_dims = lambda arg: [arg.D]+arg.nb_filters[1:]+[arg.D_out]
-    #
-    #arg.get_mdl_inf = lambda arg: 'nb_'
 elif arg.mdl == 'binary_tree_64D_conv_hidden_layer':
     logD = 6
     L = logD
@@ -407,7 +364,7 @@ arg.get_y_shape = lambda arg: [None, arg.D_out]
 arg.float_type = tf.float32
 #steps
 arg.steps_low = int(2.5*60000)
-arg.steps_low = int(1*4001)
+#arg.steps_low = int(1*801)
 arg.steps_high = arg.steps_low+1
 arg.get_steps = lambda arg: int( np.random.randint(low=arg.steps_low ,high=arg.steps_high) )
 
@@ -415,46 +372,43 @@ arg.M_low = 32
 arg.M_high = 15000
 arg.get_batch_size = lambda arg: int(np.random.randint(low=arg.M_low , high=arg.M_high))
 #arg.potential_batch_sizes = [16,32,64,128,256,512,1024]
-arg.potential_batch_sizes = [32]
+#arg.potential_batch_sizes = [4]
 def get_power2_batch_size(arg):
     i = np.random.randint( low=0, high=len(arg.potential_batch_sizes) )
     batch_size = arg.potential_batch_sizes[i]
     return batch_size
-arg.get_batch_size = get_power2_batch_size
+#arg.get_batch_size = get_power2_batch_size
 ## report freqs
-arg.report_error_freq = 5
+arg.report_error_freq = 100
+#arg.get_save_ckpt_freq = lambda arg: arg.report_error_freq
 arg.get_save_ckpt_freq = lambda arg: int(0.25*arg.nb_steps)
 
-## learning step/rate
-#arg.low_log_const_learning_rate, arg.high_log_const_learning_rate = -0.5, -4
-#arg.get_log_learning_rate =  lambda arg: np.random.uniform(low=arg.low_log_const_learning_rate, high=arg.high_log_const_learning_rate)
-#arg.get_start_learning_rate = lambda arg: 10**arg.log_learning_rate
-arg.get_log_learning_rate =  lambda arg: None
-arg.get_start_learning_rate = lambda arg: 0.001
-
+arg.low_log_const_learning_rate, arg.high_log_const_learning_rate = -0.2, -4.5
+arg.get_log_learning_rate =  lambda arg: np.random.uniform(low=arg.low_log_const_learning_rate, high=arg.high_log_const_learning_rate)
+arg.get_start_learning_rate = lambda arg: 10**arg.log_learning_rate
 ## decayed_learning_rate = learning_rate * decay_rate ^ (global_step / decay_steps)
-#arg.decay_rate_low, arg.decay_rate_high = 0.1, 1.0
-#arg.get_decay_rate = lambda arg: np.random.uniform(low=arg.decay_rate_low, high=arg.decay_rate_high)
-arg.get_decay_rate = lambda arg: 0.1
+arg.decay_rate_low, arg.decay_rate_high = 0.1, 1.0
+arg.get_decay_rate = lambda arg: np.random.uniform(low=arg.decay_rate_low, high=arg.decay_rate_high)
+
 #arg.decay_steps_low, arg.decay_steps_high = arg.report_error_freq, arg.M
+#arg.get_decay_steps_low_high = lambda arg: arg.report_error_freq, arg.M
 #arg.get_decay_steps = lambda arg: np.random.randint(low=arg.decay_steps_low, high=arg.decay_steps_high)
 def get_decay_steps(arg):
     #arg.decay_steps_low, arg.decay_steps_high = arg.report_error_freq, arg.M
-    arg.decay_steps_low, arg.decay_steps_high = 1000, 15000
+    arg.decay_steps_low, arg.decay_steps_high = 2000, 25000
     decay_steos = np.random.randint(low=arg.decay_steps_low, high=arg.decay_steps_high)
     return decay_steos
-get_decay_steps = lambda arg: 500
 arg.get_decay_steps = get_decay_steps # when stair case, how often to shrink
 
 #arg.staircase = False
 arg.staircase = True
 
-# optimization_alg = 'GD'
-# optimization_alg = 'Momentum'
+#optimization_alg = 'GD'
+#optimization_alg = 'Momentum'
 # optimization_alg = 'Adadelta'
 # optimization_alg = 'Adagrad'
 optimization_alg = 'Adam'
-# optimization_alg = 'RMSProp'
+#optimization_alg = 'RMSProp'
 arg.optimization_alg = optimization_alg
 
 if optimization_alg == 'GD':
@@ -561,7 +515,6 @@ arg.start_stid = 1
 arg.end_stid = arg.nb_array_jobs
 arg.restore = False
 #pdb.set_trace()
-arg.rand_x = None
 if __name__ == '__main__':
     cmd_args = arg.cmd_args
     #print('In __name__ == __main__')

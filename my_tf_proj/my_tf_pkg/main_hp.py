@@ -139,6 +139,8 @@ def get_mdl(arg,x):
         with tf.name_scope("standardNN") as scope:
             y = mtf.build_standard_NN(arg, x,arg.dims,(None,inits_W,inits_b))
             y = mtf.get_summation_layer(l=str(nb_layers),x=y,init=inits_C[0])
+            #pdb.set_trace()
+            #print('y----> ', y)
     elif arg.mdl == 'hbf':
         raise ValueError('HBF not implemented yet.')
         # arg.dims = [D]+arg.units+[D_out]
@@ -259,19 +261,29 @@ def get_accuracy_loss(arg,x,y,y_):
     loss = cross_entropy,svm_loss, surrogate_loss, etc and accuracy = 1 - {0-1 loss}.
     '''
     with tf.name_scope("loss_and_acc") as scope:
-        if arg.classificaton:
+        # loss
+        if arg.softmax:
             #cross_entropy = tf.reduce_mean(-tf.reduce_sum(y_ * tf.log(y), reduction_indices=[1]))
             diff = tf.nn.softmax_cross_entropy_with_logits(labels=y_, logits=y)
             cross_entropy = tf.reduce_mean(diff)
+            loss = cross_entropy
             correct_prediction = tf.equal(tf.argmax(y,1), tf.argmax(y_,1)) # list of booleans indicating correct predictions
-            #
-            loss, accuracy = cross_entropy, tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
+            accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
         else:
             l2_loss = tf.reduce_sum( tf.reduce_mean(tf.square(y_-y), 0))
-            #
-            loss, accuracy = l2_loss, l2_loss
+            loss = l2_loss
+            y = tf.cast(tf.sign(y),tf.float32)
+            correct_prediction = tf.equal(y, y_) # list of booleans indicating correct predictions
+            accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
+        # accuracy
+        # if arg.classification:
+        #     correct_prediction = tf.equal(tf.argmax(y,1), tf.argmax(y_,1)) # list of booleans indicating correct predictions
+        #     accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
+        # else:
+        #     accuracy = tf.equal(tf.argmax(y,1), tf.argmax(y_,1))
     ##
-    tf.summary.scalar('loss', loss), tf.summary.scalar('accuracy', accuracy)
+    tf.summary.scalar('loss', loss)
+    tf.summary.scalar('accuracy', accuracy)
     return loss, accuracy
 
 def main_hp(arg):
@@ -380,6 +392,7 @@ def main_hp(arg):
             # train
             train_accs = []
             train_errs = []
+            #Y_train_c, Y_cv_c, Y_test_c = mtf.radamacher_to_one_hot(Y_train), mtf.radamacher_to_one_hot(Y_cv), mtf.radamacher_to_one_hot(Y_test)
             for i in range(start_iteration,nb_iterations.eval()):
                 batch_xs, batch_ys = get_batch_feed(X_train, Y_train, batch_size.eval())
                 sess.run(fetches=train_step, feed_dict={x: batch_xs, y_: batch_ys})
@@ -390,14 +403,21 @@ def main_hp(arg):
                     #pdb.set_trace()
                     fetched_loss_train = sess.run(fetches=fetches_loss, feed_dict={x: X_train, y_: Y_train}) # fltr = fetches_loss_train
                     fetched_loss_train.acc = -1
-                    if arg.classificaton:
+                    #y_pred = tf.cast(tf.sign(y),tf.float32)
+                    # y_truth =tf.cast(tf.argmax(y_,1),tf.float32)
+                    #print('y: ', sess.run(fetches=y, feed_dict={x: X_train, y_: Y_train})[0:10])
+                    #print('y_: ', sess.run(fetches=y_, feed_dict={y_: Y_train})[0:10])
+                    # print('y_pred: ', sess.run(fetches=y_pred, feed_dict={x: X_train, y_: Y_train})[0:10])
+                    # print('y_truth: ', sess.run(fetches=y_truth, feed_dict={y_: Y_train})[0:10])
+                    #pdb.set_trace()
+                    if arg.classification:
                         fetched_acc_train = sess.run(fetches=fetches_acc, feed_dict={x: X_train, y_: Y_train}) # fatr = fetches_acc_train
                     # cv, test evaluate
                     if arg.collect_generalization:
                         fetched_loss_cv = sess.run(fetches=fetches_loss, feed_dict={x: X_cv, y_: Y_cv})
                         fetched_loss_test = sess.run(fetches=fetches_loss, feed_dict={x: X_test, y_: Y_test})
                         fetched_loss_cv.acc, fetched_loss_test= -1, -1
-                        if arg.classificaton:
+                        if arg.classification:
                             cv_acc = sess.run(fetches=fetches_acc, feed_dict={x: X_cv, y_: Y_cv})
                             test_acc = sess.run(fetches=fetches_acc, feed_dict={x: X_test, y_: Y_test})
                     # set variables
@@ -407,7 +427,9 @@ def main_hp(arg):
                         cv_acc, test_acc = fetched_acc_cv.acc, fetched_acc_test.acc
                     # display training stuff
                     if arg.display_training:
-                        print( 'step %d, train error: %s | train acc %s | batch_size(step.eval(),arg.batch_size): %s,%s log_learning_rate: %s | mdl %s '%(i,train_error,train_acc,batch_size_eval,arg.batch_size,arg.log_learning_rate,arg.mdl) )
+                        #y_pred_val = sess.run(fetches=tf.nn.softmax(y), feed_dict={x: X_train, y_: Y_train})
+                        #print('y_val: %s \n Y_train: %s '%(y_pred_val, Y_train))
+                        print('step %d, train error: %s | train acc %s | batch_size(step.eval(),arg.batch_size): %s,%s log_learning_rate: %s | mdl %s '%(i,train_error,train_acc,batch_size_eval,arg.batch_size,arg.log_learning_rate,arg.mdl) )
                     # write files
                     if not arg.collect_generalization:
                         dict_errs = {'train_error':train_error,'train_acc':train_acc}
