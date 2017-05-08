@@ -95,7 +95,7 @@ arg.softmax, arg.one_hot = True, True
 #arg.softmax, arg.one_hot = False, False
 
 arg.experiment_name = 'task_May_8_parity_16D_softmax' # experiment_name e.g. task_Oct_10_NN_MGD_xavier_relu_N2000
-arg.experiment_name = 'TMP3'
+#arg.experiment_name = 'TMP3'
 arg.job_name = 'BT_16D_units1000_Adam'
 
 # arg.experiment_name = 'task_May_8_parity_16D_softmax' # experiment_name e.g. task_Oct_10_NN_MGD_xavier_relu_N2000
