@@ -111,7 +111,7 @@ arg.data_filename = 'f_16D_binary_parity_N65536'
 arg.task_folder_name = mtf.get_experiment_folder(arg.data_filename) #om_f_4d_conv
 arg.type_preprocess_data = None
 #
-arg.N_frac = 65536
+arg.N_frac = 100
 #print('arg.N_frac: ', arg.N_frac)
 
 ## Classification Task related flags
@@ -234,7 +234,7 @@ elif arg.mdl == 'binary_tree_8D_conv_hidden_layer':
     arg.weights_initializer = tf.contrib.layers.xavier_initializer(dtype=tf.float32)
     arg.biases_initializer = tf.constant_initializer(value=0.1, dtype=tf.float32)
     #
-    F1 = 20
+    F1 = 3
     arg.F = [None, F1, 2*F1, 4*F1]
     #
     arg.normalizer_fn = None
@@ -406,7 +406,7 @@ arg.get_y_shape = lambda arg: [None, arg.D_out]
 arg.float_type = tf.float32
 #steps
 arg.steps_low = int(2.5*60000)
-arg.steps_low = int(1*2001)
+arg.steps_low = int(1*4001)
 arg.steps_high = arg.steps_low+1
 arg.get_steps = lambda arg: int( np.random.randint(low=arg.steps_low ,high=arg.steps_high) )
 
@@ -421,7 +421,7 @@ def get_power2_batch_size(arg):
     return batch_size
 arg.get_batch_size = get_power2_batch_size
 ## report freqs
-arg.report_error_freq = 1
+arg.report_error_freq = 5
 arg.get_save_ckpt_freq = lambda arg: int(0.25*arg.nb_steps)
 
 ## learning step/rate
@@ -429,7 +429,7 @@ arg.get_save_ckpt_freq = lambda arg: int(0.25*arg.nb_steps)
 #arg.get_log_learning_rate =  lambda arg: np.random.uniform(low=arg.low_log_const_learning_rate, high=arg.high_log_const_learning_rate)
 #arg.get_start_learning_rate = lambda arg: 10**arg.log_learning_rate
 arg.get_log_learning_rate =  lambda arg: None
-arg.get_start_learning_rate = lambda arg: 0.0001
+arg.get_start_learning_rate = lambda arg: 0.001
 
 ## decayed_learning_rate = learning_rate * decay_rate ^ (global_step / decay_steps)
 #arg.decay_rate_low, arg.decay_rate_high = 0.1, 1.0
@@ -448,12 +448,12 @@ arg.get_decay_steps = get_decay_steps # when stair case, how often to shrink
 #arg.staircase = False
 arg.staircase = True
 
-#optimization_alg = 'GD'
-#optimization_alg = 'Momentum'
+# optimization_alg = 'GD'
+# optimization_alg = 'Momentum'
 # optimization_alg = 'Adadelta'
 # optimization_alg = 'Adagrad'
 optimization_alg = 'Adam'
-#optimization_alg = 'RMSProp'
+# optimization_alg = 'RMSProp'
 arg.optimization_alg = optimization_alg
 
 if optimization_alg == 'GD':
