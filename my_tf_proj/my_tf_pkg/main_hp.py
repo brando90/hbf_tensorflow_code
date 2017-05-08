@@ -403,12 +403,6 @@ def main_hp(arg):
                     #pdb.set_trace()
                     fetched_loss_train = sess.run(fetches=fetches_loss, feed_dict={x: X_train, y_: Y_train}) # fltr = fetches_loss_train
                     fetched_loss_train.acc = -1
-                    #y_pred = tf.cast(tf.sign(y),tf.float32)
-                    # y_truth =tf.cast(tf.argmax(y_,1),tf.float32)
-                    #print('y: ', sess.run(fetches=y, feed_dict={x: X_train, y_: Y_train})[0:10])
-                    #print('y_: ', sess.run(fetches=y_, feed_dict={y_: Y_train})[0:10])
-                    # print('y_pred: ', sess.run(fetches=y_pred, feed_dict={x: X_train, y_: Y_train})[0:10])
-                    # print('y_truth: ', sess.run(fetches=y_truth, feed_dict={y_: Y_train})[0:10])
                     #pdb.set_trace()
                     if arg.classification:
                         fetched_acc_train = sess.run(fetches=fetches_acc, feed_dict={x: X_train, y_: Y_train}) # fatr = fetches_acc_train

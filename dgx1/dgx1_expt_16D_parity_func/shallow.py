@@ -111,7 +111,7 @@ arg.data_filename = 'f_16D_binary_parity_N65536'
 arg.task_folder_name = mtf.get_experiment_folder(arg.data_filename) #om_f_4d_conv
 arg.type_preprocess_data = None
 #
-arg.N_frac = 1000
+arg.N_frac = 65536
 #print('arg.N_frac: ', arg.N_frac)
 
 ## Classification Task related flags
@@ -139,7 +139,7 @@ arg.mdl = 'standard_nn'
 #arg.mdl = 'binary_tree_4D_conv_hidden_layer'
 #arg.mdl = "binary_tree_4D_conv_hidden_layer_automatic"
 #arg.mdl = 'binary_tree_8D_conv_hidden_layer'
-#arg.mdl = 'binary_tree_16D_conv_hidden_layer'
+arg.mdl = 'binary_tree_16D_conv_hidden_layer'
 #arg.mdl = 'binary_tree_32D_conv_hidden_layer'
 #arg.mdl = 'binary_tree_64D_conv_hidden_layer'
 #arg.mdl = 'binary_tree_256D_conv_hidden_layer'
