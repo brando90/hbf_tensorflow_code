@@ -176,8 +176,6 @@ arg.get_start_learning_rate = lambda arg: 10**arg.log_learning_rate
 arg.decay_rate_low, arg.decay_rate_high = 0.1, 1.0
 arg.get_decay_rate = lambda arg: np.random.uniform(low=arg.decay_rate_low, high=arg.decay_rate_high)
 #arg.get_decay_rate = lambda arg: 0.1
-arg.decay_steps_low, arg.decay_steps_high = arg.report_error_freq, arg.M
-arg.get_decay_steps = lambda arg: np.random.randint(low=arg.decay_steps_low, high=arg.decay_steps_high)
 def get_decay_steps(arg):
     #arg.decay_steps_low, arg.decay_steps_high = arg.report_error_freq, arg.M
     arg.decay_steps_low, arg.decay_steps_high = 5000, 30000
