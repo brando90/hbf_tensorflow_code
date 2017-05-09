@@ -203,6 +203,7 @@ class TestNN_BT(unittest.TestCase):
         F = list of nb of filters [F^(1),F^(2),...]
         '''
         arg = ns.Namespace(L=L,trainable=True,padding='VALID',scope_name=scope_name)
+        arg.D_out = 1
         #weights_initializer = tf.contrib.layers.xavier_initializer(dtype=tf.float32)
         arg.weights_initializer = tf.constant_initializer(value=1.0, dtype=tf.float32)
         #biases_initializer = tf.constant_initializer(value=0.0, dtype=tf.float32)
@@ -329,10 +330,10 @@ class TestNN_BT(unittest.TestCase):
         return mdl
 
     def test_NN_BTD(self,M=3):
-        logD=9
+        logD=4
         L = logD
         D = 2**L
-        F1 = 6 # <--- EDIT nb units BT
+        F1 = 5 # <--- EDIT nb units BT
         nb_units = (D-1)*F1  # <-- EDIT nb units shallow
         F = [None] + [ F1*(2**l) for l in range(1,L+1) ]
         print('F ', F)

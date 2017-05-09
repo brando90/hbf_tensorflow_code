@@ -11,5 +11,5 @@ setup(
     packages=['my_tf_pkg','cifar10','sgd_lib'],
     #install_requires=['numpy','keras','namespaces','pdb','scikit-learn','scipy','virtualenv']
     #install_requires=['numpy','keras','namespaces','pdb']
-    install_requires=['numpy','namespaces','pdb','scikit-learn','scipy','maps']
+    install_requires=['numpy','namespaces','pdb','scikit-learn','scipy','maps','pandas','matplotlib']
 )

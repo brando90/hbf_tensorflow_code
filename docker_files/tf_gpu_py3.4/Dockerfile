@@ -30,3 +30,4 @@ RUN apt-get install -y python3-tk
 
 # enviromnet
 ENV OMP_NUM_THREADS=2
+ENV IN_DOCKER_CONT=1
