@@ -1,15 +1,20 @@
 #!/usr/bin/env python
 #SBATCH --mem=5G
-#SBATCH --mail-type=ALL
+#SBATCH --mail-type=END
 #SBATCH --mail-user=brando90@mit.edu
-#SBATCH --gress=gpu:1
 #SBATCH --ntask=1
-#SBATCH --cpus-per-task=1
 #SBATCH --time=7-00:00
+#SBATCH --array=1-200
 
 #from __future__ import #print_function
 #tensorboard --logdir=/tmp/mdl_logs
 #
+
+
+''' useful commands for slurm:
+#SBATCH --array=1-200
+#SBATCH --gres=gpu:1
+'''
 
 print('#!/usr/bin/env python')
 print('#!/usr/bin/python')
