@@ -76,7 +76,7 @@ if hostname == 'dhcp-18-189-23-174.dyn.mit.edu':
     prefix_path_sim_results = '../../simulation_results_scripts/%s/%s/' # folder where the results from script is saved
     prefix_path_ckpts = '../../all_ckpts/%s/%s/' # folder where the results from script is saved
     arg.tb_data_dump = '../../tb_dump' # folder where /train,/cv,/test tb stats are stored
-elif hostname == 'openmind7':
+else:
     # to run in OM
     arg.data_dirpath = '/om/user/brando90/home_simulation_research/hbf_tensorflow_code/tf_experiments_scripts/data/' # path to datasets
     prefix_path_sim_results = '/om/user/brando90/home_simulation_research/simulation_results_scripts/%s/%s/' # folder where the results from script is saved
