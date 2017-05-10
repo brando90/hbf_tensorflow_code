@@ -96,11 +96,11 @@ arg.get_path_root_ckpts =  lambda arg: prefix_path_ckpts%(arg.experiment_root_di
 
 arg.prefix_ckpt = 'mdl_ckpt'
 ####
-arg.data_filename = 'f_16D_binary_parity_N65536'
+arg.data_filename = 'f_32D_binary_parity_N80000'
 arg.task_folder_name = mtf.get_experiment_folder(arg.data_filename) #om_f_4d_conv
 arg.type_preprocess_data = None
 #
-arg.N_frac = 65536
+arg.N_frac = int(8*10**4)
 #print('arg.N_frac: ', arg.N_frac)
 
 ## Classification Task related flags
@@ -110,9 +110,9 @@ arg.classification = True
 #arg.softmax, arg.one_hot = True, True
 arg.softmax, arg.one_hot = False, False
 
-arg.experiment_name = 'task_May9_NN_16D_parity_prod' # experiment_name e.g. task_Oct_10_NN_MGD_xavier_relu_N2000
+arg.experiment_name = 'task_May10_NN_32D_parity_prod' # experiment_name e.g. task_Oct_10_NN_MGD_xavier_relu_N2000
 #arg.experiment_name = 'TMP3'
-arg.job_name = 'NN_16D_units15x2_Adam'
+arg.job_name = 'NN_32D_units15x3_Adam'
 
 arg.experiment_root_dir = mtf.get_experiment_folder(arg.data_filename)
 #
@@ -130,7 +130,7 @@ elif arg.mdl == 'standard_nn':
     arg.init_type = 'data_xavier_kern'
     arg.init_type = 'xavier'
 
-    K = 15*2
+    K = 15*3
     arg.units = [K]
     #arg.mu = 0.0
     #arg.std = 0.5
@@ -161,7 +161,7 @@ arg.get_y_shape = lambda arg: [None, arg.D_out]
 # float type
 arg.float_type = tf.float32
 #steps
-arg.steps_low = int(2.5*60000)
+arg.steps_low = int(2.5*80000)
 #arg.steps_low = int(1*4001)
 arg.steps_high = arg.steps_low+1
 arg.get_steps = lambda arg: int( np.random.randint(low=arg.steps_low ,high=arg.steps_high) )

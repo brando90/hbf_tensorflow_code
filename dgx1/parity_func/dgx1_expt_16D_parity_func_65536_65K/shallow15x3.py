@@ -110,7 +110,7 @@ arg.classification = True
 #arg.softmax, arg.one_hot = True, True
 arg.softmax, arg.one_hot = False, False
 
-arg.experiment_name = 'task_May8_NN_16D_continuous_prod' # experiment_name e.g. task_Oct_10_NN_MGD_xavier_relu_N2000
+arg.experiment_name = 'task_May9_NN_16D_parity_prod' # experiment_name e.g. task_Oct_10_NN_MGD_xavier_relu_N2000
 #arg.experiment_name = 'TMP3'
 arg.job_name = 'NN_16D_units15x3_Adam'
 

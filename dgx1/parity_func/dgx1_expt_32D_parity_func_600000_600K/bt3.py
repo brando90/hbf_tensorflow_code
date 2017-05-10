@@ -96,11 +96,11 @@ arg.get_path_root_ckpts =  lambda arg: prefix_path_ckpts%(arg.experiment_root_di
 
 arg.prefix_ckpt = 'mdl_ckpt'
 ####
-arg.data_filename = 'f_16D_binary_parity_N65536'
+arg.data_filename = 'f_32D_binary_parity_N80000'
 arg.task_folder_name = mtf.get_experiment_folder(arg.data_filename) #om_f_4d_conv
 arg.type_preprocess_data = None
 #
-arg.N_frac = 65536
+arg.N_frac = int(8*10**4)
 #print('arg.N_frac: ', arg.N_frac)
 
 ## Classification Task related flags
@@ -110,14 +110,18 @@ arg.classification = True
 #arg.softmax, arg.one_hot = True, True
 arg.softmax, arg.one_hot = False, False
 
-arg.experiment_name = 'task_May9_NN_16D_parity_prod' # experiment_name e.g. task_Oct_10_NN_MGD_xavier_relu_N2000
+arg.experiment_name = 'task_May10_BT_32D_parity_prod' # experiment_name e.g. task_Oct_10_NN_MGD_xavier_relu_N2000
 #arg.experiment_name = 'TMP3'
-arg.job_name = 'NN_16D_units15x2_Adam'
+arg.job_name = 'BT_32D_units2_Adam'
 
+# arg.experiment_name = 'task_May_8_parity_16D_l2_loss' # experiment_name e.g. task_Oct_10_NN_MGD_xavier_relu_N2000
+# #arg.experiment_name = 'TMP3'
+# arg.job_name = 'NN_8D_units2_Adam'
+#
 arg.experiment_root_dir = mtf.get_experiment_folder(arg.data_filename)
 #
-arg.mdl = 'standard_nn'
-#arg.mdl = 'binary_tree_16D_conv_hidden_layer'
+#arg.mdl = 'standard_nn'
+arg.mdl = 'binary_tree_32D_conv_hidden_layer'
 #
 if arg.mdl == 'debug_mdl':
     arg.act = tf.nn.relu
@@ -125,35 +129,31 @@ if arg.mdl == 'debug_mdl':
     arg.get_dims = lambda arg: arg.dims
     arg.get_x_shape = lambda arg: [None,arg.D]
     arg.get_y_shape = lambda arg: [None,arg.D_out]
-elif arg.mdl == 'standard_nn':
-    arg.init_type = 'truncated_normal'
-    arg.init_type = 'data_xavier_kern'
+elif arg.mdl == 'binary_tree_16D_conv_hidden_layer':
+    logD = 5
+    L = logD
+    arg.L, arg.padding, arg.scope_name, arg.verbose = L, 'VALID', 'BT_8D', False
+    #
     arg.init_type = 'xavier'
-
-    K = 15*2
-    arg.units = [K]
-    #arg.mu = 0.0
-    #arg.std = 0.5
-
-    arg.get_W_mu_init = lambda arg: [None, None, 0]
-    #arg.get_W_mu_init = lambda arg: [None, None, None, None, None, 0]
-    #arg.get_W_std_init = lambda arg: [None, None, 0.1]
-    arg.std_low, arg.std_high = 0.001, 3.0
-    arg.get_W_std_init = lambda arg: [None, None, float(np.random.uniform(low=arg.std_low, high=arg.std_high, size=1)) ]
-    #arg.get_W_std_init = lambda arg: [None, None, None, None, None, float(np.random.uniform(low=arg.std_low, high=arg.std_high, size=1)) ]
-
-    #arg.get_W_mu_init = lambda arg: len(arg.dims)*[arg.mu]
-    #arg.get_W_std_init = lambda arg: len(arg.dims)*[arg.std]
-
-    arg.b = 0.1
-    arg.get_b_init = lambda arg: len(arg.get_dims(arg))*[arg.b]
+    arg.weights_initializer = tf.contrib.layers.xavier_initializer(dtype=tf.float32)
+    arg.biases_initializer = tf.constant_initializer(value=0.1, dtype=tf.float32)
+    #
+    F1 = 3
+    arg.F = [None] + [ F1*(2**l) for l in range(1,L+1) ]
+    arg.nb_filters = arg.F
+    #
+    arg.normalizer_fn = None
+    arg.trainable = True
+    #arg.normalizer_fn = tf.contrib.layers.batch_norm
 
     arg.act = tf.nn.relu
     #arg.act = tf.nn.elu
     #arg.act = tf.nn.softplus
     #
-    arg.get_x_shape = lambda arg: [None,arg.D]
-    arg.get_dims = lambda arg: [arg.D]+arg.units+[arg.D_out]
+    arg.get_x_shape = lambda arg: [None,1,arg.D,1]
+    arg.type_preprocess_data = 're_shape_X_to_(N,1,D,1)'
+    #
+    arg.get_dims = lambda arg: [arg.D]+arg.nb_filters[1:]+[arg.D_out]
 else:
     raise ValueError('Need to use a valid model, incorrect or unknown model %s give.'%arg.mdl)
 
@@ -161,7 +161,7 @@ arg.get_y_shape = lambda arg: [None, arg.D_out]
 # float type
 arg.float_type = tf.float32
 #steps
-arg.steps_low = int(2.5*60000)
+arg.steps_low = int(2.5*80000)
 #arg.steps_low = int(1*4001)
 arg.steps_high = arg.steps_low+1
 arg.get_steps = lambda arg: int( np.random.randint(low=arg.steps_low ,high=arg.steps_high) )
