@@ -1,6 +1,6 @@
 import numpy as np
 
-#import sklearn as sk
+#import sklearn as sk # TODO do I need this?
 #from sklearn.metrics.pairwise import euclidean_distances
 
 import tensorflow as tf
