@@ -1,7 +1,7 @@
 import numpy as np
 
-import sklearn as sk
-from sklearn.metrics.pairwise import euclidean_distances
+#import sklearn as sk
+#from sklearn.metrics.pairwise import euclidean_distances
 
 import tensorflow as tf
 from tensorflow.contrib.layers.python.layers import batch_norm as batch_norm
