@@ -116,7 +116,7 @@ arg.softmax, arg.one_hot = False, False
 
 arg.experiment_name = 'task_May10_NN_32D_parity_prod_80K' # experiment_name e.g. task_Oct_10_NN_MGD_xavier_relu_N2000
 #arg.experiment_name = 'TMP3'
-arg.job_name = 'NN_32D_units15x2_Adam'
+arg.job_name = 'NN_32D_units31x3_Adam'
 
 arg.experiment_root_dir = mtf.get_experiment_folder(arg.data_filename)
 #
@@ -134,7 +134,7 @@ elif arg.mdl == 'standard_nn':
     arg.init_type = 'data_xavier_kern'
     arg.init_type = 'xavier'
 
-    K = 15*2
+    K = 31*3
     arg.units = [K]
     #arg.mu = 0.0
     #arg.std = 0.5
