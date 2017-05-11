@@ -129,7 +129,7 @@ if arg.mdl == 'debug_mdl':
     arg.get_dims = lambda arg: arg.dims
     arg.get_x_shape = lambda arg: [None,arg.D]
     arg.get_y_shape = lambda arg: [None,arg.D_out]
-elif arg.mdl == 'binary_tree_16D_conv_hidden_layer':
+elif arg.mdl == 'binary_tree_32D_conv_hidden_layer':
     logD = 5
     L = logD
     arg.L, arg.padding, arg.scope_name, arg.verbose = L, 'VALID', 'BT_8D', False
