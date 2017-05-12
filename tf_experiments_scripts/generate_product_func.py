@@ -8,12 +8,12 @@ import my_tf_pkg as mtf
 
 import pdb
 
-D = 16
+D = 32
 params = []
 f = mtf.get_product_function()
 #pdb.set_trace()
-file_name = './data/f_16D_product_continuous_65536.npz'
-N = 65536
+file_name = './data/f_32D_product_continuous_80000.npz'
+N = 80000
 N_train, N_cv, N_test = N, N, N
 print('file_name ', file_name)
 data = mtf.generate_and_save_data_set_general_D(file_name,f,D,params=params,N_train=N_train,N_cv=N_cv,N_test=N_test,low_x=-1.5,high_x=1.5)
