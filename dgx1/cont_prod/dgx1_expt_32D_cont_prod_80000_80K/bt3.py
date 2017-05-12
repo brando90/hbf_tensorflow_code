@@ -96,7 +96,7 @@ arg.get_path_root_ckpts =  lambda arg: prefix_path_ckpts%(arg.experiment_root_di
 
 arg.prefix_ckpt = 'mdl_ckpt'
 ####
-arg.data_filename = 'task_May10_BT_32D_prod_cont_80K'
+arg.data_filename = 'f_32D_product_continuous_80000'
 arg.task_folder_name = mtf.get_experiment_folder(arg.data_filename) #om_f_4d_conv
 arg.type_preprocess_data = None
 #
