@@ -12,11 +12,13 @@ import my_tf_pkg as mtf
 
 import pdb
 
-D = 32
+logD = 5
+D = 2**logD
+f = np.prod
 params = []
-f = mtf.get_product_function()
-#pdb.set_trace()
-file_name = './data/f_32D_product_continuous_80000.npz'
+#file_name = './data/f_32D_product_continuous_80000.npz'
+file_name = '/home_simulation_research/hbf_tensorflow_code/tf_experiments_scripts/data/f_32D_product_continuous_80000'
+
 N = 80000
 N_train, N_cv, N_test = N, N, N
 print('file_name ', file_name)
