@@ -1,3 +1,7 @@
+#!/usr/bin/env python
+#SBATCH --mem=7000
+#SBATCH --time=7-00:00
+
 import numpy as np
 import json
 #from sklearn.cross_validation import train_test_split
