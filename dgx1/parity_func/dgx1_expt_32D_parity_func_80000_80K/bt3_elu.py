@@ -110,7 +110,7 @@ arg.classification = True
 #arg.softmax, arg.one_hot = True, True
 arg.softmax, arg.one_hot = False, False
 
-arg.experiment_name = 'task_May10_BT_32D_parity_prod_80K_bn_NO_train' # experiment_name e.g. task_Oct_10_NN_MGD_xavier_relu_N2000
+arg.experiment_name = 'task_May10_BT_32D_parity_prod_80K_elu' # experiment_name e.g. task_Oct_10_NN_MGD_xavier_relu_N2000
 #arg.experiment_name = 'TMP3'
 arg.job_name = 'BT_32D_units3_Adam'
 
@@ -139,12 +139,12 @@ elif arg.mdl == 'binary_tree_32D_conv_hidden_layer':
     arg.nb_filters = arg.F
     #
     arg.normalizer_fn = None
-    #arg.trainable = True
-    arg.trainable = False
-    arg.normalizer_fn = tf.contrib.layers.batch_norm
+    arg.trainable = True
+    #arg.trainable = False
+    #arg.normalizer_fn = tf.contrib.layers.batch_norm
 
-    arg.act = tf.nn.relu
-    #arg.act = tf.nn.elu
+    #arg.act = tf.nn.relu
+    arg.act = tf.nn.elu
     #arg.act = tf.nn.softplus
     #
     arg.get_x_shape = lambda arg: [None,1,arg.D,1]

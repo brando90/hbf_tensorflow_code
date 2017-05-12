@@ -65,17 +65,21 @@ arg.save_last_mdl = False
 hostname = platform.node()
 print('hostname: ', hostname)
 print('in docker? ','IN_DOCKER_CONT' in os.environ)
-if hostname == 'dhcp-18-189-23-174.dyn.mit.edu':
+if hostname == 'dhcp-18-189-23-174.dyn.mit.edu' or hostname == 'Yasmins-MacBook-Pro.local':
     ## debug mode
     #arg.data_dirpath = './data/' # path to datasets
     #prefix_path_sim_results = './tmp_simulation_results_scripts/%s/%s/' # folder where the results from script is saved
     #prefix_path_ckpts = './tmp_all_ckpts/%s/%s/' # folder where the results from script is saved
     #arg.tb_data_dump = './tb_dump' # folder where /train,/cv,/test tb stats are stored
     ## to run locally: python batch_main.py -sj sj
-    arg.data_dirpath = './data/' # path to datasets
-    prefix_path_sim_results = '../../simulation_results_scripts/%s/%s/' # folder where the results from script is saved
-    prefix_path_ckpts = '../../all_ckpts/%s/%s/' # folder where the results from script is saved
-    arg.tb_data_dump = '../../tb_dump' # folder where /train,/cv,/test tb stats are stored
+    # arg.data_dirpath = './data/' # path to datasets
+    # prefix_path_sim_results = '../../simulation_results_scripts/%s/%s/' # folder where the results from script is saved
+    # prefix_path_ckpts = '../../all_ckpts/%s/%s/' # folder where the results from script is saved
+    # arg.tb_data_dump = '../../tb_dump' # folder where /train,/cv,/test tb stats are stored
+    arg.data_dirpath = '/Users/brandomiranda/home_simulation_research/hbf_tensorflow_code/tf_experiments_scripts/data/' # path to datasets
+    prefix_path_sim_results = '/Users/brandomiranda/home_simulation_research/simulation_results_scripts/%s/%s/' # folder where the results from script is saved
+    prefix_path_ckpts = '/Users/brandomiranda/home_simulation_research/all_ckpts/%s/%s/' # folder where the results from script is saved
+    arg.tb_data_dump = '/Users/brandomiranda/home_simulation_research/tb_dump' # folder where /train,/cv,/test tb stats are stored
 else:
     # to run in OM
     arg.data_dirpath = '/om/user/brando90/home_simulation_research/hbf_tensorflow_code/tf_experiments_scripts/data/' # path to datasets
@@ -110,9 +114,9 @@ arg.classification = True
 #arg.softmax, arg.one_hot = True, True
 arg.softmax, arg.one_hot = False, False
 
-arg.experiment_name = 'task_May10_BT_32D_parity_prod_80K_bn_NO_train' # experiment_name e.g. task_Oct_10_NN_MGD_xavier_relu_N2000
+arg.experiment_name = 'task_May10_BT_32D_parity_prod_80K_elu' # experiment_name e.g. task_Oct_10_NN_MGD_xavier_relu_N2000
 #arg.experiment_name = 'TMP3'
-arg.job_name = 'BT_32D_units3_Adam'
+arg.job_name = 'BT_32D_units2_Adam'
 
 arg.experiment_root_dir = mtf.get_experiment_folder(arg.data_filename)
 #
@@ -134,17 +138,17 @@ elif arg.mdl == 'binary_tree_32D_conv_hidden_layer':
     arg.weights_initializer = tf.contrib.layers.xavier_initializer(dtype=tf.float32)
     arg.biases_initializer = tf.constant_initializer(value=0.1, dtype=tf.float32)
     #
-    F1 = 3
+    F1 = 2
     arg.F = [None] + [ F1*(2**l) for l in range(1,L+1) ]
     arg.nb_filters = arg.F
     #
     arg.normalizer_fn = None
-    #arg.trainable = True
-    arg.trainable = False
-    arg.normalizer_fn = tf.contrib.layers.batch_norm
+    arg.trainable = True
+    #arg.trainable = False
+    #arg.normalizer_fn = tf.contrib.layers.batch_norm
 
-    arg.act = tf.nn.relu
-    #arg.act = tf.nn.elu
+    #arg.act = tf.nn.relu
+    arg.act = tf.nn.elu
     #arg.act = tf.nn.softplus
     #
     arg.get_x_shape = lambda arg: [None,1,arg.D,1]
