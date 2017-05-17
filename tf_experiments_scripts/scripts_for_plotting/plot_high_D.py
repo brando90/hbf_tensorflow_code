@@ -27,6 +27,7 @@ def shallow_vs_deep():
     task_name = 'f_32D_binary_parity_N3000000'
     task_name = 'f_16D_binary_parity_N65536'
     task_name = 'f_32D_binary_parity_N80000'
+    #task_name = 'f_32D_product_continuous_80000'
     #
     experiment_name = mtf.get_experiment_folder(task_name)
     print(experiment_name)
@@ -53,6 +54,7 @@ def shallow_vs_deep():
     path_to_experiments_NN = '../../simulation_results_scripts/%s/task_Apr_15_NN_32D_Adam_xavier_relu_N60000_original_setup_dgx1'%experiment_name
     path_to_experiments_NN = '../../simulation_results_scripts/%s/task_May9_NN_16D_parity_prod'%experiment_name
     path_to_experiments_NN = '../../simulation_results_scripts/%s/task_May10_NN_32D_parity_prod_80K'%experiment_name
+    #path_to_experiments_NN = '../../simulation_results_scripts/%s/task_May10_NN_32D_prod_cont_80K'%experiment_name
     mtf.combine_errors_and_hps_to_one_json_file(path_to_experiments_NN,verbose=True,overwrite_old=True)
     expts_best_results = mtf.get_best_results_for_experiments(path_to_experiments_NN,decider,verbose=False,mdl_complexity_criteria=mdl_complexity_criteria)
     #pdb.set_trace()
@@ -99,6 +101,9 @@ def shallow_vs_deep():
     path_to_experiments_BT = '../../simulation_results_scripts/%s/task_May9_BT_16D_parity_prod'%experiment_name
     path_to_experiments_BT = '../../simulation_results_scripts/%s/task_May10_BT_32D_parity_prod_80K'%experiment_name
     path_to_experiments_BT = '../../simulation_results_scripts/%s/task_May10_BT_32D_parity_prod_80K_bn_trainable'%experiment_name
+    path_to_experiments_BT = '../../simulation_results_scripts/%s/task_May10_BT_32D_parity_prod_80K_bn_NO_train'%experiment_name
+    path_to_experiments_BT = '../../simulation_results_scripts/%s/task_May10_BT_32D_parity_prod_80K_elu'%experiment_name
+    #path_to_experiments_BT = '../../simulation_results_scripts/%s/task_May10_BT_32D_prod_cont_80K'%experiment_name
     mtf.combine_errors_and_hps_to_one_json_file(path_to_experiments_BT,verbose=True,overwrite_old=True)
     expts_best_results = mtf.get_best_results_for_experiments(path_to_experiments_BT,decider,verbose=False,mdl_complexity_criteria=mdl_complexity_criteria)
     sorted_units, sorted_train_errors, sorted_validation_errors, sorted_test_errors = mtf.get_errors_for_display(expts_best_results)

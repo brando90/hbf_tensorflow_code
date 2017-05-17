@@ -263,7 +263,7 @@ def get_accuracy_loss(arg,x,y,y_):
     with tf.name_scope("loss_and_acc") as scope:
         # loss
         if arg.softmax:
-            #cross_entropy = tf.reduce_mean(-tf.reduce_sum(y_ * tf.log(y), reduction_indices=[1]))
+            #cross_entropy = tf.reduce_mean(-tf.rduce_sum(y_ * tf.log(y), reduction_indices=[1]))
             diff = tf.nn.softmax_cross_entropy_with_logits(labels=y_, logits=y)
             cross_entropy = tf.reduce_mean(diff)
             loss = cross_entropy
@@ -273,6 +273,7 @@ def get_accuracy_loss(arg,x,y,y_):
             l2_loss = tf.reduce_sum( tf.reduce_mean(tf.square(y_-y), 0))
             loss = l2_loss
             y = tf.cast(tf.sign(y),tf.float32)
+            y_ = tf.cast(tf.sign(y_),tf.float32)
             correct_prediction = tf.equal(y, y_) # list of booleans indicating correct predictions
             accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
         # accuracy
@@ -358,6 +359,7 @@ def main_hp(arg):
     #### run session
     arg.save_ckpt_freq = arg.get_save_ckpt_freq(arg)
     start_time = time.time()
+    #pdb.set_trace()
     with tf.Session(graph=graph) as sess:
         with open(arg.path_to_hp+arg.csv_errors_filename,mode='a') as errors_csv_f: # a option: Opens a file for appending. The file pointer is at the end of the file if the file exists. That is, the file is in the append mode. If the file does not exist, it creates a new file for writing.
             #writer = csv.Writer(errors_csv_f)
