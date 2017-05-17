@@ -55,8 +55,8 @@ arg.get_errors_from = mtf.get_errors_based_on_train_error
 arg.use_tb = False
 
 #arg.type_job, arg.nb_array_jobs = 'serial', 1 #careful when this is on and GPU is NOT on
-arg.type_job, arg.nb_array_jobs = 'slurm_array_parallel', 1
-#arg.type_job, arg.nb_array_jobs = 'main_large_hp_ckpt', 200
+#arg.type_job, arg.nb_array_jobs = 'slurm_array_parallel', 1
+arg.type_job, arg.nb_array_jobs = 'main_large_hp_ckpt', 200
 #arg.save_checkpoints = True
 arg.save_checkpoints = False
 #arg.save_last_mdl = True
