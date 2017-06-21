@@ -3,7 +3,7 @@ import unittest
 
 def tri(a, m, s, x, t):
     b = 1.0 / s**2.0
-    return a * tf.maximum(0.0, m - b * l1_norm(x, t)) 
+    return a * tf.maximum(0.0, m - b * l1_norm(x, t))
 
 def l1_norm(x, t):
     n, d = x.shape
@@ -45,3 +45,6 @@ class TriTest(unittest.TestCase):
         x = np.array([[3.5],[0.2]]).astype(np.float32)
         t = np.array([[0],[3]]).astype(np.float32)
         print (tri(a, m, s, x, t).eval())
+
+if __name__ == '__main__':
+    unittest.main()
